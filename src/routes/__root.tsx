@@ -6,6 +6,7 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 import "../styles.css";
+import { CustomCursor } from "@/components/CustomCursor";
 
 function NotFoundComponent() {
   return (
@@ -75,6 +76,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <CustomCursor />
       <Outlet />
     </QueryClientProvider>
   );

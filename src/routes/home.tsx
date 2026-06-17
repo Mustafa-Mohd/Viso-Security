@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 import { useRef, useState } from "react";
 import { Shield, Radar, Lock, Satellite } from "lucide-react";
 import { SmoothScroll } from "@/components/SmoothScroll";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const Route = createFileRoute("/home")({
   head: () => ({
@@ -135,13 +136,16 @@ function Nav() {
             </a>
           ))}
         </nav>
-        <a
-          href="#contact"
-          className="group inline-flex items-center gap-2 rounded-full bg-gold px-4 py-2 text-[12px] font-medium text-gold-foreground transition-transform hover:scale-[1.02]"
-        >
-          Engage
-          <span className="transition-transform group-hover:translate-x-0.5">→</span>
-        </a>
+        <div className="flex items-center gap-4">
+          <ThemeToggle />
+          <a
+            href="#contact"
+            className="group inline-flex items-center gap-2 rounded-full bg-gold px-4 py-2 text-[12px] font-medium text-gold-foreground transition-transform hover:scale-[1.02]"
+          >
+            Engage
+            <span className="transition-transform group-hover:translate-x-0.5">→</span>
+          </a>
+        </div>
       </div>
     </motion.header>
   );
@@ -869,7 +873,7 @@ function Competencies() {
                 style={{
                   transformStyle: "preserve-3d",
                 }}
-                className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-8 backdrop-blur-xl"
+                className="group relative overflow-hidden rounded-3xl border border-foreground/10 bg-white/[0.03] p-8 backdrop-blur-xl"
               >
                 {/* Scan Line */}
                 <div className="absolute inset-0 overflow-hidden">
@@ -892,7 +896,7 @@ function Competencies() {
                     {group.items.map((item) => (
                       <li
                         key={item}
-                        className="flex items-start gap-3 border-b border-white/5 pb-4 text-white/80"
+                        className="flex items-start gap-3 border-b border-foreground/5 pb-4 text-foreground/80"
                       >
                         <span className="mt-2 h-2 w-2 rounded-full bg-gold" />
                         {item}
