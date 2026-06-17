@@ -157,6 +157,13 @@
     background-clip: text;
     color: transparent;
   }
+
+  .light .text-gradient-gold {
+    background: linear-gradient(135deg, oklch(0.6 0.15 70) 0%, oklch(0.4 0.1 50) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
 }
 
 @font-face {
