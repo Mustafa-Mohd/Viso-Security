@@ -1,321 +1,323 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { useRef, useState } from "react";
-import { Shield, Radar, Lock, Satellite } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform, useInView, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SmoothScroll } from "@/components/SmoothScroll";
 
 export const Route = createFileRoute("/")({
+  component: StoryPage,
   head: () => ({
     meta: [
-      { title: "VISO — Fortifying Tomorrow | Physical Security Consultancy" },
-      {
-        name: "description",
-        content:
-          "VISO is a premier physical security consultancy headquartered in Riyadh. SRA, design, technology integration & compliance across the Kingdom.",
-      },
-      { property: "og:title", content: "VISO — Fortifying Tomorrow" },
-      {
-        property: "og:description",
-        content:
-          "Tailored physical security strategy, design and assurance for critical national infrastructure.",
-      },
+      { title: "Our Story — Fortifying Tomorrow | VISO Security Consultations" },
+      { name: "description", content: "A cinematic scroll-driven journey through VISO — a Riyadh-based physical security consultancy protecting the Kingdom's critical assets." },
     ],
   }),
-  component: Index,
 });
 
-/* ---------- helpers ---------- */
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
-function Reveal({
-  children,
-  delay = 0,
-  className,
-}: {
-  children: React.ReactNode;
-  delay?: number;
-  className?: string;
-}) {
+/* ============================================================
+   LOADING SCREEN
+   ============================================================ */
+function LoadingScreen({ onDone }: { onDone: () => void }) {
+  const [progress, setProgress] = useState(0);
+  useEffect(() => {
+    const start = performance.now();
+    const dur = 1800;
+    let raf = 0;
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - start) / dur);
+      setProgress(p);
+      if (p < 1) raf = requestAnimationFrame(tick);
+      else setTimeout(onDone, 350);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [onDone]);
   return (
     <motion.div
-      className={className}
-      initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, margin: "-80px" }}
-      variants={{
-        hidden: { opacity: 0, y: 28 },
-        show: {
-          opacity: 1,
-          y: 0,
-          transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1], delay },
-        },
-      }}
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.6 } }}
+      className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-[#050505]"
     >
-      {children}
+      <div className="absolute inset-0 opacity-30 [background:radial-gradient(circle_at_50%_50%,#00AEEF22,transparent_60%)]" />
+      <div className="relative">
+        <svg width="160" height="160" viewBox="0 0 160 160" className="drop-shadow-[0_0_30px_#00AEEF80]">
+          <defs>
+            <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#00AEEF" />
+              <stop offset="100%" stopColor="#0066ff" />
+            </linearGradient>
+          </defs>
+          <circle cx="80" cy="80" r="60" fill="none" stroke="#ffffff10" strokeWidth="2" />
+          <motion.circle
+            cx="80" cy="80" r="60" fill="none" stroke="url(#lg)" strokeWidth="2"
+            strokeDasharray={2 * Math.PI * 60}
+            strokeDashoffset={(1 - progress) * 2 * Math.PI * 60}
+            transform="rotate(-90 80 80)"
+          />
+          <path d="M80 40 L110 55 V85 C110 105 80 120 80 120 C80 120 50 105 50 85 V55 Z"
+            fill="none" stroke="url(#lg)" strokeWidth="1.5" />
+        </svg>
+        <motion.div
+          className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#00AEEF] to-transparent"
+          style={{ top: `${20 + progress * 120}px` }}
+        />
+      </div>
+      <div className="mt-10 font-mono text-xs tracking-[0.4em] text-white/60">
+        SECURE BOOT · {Math.floor(progress * 100).toString().padStart(3, "0")}%
+      </div>
     </motion.div>
   );
 }
 
-function SectionLabel({ n, label }: { n: string; label: string }) {
+/* ============================================================
+   NAV / SCROLL PROGRESS
+   ============================================================ */
+function ProgressBar() {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
   return (
-    <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
-      <span className="text-gold">{n}</span>
-      <span className="h-px w-8 bg-border" />
-      <span>{label}</span>
+    <motion.div
+      style={{ scaleX }}
+      className="fixed top-0 left-0 right-0 z-[150] h-[2px] origin-left bg-gradient-to-r from-[#00AEEF] via-[#3dd9ff] to-[#00AEEF] shadow-[0_0_12px_#00AEEF]"
+    />
+  );
+}
+
+function TopNav() {
+  return (
+    <div className="fixed top-0 left-0 right-0 z-[140] flex items-center justify-between px-8 py-5 mix-blend-difference">
+      <div className="font-mono text-xs tracking-[0.3em] text-white">VISO · SECURITY CONSULTATIONS</div>
+      <div className="flex items-center gap-6">
+        <div className="hidden md:flex gap-8 font-mono text-[10px] tracking-[0.3em] text-white/70">
+          <span>CHAPTER 01 — 10</span>
+          <span>RIYADH · KSA</span>
+        </div>
+        <Link to="/home" className="rounded-full border border-white/20 bg-white/10 px-4 py-2 font-mono text-[10px] tracking-[0.2em] text-white hover:bg-white/20 transition-colors backdrop-blur">
+          ENTER SITE
+        </Link>
+      </div>
     </div>
   );
 }
 
-/* ---------- page ---------- */
-function Index() {
+/* ============================================================
+   SHARED: World Map SVG with network lines
+   ============================================================ */
+function WorldNetwork({ intensity = 1 }: { intensity?: number }) {
+  // Simplified dotted world with arcs
+  const nodes = [
+    [120, 110], [210, 95], [305, 105], [380, 120], [460, 100], [540, 130], [620, 110], [705, 140],
+    [160, 180], [260, 200], [355, 190], [450, 215], [560, 200], [660, 220],
+    [140, 260], [240, 280], [340, 270], [440, 290], [555, 280], [665, 295],
+  ];
   return (
-    <>
-      <SmoothScroll />
-      <Nav />
-      <main className="relative overflow-hidden bg-background text-foreground">
-        <Hero />
-        <Marquee />
-        <About />
-        <VisionMission />
-        <Need />
-        <Approach />
-        <Functions />
-        <SRA />
-        <Planning />
-        <Technology />
-        <Competencies />
-        <Clients />
-        <Portfolio />
-        <Regional />
-        <WhyUs />
-        <Compliance />
-        <Contact />
-        <Footer />
-      </main>
-    </>
+    <svg viewBox="0 0 800 400" className="w-full h-full">
+      <defs>
+        <radialGradient id="node" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0%" stopColor="#00AEEF" />
+          <stop offset="100%" stopColor="#00AEEF00" />
+        </radialGradient>
+        <linearGradient id="arc" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#00AEEF00" />
+          <stop offset="50%" stopColor="#00AEEF" />
+          <stop offset="100%" stopColor="#00AEEF00" />
+        </linearGradient>
+      </defs>
+      {/* dotted continents grid */}
+      {Array.from({ length: 40 }).map((_, r) =>
+        Array.from({ length: 80 }).map((_, c) => {
+          const x = c * 10 + 5, y = r * 10 + 5;
+          // crude landmask via sin waves
+          const m = Math.sin(c / 6) * Math.cos(r / 5) + Math.sin((c + r) / 8);
+          if (m < 0.2) return null;
+          return <circle key={`${r}-${c}`} cx={x} cy={y} r="0.9" fill="#ffffff" opacity={0.12} />;
+        })
+      )}
+      {/* arcs */}
+      {nodes.map((a, i) => {
+        const b = nodes[(i + 5) % nodes.length];
+        const mx = (a[0] + b[0]) / 2;
+        const my = Math.min(a[1], b[1]) - 60;
+        return (
+          <motion.path
+            key={i}
+            d={`M${a[0]} ${a[1]} Q ${mx} ${my} ${b[0]} ${b[1]}`}
+            stroke="url(#arc)" strokeWidth="1" fill="none" opacity={intensity * 0.7}
+            initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }}
+            viewport={{ once: false, amount: 0.3 }}
+            transition={{ duration: 2.4, delay: i * 0.05, ease: "easeOut" }}
+          />
+        );
+      })}
+      {nodes.map(([x, y], i) => (
+        <g key={`n${i}`}>
+          <circle cx={x} cy={y} r="10" fill="url(#node)" opacity={0.6 * intensity} />
+          <motion.circle
+            cx={x} cy={y} r="2" fill="#00AEEF"
+            animate={{ opacity: [0.4, 1, 0.4] }}
+            transition={{ duration: 2 + (i % 5) * 0.3, repeat: Infinity }}
+          />
+        </g>
+      ))}
+    </svg>
   );
 }
 
-/* ---------- Nav ---------- */
-function Nav() {
-  const links = [
-    ["About", "#about"],
-    ["Approach", "#approach"],
-    ["Capabilities", "#competencies"],
-    ["Portfolio", "#portfolio"],
-    ["Contact", "#contact"],
-  ] as const;
-  return (
-    <motion.header
-      initial={{ y: -40, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-      className="fixed inset-x-0 top-0 z-50"
-    >
-      <div className="mx-auto mt-4 flex max-w-7xl items-center justify-between rounded-full border border-border/60 bg-background/40 px-5 py-3 backdrop-blur-xl">
-        <a href="#top" className="flex items-center gap-2.5">
-          <span className="grid h-7 w-7 place-items-center rounded-md bg-gold text-gold-foreground font-mono text-[11px] font-bold">
-            V
-          </span>
-          <span className="font-display text-lg leading-none">VISO</span>
-          <span className="hidden font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground sm:inline">
-            Security Consultations
-          </span>
-        </a>
-        <nav className="hidden items-center gap-7 md:flex">
-          {links.map(([label, href]) => (
-            <a
-              key={href}
-              href={href}
-              className="text-[13px] text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {label}
-            </a>
-          ))}
-        </nav>
-        <a
-          href="#contact"
-          className="group inline-flex items-center gap-2 rounded-full bg-gold px-4 py-2 text-[12px] font-medium text-gold-foreground transition-transform hover:scale-[1.02]"
-        >
-          Engage
-          <span className="transition-transform group-hover:translate-x-0.5">→</span>
-        </a>
-      </div>
-    </motion.header>
-  );
-}
-
-/* ---------- Hero ---------- */
-function Hero() {
+/* ============================================================
+   SECTION 1 — HERO
+   ============================================================ */
+function HeroSection() {
   const ref = useRef<HTMLDivElement>(null);
-  const prefersReduced = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], [0, prefersReduced ? 0 : 200]);
-  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const mapScale = useTransform(scrollYProgress, [0, 1], [1, 1.6]);
+  const mapOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const titleY = useTransform(scrollYProgress, [0, 1], [0, -120]);
+  const scanY = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+
+  const subline = "A premier physical security consultancy headquartered in Riyadh — protecting people, property and information across the Kingdom.";
+  const chars = subline.split("");
 
   return (
-    <section
-      ref={ref}
-      id="top"
-      className="relative isolate grid min-h-[100svh] grid-bg place-items-center px-6 pt-32"
-    >
-      <div className="pointer-events-none absolute inset-0 radial-fade" />
+    <section ref={ref} className="relative h-[110vh] overflow-hidden bg-[#050505]">
+      <motion.div style={{ scale: mapScale, opacity: mapOpacity }} className="absolute inset-0 opacity-70">
+        <WorldNetwork />
+      </motion.div>
+      {/* sweep scan line */}
       <motion.div
-        aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/3 -z-10 h-[60vh] w-[60vh] -translate-x-1/2 rounded-full"
-        style={{
-          background:
-            "radial-gradient(circle, oklch(0.82 0.13 85 / 0.18), transparent 70%)",
-        }}
-        animate={{ scale: [1, 1.15, 1] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        style={{ top: scanY }}
+        className="pointer-events-none absolute left-0 right-0 h-[140px] bg-gradient-to-b from-transparent via-[#00AEEF22] to-transparent"
       />
+      <div className="absolute inset-0 [background:radial-gradient(ellipse_at_center,transparent_30%,#050505_75%)]" />
 
-      <motion.div
-        style={{ y, opacity }}
-        className="relative z-10 mx-auto max-w-5xl text-center"
-      >
-        <Reveal>
-          <div className="mx-auto mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1.5 font-mono text-[10.5px] uppercase tracking-[0.25em] text-muted-foreground backdrop-blur">
-            <span className="h-1.5 w-1.5 rounded-full bg-gold" />
-            Est. 2020 — Riyadh, KSA
-          </div>
-        </Reveal>
-
-        <h1 className="font-display text-[clamp(3rem,9vw,8.5rem)] leading-[0.95] text-balance">
-          {"Fortifying".split("").map((c, i) => (
+      <motion.div style={{ y: titleY }} className="relative z-10 flex h-screen flex-col items-center justify-center px-6 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+          className="mb-6 font-mono text-[10px] tracking-[0.4em] text-[#00AEEF]"
+        >
+          ◉ EST. 2020 · RIYADH · KINGDOM OF SAUDI ARABIA
+        </motion.div>
+        <h1 className="max-w-5xl text-[clamp(2.5rem,7vw,6.5rem)] font-light leading-[0.95] tracking-tight text-white">
+          {"Fortifying Tomorrow.\nSecuring the Kingdom.".split("\n").map((line, i) => (
             <motion.span
-              key={i}
-              initial={{ y: "110%", opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.9, delay: 0.05 * i, ease: [0.22, 1, 0.36, 1] }}
-              className="inline-block"
+              key={i} className="block"
+              initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3 + i * 0.15, duration: 1, ease: [0.16, 1, 0.3, 1] }}
             >
-              {c}
+              {line}
             </motion.span>
           ))}
-          <br />
-          <span className="text-gradient-gold italic">tomorrow.</span>
         </h1>
+        <p className="mt-8 max-w-2xl text-base text-white/60">
+          {chars.map((c, i) => (
+            <motion.span
+              key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              transition={{ delay: 0.9 + i * 0.012 }}
+            >{c}</motion.span>
+          ))}
+        </p>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3 font-mono text-[10px] tracking-[0.3em] text-white/40">
+          {["RIYADH", "KHOBAR", "JUBAIL", "JEDDAH", "YANBU"].map((c, i) => (
+            <span key={c} className="flex items-center gap-3">
+              {i > 0 && <span className="h-1 w-1 rounded-full bg-[#00AEEF]/60" />}
+              {c}
+            </span>
+          ))}
+        </div>
 
-        <Reveal delay={0.6}>
-          <p className="mx-auto mt-8 max-w-xl text-balance text-[15px] leading-relaxed text-muted-foreground">
-            A comprehensive approach to physical security — protecting people,
-            property and information across the Kingdom&apos;s most critical assets.
-          </p>
-        </Reveal>
-
-        <Reveal delay={0.75}>
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-            {["Riyadh", "Khobar", "Jubail", "Jeddah", "Yanbu"].map((c, i) => (
-              <span key={c} className="flex items-center gap-2">
-                {i > 0 && <span className="h-1 w-1 rounded-full bg-gold/60" />}
-                {c}
-              </span>
-            ))}
-          </div>
-        </Reveal>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.6, duration: 1 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground"
-      >
+        {/* fingerprint */}
         <motion.div
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 1.6, duration: 1 }}
+          className="mt-12"
         >
-          scroll ↓
+          <Fingerprint />
         </motion.div>
       </motion.div>
-    </section>
-  );
-}
 
-/* ---------- Marquee ---------- */
-function Marquee() {
-  const items = [
-    "ISO 9001",
-    "ISO 45001",
-    "ISO 27001",
-    "Aramco SACS-002",
-    "HCIS / SAIS",
-    "API 780",
-    "ASIS RA",
-    "52.53% Local Content",
-  ];
-  return (
-    <section className="border-y border-border/60 bg-surface/30 py-6 overflow-hidden">
+      {/* scroll cue */}
       <motion.div
-        className="flex gap-12 whitespace-nowrap"
-        animate={{ x: ["0%", "-50%"] }}
-        transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.2 }}
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 font-mono text-[10px] tracking-[0.3em] text-white/40"
       >
-        {[...items, ...items, ...items].map((it, i) => (
-          <span
-            key={i}
-            className="font-mono text-[11px] uppercase tracking-[0.3em] text-muted-foreground"
-          >
-            ◆ {it}
-          </span>
-        ))}
+        SCROLL TO ENTER ↓
       </motion.div>
     </section>
   );
 }
 
-/* ---------- About ---------- */
-function About() {
-  const stats = [
-    ["2020", "Established"],
-    ["5", "Regional Offices"],
-    ["92+", "Projects Delivered"],
-    ["52.53%", "Local Content"],
-  ] as const;
+function Fingerprint() {
   return (
-    <section id="about" className="relative px-6 py-32">
-      <div className="mx-auto grid max-w-7xl gap-16 lg:grid-cols-12">
-        <div className="lg:col-span-4">
-          <Reveal>
-            <SectionLabel n="01" label="About VISO" />
-          </Reveal>
-          <Reveal delay={0.1}>
-            <h2 className="mt-6 font-display text-5xl leading-[1.05] text-balance md:text-6xl">
-              Where security meets <em className="text-gradient-gold">peace of mind.</em>
+    <svg width="90" height="110" viewBox="0 0 90 110" className="drop-shadow-[0_0_30px_#00AEEF80]">
+      {[...Array(7)].map((_, i) => (
+        <motion.path
+          key={i}
+          d={`M ${15 + i * 2} ${50 + i * 3} Q 45 ${10 - i * 2}, ${75 - i * 2} ${50 + i * 3} Q 45 ${100 + i * 2}, ${15 + i * 2} ${50 + i * 3}`}
+          fill="none" stroke="#00AEEF" strokeWidth="1" opacity={0.7 - i * 0.07}
+          initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+          transition={{ duration: 1.6, delay: i * 0.1 }}
+        />
+      ))}
+      <motion.line
+        x1="0" x2="90" y1="50" y2="50"
+        stroke="#00AEEF" strokeWidth="0.5"
+        animate={{ y1: [10, 100, 10], y2: [10, 100, 10] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+      />
+    </svg>
+  );
+}
+
+/* ============================================================
+   SECTION 2 — THREAT LANDSCAPE (pinned)
+   ============================================================ */
+function ThreatSection() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+  const dotCount = useTransform(scrollYProgress, [0, 1], [40, 600]);
+  const [dots, setDots] = useState(40);
+  useEffect(() => dotCount.on("change", (v) => setDots(Math.floor(v))), [dotCount]);
+
+  return (
+    <section ref={ref} className="relative h-[300vh]">
+      <div className="sticky top-0 h-screen overflow-hidden bg-[#050505]">
+        <div className="absolute inset-0 opacity-50">
+          <WorldNetwork intensity={0.4} />
+        </div>
+        {/* threat dots */}
+        <svg viewBox="0 0 800 400" className="absolute inset-0 h-full w-full">
+          {Array.from({ length: dots }).map((_, i) => {
+            const x = (i * 73) % 780 + 10;
+            const y = (i * 47) % 380 + 10;
+            return (
+              <motion.circle
+                key={i} cx={x} cy={y} r="1.6" fill="#ff3855"
+                initial={{ opacity: 0 }} animate={{ opacity: [0.3, 1, 0.3] }}
+                transition={{ duration: 1.5, repeat: Infinity, delay: (i % 20) * 0.05 }}
+              />
+            );
+          })}
+        </svg>
+
+        <div className="relative z-10 mx-auto flex h-full max-w-7xl flex-col justify-center px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ duration: 0.8 }}
+          >
+            <div className="font-mono text-[10px] tracking-[0.4em] text-[#ff3855]">CHAPTER 02 · THE NEED</div>
+            <h2 className="mt-4 max-w-3xl text-5xl font-light leading-tight text-white md:text-7xl">
+              Why structured security <span className="italic text-[#ff3855]">is essential</span>.
             </h2>
-          </Reveal>
-        </div>
-        <div className="lg:col-span-7 lg:col-start-6">
-          <Reveal delay={0.15}>
-            <p className="text-lg leading-relaxed text-muted-foreground">
-              VISO is a premier physical security consultancy specializing in
-              safeguarding our clients&apos; most valuable assets. Founded in January
-              2020 and headquartered in Riyadh, we now operate from five offices
-              across the Kingdom — delivering tailored solutions that align with
-              national authorities and the highest international benchmarks.
-            </p>
-          </Reveal>
-          <Reveal delay={0.25}>
-            <p className="mt-6 text-base leading-relaxed text-muted-foreground/80">
-              Our team brings decades of combined experience in security analysis,
-              risk assessment and integrated protective measures across critical
-              national infrastructure, energy, industrial, financial and government
-              sectors.
-            </p>
-          </Reveal>
+            <p className="mt-6 max-w-xl text-white/60">Theft, vandalism, breaches, and regulatory exposure threaten every critical facility in the Kingdom. The cost of inaction is measurable — and rising.</p>
+          </motion.div>
 
-          <div className="mt-14 grid grid-cols-2 gap-px border border-border bg-border md:grid-cols-4">
-            {stats.map(([n, l], i) => (
-              <Reveal key={l} delay={0.3 + i * 0.08}>
-                <div className="bg-background p-6">
-                  <div className="font-display text-4xl text-gold">{n}</div>
-                  <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                    {l}
-                  </div>
-                </div>
-              </Reveal>
-            ))}
+          <div className="mt-16 grid gap-6 md:grid-cols-2">
+            <ThreatStat n={60} suffix="%" label="of businesses faced a physical security breach in the past 5 years" delay={0} />
+            <ThreatStat n={100} suffix="K USD" label="average cost to address a single breach incident" delay={0.2} />
           </div>
         </div>
       </div>
@@ -323,240 +325,265 @@ function About() {
   );
 }
 
-/* ---------- Vision & Mission ---------- */
-function VisionMission() {
-  const items = [
-    {
-      tag: "Our Vision",
-      title: "Trusted leadership in physical security.",
-      body: "To become the trusted leader in physical security consultancy — renowned for our expertise, innovation, and unwavering commitment to excellence. We aspire to continually push the boundaries of security solutions, shaping a safer world for generations to come.",
-    },
-    {
-      tag: "Our Mission",
-      title: "Protecting assets. Ensuring safety.",
-      body: "To protect our clients' assets and ensure their safety through thorough analysis, creative solutions, and unwavering commitment to excellence — delivering customized strategies that empower clients to thrive in a secure environment.",
-    },
-  ];
+function ThreatStat({ n, suffix, label, delay }: { n: number; suffix: string; label: string; delay: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.5 });
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    const obj = { v: 0 };
+    gsap.to(obj, { v: n, duration: 2.2, delay, ease: "power3.out", onUpdate: () => setVal(Math.floor(obj.v)) });
+  }, [inView, n, delay]);
   return (
-    <section className="border-t border-border/60 px-6 py-32">
-      <div className="mx-auto grid max-w-7xl gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-2">
-        {items.map((it, i) => (
-          <Reveal key={it.tag} delay={i * 0.15}>
-            <div className="group relative h-full bg-surface p-10 transition-colors hover:bg-surface-2 md:p-14">
-              <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-gold">
-                {it.tag}
-              </div>
-              <h3 className="mt-6 font-display text-4xl leading-tight text-balance md:text-5xl">
-                {it.title}
-              </h3>
-              <p className="mt-6 text-[15px] leading-relaxed text-muted-foreground">
-                {it.body}
-              </p>
-            </div>
-          </Reveal>
-        ))}
+    <motion.div
+      ref={ref}
+      initial={{ y: 80, opacity: 0, rotateX: -20 }}
+      whileInView={{ y: 0, opacity: 1, rotateX: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 1, delay, ease: [0.16, 1, 0.3, 1] }}
+      className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-8 backdrop-blur-xl"
+    >
+      <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[#00AEEF]/10 blur-3xl" />
+      <div className="font-mono text-[10px] tracking-[0.3em] text-white/40">METRIC · 0{Math.floor(delay * 10) + 1}</div>
+      <div className="mt-3 text-6xl font-light text-white md:text-7xl">
+        {val}<span className="text-[#00AEEF]">{suffix}</span>
       </div>
-    </section>
+      <div className="mt-3 text-sm text-white/60">{label}</div>
+    </motion.div>
   );
 }
 
-/* ---------- The Need ---------- */
-function Need() {
-  const cards = [
-    ["Theft & Vandalism", "Defending tangible and intangible assets against intentional damage and loss."],
-    ["Personal Safety", "Creating a safe environment for staff, visitors and contractors at all times."],
-    ["Business Continuity", "Minimizing disruption from incidents so operations stay reliable and resilient."],
-    ["Regulatory Compliance", "Meeting HCIS/SAIS, ASIS and ISO requirements that govern critical facilities."],
-    ["Data Security", "Protecting confidential and sensitive information from unauthorized exposure."],
-  ] as const;
-  return (
-    <section className="border-t border-border/60 px-6 py-32">
-      <div className="mx-auto max-w-7xl">
-        <div className="grid gap-10 lg:grid-cols-12">
-          <div className="lg:col-span-5">
-            <Reveal>
-              <SectionLabel n="02" label="The Need" />
-            </Reveal>
-            <Reveal delay={0.1}>
-              <h2 className="mt-6 font-display text-5xl leading-[1.05] text-balance md:text-6xl">
-                Why structured security <em className="text-gradient-gold">is essential.</em>
-              </h2>
-            </Reveal>
-          </div>
-          <div className="lg:col-span-6 lg:col-start-7">
-            <Reveal delay={0.2}>
-              <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border">
-                <div className="bg-surface p-6">
-                  <div className="font-display text-5xl text-gold">60%</div>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    of businesses have experienced a physical security breach in
-                    the past 5 years.
-                  </p>
-                </div>
-                <div className="bg-surface p-6">
-                  <div className="font-display text-5xl text-gold">$100K</div>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    average cost to address a single physical security breach
-                    incident.
-                  </p>
-                </div>
-              </div>
-            </Reveal>
-          </div>
-        </div>
+/* ============================================================
+   SECTION 3 — SOC
+   ============================================================ */
+function SOCSection() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const x = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
+  const beamY = useTransform(scrollYProgress, [0, 1], ["-100%", "200%"]);
 
-        <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          {cards.map(([t, b], i) => (
-            <Reveal key={t} delay={i * 0.07}>
-              <div className="group relative h-full rounded-xl border border-border bg-surface p-6 transition-all hover:-translate-y-1 hover:border-gold/40">
-                <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold">
-                  0{i + 1}
-                </div>
-                <h4 className="mt-4 font-display text-xl leading-snug">{t}</h4>
-                <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
-                  {b}
-                </p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ---------- Approach ---------- */
-function Approach() {
-  const pillars = [
-    {
-      n: "01",
-      t: "People",
-      b: "Our foremost duty is the safety of every individual on site — staff, contractors, visitors and the wider community. Robust protocols, training and continuous review create a secure environment for all stakeholders.",
-    },
-    {
-      n: "02",
-      t: "Property",
-      b: "Property protection extends well beyond physical barriers. We integrate technology-driven measures — advanced surveillance, access control and perimeter systems — that deter threats and reduce risk to infrastructure.",
-    },
-    {
-      n: "03",
-      t: "Information",
-      b: "Information security is central. Strict procedural controls combined with modern technology safeguard sensitive data, ensure client confidentiality and prevent unauthorized access or breaches.",
-    },
-  ];
   return (
-    <section id="approach" className="relative border-t border-border/60 px-6 py-32">
-      <div className="mx-auto max-w-7xl">
-        <Reveal>
-          <SectionLabel n="03" label="Our Approach" />
-        </Reveal>
-        <Reveal delay={0.1}>
-          <h2 className="mt-6 max-w-3xl font-display text-5xl leading-[1.05] text-balance md:text-6xl">
-            Three pillars frame <em className="text-gradient-gold">every engagement.</em>
+    <section ref={ref} className="relative min-h-screen overflow-hidden bg-[#070b14] py-32">
+      <div className="absolute inset-0 [background:linear-gradient(180deg,#050505,#070b14_30%,#050505)]" />
+      <div className="mx-auto max-w-7xl px-8">
+        <div className="mb-16">
+          <div className="font-mono text-[10px] tracking-[0.4em] text-[#00AEEF]">CHAPTER 03 · TECHNOLOGY INTEGRATION</div>
+          <h2 className="mt-4 max-w-3xl text-5xl font-light leading-tight text-white md:text-7xl">
+            One ecosystem. <br /><span className="text-white/40">Centrally managed.</span>
           </h2>
-        </Reveal>
-
-        <div className="mt-20 space-y-px overflow-hidden rounded-2xl border border-border bg-border">
-          {pillars.map((p, i) => (
-            <motion.div
-              key={p.n}
-              initial={{ opacity: 0, x: -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="group grid grid-cols-12 items-start gap-6 bg-surface p-8 transition-colors hover:bg-surface-2 md:p-12"
-            >
-              <div className="col-span-12 md:col-span-2">
-                <div className="font-display text-6xl text-gold/80 md:text-7xl">
-                  {p.n}
-                </div>
-              </div>
-              <div className="col-span-12 md:col-span-3">
-                <h3 className="font-display text-4xl uppercase tracking-tight md:text-5xl">
-                  {p.t}
-                </h3>
-              </div>
-              <div className="col-span-12 md:col-span-7">
-                <p className="text-[15px] leading-relaxed text-muted-foreground md:text-base">
-                  {p.b}
-                </p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ---------- Functions (5 D's) ---------- */
-function Functions() {
-  const steps = [
-    { k: "Deter", v: "Discourage threats", phase: "Preventative" },
-    { k: "Detect", v: "Identify intrusions", phase: "Preventative" },
-    { k: "Delay", v: "Slow attacker progress", phase: "Preventative" },
-    { k: "Respond", v: "Engage and neutralize", phase: "Reactive" },
-    { k: "Recover", v: "Restore operations", phase: "Reactive" },
-  ];
-  return (
-    <section className="border-t border-border/60 px-6 py-32">
-      <div className="mx-auto max-w-7xl">
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <div>
-            <Reveal>
-              <SectionLabel n="04" label="Security Functions" />
-            </Reveal>
-            <Reveal delay={0.1}>
-              <h2 className="mt-6 max-w-2xl font-display text-5xl leading-[1.05] text-balance md:text-6xl">
-                Defence <em className="text-gradient-gold">in depth.</em>
-              </h2>
-            </Reveal>
-          </div>
-          <Reveal delay={0.2}>
-            <p className="max-w-sm text-sm text-muted-foreground">
-              Every effective security program combines preventative and reactive
-              layers — each calibrated for measurable return on investment.
-            </p>
-          </Reveal>
+          <p className="mt-6 max-w-xl text-white/60">Proven technologies converged into a single security platform — interoperable with ICT, BMS, fire-safety and operational systems.</p>
         </div>
 
-        <div className="mt-16 grid gap-3 md:grid-cols-5">
-          {steps.map((s, i) => (
+        <motion.div style={{ x }} className="relative grid gap-4 md:grid-cols-3">
+          {[
+            { code: "CCTV", t: "CCTV & Video Analytics", d: "AI-enabled surveillance, command-room integration." },
+            { code: "ACS", t: "Access Control", d: "Multi-factor identity, biometrics, zoned permissions." },
+            { code: "PIDS", t: "Perimeter Intrusion", d: "Fence detection, radar and microwave layers." },
+            { code: "PSIM", t: "PSIM / Command Centre", d: "Unified situational awareness and response." },
+            { code: "COMMS", t: "Communications", d: "Resilient radio, data networks, emergency dispatch." },
+            { code: "FLS", t: "Fire & Life Safety", d: "Detection, suppression, mass-notification." },
+          ].map((tech, i) => (
             <motion.div
-              key={s.k}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="group relative aspect-[3/4] overflow-hidden rounded-xl border border-border bg-surface p-6"
+              key={tech.code}
+              initial={{ opacity: 0, y: 40, rotateY: -15 }}
+              whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ delay: i * 0.08, duration: 0.8 }}
+              className="relative aspect-[4/3] overflow-hidden rounded-xl border border-[#00AEEF]/20 bg-gradient-to-br from-[#0a1628] to-[#050b15] p-5"
+              style={{ perspective: 1000 }}
             >
-              <div className="flex h-full flex-col justify-between">
-                <div className="flex items-start justify-between">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                    0{i + 1}
-                  </span>
-                  <span
-                    className={`rounded-full px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.2em] ${
-                      s.phase === "Preventative"
-                        ? "bg-gold/15 text-gold"
-                        : "bg-accent/20 text-accent"
-                    }`}
-                  >
-                    {s.phase}
-                  </span>
-                </div>
-                <div>
-                  <h3 className="font-display text-3xl md:text-4xl">{s.k}</h3>
-                  <p className="mt-2 text-[13px] text-muted-foreground">{s.v}</p>
-                </div>
+              <div className="flex items-center justify-between font-mono text-[9px] text-[#00AEEF]/70">
+                <span>{tech.code}-{String(i + 1).padStart(2, "0")}</span>
+                <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.5, repeat: Infinity }}>● ONLINE</motion.span>
               </div>
               <motion.div
-                aria-hidden
-                className="absolute inset-x-0 bottom-0 h-0.5 origin-left bg-gold"
-                initial={{ scaleX: 0 }}
-                whileInView={{ scaleX: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 1, delay: 0.4 + i * 0.1, ease: "easeOut" }}
+                style={{ top: beamY }}
+                className="absolute left-0 right-0 h-12 bg-gradient-to-b from-transparent via-[#00AEEF40] to-transparent"
+              />
+              <MiniChart seed={i} />
+              <div className="mt-3 text-lg font-light text-white">{tech.t}</div>
+              <div className="mt-1 text-xs text-white/50">{tech.d}</div>
+            </motion.div>
+          ))}
+        </motion.div>
+        
+        <div className="mt-20 flex justify-center">
+          <Link to="/home" className="group flex items-center gap-3 rounded-full border border-[#00AEEF]/50 px-8 py-4 font-mono text-[11px] tracking-[0.2em] text-[#00AEEF] hover:bg-[#00AEEF]/10 transition-colors">
+            EXPLORE OUR SERVICES <span className="transition-transform group-hover:translate-x-1">→</span>
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function MiniChart({ seed }: { seed: number }) {
+  const points = Array.from({ length: 20 }).map((_, i) => {
+    const v = 30 + Math.sin(i / 2 + seed) * 12 + Math.cos(i + seed * 0.7) * 8;
+    return `${i * 8},${v}`;
+  }).join(" ");
+  return (
+    <svg viewBox="0 0 160 80" className="mt-6 w-full">
+      <motion.polyline
+        points={points} fill="none" stroke="#00AEEF" strokeWidth="1.5"
+        initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }}
+        viewport={{ once: true }} transition={{ duration: 1.5, delay: seed * 0.05 }}
+      />
+      {Array.from({ length: 5 }).map((_, i) => (
+        <line key={i} x1="0" x2="160" y1={15 * (i + 1)} y2={15 * (i + 1)} stroke="#ffffff08" />
+      ))}
+    </svg>
+  );
+}
+
+/* ============================================================
+   SECTION 4 — ACCESS CONTROL STORY
+   ============================================================ */
+function AccessControlSection() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+  const stages = ["PEOPLE — Safety of every individual", "PROPERTY — Layered physical protection", "INFORMATION — Confidentiality & data security", "ASSURANCE — Continuous review & audit"];
+  const rotate = useTransform(scrollYProgress, [0, 1], [0, 720]);
+  const [stage, setStage] = useState(0);
+  useEffect(() => scrollYProgress.on("change", (v) => setStage(Math.min(3, Math.floor(v * 4)))), [scrollYProgress]);
+
+  const bg = ["#050505", "#06121e", "#0a1224", "#0e0a24"][stage];
+
+  return (
+    <section ref={ref} className="relative h-[400vh]">
+      <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden transition-colors duration-700" style={{ background: bg }}>
+        <div className="absolute inset-0 opacity-30 [background:radial-gradient(circle_at_center,#00AEEF22,transparent_60%)]" />
+        <div className="relative grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-8 md:grid-cols-2">
+          <div>
+            <div className="font-mono text-[10px] tracking-[0.4em] text-[#00AEEF]">CHAPTER 04 · OUR APPROACH</div>
+            <h2 className="mt-4 text-5xl font-light leading-tight text-white md:text-7xl">Three pillars frame <span className="italic text-[#00AEEF]">every engagement</span>.</h2>
+            <p className="mt-6 max-w-md text-white/60">People, property and information — protected through robust protocols, integrated technology and disciplined assurance.</p>
+            <div className="mt-10 space-y-3">
+              {stages.map((s, i) => (
+                <motion.div
+                  key={s}
+                  animate={{ opacity: stage >= i ? 1 : 0.25, x: stage >= i ? 0 : -10 }}
+                  className="flex items-center gap-3 font-mono text-sm tracking-[0.2em] text-white"
+                >
+                  <span className={`h-px transition-all ${stage >= i ? "w-12 bg-[#00AEEF]" : "w-4 bg-white/30"}`} />
+                  <span>{String(i + 1).padStart(2, "0")} · {s}</span>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+          <div className="flex items-center justify-center">
+            <motion.div style={{ rotateY: rotate }} className="relative" >
+              <BadgeArt stage={stage} />
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function BadgeArt({ stage }: { stage: number }) {
+  return (
+    <div className="relative h-[340px] w-[240px]">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={stage}
+          initial={{ opacity: 0, scale: 0.85, filter: "blur(20px)" }}
+          animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+          exit={{ opacity: 0, scale: 1.1, filter: "blur(20px)" }}
+          transition={{ duration: 0.6 }}
+          className="absolute inset-0 rounded-2xl border border-[#00AEEF]/40 bg-white/[0.03] p-6 shadow-[0_0_60px_#00AEEF40] backdrop-blur-xl"
+        >
+          <div className="font-mono text-[9px] tracking-[0.3em] text-[#00AEEF]">VISO · CLEARANCE</div>
+          <div className="mt-6 flex h-40 items-center justify-center">
+            {stage === 0 && <div className="h-20 w-32 rounded border border-[#00AEEF] [background:repeating-linear-gradient(45deg,#00AEEF10,#00AEEF10_4px,transparent_4px,transparent_8px)]" />}
+            {stage === 1 && <Fingerprint />}
+            {stage === 2 && <FaceMesh />}
+            {stage === 3 && <AIBrain />}
+          </div>
+          <div className="mt-4 font-mono text-xs text-white/70">LEVEL · {stage + 1} / 4</div>
+          <div className="mt-1 font-mono text-[10px] text-white/40">ID-2026-{(stage + 1) * 1731}</div>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function FaceMesh() {
+  return (
+    <svg viewBox="0 0 100 120" width="100" height="120">
+      {[...Array(8)].map((_, i) => (
+        <motion.ellipse key={i} cx="50" cy="60" rx={40 - i * 4} ry={55 - i * 5} fill="none" stroke="#00AEEF" strokeWidth="0.5" opacity={0.6}
+          initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1, delay: i * 0.08 }} />
+      ))}
+      <circle cx="40" cy="50" r="2" fill="#00AEEF" />
+      <circle cx="60" cy="50" r="2" fill="#00AEEF" />
+    </svg>
+  );
+}
+
+function AIBrain() {
+  return (
+    <svg viewBox="0 0 100 100" width="100" height="100">
+      {[...Array(12)].map((_, i) => {
+        const a = (i / 12) * Math.PI * 2;
+        const x = 50 + Math.cos(a) * 35;
+        const y = 50 + Math.sin(a) * 35;
+        return (
+          <g key={i}>
+            <line x1="50" y1="50" x2={x} y2={y} stroke="#00AEEF" strokeWidth="0.5" opacity="0.5" />
+            <motion.circle cx={x} cy={y} r="2.5" fill="#00AEEF"
+              animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1 }} />
+          </g>
+        );
+      })}
+      <circle cx="50" cy="50" r="6" fill="#00AEEF" />
+    </svg>
+  );
+}
+
+/* ============================================================
+   SECTION 5 — INFRASTRUCTURE
+   ============================================================ */
+function InfraSection() {
+  const industries = [
+    { name: "Energy & Petrochemicals", icon: "M13 2L3 14h8l-1 8 10-12h-8z", sub: "Aramco · SATORP · SABIC · Ma'aden" },
+    { name: "Ports & Marine", icon: "M12 2v10M4 12h16M6 12v8M18 12v8", sub: "Jeddah Islamic · Jazan · Saudi Ports" },
+    { name: "EPC & Engineering", icon: "M3 4h18v6H3zM3 14h18v6H3z", sub: "Samsung · Doosan · L&T · Worley" },
+    { name: "Government & Infra", icon: "M3 21h18M5 21V10l7-6 7 6v11", sub: "MoI · RCJY · MODON" },
+    { name: "Giga-Projects & Hospitality", icon: "M2 16h20l-9-7v-3a2 2 0 1 0-2 0v3z", sub: "Red Sea Intl. · Ritz-Carlton · Amazon" },
+  ];
+  return (
+    <section className="relative bg-[#050505] py-32">
+      <div className="mx-auto max-w-7xl px-8">
+        <div className="font-mono text-[10px] tracking-[0.4em] text-[#00AEEF]">CHAPTER 05 · OUR ESTEEMED CLIENTS</div>
+        <h2 className="mt-4 max-w-3xl text-5xl font-light leading-tight text-white md:text-7xl">
+          Trusted across the <span className="italic">Kingdom's most critical assets</span>.
+        </h2>
+
+        <div className="mt-20 grid gap-6 md:grid-cols-3 lg:grid-cols-5">
+          {industries.map((ind, i) => (
+            <motion.div
+              key={ind.name}
+              initial={{ opacity: 0, y: 80, filter: "blur(20px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 1, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] }}
+              className="group relative h-72 overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] p-6 backdrop-blur-xl transition-colors hover:border-[#00AEEF]/50"
+            >
+              <div className="absolute inset-0 opacity-30 [background-image:linear-gradient(#00AEEF22_1px,transparent_1px),linear-gradient(90deg,#00AEEF22_1px,transparent_1px)] [background-size:20px_20px]" />
+              <svg viewBox="0 0 24 24" className="relative h-12 w-12 stroke-[#00AEEF]" fill="none" strokeWidth="1.5">
+                <path d={ind.icon} />
+              </svg>
+              <div className="relative mt-auto pt-24">
+                <div className="font-mono text-[9px] tracking-[0.3em] text-white/40">SECTOR {String(i + 1).padStart(2, "0")}</div>
+                <div className="mt-2 text-xl font-light text-white">{ind.name}</div>
+                <div className="mt-2 text-[11px] text-white/40">{ind.sub}</div>
+              </div>
+              <motion.div
+                className="absolute inset-x-0 bottom-0 h-px bg-[#00AEEF]"
+                initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }}
+                viewport={{ once: true }} transition={{ duration: 1.2, delay: 0.3 + i * 0.12 }}
               />
             </motion.div>
           ))}
@@ -566,171 +593,165 @@ function Functions() {
   );
 }
 
-/* ---------- SRA ---------- */
-function SRA() {
+/* ============================================================
+   SECTION 6 — ASSESSMENT PROCESS (horizontal scroll, GSAP)
+   ============================================================ */
+function ProcessSection() {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!wrapRef.current || !trackRef.current) return;
+    const ctx = gsap.context(() => {
+      const track = trackRef.current!;
+      const distance = track.scrollWidth - window.innerWidth;
+      gsap.to(track, {
+        x: -distance,
+        ease: "none",
+        scrollTrigger: {
+          trigger: wrapRef.current,
+          start: "top top",
+          end: () => `+=${distance}`,
+          scrub: 1,
+          pin: true,
+          anticipatePin: 1,
+        },
+      });
+    }, wrapRef);
+    return () => ctx.revert();
+  }, []);
+
   const steps = [
-    "Identify the assets",
-    "Determine the critical level of assets",
-    "Identify the threats to each critical asset",
-    "Identify existing countermeasures",
-    "Determine the vulnerability level of each asset",
-    "Determine the risk level of each critical asset",
-    "Recommend security upgrades to reduce high risk",
-    "Perform cost-benefit analysis to support upgrades",
+    { n: "01", t: "Requirements & Brief", d: "Stakeholder workshops align mission, threats and constraints." },
+    { n: "02", t: "Security Risk Assessment", d: "ISO 31000 / API 780 / ASIS RA — assets, threats, vulnerability, risk." },
+    { n: "03", t: "Concept & Detailed Design", d: "Layered protection, system architecture, drawings, BOQ to tender-ready." },
+    { n: "04", t: "Procurement & Construction", d: "Vendor evaluation, technical advisory, quality oversight, witness testing." },
+    { n: "05", t: "Commissioning & Handover", d: "Phased mobilization, testing, and operational handover with assurance." },
   ];
+
   return (
-    <section className="border-t border-border/60 px-6 py-32">
-      <div className="mx-auto grid max-w-7xl gap-16 lg:grid-cols-12">
-        <div className="lg:col-span-5">
-          <Reveal>
-            <SectionLabel n="05" label="Security Risk Assessment" />
-          </Reveal>
-          <Reveal delay={0.1}>
-            <h2 className="mt-6 font-display text-5xl leading-[1.05] text-balance md:text-6xl">
-              Risk-based. <em className="text-gradient-gold">Evidence-driven.</em>
-            </h2>
-          </Reveal>
-          <Reveal delay={0.2}>
-            <p className="mt-6 text-[15px] leading-relaxed text-muted-foreground">
-              Every project begins with a structured SRA that identifies critical
-              assets, evaluates credible threats, measures vulnerabilities and
-              quantifies residual risk. Findings drive measurable, cost-justified
-              mitigation recommendations.
-            </p>
-          </Reveal>
-          <Reveal delay={0.3}>
-            <div className="mt-8 flex flex-wrap gap-2">
-              {["ISO 31000", "API 780", "ASIS RA", "HCIS"].map((s) => (
-                <span
-                  key={s}
-                  className="rounded-full border border-gold/30 bg-gold/5 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.15em] text-gold"
-                >
-                  {s}
-                </span>
-              ))}
+    <section ref={wrapRef} className="relative h-screen overflow-hidden bg-[#050505]">
+      <div className="absolute top-10 left-8 z-10">
+        <div className="font-mono text-[10px] tracking-[0.4em] text-[#00AEEF]">CHAPTER 06 · PLANNING & DESIGN</div>
+        <h2 className="mt-2 text-3xl font-light text-white md:text-5xl">From requirements to implementation.</h2>
+      </div>
+      <div ref={trackRef} className="flex h-full items-center gap-10 pl-[10vw] pr-[20vw] will-change-transform">
+        {steps.map((s, i) => (
+          <div key={s.n} className="relative flex h-[60vh] w-[70vw] shrink-0 flex-col justify-between rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.04] to-transparent p-10 backdrop-blur-xl md:w-[40vw]">
+            <div className="font-mono text-[180px] leading-none text-[#00AEEF]/10 md:text-[260px]">{s.n}</div>
+            <div>
+              <div className="font-mono text-xs tracking-[0.3em] text-[#00AEEF]">PHASE {s.n}</div>
+              <div className="mt-2 text-4xl font-light text-white md:text-6xl">{s.t}</div>
+              <div className="mt-4 max-w-md text-white/60">{s.d}</div>
             </div>
-          </Reveal>
-        </div>
-        <div className="lg:col-span-6 lg:col-start-7">
-          <ol className="relative space-y-px overflow-hidden rounded-xl border border-border bg-border">
-            {steps.map((s, i) => (
-              <motion.li
-                key={s}
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-30px" }}
-                transition={{ duration: 0.5, delay: i * 0.05 }}
-                className="group flex items-center gap-6 bg-surface px-6 py-4 transition-colors hover:bg-surface-2"
-              >
-                <span className="font-mono text-xs text-gold w-6">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span className="text-[14px] leading-snug">{s}</span>
-                <span className="ml-auto text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100">
-                  →
-                </span>
-              </motion.li>
-            ))}
-          </ol>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ---------- Planning ---------- */
-function Planning() {
-  const stages = [
-    ["Requirements & Brief", "Stakeholder workshops align mission, threats and constraints."],
-    ["Concept Design", "Layered protection concept, system architecture and zoning."],
-    ["Detailed Design", "Drawings, schedules, specifications and BOQ to tender-ready quality."],
-    ["Procurement Support", "Vendor evaluation, technical assessment and contract advisory."],
-    ["Construction Supervision", "Quality oversight, witness testing and progress assurance."],
-    ["Implementation Planning", "Phasing, mobilization, commissioning and handover."],
-  ];
-  return (
-    <section className="border-t border-border/60 bg-surface/30 px-6 py-32">
-      <div className="mx-auto max-w-7xl">
-        <Reveal>
-          <SectionLabel n="06" label="Planning & Design" />
-        </Reveal>
-        <Reveal delay={0.1}>
-          <h2 className="mt-6 max-w-3xl font-display text-5xl leading-[1.05] text-balance md:text-6xl">
-            From requirements to implementation —
-            <em className="text-gradient-gold"> a systematic workflow.</em>
-          </h2>
-        </Reveal>
-
-        <div className="mt-16 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {stages.map(([t, b], i) => (
-            <Reveal key={t} delay={i * 0.07}>
-              <div className="group relative h-full overflow-hidden rounded-xl border border-border bg-background p-7 transition-all hover:border-gold/40">
-                <div className="flex items-baseline justify-between">
-                  <span className="font-display text-4xl text-gold/70">
-                    0{i + 1}
-                  </span>
-                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                    Stage
-                  </span>
-                </div>
-                <h4 className="mt-6 font-display text-2xl leading-snug">{t}</h4>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                  {b}
-                </p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ---------- Technology ---------- */
-function Technology() {
-  const items = [
-    ["CCTV & Video Analytics", "AI-enabled surveillance with central command-room integration."],
-    ["Access Control", "Multi-factor identity, biometrics and zoned permissions."],
-    ["Perimeter Intrusion", "Fence detection, radar and microwave layers."],
-    ["PSIM / Command Centre", "Unified situational awareness and incident response."],
-    ["Communications", "Resilient radio, data networks and emergency dispatch."],
-    ["Fire & Life Safety", "Detection, suppression and mass-notification integration."],
-  ];
-  return (
-    <section className="border-t border-border/60 px-6 py-32">
-      <div className="mx-auto max-w-7xl">
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <div className="max-w-2xl">
-            <Reveal>
-              <SectionLabel n="07" label="Technology Integration" />
-            </Reveal>
-            <Reveal delay={0.1}>
-              <h2 className="mt-6 font-display text-5xl leading-[1.05] text-balance md:text-6xl">
-                One ecosystem. <em className="text-gradient-gold">Centrally managed.</em>
-              </h2>
-            </Reveal>
+            {i < steps.length - 1 && (
+              <div className="absolute -right-8 top-1/2 hidden h-px w-10 bg-[#00AEEF]/30 md:block" />
+            )}
           </div>
-          <Reveal delay={0.2}>
-            <p className="max-w-sm text-sm text-muted-foreground">
-              Proven technologies converged into a single security platform —
-              interoperable with ICT, BMS, fire-safety and operational systems.
-            </p>
-          </Reveal>
-        </div>
+        ))}
+      </div>
+    </section>
+  );
+}
 
-        <div className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-2 lg:grid-cols-3">
-          {items.map(([t, b], i) => (
-            <Reveal key={t} delay={i * 0.05}>
-              <div className="group relative h-full bg-surface p-8 transition-colors hover:bg-surface-2">
-                <div className="mb-6 grid h-10 w-10 place-items-center rounded-lg border border-gold/30 bg-gold/10 font-mono text-xs text-gold">
-                  {String(i + 1).padStart(2, "0")}
-                </div>
-                <h4 className="font-display text-2xl">{t}</h4>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                  {b}
-                </p>
-              </div>
-            </Reveal>
+/* ============================================================
+   SECTION 7 — INCIDENT RESPONSE
+   ============================================================ */
+function IncidentSection() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+  const [phase, setPhase] = useState(0);
+  useEffect(() => scrollYProgress.on("change", (v) => setPhase(Math.min(4, Math.floor(v * 5)))), [scrollYProgress]);
+
+  const phases = [
+    { t: "Deter — Discourage threats", c: "#ff3855" },
+    { t: "Detect — Identify intrusions", c: "#ff8c1a" },
+    { t: "Delay — Slow attacker progress", c: "#ffd400" },
+    { t: "Respond — Engage & neutralize", c: "#3df58b" },
+    { t: "Recover — Restore operations", c: "#00AEEF" },
+  ];
+  const active = phases[phase];
+
+  return (
+    <section ref={ref} className="relative h-[400vh]">
+      <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden transition-colors duration-700"
+        style={{ background: phase < 4 ? "#1a0508" : "#050a14" }}>
+        <motion.div
+          className="absolute inset-0"
+          animate={{ opacity: phase < 4 ? [0.2, 0.5, 0.2] : 0 }}
+          transition={{ duration: 1, repeat: Infinity }}
+          style={{ background: `radial-gradient(circle at center, ${active.c}33, transparent 60%)` }}
+        />
+        {/* alarm sweep */}
+        {phase < 4 && (
+          <motion.div
+            className="absolute inset-0 origin-center"
+            animate={{ rotate: 360 }} transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+            style={{ background: `conic-gradient(from 0deg, transparent 0deg, ${active.c}22 30deg, transparent 60deg)` }}
+          />
+        )}
+
+        <div className="relative z-10 mx-auto max-w-5xl px-8 text-center">
+          <div className="font-mono text-[10px] tracking-[0.4em]" style={{ color: active.c }}>
+            CHAPTER 07 · THE FIVE D's · SECURITY FUNCTIONS
+          </div>
+          <AnimatePresence mode="wait">
+            <motion.h2
+              key={phase}
+              initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -30, filter: "blur(10px)" }}
+              transition={{ duration: 0.5 }}
+              className="mt-6 text-6xl font-light text-white md:text-8xl"
+              style={{ textShadow: `0 0 60px ${active.c}` }}
+            >
+              {active.t}
+            </motion.h2>
+          </AnimatePresence>
+
+          <div className="mt-12 flex justify-center gap-2">
+            {phases.map((p, i) => (
+              <div key={i} className="h-1 w-16 rounded-full transition-all" style={{ background: phase >= i ? p.c : "#ffffff20" }} />
+            ))}
+          </div>
+
+          {phase === 4 && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }}
+              className="mt-16 inline-block rounded-2xl border border-[#00AEEF]/40 bg-white/[0.03] px-10 py-6 backdrop-blur-xl"
+            >
+              <div className="font-mono text-[10px] tracking-[0.3em] text-[#00AEEF]">DEFENCE IN DEPTH</div>
+              <div className="mt-2 text-4xl font-light text-white">Preventative + Reactive — <span className="text-[#00AEEF]">measurable ROI</span></div>
+            </motion.div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============================================================
+   SECTION 8 — TRUST METRICS
+   ============================================================ */
+function TrustSection() {
+  const metrics = [
+    { n: 92, suffix: "+", label: "Projects Delivered (2021–26)" },
+    { n: 5, suffix: "", label: "Regional Offices · KSA" },
+    { n: 52.5, suffix: "%", label: "Local Content · Verified" },
+  ];
+  return (
+    <section className="relative bg-[#050505] py-40">
+      <div className="mx-auto max-w-7xl px-8">
+        <div className="font-mono text-[10px] tracking-[0.4em] text-[#00AEEF]">CHAPTER 08 · BY THE NUMBERS</div>
+        <h2 className="mt-4 max-w-3xl text-5xl font-light leading-tight text-white md:text-7xl">Numbers we stand behind.</h2>
+        <div className="mt-20 grid gap-12 md:grid-cols-3">
+          {metrics.map((m, i) => <BigCounter key={i} {...m} delay={i * 0.15} />)}
+        </div>
+        <div className="mt-20 flex flex-wrap gap-3">
+          {["ISO 9001", "ISO 45001", "ISO 27001", "Aramco SACS-002", "HCIS / SAIS", "API 780", "ASIS RA", "VAT Compliant"].map((b) => (
+            <span key={b} className="rounded-full border border-[#00AEEF]/30 bg-[#00AEEF]/5 px-4 py-2 font-mono text-[10px] tracking-[0.2em] text-[#00AEEF]">
+              ◆ {b}
+            </span>
           ))}
         </div>
       </div>
@@ -738,579 +759,209 @@ function Technology() {
   );
 }
 
-/* ---------- Competencies ---------- */
-function Competencies() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+function BigCounter({ n, suffix, label, delay }: { n: number; suffix: string; label: string; delay: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.5 });
+  const [v, setV] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    const o = { v: 0 };
+    gsap.to(o, { v: n, duration: 2.4, delay, ease: "power3.out", onUpdate: () => setV(o.v) });
+  }, [inView, n, delay]);
+  const display = n % 1 ? v.toFixed(1) : Math.floor(v);
+  return (
+    <motion.div ref={ref}
+      initial={{ opacity: 0, y: 60 }} whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }} transition={{ duration: 0.9, delay }}
+    >
+      <div className="text-[120px] font-extralight leading-none text-white md:text-[180px]">
+        {display}<span className="text-[#00AEEF]">{suffix}</span>
+      </div>
+      <div className="mt-4 font-mono text-xs tracking-[0.3em] text-white/50">{label.toUpperCase()}</div>
+    </motion.div>
+  );
+}
 
-  const groups = [
-    {
-      icon: Shield,
-      h: "Consultancy & Advisory",
-      items: [
-        "Security Risk Assessment",
-        "Threat & Vulnerability Analysis",
-        "Master Security Planning",
-        "Crisis Management",
-      ],
-    },
-    {
-      icon: Radar,
-      h: "Engineering & Design",
-      items: [
-        "Concept & Detailed Design",
-        "CCTV, ACS, PIDS, PSIM",
-        "Drawings, BOQ & Specs",
-        "CADD & 3D Modelling",
-      ],
-    },
-    {
-      icon: Satellite,
-      h: "Implementation Support",
-      items: [
-        "Tender & Procurement",
-        "Construction Supervision",
-        "Testing & Commissioning",
-        "Data Networks & Radio Comms",
-      ],
-    },
+/* ============================================================
+   SECTION 9 — TESTIMONIALS
+   ============================================================ */
+function TestimonialsSection() {
+  const items = [
+    { q: "Specialist focus — a pure-play physical security consultancy, never a side practice.", a: "Why VISO · 01" },
+    { q: "KSA-first pedigree — built around HCIS, SAIS and Aramco standards from day one.", a: "Why VISO · 02" },
+    { q: "Sector depth across energy, petrochemicals, ports, giga-projects and sovereign assets.", a: "Why VISO · 03" },
+    { q: "Independent counsel — vendor-neutral advisory founded on trust and accountability.", a: "Why VISO · 04" },
   ];
+  return (
+    <section className="relative bg-[#050505] py-32">
+      <div className="mx-auto max-w-5xl px-8">
+        <div className="font-mono text-[10px] tracking-[0.4em] text-[#00AEEF]">CHAPTER 09 · WHY CHOOSE VISO</div>
+        <h2 className="mt-4 text-5xl font-light leading-tight text-white md:text-6xl">Built for the Kingdom's most demanding assets.</h2>
+        <div className="mt-20 space-y-6">
+          {items.map((it, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 100, rotate: -2 }}
+              whileInView={{ opacity: 1, y: 0, rotate: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              whileHover={{ y: -6, rotate: 0.4 }}
+              transition={{ duration: 0.8, delay: i * 0.1 }}
+              className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.06] to-white/[0.01] p-10 backdrop-blur-xl"
+            >
+              <div className="absolute right-6 top-6 font-mono text-[9px] tracking-[0.3em] text-[#00AEEF]/70">CLASSIFIED · CLEARED</div>
+              <div className="absolute left-0 top-0 h-full w-1 bg-[#00AEEF]" />
+              <p className="text-2xl font-light leading-snug text-white md:text-3xl">"{it.q}"</p>
+              <div className="mt-6 font-mono text-xs tracking-[0.2em] text-white/50">— {it.a}</div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============================================================
+   SECTION 10 — MISSION CONTROL
+   ============================================================ */
+function MissionControl() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end end"] });
+  const earthScale = useTransform(scrollYProgress, [0, 1], [0.6, 1.05]);
+  const glow = useTransform(scrollYProgress, [0, 1], [0.2, 1]);
+  const rotate = useTransform(scrollYProgress, [0, 1], [0, 60]);
+
+  // Magnetic button
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const mx = useMotionValue(0); const my = useMotionValue(0);
+  const sx = useSpring(mx, { stiffness: 200, damping: 15 });
+  const sy = useSpring(my, { stiffness: 200, damping: 15 });
+  const onMove = (e: React.MouseEvent) => {
+    const r = btnRef.current!.getBoundingClientRect();
+    mx.set((e.clientX - (r.left + r.width / 2)) * 0.4);
+    my.set((e.clientY - (r.top + r.height / 2)) * 0.4);
+  };
+  const onLeave = () => { mx.set(0); my.set(0); };
 
   return (
-    <section
-      id="competencies"
-      className="relative overflow-hidden border-t border-border/60 px-6 py-40"
-      onMouseMove={(e) => {
-        setMousePosition({
-          x: e.clientX,
-          y: e.clientY,
-        });
-      }}
-    >
-      {/* Spotlight */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-20"
-        style={{
-          background: `radial-gradient(
-            500px circle at ${mousePosition.x}px ${mousePosition.y}px,
-            rgba(212,175,55,0.18),
-            transparent 70%
-          )`,
-        }}
-      />
-
-      {/* Grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:60px_60px]" />
-
-      {/* Sphere */}
-      <motion.div
-        animate={{
-          rotate: 360,
-        }}
-        transition={{
-          duration: 40,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-        className="absolute left-1/2 top-1/2 h-[550px] w-[550px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-gold/20"
-      >
-        <div className="absolute inset-0 rounded-full border border-gold/10 scale-90" />
-        <div className="absolute inset-0 rounded-full border border-gold/10 scale-75" />
-        <div className="absolute inset-0 rounded-full border border-gold/10 scale-50" />
-      </motion.div>
-
-      {/* Floating Icons */}
-      <motion.div
-        animate={{ y: [-20, 20, -20] }}
-        transition={{ duration: 8, repeat: Infinity }}
-        className="absolute left-[15%] top-[25%]"
-      >
-        <Shield className="h-10 w-10 text-gold/50" />
-      </motion.div>
-
-      <motion.div
-        animate={{ y: [20, -20, 20] }}
-        transition={{ duration: 10, repeat: Infinity }}
-        className="absolute right-[15%] top-[20%]"
-      >
-        <Radar className="h-10 w-10 text-gold/50" />
-      </motion.div>
-
-      <motion.div
-        animate={{ y: [-15, 15, -15] }}
-        transition={{ duration: 9, repeat: Infinity }}
-        className="absolute left-[20%] bottom-[20%]"
-      >
-        <Lock className="h-10 w-10 text-gold/50" />
-      </motion.div>
-
-      <div className="relative z-10 mx-auto max-w-7xl">
-        <motion.div
-          initial={{ opacity: 0, y: 80 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
-          <p className="font-mono text-xs uppercase tracking-[0.4em] text-gold">
-            08 • Core Competencies
-          </p>
-
-          <h2 className="mt-6 max-w-4xl font-display text-5xl leading-tight md:text-7xl">
-            The Full Physical Security{" "}
-            <span className="bg-gradient-to-r from-yellow-300 via-yellow-500 to-yellow-200 bg-clip-text text-transparent">
-              Lifecycle
-            </span>
-          </h2>
-
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-            From strategic consulting and risk assessment to engineering,
-            implementation, commissioning and operational support.
-          </p>
+    <section ref={ref} className="relative h-[200vh]">
+      <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden bg-black">
+        <motion.div style={{ opacity: glow }} className="absolute inset-0 [background:radial-gradient(circle_at_center,#00AEEF33,transparent_55%)]" />
+        <motion.div style={{ scale: earthScale, rotate }} className="absolute h-[120vh] w-[120vh] rounded-full">
+          <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_30%,#0a3a6b,#020a18_70%,#000)] shadow-[inset_0_0_120px_#00AEEF60]" />
+          <svg viewBox="0 0 400 400" className="absolute inset-0">
+            {[...Array(60)].map((_, i) => {
+              const a = (i / 60) * Math.PI * 2;
+              const r1 = 180, r2 = 190 + (i % 5) * 6;
+              return (
+                <motion.line
+                  key={i}
+                  x1={200 + Math.cos(a) * r1} y1={200 + Math.sin(a) * r1}
+                  x2={200 + Math.cos(a) * r2} y2={200 + Math.sin(a) * r2}
+                  stroke="#00AEEF" strokeWidth="0.5"
+                  animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 2, delay: i * 0.05, repeat: Infinity }}
+                />
+              );
+            })}
+            {[...Array(20)].map((_, i) => {
+              const a1 = (i / 20) * Math.PI * 2;
+              const a2 = ((i + 7) / 20) * Math.PI * 2;
+              return (
+                <motion.path
+                  key={i}
+                  d={`M ${200 + Math.cos(a1) * 180} ${200 + Math.sin(a1) * 180} Q 200 200 ${200 + Math.cos(a2) * 180} ${200 + Math.sin(a2) * 180}`}
+                  fill="none" stroke="#00AEEF" strokeWidth="0.5" opacity="0.4"
+                  initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }}
+                  transition={{ duration: 2, delay: i * 0.1 }}
+                />
+              );
+            })}
+          </svg>
         </motion.div>
 
-        <div className="mt-24 grid gap-8 md:grid-cols-3">
-          {groups.map((group, i) => {
-            const Icon = group.icon;
-
-            return (
-              <motion.div
-                key={group.h}
-                initial={{
-                  opacity: 0,
-                  y: 100,
-                  rotateX: 20,
-                }}
-                whileInView={{
-                  opacity: 1,
-                  y: 0,
-                  rotateX: 0,
-                }}
-                transition={{
-                  duration: 0.8,
-                  delay: i * 0.15,
-                }}
-                whileHover={{
-                  y: -15,
-                  rotateX: 8,
-                  rotateY: 8,
-                  scale: 1.03,
-                }}
-                style={{
-                  transformStyle: "preserve-3d",
-                }}
-                className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-8 backdrop-blur-xl"
-              >
-                {/* Scan Line */}
-                <div className="absolute inset-0 overflow-hidden">
-                  <div className="absolute -top-32 left-0 h-32 w-full bg-gradient-to-b from-transparent via-gold/20 to-transparent opacity-0 transition-all duration-700 group-hover:translate-y-[500px] group-hover:opacity-100" />
-                </div>
-
-                {/* Glow */}
-                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-gold/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-
-                <div className="relative z-10">
-                  <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-gold/20 bg-gold/10">
-                    <Icon className="h-8 w-8 text-gold" />
-                  </div>
-
-                  <h4 className="font-mono text-xs uppercase tracking-[0.25em] text-gold">
-                    {group.h}
-                  </h4>
-
-                  <ul className="mt-8 space-y-5">
-                    {group.items.map((item) => (
-                      <li
-                        key={item}
-                        className="flex items-start gap-3 border-b border-white/5 pb-4 text-white/80"
-                      >
-                        <span className="mt-2 h-2 w-2 rounded-full bg-gold" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Radar Pulse */}
-      <div className="pointer-events-none absolute left-1/2 top-1/2">
-        <div className="absolute h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 animate-ping rounded-full border border-gold/10" />
-      </div>
-    </section>
-  );
-}
-
-/* ---------- Clients ---------- */
-function Clients() {
-  const groups: Array<[string, string[]]> = [
-    ["Energy & Petrochemicals", ["Saudi Aramco", "SATORP", "SABIC", "Ma'aden", "Yansab", "Tasnee"]],
-    ["EPC & Engineering", ["Samsung Engineering", "Doosan", "L&T", "Tecnimont", "Worley"]],
-    ["Government & Infrastructure", ["MoI", "RCJY", "Saudi Ports", "MODON"]],
-    ["Private & Hospitality", ["The Ritz-Carlton", "Red Sea International", "Amazon"]],
-  ];
-  return (
-    <section className="border-t border-border/60 bg-surface/30 px-6 py-32">
-      <div className="mx-auto max-w-7xl">
-        <Reveal>
-          <SectionLabel n="09" label="Our Esteemed Clients" />
-        </Reveal>
-        <Reveal delay={0.1}>
-          <h2 className="mt-6 max-w-3xl font-display text-5xl leading-[1.05] text-balance md:text-6xl">
-            Trusted by leaders <em className="text-gradient-gold">across the Kingdom.</em>
+        <div className="relative z-10 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ duration: 1 }}
+            className="font-mono text-[10px] tracking-[0.4em] text-[#00AEEF]"
+          >
+            CHAPTER 10 · OUR VISION
+          </motion.div>
+          <h2 className="mt-6 text-6xl font-light leading-[0.95] tracking-tight text-white md:text-8xl">
+            Fortifying <br /><span className="italic text-[#00AEEF]">Tomorrow</span>.
           </h2>
-        </Reveal>
-
-        <div className="mt-16 space-y-px overflow-hidden rounded-2xl border border-border bg-border">
-          {groups.map((g, i) => (
-            <Reveal key={g[0]} delay={i * 0.08}>
-              <div className="grid grid-cols-12 items-center gap-6 bg-background px-6 py-8 md:px-10">
-                <div className="col-span-12 md:col-span-3">
-                  <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-gold">
-                    Sector {String(i + 1).padStart(2, "0")}
-                  </div>
-                  <h4 className="mt-2 font-display text-xl leading-tight md:text-2xl">
-                    {g[0]}
-                  </h4>
-                </div>
-                <div className="col-span-12 flex flex-wrap items-center gap-x-8 gap-y-3 md:col-span-9">
-                  {g[1].map((c) => (
-                    <span
-                      key={c}
-                      className="font-display text-lg uppercase tracking-wide text-muted-foreground transition-colors hover:text-foreground md:text-xl"
-                    >
-                      {c}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ---------- Portfolio ---------- */
-function Portfolio() {
-  const big = [
-    ["92+", "Total Projects"],
-    ["68%", "Completed"],
-    ["32%", "Ongoing"],
-    ["2021—26", "Active Period"],
-  ] as const;
-  const samples = [
-    ["ROSTP Aramco Project — Jazan", "Aramco", "Stage 4", "Completed"],
-    ["Jeddah Islamic & Jazan Port", "Western Coast", "Stage 1", "Completed"],
-    ["WTCO — Khobar/Jubail WTS", "WTCO", "Supervision", "Ongoing"],
-    ["Giga-Project Perimeter", "Confidential", "Stage 3", "Ongoing"],
-    ["Critical Substation Programme", "Government", "Stage 2", "Completed"],
-    ["Industrial City Security Plan", "MODON", "Master Plan", "Completed"],
-  ];
-  return (
-    <section id="portfolio" className="border-t border-border/60 px-6 py-32">
-      <div className="mx-auto max-w-7xl">
-        <Reveal>
-          <SectionLabel n="10" label="Project Portfolio" />
-        </Reveal>
-        <Reveal delay={0.1}>
-          <h2 className="mt-6 max-w-3xl font-display text-5xl leading-[1.05] text-balance md:text-6xl">
-            Delivered across the Kingdom — <em className="text-gradient-gold">2021 to 2026.</em>
-          </h2>
-        </Reveal>
-
-        <div className="mt-16 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-4">
-          {big.map(([n, l]) => (
-            <div key={l} className="bg-surface p-8">
-              <div className="font-display text-5xl text-gold md:text-6xl">{n}</div>
-              <div className="mt-3 font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-                {l}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-12 overflow-hidden rounded-2xl border border-border">
-          <div className="grid grid-cols-12 gap-4 border-b border-border bg-surface-2 px-6 py-4 font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-            <span className="col-span-6">Project</span>
-            <span className="col-span-3">End-User</span>
-            <span className="col-span-2">Scope</span>
-            <span className="col-span-1 text-right">Status</span>
+          <p className="mx-auto mt-8 max-w-xl text-lg text-white/60">
+            Where security meets peace of mind — protecting people, property and information across the Kingdom's most critical assets.
+          </p>
+          <div className="mt-12">
+            <motion.button
+              ref={btnRef}
+              onMouseMove={onMove} onMouseLeave={onLeave}
+              style={{ x: sx, y: sy }}
+              whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}
+              className="group relative overflow-hidden rounded-full border border-[#00AEEF] bg-[#00AEEF]/10 px-10 py-5 font-mono text-sm tracking-[0.25em] text-white shadow-[0_0_40px_#00AEEF80] backdrop-blur-xl transition-shadow hover:shadow-[0_0_80px_#00AEEFcc]"
+            >
+              <motion.span
+                className="pointer-events-none absolute inset-0 bg-[#00AEEF]"
+                animate={{ opacity: [0, 0.25, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+              <span className="relative">ENGAGE VISO · RIYADH HQ →</span>
+            </motion.button>
           </div>
-          {samples.map((row, i) => (
-            <motion.div
-              key={row[0]}
-              initial={{ opacity: 0, y: 14 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-30px" }}
-              transition={{ duration: 0.5, delay: i * 0.05 }}
-              className="grid grid-cols-12 items-center gap-4 border-b border-border bg-surface px-6 py-5 text-sm last:border-0 hover:bg-surface-2"
-            >
-              <span className="col-span-6 font-display text-lg">{row[0]}</span>
-              <span className="col-span-3 text-muted-foreground">{row[1]}</span>
-              <span className="col-span-2 font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
-                {row[2]}
-              </span>
-              <span className="col-span-1 text-right">
-                <span
-                  className={`inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.15em] ${
-                    row[3] === "Completed" ? "text-gold" : "text-accent"
-                  }`}
-                >
-                  <span
-                    className={`h-1.5 w-1.5 rounded-full ${
-                      row[3] === "Completed" ? "bg-gold" : "bg-accent"
-                    }`}
-                  />
-                  {row[3]}
-                </span>
-              </span>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ---------- Regional ---------- */
-function Regional() {
-  const cities = ["Riyadh", "Khobar", "Jubail", "Jeddah", "Yanbu"];
-  const timeline = [
-    ["2020", "Founded — Riyadh HQ"],
-    ["2024", "Eastern Expansion — Khobar & Jubail"],
-    ["2025", "Western Expansion — Jeddah & Yanbu"],
-  ];
-  return (
-    <section className="border-t border-border/60 bg-surface/30 px-6 py-32">
-      <div className="mx-auto max-w-7xl">
-        <Reveal>
-          <SectionLabel n="11" label="Regional Presence" />
-        </Reveal>
-        <Reveal delay={0.1}>
-          <h2 className="mt-6 max-w-3xl font-display text-5xl leading-[1.05] text-balance md:text-6xl">
-            Five offices. <em className="text-gradient-gold">One Kingdom.</em>
-          </h2>
-        </Reveal>
-
-        <div className="mt-16 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-5">
-          {cities.map((c, i) => (
-            <motion.div
-              key={c}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: i * 0.08 }}
-              className="group relative aspect-square bg-background p-6 transition-colors hover:bg-surface"
-            >
-              <div className="absolute right-4 top-4 h-2 w-2 rounded-full bg-gold animate-pulse" />
-              <div className="flex h-full flex-col justify-end">
-                <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-                  Office 0{i + 1}
-                </div>
-                <h4 className="mt-1 font-display text-2xl md:text-3xl">{c}</h4>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        <div className="mt-12 grid gap-4 md:grid-cols-3">
-          {timeline.map(([y, t], i) => (
-            <Reveal key={y} delay={i * 0.1}>
-              <div className="flex items-baseline gap-4 rounded-xl border border-border bg-background p-6">
-                <span className="font-display text-3xl text-gold">{y}</span>
-                <span className="text-sm text-muted-foreground">{t}</span>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ---------- Why Us ---------- */
-function WhyUs() {
-  const reasons = [
-    ["Specialist Focus", "Pure-play physical security consultancy — not a side practice."],
-    ["KSA-First Pedigree", "Built around HCIS, SAIS and Aramco standards from day one."],
-    ["Sector Depth", "Energy, petrochemicals, ports, giga-projects and sovereign assets."],
-    ["Independent Counsel", "Vendor-neutral advisory founded on trust and accountability."],
-  ];
-  return (
-    <section className="border-t border-border/60 px-6 py-32">
-      <div className="mx-auto max-w-7xl">
-        <Reveal>
-          <SectionLabel n="12" label="Why Choose VISO" />
-        </Reveal>
-        <Reveal delay={0.1}>
-          <h2 className="mt-6 max-w-3xl font-display text-5xl leading-[1.05] text-balance md:text-6xl">
-            Built for the Kingdom&apos;s
-            <em className="text-gradient-gold"> most demanding assets.</em>
-          </h2>
-        </Reveal>
-
-        <div className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-2">
-          {reasons.map(([t, b], i) => (
-            <Reveal key={t} delay={i * 0.08}>
-              <div className="group flex h-full items-start gap-6 bg-surface p-8 transition-colors hover:bg-surface-2 md:p-10">
-                <div className="font-display text-5xl text-gold/70">
-                  0{i + 1}
-                </div>
-                <div>
-                  <h4 className="font-display text-2xl">{t}</h4>
-                  <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
-                    {b}
-                  </p>
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ---------- Compliance ---------- */
-function Compliance() {
-  const badges = [
-    ["ISO 9001", "Quality Management"],
-    ["ISO 45001", "Occupational H&S"],
-    ["ISO 27001", "Information Security"],
-    ["Aramco SACS-002", "Cybersecurity Compliance"],
-    ["SAIS Licensed", "Saudi Authority"],
-    ["52.53% Local Content", "Verified by Audit Firm"],
-    ["VAT Compliant", "Since Aug 2024"],
-    ["CR 1010558646", "Vision of Solutions Co. Ltd"],
-  ];
-  return (
-    <section className="border-t border-border/60 bg-surface/30 px-6 py-32">
-      <div className="mx-auto max-w-7xl">
-        <Reveal>
-          <SectionLabel n="13" label="Licenses & Standards" />
-        </Reveal>
-        <Reveal delay={0.1}>
-          <h2 className="mt-6 max-w-3xl font-display text-5xl leading-[1.05] text-balance md:text-6xl">
-            Independently audited.
-            <em className="text-gradient-gold"> Fully authorized.</em>
-          </h2>
-        </Reveal>
-
-        <div className="mt-16 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-4">
-          {badges.map(([t, b], i) => (
-            <motion.div
-              key={t}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.05 }}
-              className="bg-background p-6 transition-colors hover:bg-surface"
-            >
-              <div className="font-display text-xl">{t}</div>
-              <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                {b}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ---------- Contact ---------- */
-function Contact() {
-  return (
-    <section id="contact" className="relative border-t border-border/60 px-6 py-40">
-      <motion.div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10"
-        animate={{
-          background: [
-            "radial-gradient(ellipse 60% 50% at 30% 30%, oklch(0.82 0.13 85 / 0.15), transparent 60%)",
-            "radial-gradient(ellipse 60% 50% at 70% 60%, oklch(0.82 0.13 85 / 0.15), transparent 60%)",
-            "radial-gradient(ellipse 60% 50% at 30% 30%, oklch(0.82 0.13 85 / 0.15), transparent 60%)",
-          ],
-        }}
-        transition={{ duration: 14, repeat: Infinity }}
-      />
-      <div className="mx-auto max-w-5xl text-center">
-        <Reveal>
-          <SectionLabel n="14" label="Contact" />
-        </Reveal>
-        <Reveal delay={0.1}>
-          <h2 className="mx-auto mt-8 max-w-4xl font-display text-[clamp(2.5rem,7vw,6.5rem)] leading-[1.02] text-balance">
-            Let&apos;s build your
-            <br />
-            <em className="text-gradient-gold">security strategy</em> together.
-          </h2>
-        </Reveal>
-        <Reveal delay={0.25}>
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
-            <a
-              href="mailto:contact@viso.com.sa"
-              className="group inline-flex items-center gap-3 rounded-full bg-gold px-7 py-3.5 text-sm font-medium text-gold-foreground transition-transform hover:scale-[1.02]"
-            >
-              contact@viso.com.sa
-              <span className="transition-transform group-hover:translate-x-0.5">→</span>
-            </a>
-            <a
-              href="tel:+966"
-              className="inline-flex items-center gap-3 rounded-full border border-border bg-surface/60 px-7 py-3.5 text-sm backdrop-blur hover:bg-surface-2"
-            >
-              +966 (HQ Riyadh)
-            </a>
+          <div className="mt-12 font-mono text-[10px] tracking-[0.4em] text-white/30">
+            END OF TRANSMISSION · VISO © 2026
           </div>
-        </Reveal>
-
-        <Reveal delay={0.4}>
-          <div className="mx-auto mt-20 grid max-w-3xl grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-3">
-            {[
-              ["Headquarters", "Riyadh, KSA"],
-              ["District", "Al Taawun"],
-              ["Short Address", "RHTA7423"],
-              ["CR", "1010558646"],
-              ["VAT", "312415959200003"],
-              ["Issued", "May 2026"],
-            ].map(([k, v]) => (
-              <div key={k} className="bg-background p-5 text-left">
-                <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                  {k}
-                </div>
-                <div className="mt-1.5 text-sm">{v}</div>
-              </div>
-            ))}
-          </div>
-        </Reveal>
+        </div>
       </div>
     </section>
   );
 }
 
-/* ---------- Footer ---------- */
-function Footer() {
+/* ============================================================
+   PARTICLES (background)
+   ============================================================ */
+function Particles() {
+  const items = Array.from({ length: 30 });
   return (
-    <footer className="border-t border-border/60 bg-surface px-6 py-12">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-6">
-        <div className="flex items-center gap-3">
-          <span className="grid h-7 w-7 place-items-center rounded-md bg-gold text-gold-foreground font-mono text-[11px] font-bold">
-            V
-          </span>
-          <span className="font-display text-lg">VISO</span>
-          <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-            Security Consultations
-          </span>
-        </div>
-        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-          Riyadh • Khobar • Jubail • Jeddah • Yanbu
-        </p>
-        <p className="text-[11px] text-muted-foreground">
-          © {new Date().getFullYear()} Vision of Solutions for Security
-          Consultations Co. Ltd
-        </p>
-      </div>
-    </footer>
+    <div className="pointer-events-none fixed inset-0 z-[10] overflow-hidden">
+      {items.map((_, i) => (
+        <motion.span
+          key={i}
+          className="absolute h-1 w-1 rounded-full bg-[#00AEEF]"
+          initial={{ x: `${(i * 37) % 100}%`, y: "110%", opacity: 0 }}
+          animate={{ y: "-10%", opacity: [0, 0.6, 0] }}
+          transition={{ duration: 12 + (i % 6) * 2, repeat: Infinity, delay: i * 0.3, ease: "linear" }}
+          style={{ left: `${(i * 37) % 100}%` }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* ============================================================
+   PAGE
+   ============================================================ */
+function StoryPage() {
+  const [loading, setLoading] = useState(true);
+  return (
+    <div className="bg-[#050505] text-white">
+      <SmoothScroll />
+      <AnimatePresence>{loading && <LoadingScreen onDone={() => setLoading(false)} />}</AnimatePresence>
+      <ProgressBar />
+      <TopNav />
+      <Particles />
+      <main className="relative z-20">
+        <HeroSection />
+        <ThreatSection />
+        <SOCSection />
+        <AccessControlSection />
+        <InfraSection />
+        <ProcessSection />
+        <IncidentSection />
+        <TrustSection />
+        <TestimonialsSection />
+        <MissionControl />
+      </main>
+    </div>
   );
 }
