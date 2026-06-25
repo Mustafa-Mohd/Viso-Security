@@ -267,35 +267,53 @@ function CapabilitiesSection() {
   ];
 
   return (
-    <section ref={ref} className="relative min-h-screen overflow-hidden bg-background py-32">
-      <div className="absolute right-0 top-0 opacity-20 w-1/2 h-full bg-[url('/images/cap_bg.png')] bg-cover bg-left opacity-5 [mask-image:linear-gradient(to_left,black,transparent)]" />
+    <section ref={ref} className="relative min-h-screen overflow-hidden bg-black py-32">
+      <div className="absolute right-0 top-0 w-full md:w-2/3 h-full bg-[url('/images/cap_bg.png')] bg-cover bg-left [mask-image:linear-gradient(to_left,black,transparent)] opacity-60 mix-blend-lighten" />
       <div className="mx-auto max-w-7xl px-8 relative z-10">
         <div className="mb-16">
           <div className="font-mono text-[10px] tracking-[0.4em] text-[#DF9B2A]">PHASE 02 · FULL SPECTRUM SERVICES</div>
-          <h2 className="mt-4 max-w-3xl text-5xl font-light leading-tight text-foreground md:text-7xl">
-            Unified protection. <br /><span className="text-foreground/40">Architected for scale.</span>
+          <h2 className="mt-4 max-w-3xl text-5xl font-light leading-tight text-white md:text-7xl">
+            Unified protection. <br /><span className="text-white/40">Architected for scale.</span>
           </h2>
-          <p className="mt-6 max-w-xl text-foreground/80">An integrated methodology converging rigorous risk evaluation, architectural design, and operational compliance into a cohesive defensive matrix.</p>
+          <p className="mt-6 max-w-xl text-white/80">An integrated methodology converging rigorous risk evaluation, architectural design, and operational compliance into a cohesive defensive matrix.</p>
         </div>
 
-        <motion.div style={{ x }} className="relative grid gap-4 md:grid-cols-3">
+        <motion.div style={{ x }} className="relative grid gap-6 md:grid-cols-3">
           {capabilities.map((cap, i) => (
             <motion.div
               key={cap.code}
               initial={{ opacity: 0, y: 40, scale: 0.95 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true, amount: 0.3 }}
-              whileHover={{ y: -5, borderColor: "rgba(0, 174, 239, 0.5)", boxShadow: "0 10px 30px -10px rgba(0,174,239,0.3)" }}
               transition={{ delay: i * 0.08, duration: 0.6 }}
-              className="relative aspect-[4/3] overflow-hidden rounded-xl border border-foreground/10 bg-surface shadow-md p-6  transition-all duration-300"
+              className="group relative aspect-[4/3] w-full [perspective:1000px]"
             >
-              <div className="flex items-center justify-between font-mono text-[9px] text-[#DF9B2A]/70">
-                <span>{cap.code}-{String(i + 1).padStart(2, "0")}</span>
-                <span className="text-foreground/30">ACTIVE</span>
+              <div className="relative h-full w-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
+                {/* Front Face */}
+                <div className="absolute inset-0 flex flex-col justify-between overflow-hidden rounded-xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-sm [backface-visibility:hidden]">
+                  <div className="flex items-center justify-between font-mono text-[9px] text-[#DF9B2A]">
+                    <span>{cap.code}-{String(i + 1).padStart(2, "0")}</span>
+                    <span className="text-white/30 tracking-widest transition-colors group-hover:text-[#DF9B2A]">HOVER</span>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-light text-white leading-snug">{cap.t}</div>
+                    <div className="mt-6 h-px w-12 bg-[#DF9B2A]" />
+                  </div>
+                </div>
+
+                {/* Back Face */}
+                <div className="absolute inset-0 flex flex-col justify-center overflow-hidden rounded-xl border border-[#DF9B2A]/30 bg-black p-8 shadow-2xl [backface-visibility:hidden] [transform:rotateY(180deg)]">
+                  <div className="absolute inset-0 bg-[#DF9B2A]/10" />
+                  <div className="relative z-10">
+                    <div className="font-mono text-[9px] tracking-widest text-[#DF9B2A] mb-4">SYSTEM DETAILS</div>
+                    <div className="text-sm text-white/90 leading-relaxed">{cap.d}</div>
+                    <button className="mt-6 flex items-center gap-2 font-mono text-[10px] tracking-widest text-[#DF9B2A] transition-colors hover:text-white">
+                      EXPLORE DEPLOYMENT 
+                      <span className="text-lg leading-none">→</span>
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div className="mt-8 text-xl font-light text-foreground">{cap.t}</div>
-              <div className="mt-2 text-sm text-foreground/80">{cap.d}</div>
-              <div className="absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r from-[#DF9B2A] to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-300" />
             </motion.div>
           ))}
         </motion.div>
@@ -330,25 +348,44 @@ function DefensePillarsSection() {
 
   return (
     <section ref={ref} className="relative h-[400vh]">
-      <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden bg-background">
-        <div className="absolute inset-0 transition-colors duration-700 opacity-[0.03]" style={{ backgroundColor: tint }} />
-        <div className="absolute inset-0 opacity-30 [background:radial-gradient(circle_at_center,#DF9B2A44,transparent_60%)]" />
+      <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden bg-black">
+        <div className="absolute inset-0">
+          <img src="https://apuedge.com/wp-content/uploads/IHS-Lead-042820.jpg" className="h-full w-full object-cover opacity-30" alt="Background" />
+          <div className="absolute inset-0 bg-black/60" />
+        </div>
+        <div className="absolute inset-0 transition-colors duration-700 opacity-20" style={{ backgroundColor: tint }} />
+        <div className="absolute inset-0 opacity-50 [background:radial-gradient(circle_at_center,#DF9B2A44,transparent_60%)]" />
         <div className="relative grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-8 md:grid-cols-2">
           <div>
             <div className="font-mono text-[10px] tracking-[0.4em] text-[#DF9B2A]">PHASE 03 · CORE METHODOLOGY</div>
-            <h2 className="mt-4 text-5xl font-light leading-tight text-foreground md:text-7xl">Comprehensive defense <span className="italic text-[#DF9B2A]">at every layer</span>.</h2>
-            <p className="mt-6 max-w-md text-foreground/80">Personnel, Physical Assets, and Data Integrity — defended through layered strategies, advanced technology, and rigorous auditing.</p>
-            <div className="mt-10 space-y-3">
-              {stages.map((s, i) => (
-                <motion.div
-                  key={s}
-                  animate={{ opacity: stage >= i ? 1 : 0.25, x: stage >= i ? 0 : -10 }}
-                  className="flex items-center gap-3 font-mono text-sm tracking-[0.2em] text-foreground"
-                >
-                  <span className={`h-px transition-all ${stage >= i ? "w-12 bg-[#DF9B2A]" : "w-4 bg-foreground/30"}`} />
-                  <span>{String(i + 1).padStart(2, "0")} · {s}</span>
-                </motion.div>
-              ))}
+            <h2 className="mt-2 text-4xl font-light leading-tight text-white md:text-5xl">Comprehensive defense <span className="italic text-[#DF9B2A]">at every layer</span>.</h2>
+            <p className="mt-4 max-w-md text-sm text-white/80">Personnel, Physical Assets, and Data Integrity — defended through layered strategies, advanced technology, and rigorous auditing.</p>
+            <div className="mt-6 flex flex-col gap-2">
+              {stages.map((s, i) => {
+                const isActive = stage === i;
+                const isPassed = stage > i;
+                const isVisible = stage >= i;
+                return (
+                  <div key={s} className="group relative flex items-start gap-4">
+                    <div className="flex flex-col items-center pt-1">
+                      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-all duration-500 ${isActive ? 'border-[#DF9B2A] bg-[#DF9B2A]/20 text-[#DF9B2A]' : isPassed ? 'border-white/30 bg-white/10 text-white/60' : 'border-white/10 bg-transparent text-white/20'}`}>
+                        <span className="font-mono text-[10px]">{String(i + 1).padStart(2, "0")}</span>
+                      </div>
+                      {i !== stages.length - 1 && (
+                        <div className={`mt-1 h-6 w-px transition-colors duration-500 ${isPassed ? 'bg-[#DF9B2A]/50' : 'bg-white/10'}`} />
+                      )}
+                    </div>
+                    <div className={`transition-all duration-500 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-30 -translate-x-4'}`}>
+                      <h3 className={`font-mono text-xs tracking-[0.1em] transition-colors ${isActive ? 'text-[#DF9B2A] font-bold' : isPassed ? 'text-white/80' : 'text-white/40'}`}>
+                        {s.split(" — ")[0]}
+                      </h3>
+                      <p className={`mt-0.5 text-xs transition-colors ${isActive ? 'text-white' : isPassed ? 'text-white/60' : 'text-white/30'}`}>
+                        {s.split(" — ")[1]}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
           <div className="flex items-center justify-center">
@@ -364,28 +401,26 @@ function DefensePillarsSection() {
 
 function BadgeArt({ stage }: { stage: number }) {
   return (
-    <div className="relative h-[340px] w-[240px]">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={stage}
-          initial={{ opacity: 0, scale: 0.85, filter: "blur(20px)" }}
-          animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-          exit={{ opacity: 0, scale: 1.1, filter: "blur(20px)" }}
-          transition={{ duration: 0.6 }}
-          className="absolute inset-0 rounded-2xl border border-[#DF9B2A]/40 bg-surface shadow-lg p-6 shadow-[0_0_60px_#DF9B2A40] "
-        >
-          <div className="font-mono text-[9px] tracking-[0.3em] text-[#DF9B2A]">VISO · CLEARANCE</div>
-          <div className="mt-6 flex h-40 w-full items-center justify-center overflow-hidden rounded-lg">
-            <img 
-              src="https://res.cloudinary.com/dcefror3c/image/upload/v1782392385/ChatGPT_Image_Jun_25_2026_06_29_30_PM_agmwib.png" 
-              alt="Clearance Badge" 
-              className="h-full w-full object-contain"
-            />
-          </div>
-          <div className="mt-4 font-mono text-xs text-foreground/70">LEVEL · {stage + 1} / 4</div>
-          <div className="mt-1 font-mono text-[10px] text-foreground/40">ID-2026-{(stage + 1) * 1731}</div>
-        </motion.div>
-      </AnimatePresence>
+    <div className="relative h-[360px] w-[260px] preserve-3d">
+      <div className="absolute inset-0 rounded-3xl border border-black/10 bg-white shadow-2xl p-6 flex flex-col justify-between">
+        <div className="flex items-center justify-between">
+          <div className="font-mono text-[9px] tracking-[0.3em] text-[#DF9B2A] font-bold">VISO · CLEARANCE</div>
+          <div className="h-2 w-2 rounded-full animate-pulse bg-[#DF9B2A]" />
+        </div>
+        
+        <div className="flex h-48 w-full items-center justify-center overflow-hidden rounded-2xl border border-black/5 bg-black/5 p-4">
+          <img 
+            src="https://res.cloudinary.com/dcefror3c/image/upload/v1782392385/ChatGPT_Image_Jun_25_2026_06_29_30_PM_agmwib.png" 
+            alt="Clearance Badge" 
+            className="h-full w-full object-contain drop-shadow-md"
+          />
+        </div>
+        
+        <div>
+          <div className="font-mono text-sm text-black font-bold transition-all duration-300">LEVEL · {stage + 1} / 4</div>
+          <div className="mt-1 font-mono text-[10px] text-black/40 transition-all duration-300">ID-2026-{(stage + 1) * 1731}</div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -395,11 +430,11 @@ function BadgeArt({ stage }: { stage: number }) {
    ============================================================ */
 function SovereignAssetsSection() {
   const industries = [
-    { name: "Petrochemicals & Energy", sub: "Refineries · Pipelines · Generation Nodes" },
-    { name: "Maritime Logistics", sub: "Commercial Ports · Naval Facilities" },
-    { name: "Mega-Infrastructure", sub: "Aviation Hubs · Transit Networks" },
-    { name: "Governmental Sectors", sub: "Ministries · Sovereign Facilities" },
-    { name: "Giga-Development", sub: "Next-Gen Cities · Hospitality Ecosystems" },
+    { name: "Petrochemicals & Energy", sub: "Refineries · Pipelines · Generation Nodes", img: "https://energyeducation.ca/wiki/images/c/c6/640px-TASNEE_001.jpg" },
+    { name: "Maritime Logistics", sub: "Commercial Ports · Naval Facilities" ,img:"https://static.fibre2fashion.com/Newsresource/images/310/shutterstock-2382999737-1-_322395.jpg?tr=w-710,h-450,c-at_max,cm-pad_resize"},
+    { name: "Mega-Infrastructure", sub: "Aviation Hubs · Transit Networks",img:"https://www.nbmcw.com/images/34-Infra/46594-Mega-Projects-1.webp" },
+    { name: "Governmental Sectors", sub: "Ministries · Sovereign Facilities" ,img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpqiIfaDzewTOCKZmADoRuIg-filu99dqa5Vopl1Ih0Q&s=10"},
+    { name: "Giga-Development", sub: "Next-Gen Cities · Hospitality Ecosystems",img:"https://www.hoteliermiddleeast.com/2021/05/OeUBMPAG-District-Al-Faisaliah-development.jpg" },
   ];
   return (
     <section className="relative bg-background py-32">
@@ -419,14 +454,20 @@ function SovereignAssetsSection() {
               transition={{ duration: 1, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] }}
               className="group relative h-72 overflow-hidden rounded-xl border border-foreground/10 bg-surface shadow-lg p-6  transition-colors hover:border-[#DF9B2A]/50"
             >
-              <div className="absolute inset-0 opacity-30 [background-image:linear-gradient(#DF9B2A44_1px,transparent_1px),linear-gradient(90deg,#DF9B2A44_1px,transparent_1px)] [background-size:20px_20px]" />
-              <div className="relative mt-auto pt-32">
-                <div className="font-mono text-[9px] tracking-[0.3em] text-foreground/40">SECTOR {String(i + 1).padStart(2, "0")}</div>
-                <div className="mt-2 text-xl font-light text-foreground">{ind.name}</div>
-                <div className="mt-2 text-[11px] text-foreground/40">{ind.sub}</div>
+              {ind.img && (
+                <div className="absolute inset-0 z-0">
+                  <img src={ind.img} alt={ind.name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                  <div className="absolute inset-0 bg-black/50 transition-colors group-hover:bg-black/30" />
+                </div>
+              )}
+              <div className="absolute inset-0 z-0 opacity-30 [background-image:linear-gradient(#DF9B2A44_1px,transparent_1px),linear-gradient(90deg,#DF9B2A44_1px,transparent_1px)] [background-size:20px_20px]" />
+              <div className="relative z-10 flex h-full flex-col justify-end pt-32">
+                <div className={`font-mono text-[9px] tracking-[0.3em] ${ind.img ? 'text-white/80' : 'text-foreground/40'}`}>SECTOR {String(i + 1).padStart(2, "0")}</div>
+                <div className={`mt-2 text-xl font-light ${ind.img ? 'text-white' : 'text-foreground'}`}>{ind.name}</div>
+                <div className={`mt-2 text-[11px] ${ind.img ? 'text-white/60' : 'text-foreground/40'}`}>{ind.sub}</div>
               </div>
               <motion.div
-                className="absolute inset-x-0 bottom-0 h-px bg-[#DF9B2A]"
+                className="absolute inset-x-0 bottom-0 z-20 h-px bg-[#DF9B2A]"
                 initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }}
                 viewport={{ once: true }} transition={{ duration: 1.2, delay: 0.3 + i * 0.12 }}
               />
