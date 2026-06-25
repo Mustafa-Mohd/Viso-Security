@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 import { useRef, useState } from "react";
 import { Shield, Radar, Lock, Satellite } from "lucide-react";
 import { SmoothScroll } from "@/components/SmoothScroll";
-import { ThemeToggle } from "@/components/ThemeToggle";
+
 
 export const Route = createFileRoute("/home")({
   head: () => ({
@@ -112,7 +112,7 @@ function Nav() {
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
       className="fixed inset-x-0 top-0 z-50"
     >
-      <div className="mx-auto mt-4 flex max-w-7xl items-center justify-between rounded-full border border-border/60 bg-background/40 px-5 py-3 backdrop-blur-xl">
+      <div className="mx-auto mt-4 flex max-w-7xl items-center justify-between rounded-full border border-border/60 bg-background/40 px-5 py-3 ">
         <a href="#top" className="flex items-center gap-2.5">
           <span className="grid h-7 w-7 place-items-center rounded-md bg-gold text-gold-foreground font-mono text-[11px] font-bold">
             V
@@ -182,7 +182,7 @@ function Hero() {
         className="relative z-10 mx-auto max-w-5xl text-center"
       >
         <Reveal>
-          <div className="mx-auto mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1.5 font-mono text-[10.5px] uppercase tracking-[0.25em] text-muted-foreground backdrop-blur">
+          <div className="mx-auto mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-surface shadow-sm px-3 py-1.5 font-mono text-[10.5px] uppercase tracking-[0.25em] text-muted-foreground ">
             <span className="h-1.5 w-1.5 rounded-full bg-gold" />
             Est. 2020 — Riyadh, KSA
           </div>
@@ -253,7 +253,7 @@ function Marquee() {
     "52.53% Local Content",
   ];
   return (
-    <section className="border-y border-border/60 bg-surface/30 py-6 overflow-hidden">
+    <section className="border-y border-border/60 bg-surface shadow-sm py-6 overflow-hidden">
       <motion.div
         className="flex gap-12 whitespace-nowrap"
         animate={{ x: ["0%", "-50%"] }}
@@ -530,12 +530,12 @@ function Functions() {
           <img 
             src="https://res.cloudinary.com/dcefror3c/image/upload/v1781685830/ChatGPT_Image_Jun_17_2026_02_12_15_PM_awfljd.png" 
             alt="Defence in depth (Desktop)" 
-            className="hidden md:block w-full h-auto rounded-xl border border-border/50 bg-surface/50 object-cover"
+            className="hidden md:block w-full h-auto rounded-xl border border-border/50 bg-surface shadow-sm object-cover"
           />
           <img 
             src="https://res.cloudinary.com/dcefror3c/image/upload/v1781690193/ChatGPT_Image_Jun_17_2026_03_26_15_PM_p1zb7z.png" 
             alt="Defence in depth (Mobile)" 
-            className="block md:hidden w-full h-auto rounded-xl border border-border/50 bg-surface/50 object-cover"
+            className="block md:hidden w-full h-auto rounded-xl border border-border/50 bg-surface shadow-sm object-cover"
           />
         </div>
       </div>
@@ -626,7 +626,7 @@ function Planning() {
     ["Implementation Planning", "Phasing, mobilization, commissioning and handover."],
   ];
   return (
-    <section className="border-t border-border/60 bg-surface/30 px-6 py-16 md:py-32">
+    <section className="border-t border-border/60 bg-surface shadow-sm px-6 py-16 md:py-32">
       <div className="mx-auto max-w-7xl">
         <Reveal>
           <SectionLabel n="06" label="Planning & Design" />
@@ -873,7 +873,7 @@ function Competencies() {
                 style={{
                   transformStyle: "preserve-3d",
                 }}
-                className="group relative overflow-hidden rounded-3xl border border-foreground/10 bg-white/[0.03] p-8 backdrop-blur-xl"
+                className="group relative overflow-hidden rounded-3xl border border-foreground/10 bg-surface shadow-md p-8 "
               >
                 {/* Scan Line */}
                 <div className="absolute inset-0 overflow-hidden">
@@ -927,7 +927,7 @@ function Clients() {
     ["Private & Hospitality", ["The Ritz-Carlton", "Red Sea International", "Amazon"]],
   ];
   return (
-    <section className="border-t border-border/60 bg-surface/30 px-6 py-16 md:py-32">
+    <section className="border-t border-border/60 bg-surface shadow-sm px-6 py-16 md:py-32">
       <div className="mx-auto max-w-7xl">
         <Reveal>
           <SectionLabel n="09" label="Our Esteemed Clients" />
@@ -1060,7 +1060,7 @@ function Regional() {
     ["2025", "Western Expansion — Jeddah & Yanbu"],
   ];
   return (
-    <section className="border-t border-border/60 bg-surface/30 px-6 py-16 md:py-32">
+    <section className="border-t border-border/60 bg-surface shadow-sm px-6 py-16 md:py-32">
       <div className="mx-auto max-w-7xl">
         <Reveal>
           <SectionLabel n="11" label="Regional Presence" />
@@ -1163,7 +1163,7 @@ function Compliance() {
     ["CR 1010558646", "Vision of Solutions Co. Ltd"],
   ];
   return (
-    <section className="border-t border-border/60 bg-surface/30 px-6 py-16 md:py-32">
+    <section className="border-t border-border/60 bg-surface shadow-sm px-6 py-16 md:py-32">
       <div className="mx-auto max-w-7xl">
         <Reveal>
           <SectionLabel n="13" label="Licenses & Standards" />
@@ -1235,7 +1235,7 @@ function Contact() {
             </a>
             <a
               href="tel:+966"
-              className="inline-flex items-center gap-3 rounded-full border border-border bg-surface/60 px-7 py-3.5 text-sm backdrop-blur hover:bg-surface-2"
+              className="inline-flex items-center gap-3 rounded-full border border-border bg-surface shadow-sm px-7 py-3.5 text-sm  hover:bg-surface-2"
             >
               +966 (HQ Riyadh)
             </a>
