@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { TopNav } from "@/components/TopNav";
 
 export const Route = createFileRoute("/")({
   component: StoryPage,
@@ -89,23 +90,7 @@ function ProgressBar() {
   );
 }
 
-function TopNav() {
-  return (
-    <div className="fixed top-0 left-0 right-0 z-[140] flex items-center justify-between px-8 py-5 mix-blend-difference">
-      <div className="font-mono text-xs tracking-[0.3em] text-foreground">VISO · ADVANCED SECURITY</div>
-      <div className="flex items-center gap-6">
-        <ThemeToggle />
-        <div className="hidden md:flex gap-8 font-mono text-[10px] tracking-[0.3em] text-foreground/70">
-          <span>MODULES 01 — 09</span>
-          <span>RIYADH · KSA</span>
-        </div>
-        <Link to="/home" className="rounded-full border border-foreground/20 bg-foreground/10 px-4 py-2 font-mono text-[10px] tracking-[0.2em] text-foreground hover:bg-foreground/20 transition-colors backdrop-blur">
-          ENTER SITE
-        </Link>
-      </div>
-    </div>
-  );
-}
+
 
 /* ============================================================
    HERO CAROUSEL
