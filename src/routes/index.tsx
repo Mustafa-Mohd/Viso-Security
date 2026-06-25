@@ -47,23 +47,28 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
     >
       <div className="absolute inset-0 opacity-30 " />
       <div className="relative">
-        <svg width="160" height="160" viewBox="0 0 160 160" className="drop-shadow-[0_0_30px_#DF9B2A80]">
-          <defs>
-            <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#DF9B2A" />
-              <stop offset="100%" stopColor="#0066ff" />
-            </linearGradient>
-          </defs>
-          <circle cx="80" cy="80" r="60" fill="none" stroke="#ffffff10" strokeWidth="2" />
-          <motion.circle
-            cx="80" cy="80" r="60" fill="none" stroke="url(#lg)" strokeWidth="2"
-            strokeDasharray={2 * Math.PI * 60}
-            strokeDashoffset={(1 - progress) * 2 * Math.PI * 60}
-            transform="rotate(-90 80 80)"
+          <svg width="160" height="160" viewBox="0 0 160 160" className="drop-shadow-[0_0_30px_#DF9B2A80]">
+            <defs>
+              <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#DF9B2A" />
+                <stop offset="100%" stopColor="#0066ff" />
+              </linearGradient>
+            </defs>
+            <circle cx="80" cy="80" r="60" fill="none" stroke="#ffffff10" strokeWidth="2" />
+            <motion.circle
+              cx="80" cy="80" r="60" fill="none" stroke="url(#lg)" strokeWidth="2"
+              strokeDasharray={2 * Math.PI * 60}
+              strokeDashoffset={(1 - progress) * 2 * Math.PI * 60}
+              transform="rotate(-90 80 80)"
+            />
+          </svg>
+          
+          {/* Logo overlay in center of loader */}
+          <img 
+            src="https://res.cloudinary.com/dcefror3c/image/upload/v1782392385/ChatGPT_Image_Jun_25_2026_06_29_30_PM_agmwib.png" 
+            alt="Viso Logo" 
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-16 w-16 rounded-full object-cover shadow-[0_0_15px_rgba(223,155,42,0.5)]" 
           />
-          <path d="M80 40 L110 55 V85 C110 105 80 120 80 120 C80 120 50 105 50 85 V55 Z"
-            fill="none" stroke="url(#lg)" strokeWidth="1.5" />
-        </svg>
         <motion.div
           className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#DF9B2A] to-transparent"
           style={{ top: `${20 + progress * 120}px` }}
@@ -245,6 +250,15 @@ function ThreatImperativeSection() {
         onEnded={() => setActive(0)}
         className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${active === 1 ? "opacity-100 z-10" : "opacity-0 z-0"}`}
       />
+      
+      {/* Overlay to cover Gemini Logo */}
+      <div className="absolute -bottom-8 right-6 z-20 pointer-events-none">
+        <img 
+          src="https://res.cloudinary.com/dcefror3c/image/upload/v1782416548/ChatGPT_Image_Jun_26__2026__01_10_40_AM-removebg-preview_u49mdr.png" 
+          alt="Overlay" 
+          className="h-60 w-auto object-contain drop-shadow-lg"
+        />
+      </div>
     </section>
   );
 }
@@ -258,11 +272,11 @@ function CapabilitiesSection() {
   const x = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"]);
 
   const capabilities = [
-    { code: "VRA", t: "Vulnerability & Risk Analysis", d: "Systematic evaluation of critical assets to determine proportional defensive measures." },
-    { code: "GTI", t: "Global Threat Intelligence", d: "Comprehensive analysis of local and global threat landscapes to protect operations." },
-    { code: "IST", t: "Infrastructure Stress Testing", d: "Simulated adversarial attacks on physical and digital environments to expose gaps." },
-    { code: "BSA", t: "Bespoke Security Architecture", d: "End-to-end design and engineering of advanced security frameworks." },
-    { code: "RAA", t: "Regulatory Assurance & Auditing", d: "Detailed on-site evaluations to guarantee alignment with strict industry standards." },
+    { code: "VRA", t: "Vulnerability & Risk Analysis", d: "Systematic evaluation of critical assets to determine proportional defensive measures.", img: "https://quzara.com/hubfs/Stephen%20VanHorn%20%281%29.jpg" },
+    { code: "GTI", t: "Global Threat Intelligence", d: "Comprehensive analysis of local and global threat landscapes to protect operations.",img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNKNJMmwm9ZKRsGRtRBGyVwb73oXL9CYocacv-vHeZNg&s=10" },
+    { code: "IST", t: "Infrastructure Stress Testing", d: "Simulated adversarial attacks on physical and digital environments to expose gaps.", img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQ3zeggCZtjYhuwhHGLFvv6oyWsflfXbErEWEl3ocmjw&s=10" },
+    { code: "BSA", t: "Bespoke Security Architecture", d: "End-to-end design and engineering of advanced security frameworks.",img:"" },
+    { code: "RAA", t: "Regulatory Assurance & Auditing", d: "Detailed on-site evaluations to guarantee alignment with strict industry standards.",img:"" },
     { code: "SSE", t: "Strategic Security Education", d: "Specialized capacity-building programs for security personnel and leadership teams." },
   ];
 
@@ -291,7 +305,13 @@ function CapabilitiesSection() {
               <div className="relative h-full w-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
                 {/* Front Face */}
                 <div className="absolute inset-0 flex flex-col justify-between overflow-hidden rounded-xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-sm [backface-visibility:hidden]">
-                  <div className="flex items-center justify-between font-mono text-[9px] text-[#DF9B2A]">
+                  {cap.img && (
+                    <div className="absolute inset-0 z-0 opacity-40 mix-blend-lighten">
+                      <img src={cap.img} alt={cap.t} className="h-full w-full object-cover" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    </div>
+                  )}
+                  <div className="relative z-10 flex items-center justify-between font-mono text-[9px] text-[#DF9B2A]">
                     <span>{cap.code}-{String(i + 1).padStart(2, "0")}</span>
                     <span className="text-white/30 tracking-widest transition-colors group-hover:text-[#DF9B2A]">HOVER</span>
                   </div>
@@ -523,12 +543,12 @@ function ProcessSection() {
       </div>
       <div ref={trackRef} className="flex h-full items-center gap-10 pl-[10vw] pr-[20vw] will-change-transform">
         {steps.map((s, i) => (
-          <div key={s.n} className="relative flex h-[60vh] w-[70vw] shrink-0 flex-col justify-between rounded-2xl border border-foreground/10 bg-surface shadow-lg p-10  md:w-[40vw]">
-            <div className="font-mono text-[180px] leading-none text-[#DF9B2A]/30 md:text-[260px]">{s.n}</div>
-            <div>
+          <div key={s.n} className="relative flex h-[60vh] w-[70vw] shrink-0 flex-col justify-end overflow-hidden rounded-2xl border border-foreground/10 bg-surface shadow-lg p-10  md:w-[40vw]">
+            <div className="absolute top-4 left-6 font-mono text-[140px] leading-none text-[#DF9B2A] md:text-[200px] pointer-events-none select-none">{s.n}</div>
+            <div className="relative z-10">
               <div className="font-mono text-xs tracking-[0.3em] text-[#DF9B2A]">STAGE {s.n}</div>
-              <div className="mt-2 text-4xl font-light text-foreground md:text-6xl">{s.t}</div>
-              <div className="mt-4 max-w-md text-foreground/80">{s.d}</div>
+              <div className="mt-2 text-4xl font-light text-foreground md:text-5xl">{s.t}</div>
+              <div className="mt-4 max-w-md text-sm text-foreground/80 md:text-base">{s.d}</div>
             </div>
             {i < steps.length - 1 && (
               <div className="absolute -right-8 top-1/2 hidden h-px w-10 bg-[#DF9B2A]/30 md:block" />

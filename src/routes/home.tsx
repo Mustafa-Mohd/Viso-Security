@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 import { useRef, useState } from "react";
 import { Shield, Radar, Lock, Satellite } from "lucide-react";
 import { SmoothScroll } from "@/components/SmoothScroll";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 
 export const Route = createFileRoute("/home")({
@@ -123,9 +124,6 @@ function Nav() {
           </span>
         </a>
         <nav className="hidden items-center gap-7 md:flex">
-          <Link to="/" className="text-[13px] text-gold font-medium transition-colors hover:text-gold/80">
-            Story
-          </Link>
           {links.map(([label, href]) => (
             <a
               key={href}
@@ -138,6 +136,13 @@ function Nav() {
         </nav>
         <div className="flex items-center gap-4">
           <ThemeToggle />
+          <Link
+            to="/"
+            className="group hidden sm:inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-[12px] font-medium text-foreground transition-colors hover:bg-surface/60"
+          >
+            <span className="transition-transform group-hover:-translate-x-0.5">←</span>
+            Story
+          </Link>
           <a
             href="#contact"
             className="group inline-flex items-center gap-2 rounded-full bg-gold px-4 py-2 text-[12px] font-medium text-gold-foreground transition-transform hover:scale-[1.02]"
@@ -189,7 +194,7 @@ function Hero() {
         </Reveal>
 
         <h1 className="font-display text-[clamp(3rem,9vw,8.5rem)] leading-[0.95] text-balance">
-          {"Fortifying".split("").map((c, i) => (
+          {"Defending".split("").map((c, i) => (
             <motion.span
               key={i}
               initial={{ y: "110%", opacity: 0 }}
