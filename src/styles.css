@@ -1,8 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300..800&family=Outfit:wght@300..800&family=Space+Grotesk:wght@300..700&display=swap');
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
-
-@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -35,54 +34,53 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --font-display: "Instrument Serif", "Times New Roman", serif;
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Space Grotesk", ui-monospace, monospace;
 }
 
 :root {
   --radius: 0.5rem;
 
-  /* Image Color Palette: White/Off-white background, Mustard Gold, Dark Grey */
-  --background: oklch(0.98 0 0); /* #FAFAFA */
-  --foreground: oklch(0.4 0.01 250); /* #545454 */
+  --background: #F8F8F6;
+  --foreground: #222222;
   
-  --surface: oklch(1 0 0); /* #FFFFFF */
-  --surface-2: oklch(0.96 0 0); /* #F5F5F5 */
+  --surface: #FFFFFF;
+  --surface-2: #F0F0EE;
 
-  --card: oklch(1 0 0); /* #FFFFFF */
-  --card-foreground: oklch(0.4 0.01 250); /* #545454 */
+  --card: #FFFFFF;
+  --card-foreground: #222222;
   
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.4 0.01 250);
+  --popover: #FFFFFF;
+  --popover-foreground: #222222;
 
-  --primary: oklch(0.75 0.16 65); /* #DF9B2A Vibrant Mustard Gold */
-  --primary-foreground: oklch(1 0 0); /* White text on primary */
+  --primary: #D4AF37;
+  --primary-foreground: #FFFFFF;
   
-  --gold: oklch(0.75 0.16 65);
-  --gold-foreground: oklch(1 0 0);
+  --gold: #D4AF37;
+  --gold-foreground: #FFFFFF;
 
-  --secondary: oklch(0.45 0.01 250); /* #666666 Dark Grey */
-  --secondary-foreground: oklch(1 0 0); /* White */
+  --secondary: #B8860B;
+  --secondary-foreground: #FFFFFF;
   
-  --muted: oklch(0.94 0 0); /* Light Grey */
-  --muted-foreground: oklch(0.55 0 0);
+  --muted: #E5E5E5;
+  --muted-foreground: #777777;
   
-  --accent: oklch(0.75 0.16 65); /* Vibrant Mustard Gold */
-  --accent-foreground: oklch(1 0 0);
+  --accent: #B8860B;
+  --accent-foreground: #FFFFFF;
   
-  --destructive: oklch(0.6 0.22 25);
-  --destructive-foreground: oklch(1 0 0);
+  --destructive: #D32F2F;
+  --destructive-foreground: #FFFFFF;
   
-  --border: oklch(0 0 0 / 8%);
-  --input: oklch(0 0 0 / 12%);
-  --ring: oklch(0.75 0.16 65);
+  --border: rgba(34, 34, 34, 0.1);
+  --input: rgba(34, 34, 34, 0.15);
+  --ring: #D4AF37;
 
-  --chart-1: oklch(0.75 0.16 65);
-  --chart-2: oklch(0.45 0.01 250);
-  --chart-3: oklch(0.7 0.1 180);
-  --chart-4: oklch(0.6 0.12 30);
-  --chart-5: oklch(0.5 0.1 300);
+  --chart-1: #D4AF37;
+  --chart-2: #B8860B;
+  --chart-3: #7A6224;
+  --chart-4: #222222;
+  --chart-5: #A3A3A3;
 
   --sidebar: var(--surface);
   --sidebar-foreground: var(--foreground);
@@ -94,35 +92,6 @@
   --sidebar-ring: var(--ring);
 
   --grain: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.9 0 0 0 0 0.85 0 0 0 0 0.6 0 0 0 0.45 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.5'/></svg>");
-}
-
-.dark {
-  --background: oklch(0.14 0.025 250);
-  --foreground: oklch(0.97 0.01 90);
-  --surface: oklch(0.18 0.028 250);
-  --surface-2: oklch(0.22 0.03 250);
-
-  --card: oklch(0.18 0.028 250);
-  --card-foreground: oklch(0.97 0.01 90);
-  --popover: oklch(0.18 0.028 250);
-  --popover-foreground: oklch(0.97 0.01 90);
-
-  --primary: oklch(0.82 0.13 85); /* gold */
-  --primary-foreground: oklch(0.14 0.025 250);
-  --gold: oklch(0.82 0.13 85);
-  --gold-foreground: oklch(0.14 0.025 250);
-
-  --secondary: oklch(0.28 0.04 250);
-  --secondary-foreground: oklch(0.97 0.01 90);
-  --muted: oklch(0.22 0.03 250);
-  --muted-foreground: oklch(0.7 0.02 250);
-  --accent: oklch(0.55 0.13 230);
-  --accent-foreground: oklch(0.97 0.01 90);
-  --destructive: oklch(0.6 0.22 25);
-  --destructive-foreground: oklch(0.97 0.01 90);
-  --border: oklch(1 0 0 / 8%);
-  --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.82 0.13 85);
 }
 
 @layer base {
@@ -187,18 +156,4 @@
   }
 }
 
-@font-face {
-  font-family: "Instrument Serif";
-  src: url("https://fonts.gstatic.com/s/instrumentserif/v4/jizDREVIvGwH5OjiZmX9r5z_WxUY0TY7ikbI.woff2") format("woff2");
-  font-weight: 400; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: "Inter";
-  src: url("https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2") format("woff2");
-  font-weight: 100 900; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: "JetBrains Mono";
-  src: url("https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKxTNlOV.woff2") format("woff2");
-  font-weight: 100 800; font-style: normal; font-display: swap;
-}
+

@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-router";
 import "../styles.css";
 import { CustomCursor } from "@/components/CustomCursor";
+import { ContactPopup } from "@/components/ContactPopup";
 
 function NotFoundComponent() {
   return (
@@ -38,24 +39,24 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
+          Something went wrong
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <div className="mt-4 text-sm text-muted-foreground/80 overflow-auto bg-surface-2 p-4 rounded text-left">
+          {error.message}
+        </div>
+        <div className="mt-6 flex justify-center gap-4">
           <button
             onClick={() => {
-              router.invalidate();
               reset();
+              router.invalidate();
             }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex items-center justify-center rounded-md border border-border bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-surface-2 hover:text-foreground"
           >
             Try again
           </button>
           <Link
             to="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Go home
           </Link>
@@ -78,6 +79,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <CustomCursor />
       <Outlet />
+      <ContactPopup />
     </QueryClientProvider>
   );
 }

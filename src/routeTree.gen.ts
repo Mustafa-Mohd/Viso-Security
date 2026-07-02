@@ -9,13 +9,31 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as HomeRouteImport } from './routes/home'
+import { Route as SecurityRouteImport } from './routes/security'
+import { Route as OthersRouteImport } from './routes/others'
+import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as ClientsRouteImport } from './routes/clients'
 import { Route as CertificatesRouteImport } from './routes/certificates'
 import { Route as IndexRouteImport } from './routes/index'
 
-const HomeRoute = HomeRouteImport.update({
-  id: '/home',
-  path: '/home',
+const SecurityRoute = SecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OthersRoute = OthersRouteImport.update({
+  id: '/others',
+  path: '/others',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClientsRoute = ClientsRouteImport.update({
+  id: '/clients',
+  path: '/clients',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CertificatesRoute = CertificatesRouteImport.update({
@@ -32,40 +50,86 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/certificates': typeof CertificatesRoute
-  '/home': typeof HomeRoute
+  '/clients': typeof ClientsRoute
+  '/gallery': typeof GalleryRoute
+  '/others': typeof OthersRoute
+  '/security': typeof SecurityRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/certificates': typeof CertificatesRoute
-  '/home': typeof HomeRoute
+  '/clients': typeof ClientsRoute
+  '/gallery': typeof GalleryRoute
+  '/others': typeof OthersRoute
+  '/security': typeof SecurityRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/certificates': typeof CertificatesRoute
-  '/home': typeof HomeRoute
+  '/clients': typeof ClientsRoute
+  '/gallery': typeof GalleryRoute
+  '/others': typeof OthersRoute
+  '/security': typeof SecurityRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/certificates' | '/home'
+  fullPaths:
+    | '/'
+    | '/certificates'
+    | '/clients'
+    | '/gallery'
+    | '/others'
+    | '/security'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/certificates' | '/home'
-  id: '__root__' | '/' | '/certificates' | '/home'
+  to: '/' | '/certificates' | '/clients' | '/gallery' | '/others' | '/security'
+  id:
+    | '__root__'
+    | '/'
+    | '/certificates'
+    | '/clients'
+    | '/gallery'
+    | '/others'
+    | '/security'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CertificatesRoute: typeof CertificatesRoute
-  HomeRoute: typeof HomeRoute
+  ClientsRoute: typeof ClientsRoute
+  GalleryRoute: typeof GalleryRoute
+  OthersRoute: typeof OthersRoute
+  SecurityRoute: typeof SecurityRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/home': {
-      id: '/home'
-      path: '/home'
-      fullPath: '/home'
-      preLoaderRoute: typeof HomeRouteImport
+    '/security': {
+      id: '/security'
+      path: '/security'
+      fullPath: '/security'
+      preLoaderRoute: typeof SecurityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/others': {
+      id: '/others'
+      path: '/others'
+      fullPath: '/others'
+      preLoaderRoute: typeof OthersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/clients': {
+      id: '/clients'
+      path: '/clients'
+      fullPath: '/clients'
+      preLoaderRoute: typeof ClientsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/certificates': {
@@ -88,7 +152,10 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CertificatesRoute: CertificatesRoute,
-  HomeRoute: HomeRoute,
+  ClientsRoute: ClientsRoute,
+  GalleryRoute: GalleryRoute,
+  OthersRoute: OthersRoute,
+  SecurityRoute: SecurityRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

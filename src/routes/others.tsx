@@ -6,7 +6,7 @@ import { SmoothScroll } from "@/components/SmoothScroll";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 
-export const Route = createFileRoute("/home")({
+export const Route = createFileRoute("/others")({
   head: () => ({
     meta: [
       { title: "VISO — Fortifying Tomorrow | Physical Security Consultancy" },
@@ -76,7 +76,6 @@ function Index() {
       <main className="relative overflow-hidden bg-background text-foreground">
         <Hero />
         <Marquee />
-        <About />
         <VisionMission />
         <Need />
         <Approach />
@@ -187,33 +186,61 @@ function Hero() {
         className="relative z-10 mx-auto max-w-5xl text-center"
       >
         <Reveal>
-          <div className="mx-auto mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-surface shadow-sm px-3 py-1.5 font-mono text-[10.5px] uppercase tracking-[0.25em] text-muted-foreground ">
-            <span className="h-1.5 w-1.5 rounded-full bg-gold" />
-            Est. 2020 — Riyadh, KSA
+          <div className="mx-auto mb-8 inline-flex items-center gap-3 rounded-full border border-gold/30 bg-gold/5 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.3em] text-gold shadow-[0_0_15px_rgba(212,175,55,0.15)] relative overflow-hidden group">
+            <motion.span
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20"
+              animate={{ x: ["-200%", "200%"] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+            />
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-gold"></span>
+            </span>
+            <span className="relative">Intelligent Security Architecture</span>
           </div>
         </Reveal>
 
-        <h1 className="font-display text-[clamp(3rem,9vw,8.5rem)] leading-[0.95] text-balance">
-          {"Defending".split("").map((c, i) => (
+        <h1 className="font-display text-[clamp(2.8rem,8vw,7.5rem)] leading-[0.95] text-balance tracking-tight">
+          {"Engineering".split("").map((c, i) => (
             <motion.span
               key={i}
               initial={{ y: "110%", opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.9, delay: 0.05 * i, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.8, delay: 0.05 * i, ease: [0.22, 1, 0.36, 1] }}
               className="inline-block"
             >
               {c}
             </motion.span>
           ))}
           <br />
-          <span className="text-gradient-gold italic">tomorrow.</span>
+          <span className="text-gradient-gold italic pr-4">Resilience.</span>
         </h1>
 
         <Reveal delay={0.6}>
-          <p className="mx-auto mt-8 max-w-xl text-balance text-[15px] leading-relaxed text-muted-foreground">
-            A comprehensive approach to physical security — protecting people,
-            property and information across the Kingdom&apos;s most critical assets.
+          <p className="mx-auto mt-8 max-w-2xl text-balance text-[16px] leading-relaxed text-muted-foreground/90">
+            Advanced risk mitigation and strategic physical security design. We fuse architectural elegance with impenetrable defense protocols for the Kingdom's most critical infrastructure.
           </p>
+        </Reveal>
+
+        <Reveal delay={0.7}>
+          <div className="mx-auto mt-12 flex items-center justify-center gap-5">
+             <div className="relative w-12 h-12 rounded-full border border-gold/20 flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.1)]">
+               <motion.div 
+                 animate={{ rotate: 360 }} 
+                 transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                 className="absolute inset-0 rounded-full border-t border-gold opacity-70" 
+               />
+               <motion.div 
+                 animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }} 
+                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                 className="w-1.5 h-1.5 bg-gold rounded-full" 
+               />
+             </div>
+             <div className="text-left font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground leading-relaxed">
+               System Status <br/>
+               <span className="text-gold">Operational Readiness</span>
+             </div>
+          </div>
         </Reveal>
 
         <Reveal delay={0.75}>
@@ -277,63 +304,7 @@ function Marquee() {
   );
 }
 
-/* ---------- About ---------- */
-function About() {
-  const stats = [
-    ["2020", "Established"],
-    ["5", "Regional Offices"],
-    ["92+", "Projects Delivered"],
-    ["52.53%", "Local Content"],
-  ] as const;
-  return (
-    <section id="about" className="relative px-6 py-16 md:py-32">
-      <div className="mx-auto grid max-w-7xl gap-16 lg:grid-cols-12">
-        <div className="lg:col-span-4">
-          <Reveal>
-            <SectionLabel n="01" label="About VISO" />
-          </Reveal>
-          <Reveal delay={0.1}>
-            <h2 className="mt-6 font-display text-5xl leading-[1.05] text-balance md:text-6xl">
-              Where security meets <em className="text-gradient-gold">peace of mind.</em>
-            </h2>
-          </Reveal>
-        </div>
-        <div className="lg:col-span-7 lg:col-start-6">
-          <Reveal delay={0.15}>
-            <p className="text-lg leading-relaxed text-muted-foreground">
-              VISO is a premier physical security consultancy specializing in
-              safeguarding our clients&apos; most valuable assets. Founded in January
-              2020 and headquartered in Riyadh, we now operate from five offices
-              across the Kingdom — delivering tailored solutions that align with
-              national authorities and the highest international benchmarks.
-            </p>
-          </Reveal>
-          <Reveal delay={0.25}>
-            <p className="mt-6 text-base leading-relaxed text-muted-foreground/80">
-              Our team brings decades of combined experience in security analysis,
-              risk assessment and integrated protective measures across critical
-              national infrastructure, energy, industrial, financial and government
-              sectors.
-            </p>
-          </Reveal>
 
-          <div className="mt-14 grid grid-cols-2 gap-px border border-border bg-border md:grid-cols-4">
-            {stats.map(([n, l], i) => (
-              <Reveal key={l} delay={0.3 + i * 0.08}>
-                <div className="bg-background p-6">
-                  <div className="font-display text-4xl text-gold">{n}</div>
-                  <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                    {l}
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 /* ---------- Vision & Mission ---------- */
 function VisionMission() {

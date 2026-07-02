@@ -95,8 +95,8 @@ export function CustomCursor() {
               fill="none" 
             />
             <text className="font-mono text-[9px] font-bold uppercase tracking-[0.25em]" fill="#DF9B2A">
-              <textPath href="#cursorPath" startOffset="0%">
-                VISO SECURITY • VISO SECURITY •
+              <textPath href="#cursorPath" startOffset="0%" textLength="251" lengthAdjust="spacing">
+                VISO GROUP • VISO GROUP • VISO GROUP •
               </textPath>
             </text>
           </motion.svg>

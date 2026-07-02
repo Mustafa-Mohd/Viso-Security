@@ -1,0 +1,209 @@
+{
+  "nav": {
+    "overview": "Overview",
+    "security": "Security",
+    "expertise": "Expertise",
+    "certifications": "Certifications",
+    "engage": "OTHERS",
+    "lang_toggle": "اردو"
+  },
+  "home": {
+    "strategic_architecture": "Strategic Architecture",
+    "designing": "Designing",
+    "the_future": "The Future",
+    "subtitle": "Elevating physical security through sophisticated architectural integration.",
+    "desc": "We merge high-end architectural design with rigorous security protocols to create spaces that are both exceptionally safe and visually stunning. Inspired by global innovation leaders.",
+    "scroll_down": "SCROLL DOWN",
+    "learn_more": "Learn More"
+  },
+  "framework": {
+    "title_mono": "Security Consulting Framework",
+    "title_display": "A Structured Four-Stage",
+    "title_display_italic": "Security Approval Process",
+    "desc": "We guide organizations through a comprehensive security consultancy process designed to support regulatory compliance and operational readiness. Discover how our structured methodology ensures every phase is meticulously designed and validated.",
+    "explore": "EXPLORE SECURITY ANALYSIS"
+  },
+  "about": {
+    "who_we_are": "WHO WE ARE",
+    "title": "Where Security Meets",
+    "title_italic": "Peace of Mind",
+    "desc1": "VISO is a premier physical security consultancy specializing in safeguarding our clients' most valuable assets. Founded in January 2020 and headquartered in Riyadh, we now operate from five offices across the Kingdom—Riyadh, Khobar, Jubail, Jeddah and Yanbu—delivering tailored security solutions that align with national authorities and the highest international benchmarks.",
+    "desc2": "Our team of seasoned experts brings decades of combined experience in security analysis, risk assessment, and the implementation of integrated protective measures across critical national infrastructure, energy, industrial, financial and government sectors.",
+    "stats": {
+      "established": "ESTABLISHED",
+      "offices": "REGIONAL OFFICES",
+      "locations": "Locations",
+      "projects": "PROJECTS DELIVERED",
+      "local": "LOCAL CONTENT"
+    },
+    "values": {
+      "title": "Our Core Values",
+      "subtitle": "Guiding principles that drive our excellence.",
+      "items": {
+        "v1": {
+          "title": "Honesty & Integrity",
+          "desc": "Our guiding philosophy revolves around transparency and professionalism. We remain prudent and fair in dealing with all stakeholders.",
+          "points": [
+            "Transparent Communication",
+            "Uncompromising Ethics",
+            "Fair Stakeholder Practices"
+          ]
+        },
+        "v2": {
+          "title": "Customer Excellence",
+          "desc": "We strive to fully understand our clients' needs to deliver tailored, premium security solutions that exceed expectations.",
+          "points": [
+            "Tailored Security Solutions",
+            "Proactive Client Support",
+            "Exceeding Expectations"
+          ]
+        },
+        "v3": {
+          "title": "Leadership & Prudence",
+          "desc": "As we build a robust security culture, we optimize resources and lead by example in setting industry standards.",
+          "points": [
+            "Robust Security Culture",
+            "Resource Optimization",
+            "Setting Industry Standards"
+          ]
+        },
+        "v4": {
+          "title": "Innovation & Change",
+          "desc": "We are an organization in constant progress, continuously adapting to new threats and integrating cutting-edge technologies.",
+          "points": [
+            "Continuous Progress",
+            "Threat Adaptation",
+            "Cutting-Edge Technologies"
+          ]
+        }
+      }
+    },
+    "areas": {
+      "title": "Areas We Serve",
+      "subtitle": "Protecting vital sectors with specialized physical security consulting and architectural integration.",
+      "items": {
+        "a1": {
+          "title": "Integrated Security Systems",
+          "desc": "Delivering comprehensive physical and cyber security architectures, ensuring end-to-end compliance with SAIS and national security directives."
+        },
+        "a2": {
+          "title": "Meteorological Solutions",
+          "desc": "Advanced monitoring and predictive frameworks for atmospheric conditions, optimizing flight safety and complex airport operations."
+        },
+        "a3": {
+          "title": "Aviation Technology",
+          "desc": "Engineering and deploying state-of-the-art Air Traffic Control, NAVAIDS, and communication networks for civil and military airspace."
+        },
+        "a4": {
+          "title": "ICT & Connectivity",
+          "desc": "Providing high-performance information and communication technology consulting to maximize operational workflow and secure data infrastructures."
+        },
+        "a5": {
+          "title": "Marine Surveying",
+          "desc": "Executing precision hydrographic surveys, spatial mapping, and maritime analytics to support complex offshore deployments."
+        },
+        "a6": {
+          "title": "Engineering Design",
+          "desc": "End-to-end turnkey engineering blueprints spanning structural security, ICT, and unified protection systems, from concept to final execution."
+        }
+      }
+    }
+  },
+  "security": {
+    "title": "Security",
+    "title_italic": "Analysis",
+    "desc": "Explore our highly interactive, structured four-stage process designed to guarantee resilience, compliance, and flawless execution.",
+    "phase": "PHASE",
+    "stage": "STAGE",
+    "deliverables": "Key Deliverables",
+    "stages": {
+      "s1": {
+        "title": "Security Risk Assessment",
+        "subtitle": "Understand Risks. Define Protection.",
+        "desc": "The first phase focuses on identifying the assets that require protection, assessing potential threats, analyzing vulnerabilities, and evaluating security risks. Based on these findings, a security strategy is established, forming the foundation for the project's physical security architecture.",
+        "d1": "Comprehensive Security Risk Assessment Report",
+        "d2": "Security Concept Design (COD)",
+        "d3": "Preliminary Security Layout Drawings",
+        "d4": "Initial Security Policies & Procedures Framework",
+        "d5": "Security Organization Structure",
+        "d6": "Training Strategy & Implementation Plan"
+      },
+      "s2": {
+        "title": "Preliminary Security Design",
+        "subtitle": "Transform Strategy into Design.",
+        "desc": "Once the security concept is approved, a preliminary engineering design is developed. This stage defines the security infrastructure, technology solutions, operational workflows, and system integration requirements while outlining installation expectations for contractors.",
+        "d1": "Physical Security Infrastructure Design",
+        "d2": "Security System Design Documentation",
+        "d3": "Conceptual Layout & Schematic Drawings",
+        "d4": "Equipment Schedule",
+        "d5": "Scope of Work (SOW)",
+        "d6": "Design Clarifications & Compliance Notes"
+      },
+      "s3": {
+        "title": "Detailed Design Review",
+        "subtitle": "Verify Compliance Before Implementation.",
+        "desc": "The detailed engineering package is thoroughly reviewed to ensure it meets the initial concept and regulatory requirements. We conduct in-depth analysis to guarantee that the architecture strictly adheres to compliance mandates before construction begins.",
+        "d1": "Detailed Engineering Package Review",
+        "d2": "Compliance & Standards Audit",
+        "d3": "Final Architecture Sign-off",
+        "d4": "Integration Verification",
+        "d5": "Operational Readiness Check"
+      },
+      "s4": {
+        "title": "Implementation & Validation",
+        "subtitle": "Ensure Operational Readiness.",
+        "desc": "The final phase involves overseeing the implementation process, validating that all security systems and architectural defenses are constructed exactly as designed and function cohesively.",
+        "d1": "On-Site Implementation Oversight",
+        "d2": "System Validation Testing",
+        "d3": "Final Compliance Certification",
+        "d4": "Handover Documentation",
+        "d5": "Ongoing Maintenance Guidelines"
+      }
+    }
+  },
+  "certificates": {
+    "accreditations": "ACCREDITATIONS & COMPLIANCE",
+    "official": "Official",
+    "certificates": "Certificates",
+    "desc": "Validated by leading governmental and international organizations, establishing our supreme standard of quality.",
+    "footer": {
+      "hq": "HEADQUARTERS",
+      "address": "Office No. 110 - Building No. 7423\nAbi Bakr As Siddiq - Al-Taawun Dist.\nRiyadh - KSA",
+      "contact": "CONTACT US",
+      "legal": "LEGAL",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "rights": "© 2026 Viso Security Consultations. All rights reserved."
+    }
+  },
+  "areas": {
+    "title": "Areas We Serve",
+    "subtitle": "Empowering growth and innovation across critical sectors through VISO's tailored, elite security and technology solutions.",
+    "items": {
+      "a1": {
+        "title": "Integrated Security Systems",
+        "desc": "Delivering comprehensive, scalable physical and cyber security solutions designed to ensure strict compliance with regional directives and safeguard critical assets."
+      },
+      "a2": {
+        "title": "Meteorological Solutions",
+        "desc": "Advanced environmental monitoring and predictive weather systems tailored to optimize flight safety, forecasting, and critical operational continuity."
+      },
+      "a3": {
+        "title": "Aviation & Air Traffic",
+        "desc": "Engineering and integrating state-of-the-art Air Traffic Management, NAVAIDS, and secure communication systems for both civil and defense applications."
+      },
+      "a4": {
+        "title": "Information & Communication Technology",
+        "desc": "Providing cutting-edge ICT consulting, services, and secure data management solutions to maximize operational efficiency and technological resilience."
+      },
+      "a5": {
+        "title": "Marine & Hydrographic Services",
+        "desc": "Comprehensive marine surveying, precision map generation, and specialized hydrographic solutions executed to the highest international standards."
+      },
+      "a6": {
+        "title": "Turnkey Engineering Design",
+        "desc": "Delivering end-to-end engineering excellence across security and ICT domains—transforming conceptual designs into fully integrated, operational realities."
+      }
+    }
+  }
+}

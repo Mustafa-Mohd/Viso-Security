@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useTranslation } from "react-i18next";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { TopNav } from "@/components/TopNav";
 
@@ -47,7 +48,8 @@ const certificatesData = [
   }
 ];
 
-function HeroSection() {
+export function HeroSection() {
+  const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [0, 150]);
@@ -69,13 +71,13 @@ function HeroSection() {
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
           className="mb-4 font-mono text-[10px] tracking-[0.4em] text-[#C89933]"
         >
-          ACCREDITATIONS & COMPLIANCE
+          {t("certificates.accreditations")}
         </motion.div>
         <h1 className="text-5xl font-light leading-tight tracking-tight text-foreground md:text-7xl">
-          Official <span className="italic text-[#C89933]">Certificates</span>.
+          {t("certificates.official")} <span className="italic text-[#C89933]">{t("certificates.certificates")}</span>.
         </h1>
         <p className="mt-6 max-w-xl mx-auto text-lg text-foreground/60">
-          Validated by leading governmental and international organizations, establishing our supreme standard of quality.
+          {t("certificates.desc")}
         </p>
       </motion.div>
     </section>
@@ -117,21 +119,21 @@ function CertificatesGrid() {
   );
 }
 
-function Footer() {
+export function Footer() {
+  const { t } = useTranslation();
   return (
     <footer className="relative bg-background py-20 border-t border-foreground/10 overflow-hidden">
       <div className="absolute inset-0 opacity-5 [background-image:radial-gradient(circle_at_center,#C89933_1px,transparent_1px)] [background-size:24px_24px]" />
       <div className="mx-auto max-w-6xl px-8 relative z-10 grid gap-12 md:grid-cols-3">
         <div>
-          <h4 className="font-mono text-[10px] tracking-[0.3em] text-[#C89933] mb-6">HEADQUARTERS</h4>
-          <p className="text-sm text-foreground/70 leading-relaxed max-w-xs">
-            Office No. 110 - Building No. 7423<br />
-            Abi Bakr As Siddiq - Al-Taawun Dist.<br />
-            Riyadh - KSA
-          </p>
+          <h4 className="font-mono text-[10px] tracking-[0.3em] text-[#C89933] mb-6">{t("certificates.footer.hq")}</h4>
+          <p 
+            className="text-sm text-foreground/70 leading-relaxed max-w-xs"
+            dangerouslySetInnerHTML={{ __html: t("certificates.footer.address") }}
+          />
         </div>
         <div>
-          <h4 className="font-mono text-[10px] tracking-[0.3em] text-[#C89933] mb-6">CONTACT US</h4>
+          <h4 className="font-mono text-[10px] tracking-[0.3em] text-[#C89933] mb-6">{t("certificates.footer.contact")}</h4>
           <ul className="space-y-3 text-sm text-foreground/70">
             <li>
               <a href="mailto:info@visogroup.com" className="hover:text-[#C89933] transition-colors">info@visogroup.com</a>
@@ -145,11 +147,11 @@ function Footer() {
           </ul>
         </div>
         <div>
-          <h4 className="font-mono text-[10px] tracking-[0.3em] text-[#C89933] mb-6">LEGAL</h4>
+          <h4 className="font-mono text-[10px] tracking-[0.3em] text-[#C89933] mb-6">{t("certificates.footer.legal")}</h4>
           <ul className="space-y-3 text-sm text-foreground/70">
-            <li><a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a></li>
-            <li><a href="#" className="hover:text-foreground transition-colors">Terms of Service</a></li>
-            <li className="pt-4 text-xs text-foreground/40">&copy; 2026 Viso Security Consultations. All rights reserved.</li>
+            <li><a href="#" className="hover:text-foreground transition-colors">{t("certificates.footer.privacy")}</a></li>
+            <li><a href="#" className="hover:text-foreground transition-colors">{t("certificates.footer.terms")}</a></li>
+            <li className="pt-4 text-xs text-foreground/40">{t("certificates.footer.rights")}</li>
           </ul>
         </div>
       </div>
