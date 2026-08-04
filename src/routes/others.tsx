@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { Shield, Radar, Lock, Satellite } from "lucide-react";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { LocationsSection } from "@/components/LocationsSection";
 
 
 export const Route = createFileRoute("/others")({
@@ -89,6 +90,7 @@ function Index() {
         <Regional />
         <WhyUs />
         <Compliance />
+        <LocationsSection />
         <Contact />
         <Footer />
       </main>

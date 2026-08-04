@@ -110,55 +110,163 @@
     }
   },
   "security": {
-    "title": "Security",
-    "title_italic": "Analysis",
-    "desc": "Explore our highly interactive, structured four-stage process designed to guarantee resilience, compliance, and flawless execution.",
-    "phase": "PHASE",
+    "title": "Our Core",
+    "title_italic": "Services",
+    "desc": "Supporting Every Stage of the HCIS / SAIS Security Project Lifecycle\nWhether developing a new facility or upgrading an existing asset, security requirements evolve throughout the project lifecycle. VISO provides specialist security engineering consultancy from project initiation through operational readiness, ensuring security objectives, engineering deliverables, and regulatory requirements remain aligned at every stage.",
+    "phase": "STAGE",
     "stage": "STAGE",
-    "deliverables": "Key Deliverables",
+    "deliverables": "Deliverables",
     "stages": {
       "s1": {
-        "title": "Security Risk Assessment",
-        "subtitle": "Understand Risks. Define Protection.",
-        "desc": "The first phase focuses on identifying the assets that require protection, assessing potential threats, analyzing vulnerabilities, and evaluating security risks. Based on these findings, a security strategy is established, forming the foundation for the project's physical security architecture.",
-        "d1": "Comprehensive Security Risk Assessment Report",
-        "d2": "Security Concept Design (COD)",
-        "d3": "Preliminary Security Layout Drawings",
-        "d4": "Initial Security Policies & Procedures Framework",
-        "d5": "Security Organization Structure",
-        "d6": "Training Strategy & Implementation Plan"
+        "title": "Security Risk Assessment (SRA)",
+        "subtitle": "Establish the security foundation.",
+        "desc": "The Security Risk Assessment (SRA) establishes the security foundation for the project by identifying critical assets, evaluating credible threats, assessing vulnerabilities, and determining the level of protection required for the facility. The assessment is conducted in accordance with applicable SAIS requirements and recognized international risk assessment methodologies, including ANSI/API 780 and ANSI/ASIS/RIMS RA.1-2015. The outcomes form the basis for the security engineering strategy, Concept of Design (CoD), and subsequent design stages.",
+        "d1": "Security Risk Assessment (SRA) Report",
+        "d2": "Business Criterial Analysis (BCA)",
+        "d3": "Concept of Design (CoD)",
+        "d4": "Concept Security Drawings",
+        "d5": "Security Philosophy",
+        "d6": "Security Organization Concept",
+        "d7": "Security Policies & Procedures Framework",
+        "d8": "Security Training Plan Framework"
       },
       "s2": {
-        "title": "Preliminary Security Design",
-        "subtitle": "Transform Strategy into Design.",
-        "desc": "Once the security concept is approved, a preliminary engineering design is developed. This stage defines the security infrastructure, technology solutions, operational workflows, and system integration requirements while outlining installation expectations for contractors.",
-        "d1": "Physical Security Infrastructure Design",
-        "d2": "Security System Design Documentation",
-        "d3": "Conceptual Layout & Schematic Drawings",
-        "d4": "Equipment Schedule",
-        "d5": "Scope of Work (SOW)",
-        "d6": "Design Clarifications & Compliance Notes"
+        "title": "Preliminary design",
+        "subtitle": "Develop the engineering package.",
+        "desc": "Following completion of the Stage-1, we develop the security engineering package required to support project execution and regulatory submissions.",
+        "d1": "Design Criteria",
+        "d2": "Physical Security Infrastructure (PSI)",
+        "d3": "System Design Document (SDD)",
+        "d4": "Security System Architecture",
+        "d5": "Schematic Drawings",
+        "d6": "Geographic Layout Drawings",
+        "d7": "Equipment Identification Schedule",
+        "d8": "Scope of Work (SOW)",
+        "d9": "Technical Specifications",
+        "d10": "Waiver Requests (where applicable)",
+        "d11": "SAIS submission Coordination"
       },
       "s3": {
-        "title": "Detailed Design Review",
-        "subtitle": "Verify Compliance Before Implementation.",
-        "desc": "The detailed engineering package is thoroughly reviewed to ensure it meets the initial concept and regulatory requirements. We conduct in-depth analysis to guarantee that the architecture strictly adheres to compliance mandates before construction begins.",
-        "d1": "Detailed Engineering Package Review",
-        "d2": "Compliance & Standards Audit",
-        "d3": "Final Architecture Sign-off",
-        "d4": "Integration Verification",
-        "d5": "Operational Readiness Check"
+        "title": "Detailed Design Review & Project Delivery",
+        "subtitle": "Independent technical support.",
+        "desc": "During project execution, we provide independent technical support to help clients maintain engineering quality, regulatory compliance, and project performance.",
+        "d1": "Detailed Design Review",
+        "d2": "Shop Drawing Review",
+        "d3": "Material Submittal Review",
+        "d4": "Technical Query Review",
+        "d5": "Project Controls",
+        "d6": "Construction Monitoring",
+        "d7": "Site Supervision",
+        "d8": "Progress Monitoring",
+        "d9": "Engineering Coordination",
+        "d10": "Contractor Technical Support",
+        "d11": "Owner's Engineer & Project Management Services"
       },
       "s4": {
-        "title": "Implementation & Validation",
-        "subtitle": "Ensure Operational Readiness.",
-        "desc": "The final phase involves overseeing the implementation process, validating that all security systems and architectural defenses are constructed exactly as designed and function cohesively.",
-        "d1": "On-Site Implementation Oversight",
-        "d2": "System Validation Testing",
-        "d3": "Final Compliance Certification",
-        "d4": "Handover Documentation",
-        "d5": "Ongoing Maintenance Guidelines"
+        "title": "Operational Readiness & Project Close-Out",
+        "subtitle": "Verify, test, and integrate.",
+        "desc": "The final stage focuses on verifying that installed security systems are fully integrated, tested, documented, and ready for operation.",
+        "d1": "Operational Readiness",
+        "d2": "Testing & Commissioning Support",
+        "d3": "FAT & SAT Witnessing",
+        "d4": "Integrated System Testing",
+        "d5": "Compliance Documentation",
+        "d6": "Regulatory Coordination",
+        "d7": "Final Inspection Support",
+        "d8": "Project Close-Out",
+        "d9": "Handover Documentation"
       }
+    },
+    "pm": {
+      "title": "Project Management",
+      "title_italic": "& Owner's Engineer Services",
+      "desc": "In addition to security engineering consultancy, VISO provides project management and owner's engineer services to support successful implementation during project execution.",
+      "services": [
+        "Project Planning & Scheduling",
+        "Project Controls",
+        "Engineering Coordination",
+        "Design Management",
+        "Technical Submittal Reviews",
+        "Material Approval Reviews",
+        "Construction Monitoring",
+        "Site Supervision",
+        "Progress Reporting",
+        "Risk & Issue Management",
+        "Testing & Commissioning Support",
+        "FAT & SAT Witnessing",
+        "Project Close-Out Support"
+      ]
+    },
+    "why_choose": {
+      "title": "Why Choose",
+      "title_italic": "VISO",
+      "items": {
+        "c1": {
+          "title": "Technical Expertise",
+          "desc": "Objective engineering advice based on technical excellence, industry best practices, and SAIS requirements."
+        },
+        "c2": {
+          "title": "Engineering Excellence",
+          "desc": "Multidisciplinary expertise in physical security systems, design reviews, and regulatory compliance."
+        },
+        "c3": {
+          "title": "End-to-End SAIS Consultancy",
+          "desc": "Supporting clients through every stage of the SAIS security engineering process, from Security Risk Assessment to Operational Readiness."
+        },
+        "c4": {
+          "title": "Project Delivery Experience",
+          "desc": "Providing project management, construction monitoring, and technical oversight to support successful implementation."
+        },
+        "c5": {
+          "title": "Quality Without Compromise",
+          "desc": "Every deliverable undergoes structured technical reviews to ensure compliance, consistency, and engineering integrity."
+        },
+        "c6": {
+          "title": "Client-Focused Solutions",
+          "desc": "Practical engineering solutions tailored to project requirements, operational objectives, and long-term security performance."
+        },
+        "c7": {
+          "title": "Trusted Partnership",
+          "desc": "Working collaboratively with owners, EPC contractors, consultants, and stakeholders to achieve successful project outcomes."
+        }
+      }
+    },
+    "approach": {
+      "title": "Our",
+      "title_italic": "Approach",
+      "desc": "Every assignment follows a structured methodology designed to maintain technical quality, regulatory compliance, and project objectives.",
+      "items": {
+        "a1": {
+          "title": "Assess",
+          "desc": "Understand project requirements and security objectives."
+        },
+        "a2": {
+          "title": "Review",
+          "desc": "Verify engineering deliverables and compliance."
+        },
+        "a3": {
+          "title": "Coordinate",
+          "desc": "Support communication between project stakeholders and regulatory authorities."
+        },
+        "a4": {
+          "title": "Monitor",
+          "desc": "Provide technical oversight during implementation."
+        },
+        "a5": {
+          "title": "Verify",
+          "desc": "Support testing, commissioning, and operational readiness."
+        },
+        "a6": {
+          "title": "Deliver",
+          "desc": "Assist with project close-out and final compliance documentation."
+        }
+      }
+    },
+    "discuss": {
+      "title": "Let's Discuss",
+      "title_italic": "Your Project",
+      "desc": "Whether you're planning a new facility, expanding an existing asset, or managing the delivery of a complex security package, VISO provides the technical expertise and project advisory services required to support successful project outcomes.",
+      "btn": "CONTACT OUR TEAM"
     }
   },
   "certificates": {
@@ -203,6 +311,53 @@
       "a6": {
         "title": "Turnkey Engineering Design",
         "desc": "Delivering end-to-end engineering excellence across security and ICT domains—transforming conceptual designs into fully integrated, operational realities."
+      }
+    }
+  },
+  "locations": {
+    "title": "OUR LOCATION",
+    "subtitle": "Serving Saudi Arabia and Surroundings",
+    "nationwide": "Saudi Arabia (Nationwide)",
+    "cities": {
+      "riyadh": {
+        "name": "Riyadh",
+        "region": "Central Region"
+      },
+      "jeddah": {
+        "name": "Jeddah",
+        "region": "Western Region"
+      },
+      "makkah": {
+        "name": "Makkah",
+        "region": "Western Region"
+      },
+      "madina": {
+        "name": "Madina",
+        "region": "Western Region"
+      },
+      "dammam": {
+        "name": "Dammam",
+        "region": "Eastern Region"
+      },
+      "jubail": {
+        "name": "Jubail",
+        "region": "Industrial City"
+      },
+      "yanbu": {
+        "name": "Yanbu",
+        "region": "Industrial City"
+      },
+      "neom": {
+        "name": "NEOM Region",
+        "region": "Northwest"
+      },
+      "taif": {
+        "name": "Taif",
+        "region": "Western Highlands"
+      },
+      "tabuk": {
+        "name": "Tabuk",
+        "region": "Northern Region"
       }
     }
   }

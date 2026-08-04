@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { TopNav } from "@/components/TopNav";
+import { LocationsSection } from "@/components/LocationsSection";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
@@ -130,6 +131,7 @@ function HomePage() {
             />
           </div>
         </div>
+          <LocationsSection />
           <FrameworkSection />
           <ShowcaseSection />
           <ClientsSection />
