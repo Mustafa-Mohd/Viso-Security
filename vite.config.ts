@@ -16,4 +16,13 @@ export default defineConfig({
       "@": "/src",
     },
   },
+  server: {
+    proxy: {
+      "/api/sambanova": {
+        target: "https://api.sambanova.ai",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/sambanova/, ""),
+      },
+    },
+  },
 });

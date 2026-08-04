@@ -8,6 +8,7 @@ import {
 import "../styles.css";
 import { CustomCursor } from "@/components/CustomCursor";
 import { ContactPopup } from "@/components/ContactPopup";
+import { Chatbot } from "@/components/Chatbot";
 
 function NotFoundComponent() {
   return (
@@ -80,6 +81,7 @@ function RootComponent() {
       <CustomCursor />
       <Outlet />
       <ContactPopup />
+      <Chatbot />
     </QueryClientProvider>
   );
 }
