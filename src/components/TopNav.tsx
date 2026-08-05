@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function TopNav() {
   const { t, i18n } = useTranslation();
@@ -13,7 +14,7 @@ export function TopNav() {
   };
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-[150] flex items-center justify-between px-8 md:px-16 py-6 backdrop-blur-md bg-[#F8F8F6]/80 border-b border-foreground/5 transition-all duration-500">
+      <div className="fixed top-0 left-0 right-0 z-[150] flex items-center justify-between px-8 md:px-16 py-6 backdrop-blur-md bg-background/80 border-b border-foreground/5 transition-all duration-500">
 
         {/* Logo - Left */}
         <div className="flex-1 flex items-center">
@@ -33,8 +34,9 @@ export function TopNav() {
           <button onClick={() => window.dispatchEvent(new Event("open-contact-popup"))} className="font-sans text-sm font-medium tracking-wide text-foreground/80 hover:text-primary transition-colors duration-300">Contact</button>
         </div>
 
-        {/* Language & CTA - Right */}
+        {/* Language & CTA & Theme - Right */}
         <div className="flex-1 flex items-center justify-end gap-6">
+          <ThemeToggle />
           <button
             onClick={toggleLanguage}
             className="hidden md:flex font-sans text-sm font-bold tracking-wider text-primary hover:text-gold cursor-pointer transition-colors duration-300"

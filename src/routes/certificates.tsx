@@ -99,7 +99,7 @@ function CertificatesGrid() {
               className="group relative flex flex-col overflow-hidden rounded-2xl border border-foreground/10 bg-surface shadow-sm p-6  hover:border-[#C89933]/50 transition-colors"
             >
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#C89933] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="mb-6 flex h-32 items-center justify-center rounded-xl bg-white p-4">
+              <div className="mb-6 flex h-32 items-center justify-center rounded-xl bg-surface p-4">
                 <img src={item.img} alt={item.org} className="max-h-full object-contain mix-blend-multiply" />
               </div>
               <h3 className="text-xl font-medium text-foreground mb-4">{item.org}</h3>

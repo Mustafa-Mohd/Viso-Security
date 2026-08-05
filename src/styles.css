@@ -156,4 +156,131 @@
   }
 }
 
+/* Blue Theme Variables */
+.theme-blue {
+  --background: #0B1329;
+  --foreground: #F8FAFC;
+  --surface: #1C2541;
+  --surface-2: #151C33;
+  --card: #1C2541;
+  --card-foreground: #F8FAFC;
+  --popover: #1C2541;
+  --popover-foreground: #F8FAFC;
+  --primary: #D4AF37;
+  --primary-foreground: #0B1329;
+  --gold: #D4AF37;
+  --gold-foreground: #0B1329;
+  --secondary: #5BC0BE;
+  --secondary-foreground: #0B1329;
+  --muted: #1C2541;
+  --muted-foreground: #94A3B8;
+  --accent: #D4AF37;
+  --accent-foreground: #0B1329;
+  --border: rgba(248, 250, 252, 0.1);
+  --input: rgba(248, 250, 252, 0.15);
+  --ring: #D4AF37;
+}
+
+/* Dark Theme Variables */
+.theme-dark {
+  --background: #050505;
+  --foreground: #F3F4F6;
+  --surface: #070B14;
+  --surface-2: #0F1626;
+  --card: #070B14;
+  --card-foreground: #F3F4F6;
+  --popover: #070B14;
+  --popover-foreground: #F3F4F6;
+  --primary: #D4AF37;
+  --primary-foreground: #050505;
+  --gold: #D4AF37;
+  --gold-foreground: #050505;
+  --secondary: #B8860B;
+  --secondary-foreground: #FFFFFF;
+  --muted: #111827;
+  --muted-foreground: #9CA3AF;
+  --accent: #B8860B;
+  --accent-foreground: #FFFFFF;
+  --border: rgba(243, 244, 246, 0.08);
+  --input: rgba(243, 244, 246, 0.12);
+  --ring: #D4AF37;
+}
+
+/* Sky Blue Theme Variables (Light) */
+.theme-sky {
+  --background: #F0F9FF;
+  --foreground: #0C4A6E;
+  --surface: #FFFFFF;
+  --surface-2: #E0F2FE;
+  --card: #FFFFFF;
+  --card-foreground: #0C4A6E;
+  --popover: #FFFFFF;
+  --popover-foreground: #0C4A6E;
+  --primary: #0284C7;
+  --primary-foreground: #FFFFFF;
+  --gold: #0284C7;
+  --gold-foreground: #FFFFFF;
+  --secondary: #0369A1;
+  --secondary-foreground: #FFFFFF;
+  --muted: #E0F2FE;
+  --muted-foreground: #0369A1;
+  --accent: #0284C7;
+  --accent-foreground: #FFFFFF;
+  --border: rgba(12, 74, 110, 0.1);
+  --input: rgba(12, 74, 110, 0.15);
+  --ring: #0284C7;
+}
+
+/* Forest Emerald Theme Variables (Dark Green + Gold) */
+.theme-emerald {
+  --background: #022C22;
+  --foreground: #ECFDF5;
+  --surface: #064E3B;
+  --surface-2: #022C22;
+  --card: #064E3B;
+  --card-foreground: #ECFDF5;
+  --popover: #064E3B;
+  --popover-foreground: #ECFDF5;
+  --primary: #D4AF37;
+  --primary-foreground: #022C22;
+  --gold: #D4AF37;
+  --gold-foreground: #022C22;
+  --secondary: #10B981;
+  --secondary-foreground: #FFFFFF;
+  --muted: #022C22;
+  --muted-foreground: #A7F3D0;
+  --accent: #10B981;
+  --accent-foreground: #FFFFFF;
+  --border: rgba(236, 253, 245, 0.1);
+  --input: rgba(236, 253, 245, 0.15);
+  --ring: #D4AF37;
+}
+
+/* Amethyst Purple Theme Variables (Dark Purple + Gold) */
+.theme-purple {
+  --background: #120D1E;
+  --foreground: #FAF5FF;
+  --surface: #1E1530;
+  --surface-2: #120D1E;
+  --card: #1E1530;
+  --card-foreground: #FAF5FF;
+  --popover: #1E1530;
+  --popover-foreground: #FAF5FF;
+  --primary: #D4AF37;
+  --primary-foreground: #120D1E;
+  --gold: #D4AF37;
+  --gold-foreground: #120D1E;
+  --secondary: #A855F7;
+  --secondary-foreground: #FFFFFF;
+  --muted: #120D1E;
+  --muted-foreground: #E9D5FF;
+  --accent: #A855F7;
+  --accent-foreground: #FFFFFF;
+  --border: rgba(250, 245, 255, 0.1);
+  --input: rgba(250, 245, 255, 0.15);
+  --ring: #D4AF37;
+}
+
+
+
 

@@ -374,7 +374,7 @@ function ServicesSection() {
   ];
 
   return (
-    <section ref={ref} className="py-20 bg-white relative">
+    <section ref={ref} className="py-20 bg-surface relative">
       <div className="max-w-[1600px] mx-auto px-8 md:px-16">
         <div className="grid lg:grid-cols-2 gap-20">
 
@@ -672,7 +672,7 @@ function StatsSection() {
   ];
 
   return (
-    <section ref={ref} className="py-20 bg-white border-y border-foreground/5">
+    <section ref={ref} className="py-20 bg-surface border-y border-foreground/5">
       <div className="max-w-[1600px] mx-auto px-8 md:px-16 text-center relative">
         {/* Scroll indicator */}
         <motion.div
