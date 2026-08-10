@@ -23,9 +23,12 @@ const cartoVoyagerProvider = (x: number, y: number, z: number, dpr?: number) => 
   return `https://basemaps.cartocdn.com/rastertiles/voyager/${z}/${x}/${y}${dpr && dpr >= 2 ? '@2x' : ''}.png`;
 };
 
-export function LocationsSection() {
+export function LocationsSection({ data }: { data?: any }) {
   const { t } = useTranslation();
   const [activeLocation, setActiveLocation] = useState<string | null>(null);
+
+  const title = data?.title || t("locations.title", "OUR LOCATION");
+  const subtitle = data?.subtitle || t("locations.subtitle", "Serving Saudi Arabia and Surroundings");
 
   return (
     <section className="relative w-full py-24 bg-background text-foreground overflow-hidden">
@@ -41,10 +44,10 @@ export function LocationsSection() {
           className="text-center mb-20"
         >
           <h2 className="text-5xl md:text-6xl font-display font-bold tracking-tight uppercase mb-4">
-            {t("locations.title", "OUR LOCATION")}
+            {title}
           </h2>
           <p className="text-lg md:text-xl text-foreground/60 tracking-wide font-light">
-            {t("locations.subtitle", "Serving Saudi Arabia and Surroundings")}
+            {subtitle}
           </p>
         </motion.div>
 

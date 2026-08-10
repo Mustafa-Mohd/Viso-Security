@@ -26,7 +26,6 @@ if (typeof window !== "undefined") {
 function HomePage() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
-  const [coreValues, setCoreValues] = useState<any[]>([]);
   const [cmsData, setCmsData] = useState<Record<string, any>>({});
 
   useEffect(() => {
@@ -43,29 +42,7 @@ function HomePage() {
     }
     fetchCmsData();
 
-    async function fetchCoreValues() {
-      try {
-        const { data, error } = await supabase
-          .from("core_values")
-          .select("*")
-          .order("created_at", { ascending: true });
-        
-        if (!error && data && data.length > 0) {
-          setCoreValues(data);
-        } else {
-          // Fallback to translation data if no DB data
-          setCoreValues([
-            { id: '1', title: t("about.values.items.v1.title"), description: t("about.values.items.v1.desc"), points: t("about.values.items.v1.points", { returnObjects: true }), image_url: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400&q=80" },
-            { id: '2', title: t("about.values.items.v2.title"), description: t("about.values.items.v2.desc"), points: t("about.values.items.v2.points", { returnObjects: true }), image_url: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&q=80" },
-            { id: '3', title: t("about.values.items.v3.title"), description: t("about.values.items.v3.desc"), points: t("about.values.items.v3.points", { returnObjects: true }), image_url: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&q=80" },
-            { id: '4', title: t("about.values.items.v4.title"), description: t("about.values.items.v4.desc"), points: t("about.values.items.v4.points", { returnObjects: true }), image_url: "https://images.unsplash.com/photo-1473186578172-c141e6798cf4?w=400&q=80" }
-          ]);
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    }
-    fetchCoreValues();
+
   }, [t]);
 
   return (
@@ -76,35 +53,37 @@ function HomePage() {
         <main>
           <HeroSection data={cmsData.hero} />
           <About data={cmsData.about} />
-          <ServiceLifecycle />
+          <ServiceLifecycle data={cmsData.lifecycle} />
         {/* Core Values Section */}
-        <div className="mt-20">
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-light mb-4 text-foreground">{t("about.values.title")}</h2>
-            <p className="text-lg text-foreground/60">{t("about.values.subtitle")}</p>
-          </motion.div>
+        {cmsData.core_values && (
+          <div className="mt-20">
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1 }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-4xl md:text-5xl font-light mb-4 text-foreground">{cmsData.core_values.title}</h2>
+              <p className="text-lg text-foreground/60">{cmsData.core_values.subtitle}</p>
+            </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <AnimatePresence>
-              {coreValues.map((cv, i) => (
-                <ValueCard 
-                  key={cv.id}
-                  title={cv.title} 
-                  desc={cv.description} 
-                  points={cv.points || []}
-                  imageUrl={cv.image_url} 
-                  delay={0.1 + (i * 0.1)}
-                />
-              ))}
-            </AnimatePresence>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <AnimatePresence>
+                {cmsData.core_values.items.map((cv: any, i: number) => (
+                  <ValueCard 
+                    key={cv.id || i}
+                    title={cv.title} 
+                    desc={cv.desc} 
+                    points={cv.points || []}
+                    imageUrl={cv.imageUrl} 
+                    delay={0.1 + (i * 0.1)}
+                  />
+                ))}
+              </AnimatePresence>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Areas We Serve Section */}
         <div className="mt-20 border-t border-foreground/5 pt-16">
@@ -144,14 +123,13 @@ function HomePage() {
             </AnimatePresence>
           </div>
         </div>
-          <LocationsSection />
-          <FrameworkSection data={cmsData.framework} />
+          <LocationsSection data={cmsData.locations} />
           <ShowcaseSection data={cmsData.showcase} />
           <ClientsSection data={cmsData.clients} />
           <ServicesSection data={cmsData.services} />
           <GallerySection />
-          <StatsSection />
-          <CTASection />
+          <StatsSection data={cmsData.stats} />
+          <CTASection data={cmsData.cta} />
         </main>
       </div>
     </>
@@ -712,17 +690,18 @@ function AnimatedCounter({ from = 0, to, prefix = "", suffix = "", duration = 2.
   return <span ref={nodeRef}>{prefix}{from}{suffix}</span>;
 }
 
-function StatsSection() {
+function StatsSection({ data }: { data?: any }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const inView = useInView(ref, { once: false, amount: 0.3 });
 
-  const stats = [
+  const stats = data?.items || [
     { target: 2, prefix: "$", suffix: "B+", label: "Assets Protected" },
     { target: 45, prefix: "", suffix: "", label: "Global Partners" },
     { target: 99, prefix: "", suffix: "%", label: "Design Compliance" },
   ];
+  const title = data?.title || "Measurable Excellence";
 
   return (
     <section ref={ref} className="py-20 bg-surface border-y border-foreground/5">
@@ -742,11 +721,11 @@ function StatsSection() {
           transition={{ duration: 0.8 }}
           className="font-mono text-xs font-bold tracking-[0.3em] text-gold mb-16 uppercase"
         >
-          Measurable Excellence
+          {title}
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-16 md:gap-8">
-          {stats.map((s, i) => (
+          {stats.map((s: any, i: number) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, scale: 0.95 }}
@@ -768,24 +747,33 @@ function StatsSection() {
 /* ============================================================
    CTA SECTION
    ============================================================ */
-function CTASection() {
+function CTASection({ data }: { data?: any }) {
+  const title1 = data?.title1 || "Ready to shape";
+  const title2 = data?.title2 || "the future?";
+  const desc = data?.desc || "Connect with our lead architects and security consultants to begin your project.";
+  const buttonText = data?.buttonText || "SCHEDULE CONSULTATION";
+  const imageUrl = data?.imageUrl;
+
   return (
     <section className="py-20 bg-background relative overflow-hidden">
       <div className="absolute top-0 right-0 w-1/2 h-full bg-surface-2 -skew-x-12 origin-top-right z-0" />
       <div className="max-w-[1600px] mx-auto px-8 md:px-16 relative z-10 flex flex-col md:flex-row justify-between items-center gap-12">
         <div className="flex-1">
           <h2 className="font-display text-5xl md:text-7xl text-foreground leading-tight">
-            Ready to shape <br /><span className="text-primary italic">the future?</span>
+            {title1} <br /><span className="text-primary italic">{title2}</span>
           </h2>
-          <p className="font-sans text-lg text-foreground/60 mt-6 max-w-md mb-8">
-            Connect with our lead architects and security consultants to begin your project.
+          <p className="font-sans text-lg text-foreground/60 mt-6 max-w-md mb-8 whitespace-pre-wrap">
+            {desc}
           </p>
-          <Link to="/others" className="inline-flex rounded-sm bg-primary px-10 py-5 font-sans text-sm font-bold tracking-[0.2em] text-white transition-all duration-400 hover:bg-gold hover:scale-[1.03] shadow-xl">
-            SCHEDULE CONSULTATION
+          <Link to="/others" className="inline-flex rounded-sm bg-primary px-10 py-5 font-sans text-sm font-bold tracking-[0.2em] text-white transition-all duration-400 hover:bg-gold hover:scale-[1.03] shadow-xl uppercase">
+            {buttonText}
           </Link>
         </div>
         <div className="flex-1 w-full relative h-[400px] rounded-xl overflow-hidden shadow-2xl border border-foreground/10 z-10 group bg-surface">
           <div className="absolute inset-0 bg-primary/5 pointer-events-none z-10"></div>
+          {imageUrl ? (
+            <img src={imageUrl} alt="Call to Action" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+          ) : (
           <iframe 
             src="https://maps.google.com/maps?q=VISO+Group,+Riyadh&t=&z=14&ie=UTF8&iwloc=&output=embed" 
             width="100%" 
@@ -797,6 +785,7 @@ function CTASection() {
             title="VISO Group Location"
             className="absolute inset-0 z-0"
           ></iframe>
+          )}
         </div>
       </div>
     </section>
@@ -1191,104 +1180,32 @@ function About({ data }: { data?: any }) {
   );
 }
 
-/* ---------- Service Lifecycle ---------- */
-function ServiceLifecycle() {
-  const stages = [
-    {
-      num: "01",
-      title: "Security Risk Assessment",
-      desc: "Comprehensive assessment of threats, vulnerabilities, perimeter, gates, access points, critical assets and the initial security concept around the facility. We establish the foundational risk profile.",
-      points: [
-        "Threat and vulnerability assessment",
-        "Perimeter, gate and access-point review",
-        "Critical asset identification",
-        "Initial protection requirements"
-      ],
-      deliverable: "Risk & Threat Matrix",
-      imageUrl: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80",
-      color: "from-blue-900/40 to-blue-900/5",
-      accent: "text-blue-400",
-      bgAccent: "bg-blue-400",
-      border: "border-blue-900/30",
-      bgHover: "group-hover:bg-blue-900/10"
-    },
-    {
-      num: "02",
-      title: "Concept / Preliminary Design",
-      desc: "Translate risk findings into a protection philosophy, security zoning, system concepts, preliminary layouts and technology requirements. Setting the architectural vision for security.",
-      points: [
-        "Protection philosophy",
-        "Concept CCTV coverage",
-        "Access control and zoning",
-        "Preliminary control-room concept"
-      ],
-      deliverable: "Preliminary Design Report",
-      imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80",
-      color: "from-emerald-900/40 to-emerald-900/5",
-      accent: "text-emerald-400",
-      bgAccent: "bg-emerald-400",
-      border: "border-emerald-900/30",
-      bgHover: "group-hover:bg-emerald-900/10"
-    },
-    {
-      num: "03",
-      title: "Detailed Design",
-      desc: "Develop implementation-level drawings, specifications, schedules, interfaces and integration requirements suitable for procurement and construction. Precision engineering for seamless deployment.",
-      points: [
-        "Detailed layouts and schematics",
-        "Equipment and device schedules",
-        "Technical specifications",
-        "Systems integration requirements"
-      ],
-      deliverable: "Tender-Ready Blueprints",
-      imageUrl: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80",
-      color: "from-purple-900/40 to-purple-900/5",
-      accent: "text-purple-400",
-      bgAccent: "bg-purple-400",
-      border: "border-purple-900/30",
-      bgHover: "group-hover:bg-purple-900/10"
-    },
-    {
-      num: "04",
-      title: "Construction & Readiness",
-      desc: "Supervision, technical submittal review, inspections, testing, commissioning, handover and confirmation of operational readiness. Turning blueprints into fortified reality.",
-      points: [
-        "Construction supervision",
-        "FAT / SAT and commissioning",
-        "Defect and closeout tracking",
-        "Operational readiness and handover"
-      ],
-      deliverable: "Operational Handover",
-      imageUrl: "https://images.unsplash.com/photo-1541888086925-0c770f066eb7?w=800&q=80",
-      color: "from-orange-900/40 to-orange-900/5",
-      accent: "text-orange-400",
-      bgAccent: "bg-orange-400",
-      border: "border-orange-900/30",
-      bgHover: "group-hover:bg-orange-900/10"
-    }
+function ServiceLifecycle({ data }: { data?: any }) {
+  const defaultStages = [
+    { num: "01", title: "Security Risk Assessment", desc: "Assessment of threats, vulnerabilities, perimeter, gates, access points, critical assets and the initial security concept around the facility.", points: "Threat and vulnerability assessment\nPerimeter, gate and access-point review\nCritical asset identification\nInitial protection requirements", deliverable: "Risk & Threat Matrix", imageUrl: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80", color: "from-blue-900/40 to-blue-900/5", accent: "text-blue-400", bgAccent: "bg-blue-400", border: "border-blue-900/30", bgHover: "group-hover:bg-blue-900/10" },
+    { num: "02", title: "Concept / Preliminary Design", desc: "Translate risk findings into a protection philosophy, security zoning, system concepts, preliminary layouts and technology requirements.", points: "Protection philosophy\nConcept CCTV coverage\nAccess control and zoning\nPreliminary control-room concept", deliverable: "Preliminary Design Report", imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80", color: "from-emerald-900/40 to-emerald-900/5", accent: "text-emerald-400", bgAccent: "bg-emerald-400", border: "border-emerald-900/30", bgHover: "group-hover:bg-emerald-900/10" },
+    { num: "03", title: "Detailed Design", desc: "Develop implementation-level drawings, specifications, schedules, interfaces and integration requirements suitable for procurement and construction.", points: "Detailed layouts and schematics\nEquipment and device schedules\nTechnical specifications\nSystems integration requirements", deliverable: "Tender-Ready Blueprints", imageUrl: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80", color: "from-purple-900/40 to-purple-900/5", accent: "text-purple-400", bgAccent: "bg-purple-400", border: "border-purple-900/30", bgHover: "group-hover:bg-purple-900/10" },
+    { num: "04", title: "Construction & Readiness", desc: "Supervision, technical submittal review, inspections, testing, commissioning, handover and confirmation of operational readiness.", points: "Construction supervision\nFAT / SAT and commissioning\nDefect and closeout tracking\nOperational readiness and handover", deliverable: "Operational Handover", imageUrl: "https://images.unsplash.com/photo-1541888086925-0c770f066eb7?w=800&q=80", color: "from-orange-900/40 to-orange-900/5", accent: "text-orange-400", bgAccent: "bg-orange-400", border: "border-orange-900/30", bgHover: "group-hover:bg-orange-900/10" }
   ];
+
+  const stages = data?.items?.length > 0 ? data.items : defaultStages;
+  const title = data?.title || "Security Services";
+  const subtitle = data?.subtitle || "Four Stages. One Security Lifecycle.";
 
   return (
     <section id="service-lifecycle" className="relative px-6 py-20 md:py-32 bg-background border-t border-border overflow-hidden">
       <div className="mx-auto max-w-7xl">
         <div className="text-center mb-16 md:mb-24 max-w-3xl mx-auto flex flex-col items-center">
           <Reveal>
-            <SectionLabel n="02" label="Service Lifecycle" />
+            <SectionLabel n="02" label={title} />
           </Reveal>
           <Reveal delay={0.1}>
-            <h2 className="mt-6 font-display text-4xl leading-[1.1] md:text-5xl">
-              Four Stages. <em className="text-gradient-gold">One Security Lifecycle.</em>
-            </h2>
-          </Reveal>
-          <Reveal delay={0.2}>
-            <p className="mt-4 text-lg text-muted-foreground">
-              Each stage will have its own professional visual, technical narrative, deliverables and connection to the next stage.
-            </p>
+            <h2 className="mt-6 font-display text-4xl leading-[1.1] md:text-5xl" dangerouslySetInnerHTML={{ __html: subtitle.replace('One Security Lifecycle.', '<em class="text-gradient-gold">One Security Lifecycle.</em>') }} />
           </Reveal>
         </div>
 
         <div className="space-y-8 md:space-y-12">
-          {stages.map((stage, i) => (
+          {stages.map((stage: any, i: number) => (
             <Reveal key={stage.num} delay={0.1 + (i * 0.1)}>
               <div className={`group relative flex flex-col md:flex-row overflow-hidden rounded-3xl border ${stage.border} bg-foreground/[0.02] ${stage.bgHover} transition-all duration-500 hover:shadow-2xl hover:-translate-y-1`}>
                 
@@ -1314,29 +1231,24 @@ function ServiceLifecycle() {
                 </div>
 
                 {/* Content Side */}
-                <div className="w-full md:w-7/12 relative z-10 p-8 md:p-12 flex flex-col justify-center">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className={`px-3 py-1 rounded-full text-xs font-mono uppercase tracking-wider bg-foreground/10 ${stage.accent} border border-foreground/10`}>
-                      Phase {stage.num}
-                    </div>
+                <div className="w-full md:w-7/12 p-8 md:p-12 flex flex-col justify-center relative z-10">
+                  <div className="flex items-center gap-4 mb-6">
+                    <span className={`font-mono text-xl ${stage.accent}`}>{stage.num}</span>
+                    <div className="h-px w-12 bg-border"></div>
                   </div>
-                  
-                  <h3 className="text-3xl md:text-4xl font-display mb-4 text-foreground drop-shadow-sm leading-tight">
-                    {stage.title}
-                  </h3>
-                  
-                  <p className="text-foreground/80 text-lg leading-relaxed mb-8 max-w-2xl">
+                  <h3 className="font-display text-2xl md:text-3xl mb-4">{stage.title}</h3>
+                  <p className="text-foreground/70 mb-8 leading-relaxed">
                     {stage.desc}
                   </p>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 mb-8">
-                    {stage.points.map((pt, j) => (
-                      <div key={j} className="flex items-start gap-3">
-                        <div className={`mt-2 h-1.5 w-1.5 rounded-full ${stage.bgAccent} shrink-0 shadow-[0_0_8px_currentColor]`} />
-                        <span className="text-foreground/80 text-[15px] leading-snug">{pt}</span>
-                      </div>
+                  <ul className="space-y-3 mb-8">
+                    {(typeof stage.points === 'string' ? stage.points.split('\n') : stage.points).map((point: string, idx: number) => (
+                      <li key={idx} className="flex items-start gap-3">
+                        <div className={`mt-1.5 w-1.5 h-1.5 rounded-full ${stage.bgAccent} flex-shrink-0`} />
+                        <span className="text-sm text-foreground/80">{point}</span>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
 
                   <div className="mt-auto pt-6 border-t border-foreground/10 flex items-center justify-between">
                     <div>

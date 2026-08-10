@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, LayoutDashboard, Image as ImageIcon, Settings, LogOut, ChevronRight, Save, Plus, Trash2, Upload, AlertCircle } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const Route = createFileRoute("/admin")({
@@ -43,13 +43,55 @@ function AdminPage() {
   const [activeTab, setActiveTab] = useState<"gallery" | "core_values" | "homepage">("gallery");
 
   // CMS State
-  const [cmsSection, setCmsSection] = useState<"hero" | "about" | "areas" | "services" | "framework" | "showcase" | "clients">("hero");
-  const [heroData, setHeroData] = useState({ title1: "DESIGNING", title2: "THE FUTURE", subtitle: "We are an elite firm...", desc: "Integrating security...", images: ["", "", ""] });
-  const [aboutData, setAboutData] = useState({ title1: "THE ARCHITECTURE", title2: "OF SECURITY", desc: "Our methodology..." });
-  const [areasData, setAreasData] = useState<{ title: string, subtitle: string, items: any[] }>({ title: "AREAS WE SERVE", subtitle: "Strategic geographic deployment...", items: [] });
-  const [servicesData, setServicesData] = useState<{ title1: string, title2: string, desc: string, items: any[] }>({ title1: "Architectural", title2: "Precision.", desc: "Our approach favors...", items: [] });
-  const [frameworkData, setFrameworkData] = useState<{ titleMono: string, title1: string, title2: string, desc: string, items: any[] }>({ titleMono: "OUR METHODOLOGY", title1: "The Architecture", title2: "Of Security", desc: "A phased approach...", items: [] });
-  const [showcaseData, setShowcaseData] = useState<{ imageUrl: string }>({ imageUrl: "" });
+  const [cmsSection, setCmsSection] = useState<"hero" | "about" | "core_values" | "areas" | "services" | "framework" | "showcase" | "clients" | "lifecycle" | "locations" | "stats" | "cta">("hero");
+  const [heroData, setHeroData] = useState({ 
+    title1: "Designing", 
+    title2: "The Future", 
+    subtitle: "Elevating physical security through sophisticated architectural integration.", 
+    desc: "We merge high-end architectural design with rigorous security protocols to create spaces that are both exceptionally safe and visually stunning. Inspired by global innovation leaders.", 
+    images: ["https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80", "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80", "https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"] 
+  });
+  const [aboutData, setAboutData] = useState({ 
+    title1: "Where Security Meets", 
+    title2: "Peace of Mind", 
+    desc: "VISO is a premier physical security consultancy specializing in safeguarding our clients' most valuable assets. Founded in January 2020 and headquartered in Riyadh, we now operate from five offices across the Kingdom—Riyadh, Khobar, Jubail, Jeddah and Yanbu—delivering tailored security solutions that align with national authorities and the highest international benchmarks.\n\nOur team of seasoned experts brings decades of combined experience in security analysis, risk assessment, and the implementation of integrated protective measures across critical national infrastructure, energy, industrial, financial and government sectors." 
+  });
+  const [coreValuesData, setCoreValuesData] = useState<{ title: string, subtitle: string, items: any[] }>({
+    title: "Our Core Values",
+    subtitle: "Guiding principles that drive our excellence.",
+    items: [
+      { id: "1", title: "Honesty & Integrity", desc: "Our guiding philosophy revolves around transparency and professionalism. We remain prudent and fair in dealing with all stakeholders.", points: ["Transparent Communication", "Uncompromising Ethics", "Fair Stakeholder Practices"], imageUrl: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400&q=80" },
+      { id: "2", title: "Customer Excellence", desc: "We strive to fully understand our clients' needs to deliver tailored, premium security solutions that exceed expectations.", points: ["Tailored Security Solutions", "Proactive Client Support", "Exceeding Expectations"], imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&q=80" },
+      { id: "3", title: "Leadership & Prudence", desc: "As we build a robust security culture, we optimize resources and lead by example in setting industry standards.", points: ["Robust Security Culture", "Resource Optimization", "Setting Industry Standards"], imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&q=80" },
+      { id: "4", title: "Innovation & Change", desc: "We are an organization in constant progress, continuously adapting to new threats and integrating cutting-edge technologies.", points: ["Continuous Progress", "Threat Adaptation", "Cutting-Edge Technologies"], imageUrl: "https://images.unsplash.com/photo-1473186578172-c141e6798cf4?w=400&q=80" }
+    ]
+  });
+  const [areasData, setAreasData] = useState<{ title: string, subtitle: string, items: any[] }>({ 
+    title: "Areas We Serve", 
+    subtitle: "Protecting vital sectors with specialized physical security consulting and architectural integration.", 
+    items: [
+      { title: "Integrated Security Systems", desc: "Delivering comprehensive physical and cyber security architectures, ensuring end-to-end compliance with SAIS and national security directives.", image_url: "" },
+      { title: "Meteorological Solutions", desc: "Advanced monitoring and predictive frameworks for atmospheric conditions, optimizing flight safety and complex airport operations.", image_url: "" },
+      { title: "Aviation Technology", desc: "Engineering and deploying state-of-the-art Air Traffic Control, NAVAIDS, and communication networks for civil and military airspace.", image_url: "" },
+      { title: "ICT & Connectivity", desc: "Providing high-performance information and communication technology consulting to maximize operational workflow and secure data infrastructures.", image_url: "" },
+      { title: "Marine Surveying", desc: "Executing precision hydrographic surveys, spatial mapping, and maritime analytics to support complex offshore deployments.", image_url: "" },
+      { title: "Engineering Design", desc: "End-to-end turnkey engineering blueprints spanning structural security, ICT, and unified protection systems, from concept to final execution.", image_url: "" }
+    ] 
+  });
+  const [servicesData, setServicesData] = useState<{ title1: string, title2: string, desc: string, items: any[] }>({ 
+    title1: "Our Core", 
+    title2: "Services", 
+    desc: "Supporting Every Stage of the HCIS / SAIS Security Project Lifecycle\nWhether developing a new facility or upgrading an existing asset, security requirements evolve throughout the project lifecycle. VISO provides specialist security engineering consultancy from project initiation through operational readiness, ensuring security objectives, engineering deliverables, and regulatory requirements remain aligned at every stage.", 
+    items: [] 
+  });
+  const [frameworkData, setFrameworkData] = useState<{ titleMono: string, title1: string, title2: string, desc: string, items: any[] }>({ 
+    titleMono: "Security Consulting Framework", 
+    title1: "A Structured Four-Stage", 
+    title2: "Security Approval Process", 
+    desc: "We guide organizations through a comprehensive security consultancy process designed to support regulatory compliance and operational readiness. Discover how our structured methodology ensures every phase is meticulously designed and validated.", 
+    items: [] 
+  });
+  const [showcaseData, setShowcaseData] = useState<{ imageUrl: string }>({ imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80" });
   const [clientsData, setClientsData] = useState<{ titleMono: string, title1: string, title2: string, items: any[] }>({ 
     titleMono: "Trusted By", 
     title1: "Industry", 
@@ -62,6 +104,39 @@ function AdminPage() {
       { name: "ACWA Power", sector: "Power & Water", icon: "💡" },
       { name: "Red Sea Global", sector: "Mega Project", icon: "🌊" },
     ] 
+  });
+  
+  const [lifecycleData, setLifecycleData] = useState<{ title: string, subtitle: string, items: any[] }>({
+    title: "Service Lifecycle",
+    subtitle: "Four Stages. One Security Lifecycle.",
+    items: [
+      { num: "01", title: "Security Risk Assessment", desc: "Comprehensive assessment...", points: "Threat and vulnerability assessment\nPerimeter, gate and access-point review", deliverable: "Risk & Threat Matrix", imageUrl: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80", color: "from-blue-900/40 to-blue-900/5", accent: "text-blue-400", bgAccent: "bg-blue-400", border: "border-blue-900/30", bgHover: "group-hover:bg-blue-900/10" },
+      { num: "02", title: "Concept / Preliminary Design", desc: "Translate risk findings...", points: "Protection philosophy\nConcept CCTV coverage", deliverable: "Preliminary Design Report", imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80", color: "from-emerald-900/40 to-emerald-900/5", accent: "text-emerald-400", bgAccent: "bg-emerald-400", border: "border-emerald-900/30", bgHover: "group-hover:bg-emerald-900/10" },
+      { num: "03", title: "Detailed Design", desc: "Develop implementation-level drawings...", points: "Detailed layouts and schematics\nEquipment and device schedules", deliverable: "Tender-Ready Blueprints", imageUrl: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80", color: "from-purple-900/40 to-purple-900/5", accent: "text-purple-400", bgAccent: "bg-purple-400", border: "border-purple-900/30", bgHover: "group-hover:bg-purple-900/10" },
+      { num: "04", title: "Construction & Readiness", desc: "Supervision, technical submittal review...", points: "Construction supervision\nFAT / SAT and commissioning", deliverable: "Operational Handover", imageUrl: "https://images.unsplash.com/photo-1541888086925-0c770f066eb7?w=800&q=80", color: "from-orange-900/40 to-orange-900/5", accent: "text-orange-400", bgAccent: "bg-orange-400", border: "border-orange-900/30", bgHover: "group-hover:bg-orange-900/10" }
+    ]
+  });
+
+  const [locationsData, setLocationsData] = useState<{ title: string, subtitle: string }>({
+    title: "OUR LOCATION",
+    subtitle: "Serving Saudi Arabia and Surroundings"
+  });
+
+  const [statsData, setStatsData] = useState<{ title: string, items: any[] }>({
+    title: "Measurable Excellence",
+    items: [
+      { target: 2, prefix: "$", suffix: "B+", label: "Assets Protected" },
+      { target: 45, prefix: "", suffix: "", label: "Global Partners" },
+      { target: 99, prefix: "", suffix: "%", label: "Design Compliance" }
+    ]
+  });
+
+  const [ctaData, setCtaData] = useState<{ title1: string, title2: string, desc: string, buttonText: string, imageUrl: string }>({
+    title1: "SECURE",
+    title2: "YOUR VISION.",
+    desc: "Partner with VISO to engineer resilience into your next architectural masterpiece.",
+    buttonText: "Schedule a Consultation",
+    imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80"
   });
 
   useEffect(() => {
@@ -131,17 +206,64 @@ function AdminPage() {
     }
   };
 
-  const fetchCmsData = async () => {
+  const handleSeedCmsData = async () => {
+    const defaultData: any[] = [
+      { section_key: 'hero', content: heroData },
+      { section_key: 'about', content: aboutData },
+      { section_key: 'core_values', content: coreValuesData },
+      { section_key: 'areas', content: areasData },
+      { section_key: 'services', content: servicesData },
+      { section_key: 'framework', content: frameworkData },
+      { section_key: 'showcase', content: showcaseData },
+      { section_key: 'clients', content: clientsData },
+      { section_key: 'lifecycle', content: lifecycleData },
+      { section_key: 'locations', content: locationsData },
+      { section_key: 'stats', content: statsData },
+      { section_key: 'cta', content: ctaData }
+    ];
+    for (const item of defaultData) {
+      await supabase.from('cms_content').upsert(item, { onConflict: 'section_key' }).select();
+    }
+    // reload data after seeding
     const { data, error } = await supabase.from('cms_content').select('*');
     if (!error && data) {
       data.forEach(row => {
         if (row.section_key === 'hero') setHeroData(row.content);
         if (row.section_key === 'about') setAboutData(row.content);
+        if (row.section_key === 'core_values') setCoreValuesData(row.content);
         if (row.section_key === 'areas') setAreasData(row.content);
         if (row.section_key === 'services') setServicesData(row.content);
         if (row.section_key === 'framework') setFrameworkData(row.content);
         if (row.section_key === 'showcase') setShowcaseData(row.content);
         if (row.section_key === 'clients') setClientsData(row.content);
+        if (row.section_key === 'lifecycle') setLifecycleData(row.content);
+        if (row.section_key === 'locations') setLocationsData(row.content);
+        if (row.section_key === 'stats') setStatsData(row.content);
+        if (row.section_key === 'cta') setCtaData(row.content);
+      });
+    }
+  };
+
+  const fetchCmsData = async () => {
+    const { data, error } = await supabase.from('cms_content').select('*');
+    if (!error && data) {
+      if (data.length === 0) {
+        handleSeedCmsData();
+        return;
+      }
+      data.forEach(row => {
+        if (row.section_key === 'hero') setHeroData(row.content);
+        if (row.section_key === 'about') setAboutData(row.content);
+        if (row.section_key === 'core_values') setCoreValuesData(row.content);
+        if (row.section_key === 'areas') setAreasData(row.content);
+        if (row.section_key === 'services') setServicesData(row.content);
+        if (row.section_key === 'framework') setFrameworkData(row.content);
+        if (row.section_key === 'showcase') setShowcaseData(row.content);
+        if (row.section_key === 'clients') setClientsData(row.content);
+        if (row.section_key === 'lifecycle') setLifecycleData(row.content);
+        if (row.section_key === 'locations') setLocationsData(row.content);
+        if (row.section_key === 'stats') setStatsData(row.content);
+        if (row.section_key === 'cta') setCtaData(row.content);
       });
     }
   };
@@ -491,45 +613,54 @@ function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Admin Nav */}
-      <div className="flex items-center justify-between px-8 py-4 border-b border-foreground/5 bg-foreground/5">
-        <div className="flex items-center gap-4">
+    <div className="flex h-screen bg-background text-foreground overflow-hidden">
+      {/* Sidebar Navigation */}
+      <aside className="w-64 flex-shrink-0 border-r border-foreground/10 bg-surface/50 backdrop-blur-xl flex flex-col hidden md:flex">
+        <div className="p-6 border-b border-foreground/10">
           <img src="https://res.cloudinary.com/dcefror3c/image/upload/v1782911668/Luxurious_black_and_gold_logo_design_kjv4np.png" alt="VISO Logo" className="h-8 w-auto object-contain" />
-          <span className="font-bold text-lg hidden sm:block">Admin Console</span>
+          <p className="mt-2 text-xs font-bold uppercase tracking-widest text-foreground/50">Admin Console</p>
         </div>
-        <div className="flex items-center gap-4">
-          <ThemeToggle />
+        <div className="flex-1 overflow-y-auto p-4 space-y-2">
+          <button
+            onClick={() => setActiveTab("homepage")}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'homepage' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
+          >
+            <LayoutDashboard size={18} />
+            Homepage CMS
+          </button>
+          <button
+            onClick={() => setActiveTab("gallery")}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'gallery' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
+          >
+            <ImageIcon size={18} />
+            Gallery
+          </button>
+          <button
+            onClick={() => setActiveTab("core_values")}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'core_values' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
+          >
+            <Settings size={18} />
+            Legacy Core Values
+          </button>
+        </div>
+        <div className="p-4 border-t border-foreground/10 space-y-4">
+          <div className="flex items-center justify-between px-2">
+            <span className="text-sm font-medium text-foreground/70">Theme</span>
+            <ThemeToggle />
+          </div>
           <button
             onClick={handleLogout}
-            className="text-sm px-4 py-2 bg-red-500/10 text-red-500 border border-red-500/20 rounded hover:bg-red-500 hover:text-white transition-colors"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-colors font-medium"
           >
+            <LogOut size={18} />
             Sign Out
           </button>
         </div>
-      </div>
+      </aside>
 
-      <div className="max-w-5xl mx-auto p-8 mt-8">
-        <div className="flex gap-6 border-b border-foreground/10 mb-8 pb-2">
-            <button
-              onClick={() => setActiveTab("gallery")}
-              className={`px-4 py-2 border-b-2 font-medium transition-colors ${activeTab === 'gallery' ? 'border-primary text-primary' : 'border-transparent text-foreground/60 hover:text-foreground'}`}
-            >
-              Gallery Management
-            </button>
-            <button
-              onClick={() => setActiveTab("core_values")}
-              className={`px-4 py-2 border-b-2 font-medium transition-colors ${activeTab === 'core_values' ? 'border-primary text-primary' : 'border-transparent text-foreground/60 hover:text-foreground'}`}
-            >
-              Core Values
-            </button>
-            <button
-              onClick={() => setActiveTab("homepage")}
-              className={`px-4 py-2 border-b-2 font-medium transition-colors ${activeTab === 'homepage' ? 'border-primary text-primary' : 'border-transparent text-foreground/60 hover:text-foreground'}`}
-            >
-              Homepage CMS
-            </button>
-        </div>
+      {/* Main Content Area */}
+      <main className="flex-1 h-full overflow-y-auto bg-background">
+        <div className="p-6 md:p-10 max-w-7xl mx-auto">
 
         {activeTab === 'gallery' && (
           <>
@@ -569,156 +700,7 @@ function AdminPage() {
           </>
         )}
 
-        {activeTab === 'core_values' && (
-          <>
-            <div className="bg-foreground/5 p-6 rounded-xl border border-foreground/10 mb-8">
-              <h2 className="text-xl mb-4">{editingId ? 'Edit Core Value' : 'Add New Core Value'}</h2>
-              <form onSubmit={handleCoreValueSubmit} className="flex flex-col gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Title</label>
-                  <input
-                    type="text"
-                    value={cvTitle}
-                    onChange={(e) => setCvTitle(e.target.value)}
-                    className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:outline-none focus:border-primary"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Description</label>
-                  <textarea
-                    value={cvDesc}
-                    onChange={(e) => setCvDesc(e.target.value)}
-                    className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:outline-none focus:border-primary h-24"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Points (Comma separated)</label>
-                  <input
-                    type="text"
-                    value={cvPoints}
-                    placeholder="e.g. Transparent Communication, Uncompromising Ethics"
-                    onChange={(e) => setCvPoints(e.target.value)}
-                    className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:outline-none focus:border-primary"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Image URL</label>
-                  <input
-                    type="url"
-                    value={cvImageUrl}
-                    placeholder="https://example.com/image.jpg"
-                    onChange={(e) => setCvImageUrl(e.target.value)}
-                    className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:outline-none focus:border-primary"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1 text-foreground/70 text-xs text-center my-2">OR UPLOAD IMAGE</label>
-                  <input
-                    type="file"
-                    name="cvImage"
-                    accept="image/*"
-                    className="w-full px-4 py-2 rounded bg-background border border-foreground/20"
-                  />
-                </div>
-                <div className="flex gap-4">
-                  <button
-                    type="submit"
-                    disabled={cvUploading}
-                    className="bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90 transition-colors"
-                  >
-                    {cvUploading ? 'Saving...' : editingId ? 'Update Core Value' : 'Add Core Value'}
-                  </button>
-                  {editingId && (
-                    <button
-                      type="button"
-                      onClick={handleCancelEdit}
-                      className="bg-foreground/10 text-foreground px-4 py-2 rounded hover:bg-foreground/20 transition-colors"
-                    >
-                      Cancel
-                    </button>
-                  )}
-                </div>
-              </form>
-            </div>
 
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl">Current Core Values</h2>
-              {orderChanged && (
-                <div className="flex gap-3">
-                  <button
-                    onClick={handleCancelOrder}
-                    className="bg-foreground/10 text-foreground px-4 py-2 rounded hover:bg-foreground/20 transition-colors text-sm"
-                  >
-                    Cancel Reorder
-                  </button>
-                  <button
-                    onClick={handleSaveOrder}
-                    className="bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90 transition-colors text-sm shadow-lg shadow-primary/20"
-                  >
-                    Save New Order
-                  </button>
-                </div>
-              )}
-            </div>
-            <div className="flex flex-col gap-4">
-              {coreValues.map((cv, i) => (
-                <div key={cv.id} className="flex gap-6 bg-surface p-6 rounded-xl border border-foreground/10 items-center">
-                  <div className="w-32 h-32 shrink-0 rounded-lg overflow-hidden border border-foreground/10">
-                    <img src={cv.image_url} alt={cv.title} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-bold font-display mb-2">{cv.title}</h3>
-                    <p className="text-sm text-foreground/70 mb-2">{cv.description}</p>
-                    {cv.points && cv.points.length > 0 && (
-                      <ul className="list-disc list-inside text-xs text-foreground/50">
-                        {cv.points.map((p: string, idx: number) => (
-                          <li key={idx}>{p}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <div className="flex gap-2 mb-2">
-                      <button
-                        onClick={() => handleMoveUp(i)}
-                        disabled={i === 0}
-                        className="bg-foreground/5 text-foreground border border-foreground/10 px-3 py-1 rounded hover:bg-foreground/10 transition-colors text-xs flex-1 disabled:opacity-30 disabled:cursor-not-allowed"
-                      >
-                        ▲ Up
-                      </button>
-                      <button
-                        onClick={() => handleMoveDown(i)}
-                        disabled={i === coreValues.length - 1}
-                        className="bg-foreground/5 text-foreground border border-foreground/10 px-3 py-1 rounded hover:bg-foreground/10 transition-colors text-xs flex-1 disabled:opacity-30 disabled:cursor-not-allowed"
-                      >
-                        ▼ Down
-                      </button>
-                    </div>
-                    <button
-                      onClick={() => handleEdit(cv)}
-                      className="bg-primary/10 text-primary border border-primary/20 px-4 py-2 rounded hover:bg-primary hover:text-white transition-colors text-sm"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteCoreValue(cv.id, cv.image_url)}
-                      className="bg-red-500/10 text-red-500 border border-red-500/20 px-4 py-2 rounded hover:bg-red-500 hover:text-white transition-colors text-sm"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              ))}
-              {coreValues.length === 0 && (
-                <p className="text-foreground/60 p-6 bg-foreground/5 rounded-xl border border-foreground/10 text-center">
-                  No core values added yet. The system is attempting to auto-seed them.
-                </p>
-              )}
-            </div>
-          </>
-        )}
 
         {activeTab === 'homepage' && (
           <div className="flex flex-col md:flex-row gap-8">
@@ -736,6 +718,12 @@ function AdminPage() {
                 className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'about' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-foreground/5'}`}
               >
                 About Section
+              </button>
+              <button
+                onClick={() => setCmsSection('core_values')}
+                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'core_values' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-foreground/5'}`}
+              >
+                Core Values
               </button>
               <button
                 onClick={() => setCmsSection('areas')}
@@ -767,6 +755,43 @@ function AdminPage() {
               >
                 Industry Titans (Clients)
               </button>
+              <button
+                onClick={() => setCmsSection('lifecycle')}
+                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'lifecycle' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-foreground/5'}`}
+              >
+                Service Lifecycle
+              </button>
+              <button
+                onClick={() => setCmsSection('locations')}
+                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'locations' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-foreground/5'}`}
+              >
+                Locations
+              </button>
+              <button
+                onClick={() => setCmsSection('stats')}
+                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'stats' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-foreground/5'}`}
+              >
+                Stats
+              </button>
+              <button
+                onClick={() => setCmsSection('cta')}
+                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'cta' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-foreground/5'}`}
+              >
+                Call to Action
+              </button>
+              <div className="mt-8 border-t border-foreground/10 pt-4">
+                <button
+                  onClick={async () => {
+                    if (confirm("Are you sure you want to overwrite all sections with the default seed content? This cannot be undone.")) {
+                      await handleSeedCmsData();
+                      alert("Successfully seeded defaults!");
+                    }
+                  }}
+                  className="w-full text-left px-4 py-3 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 font-medium transition-colors"
+                >
+                  Reset All to Defaults
+                </button>
+              </div>
             </div>
 
             {/* CMS Editor Area */}
@@ -869,6 +894,99 @@ function AdminPage() {
                     className="mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors w-fit font-medium"
                   >
                     Save About Section
+                  </button>
+                </div>
+              )}
+              {cmsSection === 'core_values' && (
+                <div className="flex flex-col gap-6">
+                  <h2 className="text-2xl font-display mb-2">Edit Core Values</h2>
+                  <div className="bg-background p-6 rounded border border-foreground/10 space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Section Title</label>
+                      <input
+                        type="text"
+                        value={coreValuesData.title}
+                        onChange={(e) => setCoreValuesData({ ...coreValuesData, title: e.target.value })}
+                        className="w-full px-4 py-2 rounded bg-surface border border-foreground/20 focus:border-primary focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Section Subtitle</label>
+                      <input
+                        type="text"
+                        value={coreValuesData.subtitle}
+                        onChange={(e) => setCoreValuesData({ ...coreValuesData, subtitle: e.target.value })}
+                        className="w-full px-4 py-2 rounded bg-surface border border-foreground/20 focus:border-primary focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <h3 className="font-bold text-lg border-b border-foreground/10 pb-2">Value Cards</h3>
+                    {coreValuesData.items.map((cv: any, idx: number) => (
+                      <div key={cv.id || idx} className="bg-background p-6 rounded border border-foreground/10 space-y-4 relative">
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-xs font-bold mb-1 opacity-70">Card Title</label>
+                            <input
+                              type="text"
+                              value={cv.title}
+                              onChange={(e) => {
+                                const newItems = [...coreValuesData.items];
+                                newItems[idx].title = e.target.value;
+                                setCoreValuesData({ ...coreValuesData, items: newItems });
+                              }}
+                              className="w-full px-3 py-2 rounded bg-surface border border-foreground/20 focus:border-primary focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold mb-1 opacity-70">Image URL</label>
+                            <input
+                              type="text"
+                              value={cv.imageUrl}
+                              onChange={(e) => {
+                                const newItems = [...coreValuesData.items];
+                                newItems[idx].imageUrl = e.target.value;
+                                setCoreValuesData({ ...coreValuesData, items: newItems });
+                              }}
+                              className="w-full px-3 py-2 rounded bg-surface border border-foreground/20 focus:border-primary focus:outline-none"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold mb-1 opacity-70">Description</label>
+                          <textarea
+                            value={cv.desc}
+                            onChange={(e) => {
+                              const newItems = [...coreValuesData.items];
+                              newItems[idx].desc = e.target.value;
+                              setCoreValuesData({ ...coreValuesData, items: newItems });
+                            }}
+                            className="w-full px-3 py-2 rounded bg-surface border border-foreground/20 focus:border-primary focus:outline-none h-20"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold mb-1 opacity-70">Bullet Points (comma separated)</label>
+                          <input
+                            type="text"
+                            value={cv.points?.join(', ')}
+                            onChange={(e) => {
+                              const newItems = [...coreValuesData.items];
+                              newItems[idx].points = e.target.value.split(',').map(p => p.trim()).filter(Boolean);
+                              setCoreValuesData({ ...coreValuesData, items: newItems });
+                            }}
+                            className="w-full px-3 py-2 rounded bg-surface border border-foreground/20 focus:border-primary focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => handleSaveCmsSection('core_values', coreValuesData)}
+                    className="mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors w-fit font-medium"
+                  >
+                    Save Core Values
                   </button>
                 </div>
               )}
@@ -1338,10 +1456,99 @@ function AdminPage() {
                   </button>
                 </div>
               )}
+              {/* LIFECYCLE CMS */}
+              {cmsSection === 'lifecycle' && (
+                <div className="flex flex-col gap-4">
+                  <h2 className="text-2xl font-display mb-4">Edit Service Lifecycle Section</h2>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Title</label>
+                    <input type="text" value={lifecycleData.title} onChange={(e) => setLifecycleData({ ...lifecycleData, title: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Subtitle</label>
+                    <input type="text" value={lifecycleData.subtitle} onChange={(e) => setLifecycleData({ ...lifecycleData, subtitle: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" />
+                  </div>
+                  <div className="mt-8 border-t border-foreground/10 pt-8">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-bold">Lifecycle Stages</h3>
+                      <button onClick={() => setLifecycleData({ ...lifecycleData, items: [...lifecycleData.items, { num: "05", title: "", desc: "", points: "", deliverable: "", imageUrl: "", color: "from-blue-900/40 to-blue-900/5", accent: "text-blue-400", bgAccent: "bg-blue-400", border: "border-blue-900/30", bgHover: "group-hover:bg-blue-900/10" }] })} className="bg-primary/20 text-primary px-4 py-2 rounded text-sm hover:bg-primary/30 transition-colors">
+                        + Add Stage
+                      </button>
+                    </div>
+                    <div className="flex flex-col gap-6">
+                      {lifecycleData.items.map((item, idx) => (
+                        <div key={idx} className="bg-background p-4 rounded border border-foreground/10 relative">
+                          <button onClick={() => { const newItems = [...lifecycleData.items]; newItems.splice(idx, 1); setLifecycleData({ ...lifecycleData, items: newItems }); }} className="absolute top-2 right-2 text-red-500 hover:text-red-700 text-xs font-bold">X</button>
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div><label className="block text-xs font-bold mb-1 opacity-70">Number (e.g. 01)</label><input type="text" value={item.num} onChange={(e) => { const newItems = [...lifecycleData.items]; newItems[idx].num = e.target.value; setLifecycleData({ ...lifecycleData, items: newItems }); }} className="w-full px-3 py-2 rounded bg-surface border border-foreground/20" /></div>
+                            <div><label className="block text-xs font-bold mb-1 opacity-70">Title</label><input type="text" value={item.title} onChange={(e) => { const newItems = [...lifecycleData.items]; newItems[idx].title = e.target.value; setLifecycleData({ ...lifecycleData, items: newItems }); }} className="w-full px-3 py-2 rounded bg-surface border border-foreground/20" /></div>
+                            <div className="md:col-span-2"><label className="block text-xs font-bold mb-1 opacity-70">Description</label><textarea value={item.desc} onChange={(e) => { const newItems = [...lifecycleData.items]; newItems[idx].desc = e.target.value; setLifecycleData({ ...lifecycleData, items: newItems }); }} className="w-full px-3 py-2 rounded bg-surface border border-foreground/20 h-20" /></div>
+                            <div className="md:col-span-2"><label className="block text-xs font-bold mb-1 opacity-70">Bullet Points (One per line)</label><textarea value={item.points} onChange={(e) => { const newItems = [...lifecycleData.items]; newItems[idx].points = e.target.value; setLifecycleData({ ...lifecycleData, items: newItems }); }} className="w-full px-3 py-2 rounded bg-surface border border-foreground/20 h-24" /></div>
+                            <div><label className="block text-xs font-bold mb-1 opacity-70">Deliverable</label><input type="text" value={item.deliverable} onChange={(e) => { const newItems = [...lifecycleData.items]; newItems[idx].deliverable = e.target.value; setLifecycleData({ ...lifecycleData, items: newItems }); }} className="w-full px-3 py-2 rounded bg-surface border border-foreground/20" /></div>
+                            <div><label className="block text-xs font-bold mb-1 opacity-70">Image URL</label><input type="text" value={item.imageUrl} onChange={(e) => { const newItems = [...lifecycleData.items]; newItems[idx].imageUrl = e.target.value; setLifecycleData({ ...lifecycleData, items: newItems }); }} className="w-full px-3 py-2 rounded bg-surface border border-foreground/20" /></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <button onClick={() => handleSaveCmsSection('lifecycle', lifecycleData)} className="mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors w-fit font-medium">Save Service Lifecycle</button>
+                </div>
+              )}
+
+              {/* LOCATIONS CMS */}
+              {cmsSection === 'locations' && (
+                <div className="flex flex-col gap-4">
+                  <h2 className="text-2xl font-display mb-4">Edit Locations Section</h2>
+                  <div><label className="block text-sm font-medium mb-1">Title</label><input type="text" value={locationsData.title} onChange={(e) => setLocationsData({ ...locationsData, title: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" /></div>
+                  <div><label className="block text-sm font-medium mb-1">Subtitle</label><input type="text" value={locationsData.subtitle} onChange={(e) => setLocationsData({ ...locationsData, subtitle: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" /></div>
+                  <p className="text-sm text-foreground/50 mt-4 italic">Note: The interactive map markers and specific cities are currently hardcoded in the component for geographic precision, but the titles above can be edited here.</p>
+                  <button onClick={() => handleSaveCmsSection('locations', locationsData)} className="mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors w-fit font-medium">Save Locations</button>
+                </div>
+              )}
+
+              {/* STATS CMS */}
+              {cmsSection === 'stats' && (
+                <div className="flex flex-col gap-4">
+                  <h2 className="text-2xl font-display mb-4">Edit Stats Section</h2>
+                  <div><label className="block text-sm font-medium mb-1">Title</label><input type="text" value={statsData.title} onChange={(e) => setStatsData({ ...statsData, title: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" /></div>
+                  <div className="mt-8 border-t border-foreground/10 pt-8">
+                    <h3 className="font-bold mb-4">Statistics</h3>
+                    <div className="grid md:grid-cols-3 gap-4">
+                      {statsData.items.map((item, idx) => (
+                        <div key={idx} className="bg-background p-4 rounded border border-foreground/10 relative">
+                          <label className="block text-xs font-bold mb-1 opacity-70">Target Number</label>
+                          <input type="number" value={item.target} onChange={(e) => { const newItems = [...statsData.items]; newItems[idx].target = Number(e.target.value); setStatsData({ ...statsData, items: newItems }); }} className="w-full px-3 py-2 rounded bg-surface border border-foreground/20 mb-2" />
+                          <label className="block text-xs font-bold mb-1 opacity-70">Prefix (e.g. $)</label>
+                          <input type="text" value={item.prefix} onChange={(e) => { const newItems = [...statsData.items]; newItems[idx].prefix = e.target.value; setStatsData({ ...statsData, items: newItems }); }} className="w-full px-3 py-2 rounded bg-surface border border-foreground/20 mb-2" />
+                          <label className="block text-xs font-bold mb-1 opacity-70">Suffix (e.g. %)</label>
+                          <input type="text" value={item.suffix} onChange={(e) => { const newItems = [...statsData.items]; newItems[idx].suffix = e.target.value; setStatsData({ ...statsData, items: newItems }); }} className="w-full px-3 py-2 rounded bg-surface border border-foreground/20 mb-2" />
+                          <label className="block text-xs font-bold mb-1 opacity-70">Label</label>
+                          <input type="text" value={item.label} onChange={(e) => { const newItems = [...statsData.items]; newItems[idx].label = e.target.value; setStatsData({ ...statsData, items: newItems }); }} className="w-full px-3 py-2 rounded bg-surface border border-foreground/20 mb-2" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <button onClick={() => handleSaveCmsSection('stats', statsData)} className="mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors w-fit font-medium">Save Stats</button>
+                </div>
+              )}
+
+              {/* CTA CMS */}
+              {cmsSection === 'cta' && (
+                <div className="flex flex-col gap-4">
+                  <h2 className="text-2xl font-display mb-4">Edit Call to Action Section</h2>
+                  <div><label className="block text-sm font-medium mb-1">Title Part 1</label><input type="text" value={ctaData.title1} onChange={(e) => setCtaData({ ...ctaData, title1: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" /></div>
+                  <div><label className="block text-sm font-medium mb-1">Title Part 2</label><input type="text" value={ctaData.title2} onChange={(e) => setCtaData({ ...ctaData, title2: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" /></div>
+                  <div><label className="block text-sm font-medium mb-1">Description</label><textarea value={ctaData.desc} onChange={(e) => setCtaData({ ...ctaData, desc: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none h-20" /></div>
+                  <div><label className="block text-sm font-medium mb-1">Button Text</label><input type="text" value={ctaData.buttonText} onChange={(e) => setCtaData({ ...ctaData, buttonText: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" /></div>
+                  <div><label className="block text-sm font-medium mb-1">Background Image URL</label><input type="text" value={ctaData.imageUrl} onChange={(e) => setCtaData({ ...ctaData, imageUrl: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" /></div>
+                  <button onClick={() => handleSaveCmsSection('cta', ctaData)} className="mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors w-fit font-medium">Save CTA</button>
+                </div>
+              )}
             </div>
           </div>
         )}
-      </div>
+        </div>
+      </main>
     </div>
   );
 }
