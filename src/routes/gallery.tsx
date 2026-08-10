@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { TopNav } from "@/components/TopNav";
 import { useTranslation } from "react-i18next";
 import { SmoothScroll } from "@/components/SmoothScroll";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({
@@ -16,15 +18,26 @@ export const Route = createFileRoute("/gallery")({
 
 function GalleryPage() {
   const { t } = useTranslation();
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const galleryImages = [
-    "https://lh3.googleusercontent.com/gps-cs-s/APNQkAHocOIHseXbk5L-q6ABIpO3Uj7RIBDCAfJQHmF03LVbsGfzNDD3hW8EC0INE_jnOx8wu6a2ieSSUVFfTn0NrWOBYRzwVJnw_rXvVP-CB41DkaYP2F4R-IEoOz2BSRi8yp-ZBK9KlA=w408-h306-k-no",
-    "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1541888081699-272e259e8756?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1574360773950-717013fc76e3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-  ];
+  useEffect(() => {
+    const fetchImages = async () => {
+      const { data, error } = await supabase
+        .from("gallery_images")
+        .select("image_url")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Error fetching images:", error);
+      } else if (data) {
+        setGalleryImages(data.map(img => img.image_url));
+      }
+      setLoading(false);
+    };
+
+    fetchImages();
+  }, []);
 
   return (
     <>
@@ -50,22 +63,31 @@ function GalleryPage() {
             Visual <span className="italic text-primary">Gallery.</span>
           </motion.h1>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {galleryImages.map((src, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.3 + (i * 0.1) }}
-                className="group relative h-[400px] rounded-xl overflow-hidden shadow-lg border border-foreground/5 cursor-pointer"
-              >
-                <img src={src} alt={`Gallery Image ${i + 1}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                <div className="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
-                  <span className="text-white font-mono text-xs tracking-widest uppercase">View Fullscreen</span>
+          {loading ? (
+            <div className="text-foreground/60 py-20">Loading images...</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {galleryImages.map((src, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.6, delay: 0.3 + (i * 0.1) }}
+                  className="group relative h-[400px] rounded-xl overflow-hidden shadow-lg border border-foreground/5 cursor-pointer"
+                >
+                  <img src={src} alt={`Gallery Image ${i + 1}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                  <div className="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                    <span className="text-white font-mono text-xs tracking-widest uppercase">View Fullscreen</span>
+                  </div>
+                </motion.div>
+              ))}
+              {galleryImages.length === 0 && (
+                <div className="col-span-full py-20 text-foreground/60">
+                  No images found in the gallery.
                 </div>
-              </motion.div>
-            ))}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       </main>
     </>

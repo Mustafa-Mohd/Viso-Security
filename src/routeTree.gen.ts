@@ -14,6 +14,7 @@ import { Route as OthersRouteImport } from './routes/others'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ClientsRouteImport } from './routes/clients'
 import { Route as CertificatesRouteImport } from './routes/certificates'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SecurityRoute = SecurityRouteImport.update({
@@ -41,6 +42,11 @@ const CertificatesRoute = CertificatesRouteImport.update({
   path: '/certificates',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -49,6 +55,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/certificates': typeof CertificatesRoute
   '/clients': typeof ClientsRoute
   '/gallery': typeof GalleryRoute
@@ -57,6 +64,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/certificates': typeof CertificatesRoute
   '/clients': typeof ClientsRoute
   '/gallery': typeof GalleryRoute
@@ -66,6 +74,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/certificates': typeof CertificatesRoute
   '/clients': typeof ClientsRoute
   '/gallery': typeof GalleryRoute
@@ -76,16 +85,25 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/certificates'
     | '/clients'
     | '/gallery'
     | '/others'
     | '/security'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/certificates' | '/clients' | '/gallery' | '/others' | '/security'
+  to:
+    | '/'
+    | '/admin'
+    | '/certificates'
+    | '/clients'
+    | '/gallery'
+    | '/others'
+    | '/security'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/certificates'
     | '/clients'
     | '/gallery'
@@ -95,6 +113,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   CertificatesRoute: typeof CertificatesRoute
   ClientsRoute: typeof ClientsRoute
   GalleryRoute: typeof GalleryRoute
@@ -139,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CertificatesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -151,6 +177,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   CertificatesRoute: CertificatesRoute,
   ClientsRoute: ClientsRoute,
   GalleryRoute: GalleryRoute,
