@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useLocation,
 } from "@tanstack/react-router";
 import "../styles.css";
 import { CustomCursor } from "@/components/CustomCursor";
@@ -75,12 +76,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith("/admin");
 
   return (
     <QueryClientProvider client={queryClient}>
       <CustomCursor />
       <Outlet />
-      <ContactPopup />
+      {!isAdmin && <ContactPopup />}
       <Chatbot />
     </QueryClientProvider>
   );

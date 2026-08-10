@@ -7,6 +7,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { TopNav } from "@/components/TopNav";
 import { LocationsSection } from "@/components/LocationsSection";
+import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
@@ -25,6 +26,47 @@ if (typeof window !== "undefined") {
 function HomePage() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
+  const [coreValues, setCoreValues] = useState<any[]>([]);
+  const [cmsData, setCmsData] = useState<Record<string, any>>({});
+
+  useEffect(() => {
+    async function fetchCmsData() {
+      try {
+        const { data } = await supabase.from('cms_content').select('*');
+        if (data) {
+          const mapped = data.reduce((acc, row) => ({ ...acc, [row.section_key]: row.content }), {});
+          setCmsData(mapped);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    fetchCmsData();
+
+    async function fetchCoreValues() {
+      try {
+        const { data, error } = await supabase
+          .from("core_values")
+          .select("*")
+          .order("created_at", { ascending: true });
+        
+        if (!error && data && data.length > 0) {
+          setCoreValues(data);
+        } else {
+          // Fallback to translation data if no DB data
+          setCoreValues([
+            { id: '1', title: t("about.values.items.v1.title"), description: t("about.values.items.v1.desc"), points: t("about.values.items.v1.points", { returnObjects: true }), image_url: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400&q=80" },
+            { id: '2', title: t("about.values.items.v2.title"), description: t("about.values.items.v2.desc"), points: t("about.values.items.v2.points", { returnObjects: true }), image_url: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&q=80" },
+            { id: '3', title: t("about.values.items.v3.title"), description: t("about.values.items.v3.desc"), points: t("about.values.items.v3.points", { returnObjects: true }), image_url: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&q=80" },
+            { id: '4', title: t("about.values.items.v4.title"), description: t("about.values.items.v4.desc"), points: t("about.values.items.v4.points", { returnObjects: true }), image_url: "https://images.unsplash.com/photo-1473186578172-c141e6798cf4?w=400&q=80" }
+          ]);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    fetchCoreValues();
+  }, [t]);
 
   return (
     <>
@@ -32,8 +74,9 @@ function HomePage() {
       <div className="bg-background min-h-screen text-foreground font-sans selection:bg-primary/20 selection:text-primary">
         <TopNav />
         <main>
-          <HeroSection />
-          <About />
+          <HeroSection data={cmsData.hero} />
+          <About data={cmsData.about} />
+          <ServiceLifecycle />
         {/* Core Values Section */}
         <div className="mt-20">
           <motion.div 
@@ -48,34 +91,18 @@ function HomePage() {
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <ValueCard 
-              title={t("about.values.items.v1.title")} 
-              desc={t("about.values.items.v1.desc")} 
-              points={t("about.values.items.v1.points", { returnObjects: true }) as string[]}
-              svg={<HonestySVG />} 
-              delay={0.1}
-            />
-            <ValueCard 
-              title={t("about.values.items.v2.title")} 
-              desc={t("about.values.items.v2.desc")} 
-              points={t("about.values.items.v2.points", { returnObjects: true }) as string[]}
-              svg={<ExcellenceSVG />} 
-              delay={0.2}
-            />
-            <ValueCard 
-              title={t("about.values.items.v3.title")} 
-              desc={t("about.values.items.v3.desc")} 
-              points={t("about.values.items.v3.points", { returnObjects: true }) as string[]}
-              svg={<LeadershipSVG />} 
-              delay={0.3}
-            />
-            <ValueCard 
-              title={t("about.values.items.v4.title")} 
-              desc={t("about.values.items.v4.desc")} 
-              points={t("about.values.items.v4.points", { returnObjects: true }) as string[]}
-              svg={<InnovationSVG />} 
-              delay={0.4}
-            />
+            <AnimatePresence>
+              {coreValues.map((cv, i) => (
+                <ValueCard 
+                  key={cv.id}
+                  title={cv.title} 
+                  desc={cv.description} 
+                  points={cv.points || []}
+                  imageUrl={cv.image_url} 
+                  delay={0.1 + (i * 0.1)}
+                />
+              ))}
+            </AnimatePresence>
           </div>
         </div>
 
@@ -88,54 +115,40 @@ function HomePage() {
             transition={{ duration: 1 }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-light mb-4 text-foreground">{t("areas.title")}</h2>
-            <p className="text-lg text-foreground/60 max-w-2xl mx-auto">{t("areas.subtitle")}</p>
+            <h2 className="text-4xl md:text-5xl font-light mb-4 text-foreground">{cmsData.areas?.title || t("areas.title")}</h2>
+            <p className="text-lg text-foreground/60 max-w-2xl mx-auto">{cmsData.areas?.subtitle || t("areas.subtitle")}</p>
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <AreaCard 
-              title={t("areas.items.a1.title")} 
-              desc={t("areas.items.a1.desc")} 
-              svg={<IntegratedSecuritySVG />} 
-              delay={0.1}
-            />
-            <AreaCard 
-              title={t("areas.items.a2.title")} 
-              desc={t("areas.items.a2.desc")} 
-              svg={<MeteorologySVG />} 
-              delay={0.2}
-            />
-            <AreaCard 
-              title={t("areas.items.a3.title")} 
-              desc={t("areas.items.a3.desc")} 
-              svg={<PlaneSVG />} 
-              delay={0.3}
-            />
-            <AreaCard 
-              title={t("areas.items.a4.title")} 
-              desc={t("areas.items.a4.desc")} 
-              svg={<IctSVG />} 
-              delay={0.4}
-            />
-            <AreaCard 
-              title={t("areas.items.a5.title")} 
-              desc={t("areas.items.a5.desc")} 
-              svg={<MarineSVG />} 
-              delay={0.5}
-            />
-            <AreaCard 
-              title={t("areas.items.a6.title")} 
-              desc={t("areas.items.a6.desc")} 
-              svg={<EngineeringSVG />} 
-              delay={0.6}
-            />
+            <AnimatePresence>
+              {cmsData.areas?.items?.length > 0 ? (
+                cmsData.areas.items.map((area: any, i: number) => (
+                  <AreaCard 
+                    key={i}
+                    title={area.title} 
+                    desc={area.desc} 
+                    imageUrl={area.image_url} 
+                    delay={0.1 + (i * 0.1)}
+                  />
+                ))
+              ) : (
+                <>
+                  <AreaCard title={t("areas.items.a1.title")} desc={t("areas.items.a1.desc")} svg={<IntegratedSecuritySVG />} delay={0.1} />
+                  <AreaCard title={t("areas.items.a2.title")} desc={t("areas.items.a2.desc")} svg={<MeteorologySVG />} delay={0.2} />
+                  <AreaCard title={t("areas.items.a3.title")} desc={t("areas.items.a3.desc")} svg={<PlaneSVG />} delay={0.3} />
+                  <AreaCard title={t("areas.items.a4.title")} desc={t("areas.items.a4.desc")} svg={<IctSVG />} delay={0.4} />
+                  <AreaCard title={t("areas.items.a5.title")} desc={t("areas.items.a5.desc")} svg={<MarineSVG />} delay={0.5} />
+                  <AreaCard title={t("areas.items.a6.title")} desc={t("areas.items.a6.desc")} svg={<EngineeringSVG />} delay={0.6} />
+                </>
+              )}
+            </AnimatePresence>
           </div>
         </div>
           <LocationsSection />
-          <FrameworkSection />
-          <ShowcaseSection />
-          <ClientsSection />
-          <ServicesSection />
+          <FrameworkSection data={cmsData.framework} />
+          <ShowcaseSection data={cmsData.showcase} />
+          <ClientsSection data={cmsData.clients} />
+          <ServicesSection data={cmsData.services} />
           <GallerySection />
           <StatsSection />
           <CTASection />
@@ -257,7 +270,7 @@ const heroImages = [
   "https://images.unsplash.com/photo-1473186578172-c141e6798cf4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"
 ];
 
-export function HeroSection() {
+export function HeroSection({ data }: { data?: any }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
@@ -265,12 +278,18 @@ export function HeroSection() {
 
   const [currentImage, setCurrentImage] = useState(0);
 
+  const title1 = data?.title1 || t("home.designing");
+  const title2 = data?.title2 || t("home.the_future");
+  const subtitle = data?.subtitle || t("home.subtitle");
+  const desc = data?.desc || t("home.desc");
+  const activeImages = data?.images?.filter(Boolean).length > 0 ? data.images.filter(Boolean) : heroImages;
+
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % heroImages.length);
+      setCurrentImage((prev) => (prev + 1) % activeImages.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, []);
+  }, [activeImages.length]);
 
   return (
     <section ref={ref} className="relative min-h-[100vh] pt-20 pb-20 overflow-hidden flex items-center">
@@ -298,14 +317,14 @@ export function HeroSection() {
             {t("home.strategic_architecture")}
           </div>
           <h2 className="font-display text-6xl md:text-8xl lg:text-[110px] leading-[0.9] tracking-[-0.02em] text-foreground uppercase">
-            {t("home.designing")} <br />
-            <span className="text-primary italic font-light">{t("home.the_future")}</span>
+            {title1} <br />
+            <span className="text-primary italic font-light">{title2}</span>
           </h2>
           <h3 className="font-sans text-xl md:text-2xl font-light text-foreground/70 mt-8 max-w-xl leading-snug">
-            {t("home.subtitle")}
+            {subtitle}
           </h3>
-          <p className="font-sans text-base text-foreground/50 mt-6 max-w-lg leading-relaxed">
-            {t("home.desc")}
+          <p className="font-sans text-base text-foreground/50 mt-6 max-w-lg leading-relaxed whitespace-pre-wrap">
+            {desc}
           </p>
 
           <div className="flex flex-wrap items-center gap-6 mt-12">
@@ -334,7 +353,7 @@ export function HeroSection() {
             <AnimatePresence>
               <motion.img 
                 key={currentImage}
-                src={heroImages[currentImage]} 
+                src={activeImages[currentImage]} 
                 alt="Premium Architecture" 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -363,11 +382,14 @@ export function HeroSection() {
 /* ============================================================
    SERVICES SECTION (Swiss Editorial Layout)
    ============================================================ */
-function ServicesSection() {
+function ServicesSection({ data }: { data?: any }) {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.2 });
 
-  const services = [
+  const title1 = data?.title1 || "Architectural";
+  const title2 = data?.title2 || "Precision.";
+  const desc = data?.desc || "Our approach favors minimalism and strict geometric order, ensuring that safety protocols disappear into the elegance of the structure.";
+  const services = data?.items?.length > 0 ? data.items : [
     { num: "01", title: "Master Planning", desc: "Holistic site analysis and macro-scale architectural defensive zoning." },
     { num: "02", title: "Facade Engineering", desc: "Integrating blast-resistant aesthetics without compromising visual purity." },
     { num: "03", title: "Access Topography", desc: "Seamless flow management blending security gates into environmental design." },
@@ -383,16 +405,16 @@ function ServicesSection() {
               initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             >
               <h2 className="font-display text-5xl md:text-7xl leading-tight text-foreground tracking-tight">
-                Architectural <br /><span className="text-primary italic">Precision.</span>
+                {title1} <br /><span className="text-primary italic">{title2}</span>
               </h2>
               <p className="font-sans mt-8 text-lg text-foreground/60 max-w-md leading-relaxed">
-                Our approach favors minimalism and strict geometric order, ensuring that safety protocols disappear into the elegance of the structure.
+                {desc}
               </p>
             </motion.div>
           </div>
 
           <div className="flex flex-col gap-12 border-t border-foreground/10 pt-12">
-            {services.map((srv, i) => (
+            {services.map((srv: any, i: number) => (
               <motion.div
                 key={srv.num}
                 initial={{ opacity: 0, x: 30 }}
@@ -418,10 +440,21 @@ function ServicesSection() {
 /* ============================================================
    FRAMEWORK SECTION (TEASER)
    ============================================================ */
-function FrameworkSection() {
+function FrameworkSection({ data }: { data?: any }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.2 });
+
+  const titleMono = data?.titleMono || t("framework.title_mono");
+  const title1 = data?.title1 || t("framework.title_display");
+  const title2 = data?.title2 || t("framework.title_display_italic");
+  const desc = data?.desc || t("framework.desc");
+  const items = data?.items?.length > 0 ? data.items : [
+    { id: 1, num: "01", title: t("security.stages.s1.title"), subtitle: t("security.stages.s1.subtitle") },
+    { id: 2, num: "02", title: t("security.stages.s2.title"), subtitle: t("security.stages.s2.subtitle") },
+    { id: 3, num: "03", title: t("security.stages.s3.title"), subtitle: t("security.stages.s3.subtitle") },
+    { id: 4, num: "04", title: t("security.stages.s4.title"), subtitle: t("security.stages.s4.subtitle") }
+  ];
 
   return (
     <section ref={ref} className="py-20 bg-surface-2 relative">
@@ -431,32 +464,27 @@ function FrameworkSection() {
           initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8 }}
           className="font-mono text-xs font-bold tracking-[0.3em] text-primary mb-6 uppercase"
         >
-          {t("framework.title_mono")}
+          {titleMono}
         </motion.div>
 
         <motion.h2
           initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.1 }}
           className="font-display text-5xl md:text-7xl leading-tight text-foreground"
         >
-          {t("framework.title_display")} <br />
-          <span className="italic text-primary">{t("framework.title_display_italic")}</span>
+          {title1} <br />
+          <span className="italic text-primary">{title2}</span>
         </motion.h2>
 
         <motion.p 
           initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.2 }}
-          className="font-sans text-lg text-foreground/60 max-w-3xl mx-auto mt-8 leading-relaxed mb-16"
+          className="font-sans text-lg text-foreground/60 max-w-3xl mx-auto mt-8 leading-relaxed mb-16 whitespace-pre-wrap"
         >
-          {t("framework.desc")}
+          {desc}
         </motion.p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-left rtl:text-right">
-          {[
-            { id: 1, num: "01", title: t("security.stages.s1.title"), subtitle: t("security.stages.s1.subtitle") },
-            { id: 2, num: "02", title: t("security.stages.s2.title"), subtitle: t("security.stages.s2.subtitle") },
-            { id: 3, num: "03", title: t("security.stages.s3.title"), subtitle: t("security.stages.s3.subtitle") },
-            { id: 4, num: "04", title: t("security.stages.s4.title"), subtitle: t("security.stages.s4.subtitle") }
-          ].map((stage, i) => (
-            <TiltCard key={stage.id} className="h-full">
+          {items.map((stage: any, i: number) => (
+            <TiltCard key={stage.id || i} className="h-full">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -499,17 +527,19 @@ function FrameworkSection() {
 /* ============================================================
    SHOWCASE SECTION (Parallax)
    ============================================================ */
-function ShowcaseSection() {
+function ShowcaseSection({ data }: { data?: any }) {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const y1 = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
+
+  const bgImage = data?.imageUrl || "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80";
 
   return (
     <section ref={ref} className="py-16 overflow-hidden bg-background">
       <div className="max-w-[1600px] mx-auto px-8 md:px-16">
         <div className="relative h-[70vh] rounded-xl overflow-hidden group">
           <motion.div style={{ y: y1 }} className="absolute inset-[-20%]">
-            <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80" alt="Corporate Lobby" className="w-full h-full object-cover" />
+            <img src={bgImage} alt="Showcase" className="w-full h-full object-cover" />
           </motion.div>
           <div className="absolute inset-0 bg-primary/20 group-hover:bg-primary/10 transition-colors duration-700" />
         </div>
@@ -521,12 +551,15 @@ function ShowcaseSection() {
 /* ============================================================
    CLIENTS SECTION (Teaser)
    ============================================================ */
-function ClientsSection() {
+function ClientsSection({ data }: { data?: any }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.2 });
 
-  const topClients = [
+  const titleMono = data?.titleMono || "Trusted By";
+  const title1 = data?.title1 || "Industry";
+  const title2 = data?.title2 || "Titans.";
+  const clients = data?.items?.length > 0 ? data.items : [
     { name: "Saudi Aramco", sector: "Oil & Gas", icon: "🛢️" },
     { name: "NEOM", sector: "Mega Project", icon: "🏙️" },
     { name: "SAMA", sector: "Government / Financial", icon: "🏛️" },
@@ -542,17 +575,17 @@ function ClientsSection() {
           initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8 }}
           className="font-mono text-xs font-bold tracking-[0.3em] text-primary mb-6 uppercase"
         >
-          Trusted By
+          {titleMono}
         </motion.div>
         <motion.h2
           initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.1 }}
           className="font-display text-5xl md:text-7xl leading-tight text-foreground mb-16"
         >
-          Industry <span className="italic text-primary">Titans.</span>
+          {title1} <span className="italic text-primary">{title2}</span>
         </motion.h2>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-12">
-          {topClients.map((client, i) => (
+          {clients.map((client: any, i: number) => (
             <TiltCard key={i} className="h-full">
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -589,11 +622,31 @@ function GallerySection() {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.2 });
 
-  const galleryImages = [
-    "https://lh3.googleusercontent.com/gps-cs-s/APNQkAHocOIHseXbk5L-q6ABIpO3Uj7RIBDCAfJQHmF03LVbsGfzNDD3hW8EC0INE_jnOx8wu6a2ieSSUVFfTn0NrWOBYRzwVJnw_rXvVP-CB41DkaYP2F4R-IEoOz2BSRi8yp-ZBK9KlA=w408-h306-k-no",
-    "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1541888081699-272e259e8756?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-  ];
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchGallery() {
+      try {
+        const { data, error } = await supabase
+          .from("gallery_images")
+          .select("image_url")
+          .order("created_at", { ascending: false });
+        
+        if (!error && data) {
+          setGalleryImages(data.map(item => item.image_url));
+        }
+      } catch (err) {
+        console.error("Error fetching gallery:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchGallery();
+  }, []);
+
+  if (loading) return null;
+  if (galleryImages.length === 0) return null;
 
   return (
     <section ref={ref} className="py-20 bg-surface-2 relative">
@@ -882,19 +935,20 @@ function ChartSVG() {
   );
 }
 
-function ValueCard({ title, desc, points, svg, delay }: { title: string, desc: string, points: string[], svg: React.ReactNode, delay: number }) {
+function ValueCard({ title, desc, points, imageUrl, delay }: { title: string, desc: string, points: string[], imageUrl: string, delay: number }) {
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
+      layout
+      initial={{ opacity: 0, y: 30, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.3 } }}
       transition={{ duration: 0.6, delay }}
       className="group relative bg-surface border border-foreground/5 text-center hover:border-gold/30 hover:shadow-2xl hover:shadow-gold/5 transition-all duration-500 rounded-2xl flex flex-col items-center overflow-hidden h-[420px]"
     >
       {/* Default State */}
       <div className="absolute inset-0 p-8 flex flex-col items-center transition-transform duration-700 ease-out group-hover:-translate-y-[120%]">
-        <div className="h-20 w-20 mb-8 mt-4 text-foreground group-hover:text-gold transition-colors duration-500">
-          {svg}
+        <div className="h-40 w-40 mb-6 mt-2 rounded-xl overflow-hidden border border-foreground/10 group-hover:border-gold transition-colors duration-500 shadow-md">
+          <img src={imageUrl} alt={title} className="w-full h-full object-cover" />
         </div>
         <h3 className="font-display text-2xl mb-4 text-foreground">{title}</h3>
         <p className="font-sans text-sm text-foreground/60 leading-relaxed">
@@ -904,10 +958,10 @@ function ValueCard({ title, desc, points, svg, delay }: { title: string, desc: s
       
       {/* Hover State (Points) */}
       <div className="absolute inset-0 p-8 flex flex-col items-center justify-center translate-y-full opacity-0 transition-all duration-700 ease-out group-hover:translate-y-0 group-hover:opacity-100 bg-surface">
-        <div className="h-12 w-12 mb-6 text-gold drop-shadow-md">
-          {svg}
+        <div className="h-20 w-20 mb-4 rounded-xl overflow-hidden border-2 border-gold shadow-lg shadow-gold/20">
+          <img src={imageUrl} alt={title} className="w-full h-full object-cover" />
         </div>
-        <h3 className="font-display text-xl mb-6 text-foreground">{title}</h3>
+        <h3 className="font-display text-xl mb-4 text-foreground">{title}</h3>
         <ul className="text-left w-full space-y-4">
           {Array.isArray(points) && points.map((pt, i) => (
             <li key={i} className="flex items-start gap-3">
@@ -956,7 +1010,7 @@ function InnovationSVG() {
   );
 }
 
-function AreaCard({ title, desc, svg, delay }: { title: string, desc: string, svg: React.ReactNode, delay: number }) {
+function AreaCard({ title, desc, svg, imageUrl, delay }: { title: string, desc: string, svg?: React.ReactNode, imageUrl?: string, delay: number }) {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -967,7 +1021,7 @@ function AreaCard({ title, desc, svg, delay }: { title: string, desc: string, sv
     >
       <div className="h-16 w-16 mb-6 text-primary group-hover:text-gold transition-colors duration-500 relative">
         <div className="absolute inset-0 bg-primary/5 group-hover:bg-gold/10 rounded-full scale-150 transition-colors duration-500 -z-10 blur-xl"></div>
-        {svg}
+        {imageUrl ? <img src={imageUrl} alt={title} className="w-full h-full object-contain" /> : svg}
       </div>
       <h3 className="font-display font-semibold text-lg tracking-wide mb-3 text-foreground">{title}</h3>
       <p className="font-sans text-sm text-foreground/60 leading-relaxed">
@@ -1088,7 +1142,11 @@ function SectionLabel({ n, label }: { n: string; label: string }) {
 }
 
 /* ---------- About ---------- */
-function About() {
+function About({ data }: { data?: any }) {
+  const title1 = data?.title1 || "Where security meets";
+  const title2 = data?.title2 || "peace of mind.";
+  const desc = data?.desc || "VISO is a premier physical security consultancy specializing in safeguarding our clients' most valuable assets. Founded in January 2020 and headquartered in Riyadh, we now operate from five offices across the Kingdom — delivering tailored solutions that align with national authorities and the highest international benchmarks.\n\nOur team brings decades of combined experience in security analysis, risk assessment and integrated protective measures across critical national infrastructure, energy, industrial, financial and government sectors.";
+
   const stats = [
     ["2020", "Established"],
     ["5", "Regional Offices"],
@@ -1104,26 +1162,14 @@ function About() {
           </Reveal>
           <Reveal delay={0.1}>
             <h2 className="mt-6 font-display text-5xl leading-[1.05] text-balance md:text-6xl">
-              Where security meets <em className="text-gradient-gold">peace of mind.</em>
+              {title1} <em className="text-gradient-gold">{title2}</em>
             </h2>
           </Reveal>
         </div>
         <div className="lg:col-span-7 lg:col-start-6">
           <Reveal delay={0.15}>
-            <p className="text-lg leading-relaxed text-muted-foreground">
-              VISO is a premier physical security consultancy specializing in
-              safeguarding our clients&apos; most valuable assets. Founded in January
-              2020 and headquartered in Riyadh, we now operate from five offices
-              across the Kingdom — delivering tailored solutions that align with
-              national authorities and the highest international benchmarks.
-            </p>
-          </Reveal>
-          <Reveal delay={0.25}>
-            <p className="mt-6 text-base leading-relaxed text-muted-foreground/80">
-              Our team brings decades of combined experience in security analysis,
-              risk assessment and integrated protective measures across critical
-              national infrastructure, energy, industrial, financial and government
-              sectors.
+            <p className="text-lg leading-relaxed text-muted-foreground whitespace-pre-wrap">
+              {desc}
             </p>
           </Reveal>
 
@@ -1139,6 +1185,180 @@ function About() {
               </Reveal>
             ))}
           </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- Service Lifecycle ---------- */
+function ServiceLifecycle() {
+  const stages = [
+    {
+      num: "01",
+      title: "Security Risk Assessment",
+      desc: "Comprehensive assessment of threats, vulnerabilities, perimeter, gates, access points, critical assets and the initial security concept around the facility. We establish the foundational risk profile.",
+      points: [
+        "Threat and vulnerability assessment",
+        "Perimeter, gate and access-point review",
+        "Critical asset identification",
+        "Initial protection requirements"
+      ],
+      deliverable: "Risk & Threat Matrix",
+      imageUrl: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80",
+      color: "from-blue-900/40 to-blue-900/5",
+      accent: "text-blue-400",
+      bgAccent: "bg-blue-400",
+      border: "border-blue-900/30",
+      bgHover: "group-hover:bg-blue-900/10"
+    },
+    {
+      num: "02",
+      title: "Concept / Preliminary Design",
+      desc: "Translate risk findings into a protection philosophy, security zoning, system concepts, preliminary layouts and technology requirements. Setting the architectural vision for security.",
+      points: [
+        "Protection philosophy",
+        "Concept CCTV coverage",
+        "Access control and zoning",
+        "Preliminary control-room concept"
+      ],
+      deliverable: "Preliminary Design Report",
+      imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80",
+      color: "from-emerald-900/40 to-emerald-900/5",
+      accent: "text-emerald-400",
+      bgAccent: "bg-emerald-400",
+      border: "border-emerald-900/30",
+      bgHover: "group-hover:bg-emerald-900/10"
+    },
+    {
+      num: "03",
+      title: "Detailed Design",
+      desc: "Develop implementation-level drawings, specifications, schedules, interfaces and integration requirements suitable for procurement and construction. Precision engineering for seamless deployment.",
+      points: [
+        "Detailed layouts and schematics",
+        "Equipment and device schedules",
+        "Technical specifications",
+        "Systems integration requirements"
+      ],
+      deliverable: "Tender-Ready Blueprints",
+      imageUrl: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80",
+      color: "from-purple-900/40 to-purple-900/5",
+      accent: "text-purple-400",
+      bgAccent: "bg-purple-400",
+      border: "border-purple-900/30",
+      bgHover: "group-hover:bg-purple-900/10"
+    },
+    {
+      num: "04",
+      title: "Construction & Readiness",
+      desc: "Supervision, technical submittal review, inspections, testing, commissioning, handover and confirmation of operational readiness. Turning blueprints into fortified reality.",
+      points: [
+        "Construction supervision",
+        "FAT / SAT and commissioning",
+        "Defect and closeout tracking",
+        "Operational readiness and handover"
+      ],
+      deliverable: "Operational Handover",
+      imageUrl: "https://images.unsplash.com/photo-1541888086925-0c770f066eb7?w=800&q=80",
+      color: "from-orange-900/40 to-orange-900/5",
+      accent: "text-orange-400",
+      bgAccent: "bg-orange-400",
+      border: "border-orange-900/30",
+      bgHover: "group-hover:bg-orange-900/10"
+    }
+  ];
+
+  return (
+    <section id="service-lifecycle" className="relative px-6 py-20 md:py-32 bg-background border-t border-border overflow-hidden">
+      <div className="mx-auto max-w-7xl">
+        <div className="text-center mb-16 md:mb-24 max-w-3xl mx-auto flex flex-col items-center">
+          <Reveal>
+            <SectionLabel n="02" label="Service Lifecycle" />
+          </Reveal>
+          <Reveal delay={0.1}>
+            <h2 className="mt-6 font-display text-4xl leading-[1.1] md:text-5xl">
+              Four Stages. <em className="text-gradient-gold">One Security Lifecycle.</em>
+            </h2>
+          </Reveal>
+          <Reveal delay={0.2}>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Each stage will have its own professional visual, technical narrative, deliverables and connection to the next stage.
+            </p>
+          </Reveal>
+        </div>
+
+        <div className="space-y-8 md:space-y-12">
+          {stages.map((stage, i) => (
+            <Reveal key={stage.num} delay={0.1 + (i * 0.1)}>
+              <div className={`group relative flex flex-col md:flex-row overflow-hidden rounded-3xl border ${stage.border} bg-foreground/[0.02] ${stage.bgHover} transition-all duration-500 hover:shadow-2xl hover:-translate-y-1`}>
+                
+                {/* Colorful Gradient Background */}
+                <div className={`absolute inset-0 bg-gradient-to-r ${stage.color} opacity-30 group-hover:opacity-50 transition-opacity duration-500`} />
+
+                {/* Image Side (Left or Right alternating) */}
+                <div className={`w-full md:w-5/12 h-64 md:h-auto relative overflow-hidden ${i % 2 === 1 ? 'md:order-last' : ''}`}>
+                  <div className="absolute inset-0 bg-background/20 group-hover:bg-transparent transition-colors duration-500 z-10" />
+                  <img 
+                    src={stage.imageUrl} 
+                    alt={stage.title} 
+                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent md:hidden z-10" />
+                  
+                  {/* Number Overlay */}
+                  <div className="absolute bottom-4 left-6 md:top-6 md:left-6 md:bottom-auto z-20">
+                    <span className="font-display text-6xl md:text-7xl font-bold text-white/90 drop-shadow-lg leading-none">
+                      {stage.num}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Content Side */}
+                <div className="w-full md:w-7/12 relative z-10 p-8 md:p-12 flex flex-col justify-center">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className={`px-3 py-1 rounded-full text-xs font-mono uppercase tracking-wider bg-foreground/10 ${stage.accent} border border-foreground/10`}>
+                      Phase {stage.num}
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-3xl md:text-4xl font-display mb-4 text-foreground drop-shadow-sm leading-tight">
+                    {stage.title}
+                  </h3>
+                  
+                  <p className="text-foreground/80 text-lg leading-relaxed mb-8 max-w-2xl">
+                    {stage.desc}
+                  </p>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 mb-8">
+                    {stage.points.map((pt, j) => (
+                      <div key={j} className="flex items-start gap-3">
+                        <div className={`mt-2 h-1.5 w-1.5 rounded-full ${stage.bgAccent} shrink-0 shadow-[0_0_8px_currentColor]`} />
+                        <span className="text-foreground/80 text-[15px] leading-snug">{pt}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-auto pt-6 border-t border-foreground/10 flex items-center justify-between">
+                    <div>
+                      <span className="text-xs text-muted-foreground uppercase tracking-widest block mb-1 font-mono">Key Deliverable</span>
+                      <span className={`text-base font-medium ${stage.accent}`}>{stage.deliverable}</span>
+                    </div>
+                    
+                    {/* Next step indicator */}
+                    {i < stages.length - 1 && (
+                      <div className="hidden sm:flex items-center gap-2 text-muted-foreground group-hover:text-foreground transition-colors">
+                        <span className="text-xs uppercase tracking-widest font-mono">Next</span>
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+              </div>
+            </Reveal>
+          ))}
         </div>
       </div>
     </section>
