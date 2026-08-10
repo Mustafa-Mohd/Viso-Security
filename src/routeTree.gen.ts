@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SecurityRouteImport } from './routes/security'
 import { Route as OthersRouteImport } from './routes/others'
 import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ClientsRouteImport } from './routes/clients'
 import { Route as CertificatesRouteImport } from './routes/certificates'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -30,6 +31,11 @@ const OthersRoute = OthersRouteImport.update({
 const GalleryRoute = GalleryRouteImport.update({
   id: '/gallery',
   path: '/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ClientsRoute = ClientsRouteImport.update({
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/certificates': typeof CertificatesRoute
   '/clients': typeof ClientsRoute
+  '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/others': typeof OthersRoute
   '/security': typeof SecurityRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/certificates': typeof CertificatesRoute
   '/clients': typeof ClientsRoute
+  '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/others': typeof OthersRoute
   '/security': typeof SecurityRoute
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/certificates': typeof CertificatesRoute
   '/clients': typeof ClientsRoute
+  '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/others': typeof OthersRoute
   '/security': typeof SecurityRoute
@@ -88,6 +97,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/certificates'
     | '/clients'
+    | '/contact'
     | '/gallery'
     | '/others'
     | '/security'
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/certificates'
     | '/clients'
+    | '/contact'
     | '/gallery'
     | '/others'
     | '/security'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/certificates'
     | '/clients'
+    | '/contact'
     | '/gallery'
     | '/others'
     | '/security'
@@ -116,6 +128,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   CertificatesRoute: typeof CertificatesRoute
   ClientsRoute: typeof ClientsRoute
+  ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
   OthersRoute: typeof OthersRoute
   SecurityRoute: typeof SecurityRoute
@@ -142,6 +155,13 @@ declare module '@tanstack/react-router' {
       path: '/gallery'
       fullPath: '/gallery'
       preLoaderRoute: typeof GalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/clients': {
@@ -180,6 +200,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   CertificatesRoute: CertificatesRoute,
   ClientsRoute: ClientsRoute,
+  ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,
   OthersRoute: OthersRoute,
   SecurityRoute: SecurityRoute,

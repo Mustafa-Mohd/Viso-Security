@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
-import { Eye, EyeOff, LayoutDashboard, Image as ImageIcon, Settings, LogOut, ChevronRight, Save, Plus, Trash2, Upload, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, LayoutDashboard, Image as ImageIcon, Settings, LogOut, ChevronRight, Save, Plus, Trash2, Upload, AlertCircle, MessageSquare } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const Route = createFileRoute("/admin")({
@@ -27,6 +27,8 @@ function AdminPage() {
   // Gallery state
   const [images, setImages] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [imageUrlInput, setImageUrlInput] = useState("");
+  const [isDragging, setIsDragging] = useState(false);
 
   // Core Values state
   const [coreValues, setCoreValues] = useState<any[]>([]);
@@ -40,7 +42,8 @@ function AdminPage() {
   const seedAttempted = useRef(false);
   
   // Tabs
-  const [activeTab, setActiveTab] = useState<"gallery" | "core_values" | "homepage">("gallery");
+  const [activeTab, setActiveTab] = useState<"gallery" | "core_values" | "homepage" | "inquiries">("homepage");
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // CMS State
   const [cmsSection, setCmsSection] = useState<"hero" | "about" | "core_values" | "areas" | "services" | "framework" | "showcase" | "clients" | "lifecycle" | "locations" | "stats" | "cta">("hero");
@@ -139,6 +142,23 @@ function AdminPage() {
     imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80"
   });
 
+  // Inquiries State
+  const [inquiries, setInquiries] = useState<any[]>([]);
+  const [inquiriesLoading, setInquiriesLoading] = useState(false);
+
+  const fetchInquiries = async () => {
+    setInquiriesLoading(true);
+    const { data, error } = await supabase
+      .from('contact_submissions')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (!error && data) {
+      setInquiries(data);
+    }
+    setInquiriesLoading(false);
+  };
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -147,6 +167,7 @@ function AdminPage() {
         fetchImages();
         fetchCoreValues();
         fetchCmsData();
+        fetchInquiries();
       }
     });
 
@@ -158,6 +179,7 @@ function AdminPage() {
         fetchImages();
         fetchCoreValues();
         fetchCmsData();
+        fetchInquiries();
       }
     });
 
@@ -268,10 +290,7 @@ function AdminPage() {
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return;
-    const file = e.target.files[0];
-    
+  const uploadFileToGallery = async (file: File) => {
     setUploading(true);
     
     // 1. Upload to storage
@@ -308,6 +327,48 @@ function AdminPage() {
     }
     
     setUploading(false);
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    await uploadFileToGallery(e.target.files[0]);
+  };
+
+  const handleUrlSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!imageUrlInput) return;
+    
+    setUploading(true);
+    const { error: dbError } = await supabase
+      .from('gallery_images')
+      .insert([{ image_url: imageUrlInput }]);
+
+    if (dbError) {
+      console.error("Database error:", dbError);
+      alert("Error saving image URL to database.");
+    } else {
+      fetchImages(); // Refresh list
+      setImageUrlInput(""); // Clear input
+    }
+    setUploading(false);
+  };
+
+  const onDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const onDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const onDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      await uploadFileToGallery(e.dataTransfer.files[0]);
+    }
   };
 
   const handleDelete = async (id: string, imageUrl: string) => {
@@ -612,35 +673,62 @@ function AdminPage() {
     );
   }
 
+
   return (
-    <div className="flex h-screen bg-background text-foreground overflow-hidden">
+    <div className="flex flex-col md:flex-row h-screen bg-background text-foreground overflow-hidden">
+      
+      {/* Mobile Top Bar */}
+      <div className="md:hidden flex items-center justify-between p-4 border-b border-foreground/10 bg-surface/50 backdrop-blur-xl z-[40]">
+        <img src="https://res.cloudinary.com/dcefror3c/image/upload/v1782911668/Luxurious_black_and_gold_logo_design_kjv4np.png" alt="VISO Logo" className="h-6 w-auto object-contain" />
+        <button 
+          onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+          className="p-2 border border-foreground/10 rounded focus:outline-none"
+        >
+          <div className={`w-5 h-0.5 bg-foreground mb-1 transition-transform ${mobileSidebarOpen ? 'rotate-45 translate-y-1.5' : ''}`}></div>
+          <div className={`w-5 h-0.5 bg-foreground mb-1 transition-opacity ${mobileSidebarOpen ? 'opacity-0' : ''}`}></div>
+          <div className={`w-5 h-0.5 bg-foreground transition-transform ${mobileSidebarOpen ? '-rotate-45 -translate-y-1.5' : ''}`}></div>
+        </button>
+      </div>
+
       {/* Sidebar Navigation */}
-      <aside className="w-64 flex-shrink-0 border-r border-foreground/10 bg-surface/50 backdrop-blur-xl flex flex-col hidden md:flex">
-        <div className="p-6 border-b border-foreground/10">
+      <aside className={`fixed inset-y-0 left-0 z-[30] w-64 border-r border-foreground/10 bg-surface/95 md:bg-surface/50 backdrop-blur-xl flex flex-col transition-transform duration-300 md:relative md:translate-x-0 ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="p-6 border-b border-foreground/10 hidden md:block">
           <img src="https://res.cloudinary.com/dcefror3c/image/upload/v1782911668/Luxurious_black_and_gold_logo_design_kjv4np.png" alt="VISO Logo" className="h-8 w-auto object-contain" />
           <p className="mt-2 text-xs font-bold uppercase tracking-widest text-foreground/50">Admin Console</p>
         </div>
-        <div className="flex-1 overflow-y-auto p-4 space-y-2">
+        <div className="flex-1 overflow-y-auto p-4 space-y-2 mt-[70px] md:mt-0">
           <button
-            onClick={() => setActiveTab("homepage")}
+            onClick={() => { setActiveTab("homepage"); setMobileSidebarOpen(false); }}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'homepage' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
           >
             <LayoutDashboard size={18} />
             Homepage CMS
           </button>
           <button
-            onClick={() => setActiveTab("gallery")}
+            onClick={() => { setActiveTab("gallery"); setMobileSidebarOpen(false); }}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'gallery' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
           >
             <ImageIcon size={18} />
             Gallery
           </button>
           <button
-            onClick={() => setActiveTab("core_values")}
+            onClick={() => { setActiveTab("core_values"); setMobileSidebarOpen(false); }}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'core_values' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
           >
             <Settings size={18} />
             Legacy Core Values
+          </button>
+          <button
+            onClick={() => { setActiveTab("inquiries"); setMobileSidebarOpen(false); }}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'inquiries' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
+          >
+            <MessageSquare size={18} />
+            Inquiries
+            {inquiries.filter((inq) => inq.status === 'unread').length > 0 && (
+              <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                {inquiries.filter((inq) => inq.status === 'unread').length}
+              </span>
+            )}
           </button>
         </div>
         <div className="p-4 border-t border-foreground/10 space-y-4">
@@ -664,18 +752,54 @@ function AdminPage() {
 
         {activeTab === 'gallery' && (
           <>
-            <div className="bg-foreground/5 p-6 rounded-xl border border-foreground/10 mb-8">
-              <h2 className="text-xl mb-4">Upload New Image</h2>
-              <label className="cursor-pointer inline-block bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90 transition-colors">
-                {uploading ? 'Uploading...' : 'Select File'}
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleFileUpload}
-                  disabled={uploading}
-                />
-              </label>
+            <div className="bg-foreground/5 p-6 rounded-xl border border-foreground/10 mb-8 grid md:grid-cols-2 gap-8">
+              <div>
+                <h2 className="text-xl mb-4 font-display">Upload New Image</h2>
+                <div 
+                  className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-foreground/20 hover:border-primary/50'}`}
+                  onDragOver={onDragOver}
+                  onDragLeave={onDragLeave}
+                  onDrop={onDrop}
+                >
+                  <Upload className="w-8 h-8 mx-auto mb-4 text-foreground/40" />
+                  <p className="text-sm text-foreground/60 mb-4">Drag and drop your image here, or</p>
+                  <label className="cursor-pointer inline-block bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90 transition-colors shadow-sm">
+                    {uploading ? 'Uploading...' : 'Browse Files'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleFileUpload}
+                      disabled={uploading}
+                    />
+                  </label>
+                </div>
+              </div>
+              
+              <div>
+                <h2 className="text-xl mb-4 font-display">Or Add via URL</h2>
+                <form onSubmit={handleUrlSubmit} className="flex flex-col gap-4 bg-surface p-6 rounded-xl border border-foreground/10 h-full justify-center">
+                  <div>
+                    <label className="block text-sm font-medium mb-2 opacity-70">Image Address (URL)</label>
+                    <input 
+                      type="url" 
+                      required
+                      placeholder="https://example.com/image.jpg"
+                      value={imageUrlInput}
+                      onChange={(e) => setImageUrlInput(e.target.value)}
+                      className="w-full px-4 py-3 rounded-lg bg-background border border-foreground/20 focus:outline-none focus:border-primary transition-colors"
+                      disabled={uploading}
+                    />
+                  </div>
+                  <button 
+                    type="submit" 
+                    disabled={uploading || !imageUrlInput}
+                    className="bg-primary text-primary-foreground font-medium px-4 py-3 rounded-lg hover:bg-primary/90 transition-colors shadow-sm disabled:opacity-50"
+                  >
+                    {uploading ? 'Saving...' : 'Add Image URL'}
+                  </button>
+                </form>
+              </div>
             </div>
 
             <h2 className="text-xl mb-4">Current Images</h2>
@@ -1545,6 +1669,46 @@ function AdminPage() {
                 </div>
               )}
             </div>
+          </div>
+        )}
+
+        {/* INQUIRIES TAB */}
+        {activeTab === 'inquiries' && (
+          <div className="flex-1 flex flex-col p-6 overflow-y-auto">
+            <h1 className="text-3xl font-display mb-2">Inquiries</h1>
+            <p className="text-foreground/60 mb-8">View and manage contact submissions.</p>
+
+            {inquiriesLoading ? (
+              <div className="flex items-center justify-center p-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            ) : inquiries.length === 0 ? (
+              <div className="bg-surface/50 border border-foreground/10 rounded-xl p-12 text-center">
+                <p className="text-foreground/60">No inquiries found.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {inquiries.map((inq: any) => (
+                  <div key={inq.id} className="bg-surface/50 border border-foreground/10 rounded-xl p-6 shadow-sm flex flex-col md:flex-row gap-6">
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <h3 className="font-bold text-lg">{inq.name}</h3>
+                          {inq.company && <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full font-medium">{inq.company}</span>}
+                        </div>
+                        <span className="text-xs text-foreground/50">{new Date(inq.created_at).toLocaleString()}</span>
+                      </div>
+                      <div className="mb-4">
+                        <a href={`mailto:${inq.email}`} className="text-sm text-primary hover:underline">{inq.email}</a>
+                      </div>
+                      <div className="bg-background rounded-lg p-4 border border-foreground/5">
+                        <p className="text-foreground/80 text-sm whitespace-pre-wrap">{inq.message}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
         </div>

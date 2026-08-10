@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-router";
 import "../styles.css";
 import { CustomCursor } from "@/components/CustomCursor";
-import { ContactPopup } from "@/components/ContactPopup";
+
 import { Chatbot } from "@/components/Chatbot";
 
 function NotFoundComponent() {
@@ -83,7 +83,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <CustomCursor />
       <Outlet />
-      {!isAdmin && <ContactPopup />}
+
       <Chatbot />
     </QueryClientProvider>
   );

@@ -270,7 +270,7 @@ export function HeroSection({ data }: { data?: any }) {
   }, [activeImages.length]);
 
   return (
-    <section ref={ref} className="relative min-h-[100vh] pt-20 pb-20 overflow-hidden flex items-center">
+    <section ref={ref} className="relative min-h-[100dvh] pt-20 pb-20 overflow-hidden flex items-center">
       {/* Oversized Faded Background Typography */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none w-full flex justify-center z-0">
         <motion.h1
