@@ -50,7 +50,19 @@ function AdminPage() {
   const [servicesData, setServicesData] = useState<{ title1: string, title2: string, desc: string, items: any[] }>({ title1: "Architectural", title2: "Precision.", desc: "Our approach favors...", items: [] });
   const [frameworkData, setFrameworkData] = useState<{ titleMono: string, title1: string, title2: string, desc: string, items: any[] }>({ titleMono: "OUR METHODOLOGY", title1: "The Architecture", title2: "Of Security", desc: "A phased approach...", items: [] });
   const [showcaseData, setShowcaseData] = useState<{ imageUrl: string }>({ imageUrl: "" });
-  const [clientsData, setClientsData] = useState<{ titleMono: string, title1: string, title2: string, items: any[] }>({ titleMono: "Trusted By", title1: "Industry", title2: "Titans.", items: [] });
+  const [clientsData, setClientsData] = useState<{ titleMono: string, title1: string, title2: string, items: any[] }>({ 
+    titleMono: "Trusted By", 
+    title1: "Industry", 
+    title2: "Titans.", 
+    items: [
+      { name: "Saudi Aramco", sector: "Oil & Gas", icon: "🛢️" },
+      { name: "NEOM", sector: "Mega Project", icon: "🏙️" },
+      { name: "SAMA", sector: "Government / Financial", icon: "🏛️" },
+      { name: "Amazon", sector: "E-commerce", icon: "📦" },
+      { name: "ACWA Power", sector: "Power & Water", icon: "💡" },
+      { name: "Red Sea Global", sector: "Mega Project", icon: "🌊" },
+    ] 
+  });
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -753,7 +765,7 @@ function AdminPage() {
                 onClick={() => setCmsSection('clients')}
                 className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'clients' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-foreground/5'}`}
               >
-                Clients
+                Industry Titans (Clients)
               </button>
             </div>
 
@@ -1218,7 +1230,7 @@ function AdminPage() {
               {/* CLIENTS CMS */}
               {cmsSection === 'clients' && (
                 <div className="flex flex-col gap-4">
-                  <h2 className="text-2xl font-display mb-4">Edit Clients Section</h2>
+                  <h2 className="text-2xl font-display mb-4">Edit Industry Titans (Clients) Section</h2>
                   
                   <div>
                     <label className="block text-sm font-medium mb-1">Small Top Title</label>
