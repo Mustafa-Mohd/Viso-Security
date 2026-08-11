@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
-import { Eye, EyeOff, LayoutDashboard, Image as ImageIcon, Settings, LogOut, ChevronRight, Save, Plus, Trash2, Upload, AlertCircle, MessageSquare, Users, Briefcase, FileText } from "lucide-react";
+import { Eye, EyeOff, LayoutDashboard, Image as ImageIcon, Settings, LogOut, ChevronRight, Save, Plus, Trash2, Upload, AlertCircle, MessageSquare, Users, Briefcase, FileText, History } from "lucide-react";
 import { DmsDashboard } from "@/components/DmsDashboard";
 import { EmployeeDashboard } from "@/components/EmployeeDashboard";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -44,7 +44,7 @@ function AdminPage() {
   const seedAttempted = useRef(false);
   
   // Tabs
-  const [activeTab, setActiveTab] = useState<"gallery" | "core_values" | "homepage" | "inquiries" | "users" | "job_apps" | "dms" | "hr">("homepage");
+  const [activeTab, setActiveTab] = useState<"gallery" | "core_values" | "homepage" | "inquiries" | "users" | "job_apps" | "dms" | "hr" | "cms_history">("homepage");
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Job Apps State
@@ -73,6 +73,15 @@ function AdminPage() {
 
   // CMS State
   const [cmsSection, setCmsSection] = useState<"hero" | "about" | "core_values" | "areas" | "services" | "framework" | "showcase" | "clients" | "lifecycle" | "locations" | "stats" | "cta">("hero");
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+  const [auditLogsLoading, setAuditLogsLoading] = useState(false);
+
+  const fetchAuditLogs = async () => {
+    setAuditLogsLoading(true);
+    const { data } = await supabase.from('cms_audit_logs').select('*').order('changed_at', { ascending: false });
+    if (data) setAuditLogs(data);
+    setAuditLogsLoading(false);
+  };
   const [heroData, setHeroData] = useState({ 
     title1: "Designing", 
     title2: "The Future", 
@@ -153,10 +162,10 @@ function AdminPage() {
     title: "Service Lifecycle",
     subtitle: "Four Stages. One Security Lifecycle.",
     items: [
-      { num: "01", title: "Security Risk Assessment", desc: "Comprehensive assessment...", points: "Threat and vulnerability assessment\nPerimeter, gate and access-point review", deliverable: "Risk & Threat Matrix", imageUrl: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80", color: "from-blue-900/40 to-blue-900/5", accent: "text-blue-400", bgAccent: "bg-blue-400", border: "border-blue-900/30", bgHover: "group-hover:bg-blue-900/10" },
-      { num: "02", title: "Concept / Preliminary Design", desc: "Translate risk findings...", points: "Protection philosophy\nConcept CCTV coverage", deliverable: "Preliminary Design Report", imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80", color: "from-emerald-900/40 to-emerald-900/5", accent: "text-emerald-400", bgAccent: "bg-emerald-400", border: "border-emerald-900/30", bgHover: "group-hover:bg-emerald-900/10" },
-      { num: "03", title: "Detailed Design", desc: "Develop implementation-level drawings...", points: "Detailed layouts and schematics\nEquipment and device schedules", deliverable: "Tender-Ready Blueprints", imageUrl: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80", color: "from-purple-900/40 to-purple-900/5", accent: "text-purple-400", bgAccent: "bg-purple-400", border: "border-purple-900/30", bgHover: "group-hover:bg-purple-900/10" },
-      { num: "04", title: "Construction & Readiness", desc: "Supervision, technical submittal review...", points: "Construction supervision\nFAT / SAT and commissioning", deliverable: "Operational Handover", imageUrl: "https://images.unsplash.com/photo-1541888086925-0c770f066eb7?w=800&q=80", color: "from-orange-900/40 to-orange-900/5", accent: "text-orange-400", bgAccent: "bg-orange-400", border: "border-orange-900/30", bgHover: "group-hover:bg-orange-900/10" }
+      { num: "01", title: "Security Risk Assessment", desc: "Assessment of threats, vulnerabilities, perimeter, gates, access points, critical assets and the initial security concept around the facility.", points: "Threat and vulnerability assessment\nPerimeter, gate and access-point review\nCritical asset identification\nInitial protection requirements", deliverable: "Risk & Threat Matrix", imageUrl: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80", color: "from-blue-900/40 to-blue-900/5", accent: "text-blue-400", bgAccent: "bg-blue-400", border: "border-blue-900/30", bgHover: "group-hover:bg-blue-900/10" },
+      { num: "02", title: "Concept / Preliminary Design", desc: "Translate risk findings into a protection philosophy, security zoning, system concepts, preliminary layouts and technology requirements.", points: "Protection philosophy\nConcept CCTV coverage\nAccess control and zoning\nPreliminary control-room concept", deliverable: "Preliminary Design Report", imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80", color: "from-emerald-900/40 to-emerald-900/5", accent: "text-emerald-400", bgAccent: "bg-emerald-400", border: "border-emerald-900/30", bgHover: "group-hover:bg-emerald-900/10" },
+      { num: "03", title: "Detailed Design", desc: "Develop implementation-level drawings, specifications, schedules, interfaces and integration requirements suitable for procurement and construction.", points: "Detailed layouts and schematics\nEquipment and device schedules\nTechnical specifications\nSystems integration requirements", deliverable: "Tender-Ready Blueprints", imageUrl: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80", color: "from-purple-900/40 to-purple-900/5", accent: "text-purple-400", bgAccent: "bg-purple-400", border: "border-purple-900/30", bgHover: "group-hover:bg-purple-900/10" },
+      { num: "04", title: "Construction & Readiness", desc: "Supervision, technical submittal review, inspections, testing, commissioning, handover and confirmation of operational readiness.", points: "Construction supervision\nFAT / SAT and commissioning\nDefect and closeout tracking\nOperational readiness and handover", deliverable: "Operational Handover", imageUrl: "https://images.unsplash.com/photo-1541888086925-0c770f066eb7?w=800&q=80", color: "from-orange-900/40 to-orange-900/5", accent: "text-orange-400", bgAccent: "bg-orange-400", border: "border-orange-900/30", bgHover: "group-hover:bg-orange-900/10" }
     ]
   });
 
@@ -210,6 +219,7 @@ function AdminPage() {
           fetchCoreValues();
           fetchCmsData();
           fetchInquiries();
+          fetchAuditLogs();
         }
         if (storedSession.role === 'super_admin') fetchUsers();
         if (storedSession.role === 'super_admin' || storedSession.role === 'hr') fetchJobApps();
@@ -245,6 +255,7 @@ function AdminPage() {
          fetchCoreValues();
          fetchCmsData();
          fetchInquiries();
+         fetchAuditLogs();
        }
        if (data.role === 'super_admin') fetchUsers();
        if (data.role === 'super_admin' || data.role === 'hr') fetchJobApps();
@@ -676,7 +687,7 @@ function AdminPage() {
     try {
       const { data: existing } = await supabase
         .from('cms_content')
-        .select('section_key')
+        .select('section_key, content')
         .eq('section_key', section)
         .maybeSingle();
 
@@ -692,6 +703,23 @@ function AdminPage() {
           .insert([{ section_key: section, content: data }]);
         if (error) throw error;
       }
+      
+      // Save audit log
+      const auditPayload = {
+        section_key: section,
+        old_content: existing ? existing.content : null,
+        new_content: data,
+        changed_by: session?.email || 'Unknown User'
+      };
+      
+      const { error: auditError } = await supabase
+        .from('cms_audit_logs')
+        .insert([auditPayload]);
+        
+      if (auditError) {
+        console.error("Failed to save audit log:", auditError);
+      }
+
       alert(`${section} section saved successfully!`);
     } catch (error: any) {
       console.error("Error saving CMS section:", error);
@@ -762,6 +790,7 @@ function AdminPage() {
 
   const navItems = [
     { id: 'homepage', label: 'Homepage CMS', icon: LayoutDashboard, roles: ['super_admin', 'admin'] },
+    { id: 'cms_history', label: 'CMS History', icon: History, roles: ['super_admin', 'admin'] },
     { id: 'gallery', label: 'Gallery', icon: ImageIcon, roles: ['super_admin', 'admin'] },
     { id: 'inquiries', label: 'Inquiries', icon: MessageSquare, roles: ['super_admin', 'admin'], badge: inquiries.filter((inq) => inq.status === 'unread').length, badgeColor: 'bg-red-500 text-white' },
     { id: 'job_apps', label: 'Job Applications', icon: Briefcase, roles: ['super_admin', 'hr', 'admin'], badge: jobApps.filter((app) => app.status === 'New').length, badgeColor: 'bg-primary text-primary-foreground' },
@@ -781,13 +810,13 @@ function AdminPage() {
           <div className="flex justify-between h-16 items-center">
             
             {/* Logo */}
-            <div className="flex items-center flex-shrink-0">
+            <div className="flex flex-col items-center justify-center flex-shrink-0 pt-1">
               <img src="https://res.cloudinary.com/dcefror3c/image/upload/v1782911668/Luxurious_black_and_gold_logo_design_kjv4np.png" alt="VISO Logo" className="h-6 md:h-8 w-auto object-contain" />
-              <span className="ml-4 font-bold uppercase tracking-widest text-foreground/50 text-[10px] md:text-xs hidden md:block">Admin Console</span>
+              <span className="mt-0.5 font-bold uppercase tracking-widest text-foreground/50 text-[9px] hidden md:block">Admin Console</span>
             </div>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex space-x-2 flex-1 justify-center px-4 overflow-x-auto no-scrollbar">
+            <nav className="hidden lg:flex space-x-1.5 flex-1 justify-center px-2 flex-wrap">
               {visibleNavItems.map(item => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
@@ -795,9 +824,9 @@ function AdminPage() {
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id as any)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-md transition-all duration-300 text-sm whitespace-nowrap ${isActive ? 'bg-primary/10 text-primary font-bold' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md transition-all duration-300 text-xs whitespace-nowrap ${isActive ? 'bg-primary/10 text-primary font-bold' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
                   >
-                    <Icon size={16} />
+                    <Icon size={14} />
                     {item.label}
                     {(item.badge || 0) > 0 && (
                       <span className={`ml-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full ${item.badgeColor}`}>
@@ -814,13 +843,7 @@ function AdminPage() {
               <div className="hidden sm:block">
                 <ThemeToggle />
               </div>
-              <button
-                onClick={handleLogout}
-                className="hidden sm:flex items-center justify-center gap-2 px-3 py-1.5 bg-red-500/10 text-red-500 rounded-md hover:bg-red-500 hover:text-white transition-colors text-sm font-medium"
-              >
-                <LogOut size={16} />
-                Sign Out
-              </button>
+
 
               {/* Mobile Menu Button */}
               <button 
@@ -867,8 +890,17 @@ function AdminPage() {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto bg-background">
-        <div className="p-4 sm:p-6 md:p-10 max-w-screen-2xl mx-auto w-full">
+      <main className="flex-1 overflow-y-auto bg-background relative">
+        <div className="absolute top-4 right-4 sm:right-6 md:right-10 z-30 hidden sm:flex">
+          <button
+            onClick={handleLogout}
+            className="flex items-center justify-center gap-2 px-3 py-1.5 bg-red-500/10 text-red-500 rounded-md hover:bg-red-500 hover:text-white transition-colors text-xs font-medium shadow-sm backdrop-blur-sm"
+          >
+            <LogOut size={14} />
+            Sign Out
+          </button>
+        </div>
+        <div className="p-4 sm:p-6 md:p-10 max-w-screen-2xl mx-auto w-full pt-14 sm:pt-6 md:pt-10">
 
         {activeTab === 'gallery' && (
           <>
@@ -945,6 +977,55 @@ function AdminPage() {
         )}
 
 
+        {activeTab === 'cms_history' && (
+          <div className="flex flex-col gap-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-display">CMS Revision History</h2>
+              <button 
+                onClick={fetchAuditLogs}
+                className="bg-primary/10 text-primary px-4 py-2 rounded hover:bg-primary/20 transition-colors text-sm font-medium"
+              >
+                Refresh History
+              </button>
+            </div>
+            {auditLogsLoading ? (
+              <p>Loading history...</p>
+            ) : auditLogs.length === 0 ? (
+              <div className="bg-surface p-8 rounded-xl border border-foreground/10 text-center text-foreground/50">
+                No changes have been recorded yet.
+              </div>
+            ) : (
+              <div className="flex flex-col gap-4">
+                {auditLogs.map((log) => (
+                  <div key={log.id} className="bg-surface p-6 rounded-xl border border-foreground/10 flex flex-col gap-4">
+                    <div className="flex items-center justify-between border-b border-foreground/10 pb-4">
+                      <div className="flex items-center gap-3">
+                        <span className="bg-primary/20 text-primary font-bold px-3 py-1 rounded text-xs uppercase tracking-wider">{log.section_key}</span>
+                        <span className="text-foreground/70 text-sm">Changed by <strong className="text-foreground">{log.changed_by}</strong></span>
+                      </div>
+                      <span className="text-sm text-foreground/50">{new Date(log.changed_at).toLocaleString()}</span>
+                    </div>
+                    
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <h4 className="text-xs font-bold uppercase tracking-widest text-red-500 mb-2">Previous Content</h4>
+                        <pre className="bg-red-500/5 border border-red-500/20 p-4 rounded-lg text-xs overflow-x-auto whitespace-pre-wrap max-h-60 overflow-y-auto font-mono text-red-500/80">
+                          {log.old_content ? JSON.stringify(log.old_content, null, 2) : "None (Created)"}
+                        </pre>
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-bold uppercase tracking-widest text-emerald-500 mb-2">New Content</h4>
+                        <pre className="bg-emerald-500/5 border border-emerald-500/20 p-4 rounded-lg text-xs overflow-x-auto whitespace-pre-wrap max-h-60 overflow-y-auto font-mono text-emerald-500/80">
+                          {JSON.stringify(log.new_content, null, 2)}
+                        </pre>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {activeTab === 'homepage' && (
           <div className="flex flex-col md:flex-row gap-8">

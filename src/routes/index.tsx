@@ -135,8 +135,6 @@ function HomePage() {
           <ShowcaseSection data={cmsData.showcase} />
           <ClientsSection data={cmsData.clients} />
           <ServicesSection data={cmsData.services} />
-          <GallerySection />
-          <StatsSection data={cmsData.stats} />
           <CTASection data={cmsData.cta} />
         </main>
         <Footer />
