@@ -746,130 +746,115 @@ function AdminPage() {
   }
 
 
+  const navItems = [
+    { id: 'homepage', label: 'Homepage CMS', icon: LayoutDashboard, roles: ['super_admin', 'admin'] },
+    { id: 'gallery', label: 'Gallery', icon: ImageIcon, roles: ['super_admin', 'admin'] },
+    { id: 'inquiries', label: 'Inquiries', icon: MessageSquare, roles: ['super_admin', 'admin'], badge: inquiries.filter((inq) => inq.status === 'unread').length, badgeColor: 'bg-red-500 text-white' },
+    { id: 'job_apps', label: 'Job Applications', icon: Briefcase, roles: ['super_admin', 'hr', 'admin'], badge: jobApps.filter((app) => app.status === 'New').length, badgeColor: 'bg-primary text-primary-foreground' },
+    { id: 'dms', label: 'DMS Platform', icon: FileText, roles: ['super_admin', 'document_controller'] },
+    { id: 'hr', label: 'HR / ESS Portal', icon: Users, roles: ['super_admin', 'hr', 'employee'] },
+    { id: 'users', label: 'Users & Roles', icon: Settings, roles: ['super_admin'] },
+  ];
+
+  const visibleNavItems = navItems.filter(item => item.roles.includes(session?.role || ''));
+
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-background text-foreground overflow-hidden">
+    <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden">
       
-      {/* Mobile Top Bar */}
-      <div className="md:hidden flex items-center justify-between p-4 border-b border-foreground/10 bg-surface/50 backdrop-blur-xl z-[40]">
-        <img src="https://res.cloudinary.com/dcefror3c/image/upload/v1782911668/Luxurious_black_and_gold_logo_design_kjv4np.png" alt="VISO Logo" className="h-6 w-auto object-contain" />
-        <button 
-          onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-          className="p-2 border border-foreground/10 rounded focus:outline-none"
-        >
-          <div className={`w-5 h-0.5 bg-foreground mb-1 transition-transform ${mobileSidebarOpen ? 'rotate-45 translate-y-1.5' : ''}`}></div>
-          <div className={`w-5 h-0.5 bg-foreground mb-1 transition-opacity ${mobileSidebarOpen ? 'opacity-0' : ''}`}></div>
-          <div className={`w-5 h-0.5 bg-foreground transition-transform ${mobileSidebarOpen ? '-rotate-45 -translate-y-1.5' : ''}`}></div>
-        </button>
-      </div>
+      {/* Top Navbar */}
+      <header className="flex-none z-[40] w-full border-b border-foreground/10 bg-surface/95 backdrop-blur-xl">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16 items-center">
+            
+            {/* Logo */}
+            <div className="flex items-center flex-shrink-0">
+              <img src="https://res.cloudinary.com/dcefror3c/image/upload/v1782911668/Luxurious_black_and_gold_logo_design_kjv4np.png" alt="VISO Logo" className="h-6 md:h-8 w-auto object-contain" />
+              <span className="ml-4 font-bold uppercase tracking-widest text-foreground/50 text-[10px] md:text-xs hidden md:block">Admin Console</span>
+            </div>
 
-      {/* Sidebar Navigation */}
-      <aside className={`fixed inset-y-0 left-0 z-[30] w-64 border-r border-foreground/10 bg-surface/95 md:bg-surface/50 backdrop-blur-xl flex flex-col transition-transform duration-300 md:relative md:translate-x-0 ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="p-6 border-b border-foreground/10 hidden md:block">
-          <img src="https://res.cloudinary.com/dcefror3c/image/upload/v1782911668/Luxurious_black_and_gold_logo_design_kjv4np.png" alt="VISO Logo" className="h-8 w-auto object-contain" />
-          <p className="mt-2 text-xs font-bold uppercase tracking-widest text-foreground/50">Admin Console</p>
-        </div>
-        <div className="flex-1 overflow-y-auto p-4 space-y-2 mt-[70px] md:mt-0">
-          {(session?.role === 'super_admin' || session?.role === 'admin') && (
-            <>
-              <button
-                onClick={() => { setActiveTab("homepage"); setMobileSidebarOpen(false); }}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'homepage' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
-              >
-                <LayoutDashboard size={18} />
-                Homepage CMS
-              </button>
-              <button
-                onClick={() => { setActiveTab("gallery"); setMobileSidebarOpen(false); }}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'gallery' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
-              >
-                <ImageIcon size={18} />
-                Gallery
-              </button>
-              <button
-                onClick={() => { setActiveTab("core_values"); setMobileSidebarOpen(false); }}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'core_values' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
-              >
-                <Settings size={18} />
-                Legacy Core Values
-              </button>
-              <button
-                onClick={() => { setActiveTab("inquiries"); setMobileSidebarOpen(false); }}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'inquiries' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
-              >
-                <MessageSquare size={18} />
-                Inquiries
-                {inquiries.filter((inq) => inq.status === 'unread').length > 0 && (
-                  <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                    {inquiries.filter((inq) => inq.status === 'unread').length}
-                  </span>
-                )}
-              </button>
-            </>
-          )}
-          
-          {(session?.role === 'super_admin' || session?.role === 'hr' || session?.role === 'admin') && (
-            <button
-              onClick={() => { setActiveTab("job_apps"); setMobileSidebarOpen(false); }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'job_apps' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
-            >
-              <Briefcase size={18} />
-              Job Applications
-              {jobApps.filter((app) => app.status === 'New').length > 0 && (
-                <span className="ml-auto bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
-                  {jobApps.filter((app) => app.status === 'New').length}
-                </span>
-              )}
-            </button>
-          )}
+            {/* Desktop Navigation Links */}
+            <nav className="hidden lg:flex space-x-2 flex-1 justify-center px-4 overflow-x-auto no-scrollbar">
+              {visibleNavItems.map(item => {
+                const Icon = item.icon;
+                const isActive = activeTab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveTab(item.id as any)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-md transition-all duration-300 text-sm whitespace-nowrap ${isActive ? 'bg-primary/10 text-primary font-bold' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
+                  >
+                    <Icon size={16} />
+                    {item.label}
+                    {(item.badge || 0) > 0 && (
+                      <span className={`ml-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full ${item.badgeColor}`}>
+                        {item.badge}
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
+            </nav>
 
-          {(session?.role === 'super_admin' || session?.role === 'document_controller') && (
-            <button
-              onClick={() => { setActiveTab("dms"); setMobileSidebarOpen(false); }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'dms' ? 'bg-gold text-background font-medium shadow-lg shadow-gold/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
-            >
-              <FileText size={18} />
-              DMS Platform
-            </button>
-          )}
+            {/* Right Side (Theme, Logout, Mobile Menu) */}
+            <div className="flex items-center gap-3 md:gap-4">
+              <div className="hidden sm:block">
+                <ThemeToggle />
+              </div>
+              <button
+                onClick={handleLogout}
+                className="hidden sm:flex items-center justify-center gap-2 px-3 py-1.5 bg-red-500/10 text-red-500 rounded-md hover:bg-red-500 hover:text-white transition-colors text-sm font-medium"
+              >
+                <LogOut size={16} />
+                Sign Out
+              </button>
 
-          {(session?.role === 'super_admin' || session?.role === 'hr' || session?.role === 'employee') && (
-            <button
-              onClick={() => { setActiveTab("hr"); setMobileSidebarOpen(false); }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'hr' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
-            >
-              <Users size={18} />
-              HR / ESS Portal
-            </button>
-          )}
-          
-          {session?.role === 'super_admin' && (
-            <button
-              onClick={() => { setActiveTab("users"); setMobileSidebarOpen(false); }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'users' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
-            >
-              <Settings size={18} />
-              Users & Roles
-            </button>
-          )}
-        </div>
-        <div className="p-4 border-t border-foreground/10 space-y-4">
-          <div className="flex items-center justify-between px-2">
-            <span className="text-sm font-medium text-foreground/70">Theme</span>
-            <ThemeToggle />
+              {/* Mobile Menu Button */}
+              <button 
+                onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+                className="lg:hidden p-2 border border-foreground/10 rounded focus:outline-none bg-surface"
+              >
+                <div className={`w-5 h-0.5 bg-foreground mb-1 transition-transform ${mobileSidebarOpen ? 'rotate-45 translate-y-1.5' : ''}`}></div>
+                <div className={`w-5 h-0.5 bg-foreground mb-1 transition-opacity ${mobileSidebarOpen ? 'opacity-0' : ''}`}></div>
+                <div className={`w-5 h-0.5 bg-foreground transition-transform ${mobileSidebarOpen ? '-rotate-45 -translate-y-1.5' : ''}`}></div>
+              </button>
+            </div>
           </div>
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-colors font-medium"
-          >
-            <LogOut size={18} />
-            Sign Out
-          </button>
         </div>
-      </aside>
+
+        {/* Mobile Navigation Dropdown */}
+        <div className={`lg:hidden transition-all duration-300 ease-in-out border-t border-foreground/10 absolute w-full bg-surface/95 backdrop-blur-xl z-[35] shadow-lg ${mobileSidebarOpen ? 'max-h-[80vh] opacity-100 overflow-y-auto' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+           <div className="px-4 py-4 space-y-1 flex flex-col">
+              {visibleNavItems.map(item => {
+                const Icon = item.icon;
+                const isActive = activeTab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => { setActiveTab(item.id as any); setMobileSidebarOpen(false); }}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 text-sm ${isActive ? 'bg-primary text-primary-foreground font-medium shadow-md shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
+                  >
+                    <Icon size={18} />
+                    {item.label}
+                    {(item.badge || 0) > 0 && (
+                      <span className={`ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full ${item.badgeColor}`}>
+                        {item.badge}
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
+              
+              <div className="flex items-center justify-between p-2 mt-4 border-t border-foreground/10 sm:hidden">
+                 <ThemeToggle />
+                 <button onClick={handleLogout} className="flex items-center gap-2 text-red-500 font-medium px-2 py-2 hover:bg-red-500/10 rounded-md transition-colors"><LogOut size={16}/> Sign Out</button>
+              </div>
+           </div>
+        </div>
+      </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 h-full overflow-y-auto bg-background">
-        <div className="p-6 md:p-10 max-w-7xl mx-auto">
+      <main className="flex-1 overflow-y-auto bg-background">
+        <div className="p-4 sm:p-6 md:p-10 max-w-screen-2xl mx-auto w-full">
 
         {activeTab === 'gallery' && (
           <>
@@ -1650,19 +1635,60 @@ function AdminPage() {
                             X
                           </button>
                           
-                          <div className="grid grid-cols-[3rem_1fr] gap-3">
+                          <div className="flex flex-col gap-3">
                             <div>
-                              <label className="block text-xs font-bold mb-1 opacity-70">Icon</label>
-                              <input
-                                type="text"
-                                value={item.icon}
-                                onChange={(e) => {
-                                  const newItems = [...clientsData.items];
-                                  newItems[idx].icon = e.target.value;
-                                  setClientsData({ ...clientsData, items: newItems });
-                                }}
-                                className="w-full px-2 py-2 rounded bg-surface border border-foreground/20 focus:border-primary focus:outline-none text-center"
-                              />
+                              <label className="block text-xs font-bold mb-1 opacity-70">Icon (URL, Emoji, or Upload)</label>
+                              <div className="flex gap-2">
+                                <input
+                                  type="text"
+                                  value={item.icon}
+                                  placeholder="Emoji or Image URL"
+                                  onChange={(e) => {
+                                    const newItems = [...clientsData.items];
+                                    newItems[idx].icon = e.target.value;
+                                    setClientsData({ ...clientsData, items: newItems });
+                                  }}
+                                  className="w-full px-2 py-2 rounded bg-surface border border-foreground/20 focus:border-primary focus:outline-none text-center"
+                                />
+                                <label className="flex items-center justify-center bg-primary/10 text-primary p-2 rounded cursor-pointer hover:bg-primary/20 transition-colors" title="Upload Image">
+                                  <Upload size={16} />
+                                  <input 
+                                    type="file" 
+                                    className="hidden" 
+                                    accept="image/*"
+                                    onChange={async (e) => {
+                                      if (e.target.files && e.target.files[0]) {
+                                        const file = e.target.files[0];
+                                        const fileExt = file.name.split('.').pop();
+                                        const fileName = `${Math.random()}.${fileExt}`;
+                                        const filePath = `clients/${fileName}`;
+                                        
+                                        const { error: uploadError } = await supabase.storage
+                                          .from('gallery_images')
+                                          .upload(filePath, file);
+                                          
+                                        if (uploadError) {
+                                          alert("Error uploading image");
+                                          return;
+                                        }
+                                        
+                                        const { data: urlData } = supabase.storage
+                                          .from('gallery_images')
+                                          .getPublicUrl(filePath);
+                                          
+                                        const newItems = [...clientsData.items];
+                                        newItems[idx].icon = urlData.publicUrl;
+                                        setClientsData({ ...clientsData, items: newItems });
+                                      }
+                                    }}
+                                  />
+                                </label>
+                              </div>
+                              {item.icon && (item.icon.startsWith('http') || item.icon.startsWith('/')) && (
+                                <div className="mt-2 flex justify-center bg-surface p-2 rounded border border-foreground/10">
+                                  <img src={item.icon} alt="Preview" className="h-8 object-contain" />
+                                </div>
+                              )}
                             </div>
                             <div>
                               <label className="block text-xs font-bold mb-1 opacity-70">Name</label>

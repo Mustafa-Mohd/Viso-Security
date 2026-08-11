@@ -571,7 +571,13 @@ function ClientsSection({ data }: { data?: any }) {
                 transition={{ duration: 0.6, delay: 0.2 + (i * 0.1) }}
                 className="bg-surface border border-foreground/5 p-6 rounded-xl flex flex-col items-center justify-center text-center hover:border-gold/30 hover:-translate-y-1 transition-all duration-300 h-full w-full"
               >
-                <div className="text-4xl mb-4">{client.icon}</div>
+                <div className="text-4xl mb-4 h-12 flex items-center justify-center">
+                  {client.icon && (client.icon.startsWith('http') || client.icon.startsWith('/')) ? (
+                    <img src={client.icon} alt={client.name} className="max-h-full max-w-full object-contain" />
+                  ) : (
+                    client.icon
+                  )}
+                </div>
                 <h3 className="font-sans font-bold text-foreground text-sm">{client.name}</h3>
                 <p className="font-mono text-[10px] text-foreground/50 mt-1 uppercase tracking-wider">{client.sector}</p>
               </motion.div>
