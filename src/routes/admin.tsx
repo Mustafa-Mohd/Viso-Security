@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
-import { Eye, EyeOff, LayoutDashboard, Image as ImageIcon, Settings, LogOut, ChevronRight, Save, Plus, Trash2, Upload, AlertCircle, MessageSquare } from "lucide-react";
+import { Eye, EyeOff, LayoutDashboard, Image as ImageIcon, Settings, LogOut, ChevronRight, Save, Plus, Trash2, Upload, AlertCircle, MessageSquare, Users, Briefcase, FileText } from "lucide-react";
+import { DmsDashboard } from "@/components/DmsDashboard";
+import { EmployeeDashboard } from "@/components/EmployeeDashboard";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const Route = createFileRoute("/admin")({
@@ -42,8 +44,32 @@ function AdminPage() {
   const seedAttempted = useRef(false);
   
   // Tabs
-  const [activeTab, setActiveTab] = useState<"gallery" | "core_values" | "homepage" | "inquiries">("homepage");
+  const [activeTab, setActiveTab] = useState<"gallery" | "core_values" | "homepage" | "inquiries" | "users" | "job_apps" | "dms" | "hr">("homepage");
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  // Job Apps State
+  const [jobApps, setJobApps] = useState<any[]>([]);
+  const [jobAppsLoading, setJobAppsLoading] = useState(false);
+
+  const fetchJobApps = async () => {
+    setJobAppsLoading(true);
+    const { data } = await supabase.from('job_applications').select('*').order('created_at', { ascending: false });
+    if (data) setJobApps(data);
+    setJobAppsLoading(false);
+  };
+
+  // Users State
+  const [users, setUsers] = useState<any[]>([]);
+  const [newUserName, setNewUserName] = useState("");
+  const [newUserEmail, setNewUserEmail] = useState("");
+  const [newUserPassword, setNewUserPassword] = useState("");
+  const [newUserRole, setNewUserRole] = useState("document_controller");
+  const [newUserDept, setNewUserDept] = useState("Operations");
+
+  const fetchUsers = async () => {
+    const { data } = await supabase.from('portal_users').select('*').order('created_at', { ascending: false });
+    if (data) setUsers(data);
+  };
 
   // CMS State
   const [cmsSection, setCmsSection] = useState<"hero" | "about" | "core_values" | "areas" | "services" | "framework" | "showcase" | "clients" | "lifecycle" | "locations" | "stats" | "cta">("hero");
@@ -160,44 +186,90 @@ function AdminPage() {
   };
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-      if (session) {
-        fetchImages();
-        fetchCoreValues();
-        fetchCmsData();
-        fetchInquiries();
-      }
-    });
+    const storedSessionStr = localStorage.getItem('viso_admin_session');
+    if (storedSessionStr) {
+      try {
+        const storedSession = JSON.parse(storedSessionStr);
+        setSession(storedSession);
+        if (storedSession.role === 'super_admin' || storedSession.role === 'admin') {
+          fetchImages();
+          fetchCoreValues();
+          fetchCmsData();
+          fetchInquiries();
+        }
+        if (storedSession.role === 'super_admin') fetchUsers();
+        if (storedSession.role === 'super_admin' || storedSession.role === 'hr') fetchJobApps();
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      if (session) {
-        fetchImages();
-        fetchCoreValues();
-        fetchCmsData();
-        fetchInquiries();
+        // Default tab based on role if they re-open the page
+        if (storedSession.role === 'document_controller' && !["dms"].includes(activeTab)) setActiveTab("dms");
+        else if ((storedSession.role === 'employee' || storedSession.role === 'hr') && !["hr", "job_apps"].includes(activeTab)) setActiveTab("hr");
+      } catch (e) {
+        localStorage.removeItem('viso_admin_session');
       }
-    });
-
-    return () => subscription.unsubscribe();
+    }
+    setLoading(false);
   }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError("");
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) setLoginError(error.message);
+    const { data, error } = await supabase
+      .from('portal_users')
+      .select('*')
+      .eq('email', email)
+      .eq('password', password)
+      .maybeSingle();
+      
+    if (error || !data) {
+      setLoginError("Invalid email or password");
+    } else {
+       setSession(data);
+       localStorage.setItem('viso_admin_session', JSON.stringify(data));
+       
+       if (data.role === 'super_admin' || data.role === 'admin') {
+         fetchImages();
+         fetchCoreValues();
+         fetchCmsData();
+         fetchInquiries();
+       }
+       if (data.role === 'super_admin') fetchUsers();
+       if (data.role === 'super_admin' || data.role === 'hr') fetchJobApps();
+       
+       if (data.role === 'document_controller') setActiveTab("dms");
+       else if (data.role === 'employee' || data.role === 'hr') setActiveTab("hr");
+       else setActiveTab("homepage");
+    }
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    setSession(null);
+    localStorage.removeItem('viso_admin_session');
+  };
+
+  const handleCreateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const { error } = await supabase.from('portal_users').insert([{
+      name: newUserName,
+      email: newUserEmail,
+      password: newUserPassword,
+      role: newUserRole,
+      department: newUserDept,
+      grade: "Professional"
+    }]);
+    if (error) {
+      alert("Error creating user: " + error.message);
+    } else {
+      setNewUserName("");
+      setNewUserEmail("");
+      setNewUserPassword("");
+      fetchUsers();
+    }
+  };
+
+  const handleDeleteUser = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this user?")) return;
+    await supabase.from('portal_users').delete().eq('id', id);
+    fetchUsers();
   };
 
   const fetchImages = async () => {
@@ -697,39 +769,88 @@ function AdminPage() {
           <p className="mt-2 text-xs font-bold uppercase tracking-widest text-foreground/50">Admin Console</p>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-2 mt-[70px] md:mt-0">
-          <button
-            onClick={() => { setActiveTab("homepage"); setMobileSidebarOpen(false); }}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'homepage' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
-          >
-            <LayoutDashboard size={18} />
-            Homepage CMS
-          </button>
-          <button
-            onClick={() => { setActiveTab("gallery"); setMobileSidebarOpen(false); }}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'gallery' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
-          >
-            <ImageIcon size={18} />
-            Gallery
-          </button>
-          <button
-            onClick={() => { setActiveTab("core_values"); setMobileSidebarOpen(false); }}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'core_values' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
-          >
-            <Settings size={18} />
-            Legacy Core Values
-          </button>
-          <button
-            onClick={() => { setActiveTab("inquiries"); setMobileSidebarOpen(false); }}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'inquiries' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
-          >
-            <MessageSquare size={18} />
-            Inquiries
-            {inquiries.filter((inq) => inq.status === 'unread').length > 0 && (
-              <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                {inquiries.filter((inq) => inq.status === 'unread').length}
-              </span>
-            )}
-          </button>
+          {(session?.role === 'super_admin' || session?.role === 'admin') && (
+            <>
+              <button
+                onClick={() => { setActiveTab("homepage"); setMobileSidebarOpen(false); }}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'homepage' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
+              >
+                <LayoutDashboard size={18} />
+                Homepage CMS
+              </button>
+              <button
+                onClick={() => { setActiveTab("gallery"); setMobileSidebarOpen(false); }}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'gallery' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
+              >
+                <ImageIcon size={18} />
+                Gallery
+              </button>
+              <button
+                onClick={() => { setActiveTab("core_values"); setMobileSidebarOpen(false); }}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'core_values' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
+              >
+                <Settings size={18} />
+                Legacy Core Values
+              </button>
+              <button
+                onClick={() => { setActiveTab("inquiries"); setMobileSidebarOpen(false); }}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'inquiries' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
+              >
+                <MessageSquare size={18} />
+                Inquiries
+                {inquiries.filter((inq) => inq.status === 'unread').length > 0 && (
+                  <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    {inquiries.filter((inq) => inq.status === 'unread').length}
+                  </span>
+                )}
+              </button>
+            </>
+          )}
+          
+          {(session?.role === 'super_admin' || session?.role === 'hr' || session?.role === 'admin') && (
+            <button
+              onClick={() => { setActiveTab("job_apps"); setMobileSidebarOpen(false); }}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'job_apps' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
+            >
+              <Briefcase size={18} />
+              Job Applications
+              {jobApps.filter((app) => app.status === 'New').length > 0 && (
+                <span className="ml-auto bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  {jobApps.filter((app) => app.status === 'New').length}
+                </span>
+              )}
+            </button>
+          )}
+
+          {(session?.role === 'super_admin' || session?.role === 'document_controller') && (
+            <button
+              onClick={() => { setActiveTab("dms"); setMobileSidebarOpen(false); }}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'dms' ? 'bg-gold text-background font-medium shadow-lg shadow-gold/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
+            >
+              <FileText size={18} />
+              DMS Platform
+            </button>
+          )}
+
+          {(session?.role === 'super_admin' || session?.role === 'hr' || session?.role === 'employee') && (
+            <button
+              onClick={() => { setActiveTab("hr"); setMobileSidebarOpen(false); }}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'hr' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
+            >
+              <Users size={18} />
+              HR / ESS Portal
+            </button>
+          )}
+          
+          {session?.role === 'super_admin' && (
+            <button
+              onClick={() => { setActiveTab("users"); setMobileSidebarOpen(false); }}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${activeTab === 'users' ? 'bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
+            >
+              <Settings size={18} />
+              Users & Roles
+            </button>
+          )}
         </div>
         <div className="p-4 border-t border-foreground/10 space-y-4">
           <div className="flex items-center justify-between px-2">
@@ -1711,6 +1832,147 @@ function AdminPage() {
             )}
           </div>
         )}
+
+        {/* USERS & ROLES TAB */}
+        {activeTab === 'users' && session?.role === 'super_admin' && (
+          <div className="flex-1 flex flex-col p-6 overflow-y-auto">
+            <h1 className="text-3xl font-display mb-2">Users & Roles</h1>
+            <p className="text-foreground/60 mb-8">Manage employee credentials and portal access.</p>
+
+            <div className="bg-surface/50 border border-foreground/10 rounded-xl p-6 mb-8">
+              <h2 className="text-lg font-bold mb-4 flex items-center gap-2"><Plus size={18} /> Create New User</h2>
+              <form onSubmit={handleCreateUser} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Full Name</label>
+                  <input required type="text" value={newUserName} onChange={e => setNewUserName(e.target.value)} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Email</label>
+                  <input required type="email" value={newUserEmail} onChange={e => setNewUserEmail(e.target.value)} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Password</label>
+                  <input required type="text" value={newUserPassword} onChange={e => setNewUserPassword(e.target.value)} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Department</label>
+                  <input required type="text" value={newUserDept} onChange={e => setNewUserDept(e.target.value)} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium mb-1">Role</label>
+                  <select value={newUserRole} onChange={e => setNewUserRole(e.target.value)} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none">
+                    <option value="super_admin">Super Admin (Full Admin Access)</option>
+                    <option value="admin">Admin (CMS & Inquiries Only)</option>
+                    <option value="document_controller">Document Controller (DMS Portal)</option>
+                    <option value="hr">HR (ESS Portal)</option>
+                    <option value="employee">Employee (ESS Portal)</option>
+                  </select>
+                </div>
+                <div className="md:col-span-2 mt-2">
+                  <button type="submit" className="bg-primary text-primary-foreground px-6 py-2 rounded font-medium hover:bg-primary/90 transition-colors">Create User</button>
+                </div>
+              </form>
+            </div>
+
+            <div className="bg-surface/50 border border-foreground/10 rounded-xl overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm whitespace-nowrap">
+                  <thead className="bg-foreground/5 text-foreground/60 font-medium border-b border-foreground/10">
+                    <tr>
+                      <th className="px-6 py-4">Name</th>
+                      <th className="px-6 py-4">Email</th>
+                      <th className="px-6 py-4">Role</th>
+                      <th className="px-6 py-4">Department</th>
+                      <th className="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-foreground/5">
+                    {users.map(user => (
+                      <tr key={user.id} className="hover:bg-foreground/5 transition-colors">
+                        <td className="px-6 py-4 font-medium">{user.name}</td>
+                        <td className="px-6 py-4 text-foreground/70">{user.email}</td>
+                        <td className="px-6 py-4">
+                          <span className="bg-primary/10 text-primary px-2 py-1 rounded text-xs font-bold uppercase">{user.role.replace('_', ' ')}</span>
+                        </td>
+                        <td className="px-6 py-4 text-foreground/70">{user.department}</td>
+                        <td className="px-6 py-4 text-right">
+                          <button onClick={() => handleDeleteUser(user.id)} className="text-red-500 hover:text-red-600 transition-colors" disabled={user.email === 'superadmin@visogroup.com'}>
+                            <Trash2 size={16} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* JOB APPLICATIONS TAB */}
+        {activeTab === 'job_apps' && (session?.role === 'super_admin' || session?.role === 'hr' || session?.role === 'admin') && (
+          <div className="flex-1 flex flex-col p-6 overflow-y-auto">
+            <h1 className="text-3xl font-display mb-2">Job Applications</h1>
+            <p className="text-foreground/60 mb-8">Review candidates from the public Careers portal.</p>
+
+            {jobAppsLoading ? (
+              <div className="flex items-center justify-center p-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            ) : jobApps.length === 0 ? (
+              <div className="bg-surface/50 border border-foreground/10 rounded-xl p-12 text-center">
+                <p className="text-foreground/60">No applications received yet.</p>
+              </div>
+            ) : (
+              <div className="bg-surface/50 border border-foreground/10 rounded-xl overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm whitespace-nowrap">
+                    <thead className="bg-foreground/5 text-foreground/60 font-medium border-b border-foreground/10">
+                      <tr>
+                        <th className="px-6 py-4">Applicant</th>
+                        <th className="px-6 py-4">Position</th>
+                        <th className="px-6 py-4">Contact</th>
+                        <th className="px-6 py-4">Status</th>
+                        <th className="px-6 py-4 text-right">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-foreground/5">
+                      {jobApps.map(app => (
+                        <tr key={app.id} className="hover:bg-foreground/5 transition-colors">
+                          <td className="px-6 py-4 font-medium">{app.name}</td>
+                          <td className="px-6 py-4 text-primary font-bold">{app.position}</td>
+                          <td className="px-6 py-4 text-foreground/70">
+                            <div>{app.email}</div>
+                            {app.phone && <div className="text-xs">{app.phone}</div>}
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="bg-emerald-500/10 text-emerald-500 px-2 py-1 rounded text-xs font-bold uppercase">{app.status}</span>
+                          </td>
+                          <td className="px-6 py-4 text-right text-foreground/50">{new Date(app.created_at).toLocaleDateString()}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* DMS DASHBOARD */}
+        {activeTab === 'dms' && (session?.role === 'super_admin' || session?.role === 'document_controller') && (
+          <div className="flex-1 flex flex-col p-6 overflow-y-auto">
+            <DmsDashboard user={session} />
+          </div>
+        )}
+
+        {/* HR DASHBOARD */}
+        {activeTab === 'hr' && (session?.role === 'super_admin' || session?.role === 'hr' || session?.role === 'employee') && (
+          <div className="flex-1 flex flex-col p-6 overflow-y-auto">
+            <EmployeeDashboard user={session} />
+          </div>
+        )}
+        
         </div>
       </main>
     </div>
