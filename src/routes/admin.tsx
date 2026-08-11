@@ -128,10 +128,24 @@ function AdminPage() {
     items: [
       { name: "Saudi Aramco", sector: "Oil & Gas", icon: "🛢️" },
       { name: "NEOM", sector: "Mega Project", icon: "🏙️" },
-      { name: "SAMA", sector: "Government / Financial", icon: "🏛️" },
-      { name: "Amazon", sector: "E-commerce", icon: "📦" },
+      { name: "National Water Company", sector: "Water Utility", icon: "💧" },
+      { name: "Saudi Electricity Company", sector: "Power Utility", icon: "⚡" },
+      { name: "SAMA — Saudi Central Bank", sector: "Government / Financial", icon: "🏛️" },
+      { name: "Ma'aden", sector: "Mining", icon: "⛏️" },
+      { name: "SATORP", sector: "Refinery", icon: "🛢️" },
+      { name: "MARAFIQ", sector: "Utilities", icon: "🔌" },
       { name: "ACWA Power", sector: "Power & Water", icon: "💡" },
+      { name: "Saudi Chemical Company", sector: "Defense & Chemicals", icon: "🧪" },
+      { name: "Amazon", sector: "E-commerce", icon: "📦" },
+      { name: "Ritz-Carlton", sector: "Hospitality", icon: "🏨" },
+      { name: "Jotun", sector: "Paints", icon: "🎨" },
+      { name: "ROSHN", sector: "Real Estate", icon: "🏘️" },
       { name: "Red Sea Global", sector: "Mega Project", icon: "🌊" },
+      { name: "Royal Commission for Jubail & Yanbu", sector: "Government", icon: "🏛️" },
+      { name: "Red Sea International", sector: "Construction", icon: "🏗️" },
+      { name: "Dammam Port", sector: "Port Authority", icon: "⚓" },
+      { name: "Jeddah Islamic Port", sector: "Port", icon: "🚢" },
+      { name: "Jazan Port", sector: "Port", icon: "🛳️" },
     ] 
   });
   
@@ -662,7 +676,7 @@ function AdminPage() {
     try {
       const { data: existing } = await supabase
         .from('cms_content')
-        .select('id')
+        .select('section_key')
         .eq('section_key', section)
         .maybeSingle();
 

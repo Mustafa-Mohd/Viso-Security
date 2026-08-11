@@ -107,6 +107,14 @@ function HomePage() {
                     title={area.title} 
                     desc={area.desc} 
                     imageUrl={area.image_url} 
+                    svg={[
+                      <IntegratedSecuritySVG />, 
+                      <MeteorologySVG />, 
+                      <PlaneSVG />, 
+                      <IctSVG />, 
+                      <MarineSVG />, 
+                      <EngineeringSVG />
+                    ][i % 6]}
                     delay={0.1 + (i * 0.1)}
                   />
                 ))
@@ -131,6 +139,7 @@ function HomePage() {
           <StatsSection data={cmsData.stats} />
           <CTASection data={cmsData.cta} />
         </main>
+        <Footer />
       </div>
     </>
   );
@@ -374,7 +383,7 @@ function ServicesSection({ data }: { data?: any }) {
   ];
 
   return (
-    <section ref={ref} className="py-20 bg-surface relative">
+    <section ref={ref} className="pt-20 pb-0 bg-surface relative">
       <div className="max-w-[1600px] mx-auto px-8 md:px-16">
         <div className="grid lg:grid-cols-2 gap-20">
 
@@ -540,11 +549,28 @@ function ClientsSection({ data }: { data?: any }) {
   const clients = data?.items?.length > 0 ? data.items : [
     { name: "Saudi Aramco", sector: "Oil & Gas", icon: "🛢️" },
     { name: "NEOM", sector: "Mega Project", icon: "🏙️" },
-    { name: "SAMA", sector: "Government / Financial", icon: "🏛️" },
-    { name: "Amazon", sector: "E-commerce", icon: "📦" },
+    { name: "National Water Company", sector: "Water Utility", icon: "💧" },
+    { name: "Saudi Electricity Company", sector: "Power Utility", icon: "⚡" },
+    { name: "SAMA — Saudi Central Bank", sector: "Government / Financial", icon: "🏛️" },
+    { name: "Ma'aden", sector: "Mining", icon: "⛏️" },
+    { name: "SATORP", sector: "Refinery", icon: "🛢️" },
+    { name: "MARAFIQ", sector: "Utilities", icon: "🔌" },
     { name: "ACWA Power", sector: "Power & Water", icon: "💡" },
+    { name: "Saudi Chemical Company", sector: "Defense & Chemicals", icon: "🧪" },
+    { name: "Amazon", sector: "E-commerce", icon: "📦" },
+    { name: "Ritz-Carlton", sector: "Hospitality", icon: "🏨" },
+    { name: "Jotun", sector: "Paints", icon: "🎨" },
+    { name: "ROSHN", sector: "Real Estate", icon: "🏘️" },
     { name: "Red Sea Global", sector: "Mega Project", icon: "🌊" },
+    { name: "Royal Commission for Jubail & Yanbu", sector: "Government", icon: "🏛️" },
+    { name: "Red Sea International", sector: "Construction", icon: "🏗️" },
+    { name: "Dammam Port", sector: "Port Authority", icon: "⚓" },
+    { name: "Jeddah Islamic Port", sector: "Port", icon: "🚢" },
+    { name: "Jazan Port", sector: "Port", icon: "🛳️" },
   ];
+
+  const row1 = clients.slice(0, Math.ceil(clients.length / 2));
+  const row2 = clients.slice(Math.ceil(clients.length / 2));
 
   return (
     <section ref={ref} className="py-20 bg-background relative border-y border-foreground/5">
@@ -562,37 +588,54 @@ function ClientsSection({ data }: { data?: any }) {
           {title1} <span className="italic text-primary">{title2}</span>
         </motion.h2>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-12">
-          {clients.map((client: any, i: number) => (
-            <TiltCard key={i} className="h-full">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={inView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ duration: 0.6, delay: 0.2 + (i * 0.1) }}
-                className="bg-surface border border-foreground/5 p-6 rounded-xl flex flex-col items-center justify-center text-center hover:border-gold/30 hover:-translate-y-1 transition-all duration-300 h-full w-full"
-              >
-                <div className="text-4xl mb-4 h-12 flex items-center justify-center">
-                  {client.icon && (client.icon.startsWith('http') || client.icon.startsWith('/')) ? (
-                    <img src={client.icon} alt={client.name} className="max-h-full max-w-full object-contain" />
-                  ) : (
-                    client.icon
-                  )}
+        <div className="relative overflow-hidden w-full whitespace-nowrap mb-4 py-4">
+          {/* Fading edges */}
+          <div className="absolute top-0 left-0 w-16 md:w-48 h-full bg-gradient-to-r from-background to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute top-0 right-0 w-16 md:w-48 h-full bg-gradient-to-l from-background to-transparent z-10 pointer-events-none"></div>
+          
+          <div className="animate-marquee flex gap-6 w-max">
+            {[...row1, ...row1].map((client: any, i: number) => (
+              <div key={i} className="inline-block w-48 md:w-56 flex-shrink-0 px-4">
+                <div className="flex flex-col items-center justify-center text-center transition-all duration-300 h-full w-full whitespace-normal hover:-translate-y-1">
+                  <div className="text-5xl mb-4 h-16 flex items-center justify-center transition-all duration-500">
+                    {client.icon && (client.icon.startsWith('http') || client.icon.startsWith('/')) ? (
+                      <img src={client.icon} alt={client.name} className="max-h-full max-w-full object-contain" />
+                    ) : (
+                      client.icon
+                    )}
+                  </div>
+                  <h3 className="font-sans font-bold text-foreground text-sm tracking-wide">{client.name}</h3>
+                  <p className="font-mono text-[10px] text-foreground/50 mt-1 uppercase tracking-wider">{client.sector}</p>
                 </div>
-                <h3 className="font-sans font-bold text-foreground text-sm">{client.name}</h3>
-                <p className="font-mono text-[10px] text-foreground/50 mt-1 uppercase tracking-wider">{client.sector}</p>
-              </motion.div>
-            </TiltCard>
-          ))}
+              </div>
+            ))}
+          </div>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.8 }}
-        >
-          <Link to="/clients" className="inline-flex items-center gap-2 rounded-sm bg-surface-2 border border-foreground/10 px-8 py-4 font-sans text-xs font-bold tracking-[0.2em] text-foreground hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 uppercase">
-            View All Clients
-            <span className="text-lg leading-none">→</span>
-          </Link>
-        </motion.div>
+        <div className="relative overflow-hidden w-full whitespace-nowrap mb-12 py-4">
+          <div className="absolute top-0 left-0 w-16 md:w-48 h-full bg-gradient-to-r from-background to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute top-0 right-0 w-16 md:w-48 h-full bg-gradient-to-l from-background to-transparent z-10 pointer-events-none"></div>
+          
+          <div className="animate-marquee-reverse flex gap-6 w-max">
+            {[...row2, ...row2].map((client: any, i: number) => (
+              <div key={i} className="inline-block w-48 md:w-56 flex-shrink-0 px-4">
+                <div className="flex flex-col items-center justify-center text-center transition-all duration-300 h-full w-full whitespace-normal hover:-translate-y-1">
+                  <div className="text-5xl mb-4 h-16 flex items-center justify-center transition-all duration-500">
+                    {client.icon && (client.icon.startsWith('http') || client.icon.startsWith('/')) ? (
+                      <img src={client.icon} alt={client.name} className="max-h-full max-w-full object-contain" />
+                    ) : (
+                      client.icon
+                    )}
+                  </div>
+                  <h3 className="font-sans font-bold text-foreground text-sm tracking-wide">{client.name}</h3>
+                  <p className="font-mono text-[10px] text-foreground/50 mt-1 uppercase tracking-wider">{client.sector}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+
       </div>
     </section>
   );
@@ -1280,5 +1323,86 @@ function ServiceLifecycle({ data }: { data?: any }) {
         </div>
       </div>
     </section>
+  );
+}
+
+/* ============================================================
+   FOOTER SECTION
+   ============================================================ */
+function Footer() {
+  return (
+    <footer className="bg-foreground text-background py-16 border-t border-gold/20 relative overflow-hidden">
+      {/* Subtle gold glow at the top edge */}
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-50"></div>
+      
+      <div className="max-w-[1600px] mx-auto px-8 md:px-16 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
+          
+          {/* Brand Col */}
+          <div className="space-y-6">
+            <img 
+              src="https://res.cloudinary.com/dcefror3c/image/upload/v1782911668/Luxurious_black_and_gold_logo_design_kjv4np.png" 
+              alt="VISO Logo" 
+              className="h-16 w-auto object-contain brightness-0 invert" 
+            />
+            <p className="font-sans text-background/70 text-sm leading-relaxed max-w-xs">
+              Pioneering high-end security architecture, consulting, and seamless defensive integration for mega-projects worldwide.
+            </p>
+          </div>
+
+          {/* Links Col */}
+          <div>
+            <h4 className="font-display font-bold text-lg mb-6 text-gold">Explore</h4>
+            <ul className="space-y-3 font-sans text-sm text-background/70">
+              <li><Link to="/" className="hover:text-gold transition-colors">Home</Link></li>
+              <li><Link to="/career" className="hover:text-gold transition-colors">Careers</Link></li>
+              <li><Link to="/admin" className="hover:text-gold transition-colors">Portals & Admin</Link></li>
+            </ul>
+          </div>
+
+          {/* Contact Col */}
+          <div>
+            <h4 className="font-display font-bold text-lg mb-6 text-gold">Contact Us</h4>
+            <ul className="space-y-3 font-sans text-sm text-background/70">
+              <li className="flex items-center gap-3">
+                <span className="text-gold">📍</span> Riyadh, Saudi Arabia
+              </li>
+              <li className="flex items-center gap-3">
+                <span className="text-gold">✉️</span> info@visogroup.com
+              </li>
+              <li className="flex items-center gap-3">
+                <span className="text-gold">📞</span> +966 11 000 0000
+              </li>
+            </ul>
+          </div>
+
+          {/* Socials Col */}
+          <div>
+            <h4 className="font-display font-bold text-lg mb-6 text-gold">Connect</h4>
+            <div className="flex gap-4">
+              <a href="#" className="w-10 h-10 rounded-full border border-background/20 flex items-center justify-center text-background/70 hover:bg-gold hover:text-foreground hover:border-gold transition-all duration-300">
+                <span className="sr-only">LinkedIn</span>
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full border border-background/20 flex items-center justify-center text-background/70 hover:bg-gold hover:text-foreground hover:border-gold transition-all duration-300">
+                <span className="sr-only">Twitter</span>
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="border-t border-background/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-background/50 text-xs font-mono uppercase tracking-widest">
+            &copy; {new Date().getFullYear()} VISO Group. All rights reserved.
+          </p>
+          <div className="flex gap-6 text-background/50 text-xs font-mono uppercase tracking-widest">
+            <a href="#" className="hover:text-gold transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-gold transition-colors">Terms of Service</a>
+          </div>
+        </div>
+      </div>
+    </footer>
   );
 }
