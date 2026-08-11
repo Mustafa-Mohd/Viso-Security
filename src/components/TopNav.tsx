@@ -32,6 +32,7 @@ export function TopNav() {
           <Link to="/clients" className="font-sans text-sm font-medium tracking-wide text-foreground/80 hover:text-primary transition-colors duration-300">Clients</Link>
           <Link to="/certificates" className="font-sans text-sm font-medium tracking-wide text-foreground/80 hover:text-primary transition-colors duration-300">{t("nav.certifications")}</Link>
           <Link to="/gallery" className="font-sans text-sm font-medium tracking-wide text-foreground/80 hover:text-primary transition-colors duration-300">Gallery</Link>
+          <Link to="/career" className="font-sans text-sm font-medium tracking-wide text-foreground/80 hover:text-primary transition-colors duration-300">Careers</Link>
           <Link to="/contact" className="font-sans text-sm font-medium tracking-wide text-foreground/80 hover:text-primary transition-colors duration-300">Contact</Link>
         </div>
 
@@ -66,6 +67,7 @@ export function TopNav() {
           <Link to="/clients" onClick={() => setMobileMenuOpen(false)} className="font-display text-2xl tracking-wide hover:text-primary transition-colors">Clients</Link>
           <Link to="/certificates" onClick={() => setMobileMenuOpen(false)} className="font-display text-2xl tracking-wide hover:text-primary transition-colors">{t("nav.certifications")}</Link>
           <Link to="/gallery" onClick={() => setMobileMenuOpen(false)} className="font-display text-2xl tracking-wide hover:text-primary transition-colors">Gallery</Link>
+          <Link to="/career" onClick={() => setMobileMenuOpen(false)} className="font-display text-2xl tracking-wide hover:text-primary transition-colors">Careers</Link>
           <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="font-display text-2xl tracking-wide hover:text-primary transition-colors">Contact</Link>
           
           <div className="w-16 h-px bg-foreground/20 my-4"></div>
