@@ -130,7 +130,9 @@ function SecurityAnalysisPage() {
                     <div className="w-full h-full min-h-[250px] relative rounded-2xl overflow-hidden shadow-2xl border border-foreground/10 group bg-surface">
                       <img 
                         src={stage.img} 
-                        alt={stage.title} 
+                        alt={stage.title}
+                        loading="lazy"
+                        decoding="async"
                         className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out" 
                       />
                     </div>

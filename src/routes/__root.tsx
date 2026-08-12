@@ -6,10 +6,16 @@ import {
   useRouter,
   useLocation,
 } from "@tanstack/react-router";
+import { lazy, Suspense } from "react";
+import { LanguagePicker } from "@/components/LanguagePicker";
 import "../styles.css";
-import { CustomCursor } from "@/components/CustomCursor";
 
-import { Chatbot } from "@/components/Chatbot";
+const CustomCursor = lazy(() =>
+  import("@/components/CustomCursor").then((m) => ({ default: m.CustomCursor }))
+);
+const Chatbot = lazy(() =>
+  import("@/components/Chatbot").then((m) => ({ default: m.Chatbot }))
+);
 
 function NotFoundComponent() {
   return (
@@ -81,10 +87,16 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <CustomCursor />
+      {!isAdmin && <LanguagePicker />}
+      <Suspense fallback={null}>
+        <CustomCursor />
+      </Suspense>
       <Outlet />
-
-      <Chatbot />
+      {!isAdmin && (
+        <Suspense fallback={null}>
+          <Chatbot />
+        </Suspense>
+      )}
     </QueryClientProvider>
   );
 }

@@ -1,14 +1,30 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { TiltCard } from "@/components/TiltCard";
 import { motion, useScroll, useTransform, useInView, AnimatePresence, animate, useMotionValue, useSpring } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { TopNav } from "@/components/TopNav";
-import { LocationsSection } from "@/components/LocationsSection";
 import { supabase } from "@/lib/supabase";
-import { AboutInteractive } from "@/components/AboutInteractive";
+import { LazyMount } from "@/components/LazyMount";
+
+const AboutInteractive = lazy(() =>
+  import("@/components/AboutInteractive").then((m) => ({ default: m.AboutInteractive }))
+);
+const LocationsSection = lazy(() =>
+  import("@/components/LocationsSection").then((m) => ({ default: m.LocationsSection }))
+);
+
+function SectionFallback({ h = 320 }: { h?: number }) {
+  return (
+    <div
+      className="w-full animate-pulse rounded-sm bg-foreground/[0.04]"
+      style={{ minHeight: h }}
+      aria-hidden
+    />
+  );
+}
 
 export const Route = createFileRoute("/")({
   component: HomePage,
@@ -53,90 +69,118 @@ function HomePage() {
         <TopNav />
         <main>
           <HeroSection data={cmsData.hero} />
-          <About data={cmsData.about} />
-          <ServiceLifecycle data={cmsData.lifecycle} />
-        {/* Core Values Section */}
-        {cmsData.core_values && (
-          <div className="mt-20">
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1 }}
-              className="text-center mb-16"
-            >
-              <h2 className="text-4xl md:text-5xl font-light mb-4 text-foreground">{cmsData.core_values.title}</h2>
-              <p className="text-lg text-foreground/60">{cmsData.core_values.subtitle}</p>
-            </motion.div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <AnimatePresence>
-                {cmsData.core_values.items.map((cv: any, i: number) => (
-                  <ValueCard 
-                    key={cv.id || i}
-                    title={cv.title} 
-                    desc={cv.desc} 
-                    points={cv.points || []}
-                    imageUrl={cv.imageUrl} 
-                    delay={0.1 + (i * 0.1)}
-                  />
-                ))}
-              </AnimatePresence>
+          <LazyMount minHeight={720} fallback={<SectionFallback h={720} />}>
+            <Suspense fallback={<SectionFallback h={720} />}>
+              <About data={cmsData.about} />
+            </Suspense>
+          </LazyMount>
+
+          <LazyMount minHeight={600} fallback={<SectionFallback h={600} />}>
+            <ServiceLifecycle data={cmsData.lifecycle} />
+          </LazyMount>
+
+          {cmsData.core_values && (
+            <LazyMount minHeight={480} fallback={<SectionFallback h={480} />}>
+              <div className="mt-20">
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1 }}
+                  className="text-center mb-16"
+                >
+                  <h2 className="text-4xl md:text-5xl font-light mb-4 text-foreground">{cmsData.core_values.title}</h2>
+                  <p className="text-lg text-foreground/60">{cmsData.core_values.subtitle}</p>
+                </motion.div>
+
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <AnimatePresence>
+                    {cmsData.core_values.items.map((cv: any, i: number) => (
+                      <ValueCard
+                        key={cv.id || i}
+                        title={cv.title}
+                        desc={cv.desc}
+                        points={cv.points || []}
+                        imageUrl={cv.imageUrl}
+                        delay={0.1 + i * 0.1}
+                      />
+                    ))}
+                  </AnimatePresence>
+                </div>
+              </div>
+            </LazyMount>
+          )}
+
+          <LazyMount minHeight={520} fallback={<SectionFallback h={520} />}>
+            <div className="mt-20 border-t border-foreground/5 pt-16">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1 }}
+                className="text-center mb-16"
+              >
+                <h2 className="text-4xl md:text-5xl font-light mb-4 text-foreground">{cmsData.areas?.title || t("areas.title")}</h2>
+                <p className="text-lg text-foreground/60 max-w-2xl mx-auto">{cmsData.areas?.subtitle || t("areas.subtitle")}</p>
+              </motion.div>
+
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <AnimatePresence>
+                  {cmsData.areas?.items?.length > 0 ? (
+                    cmsData.areas.items.map((area: any, i: number) => (
+                      <AreaCard
+                        key={i}
+                        title={area.title}
+                        desc={area.desc}
+                        imageUrl={area.image_url}
+                        svg={[
+                          <IntegratedSecuritySVG />,
+                          <MeteorologySVG />,
+                          <PlaneSVG />,
+                          <IctSVG />,
+                          <MarineSVG />,
+                          <EngineeringSVG />,
+                        ][i % 6]}
+                        delay={0.1 + i * 0.1}
+                      />
+                    ))
+                  ) : (
+                    <>
+                      <AreaCard title={t("areas.items.a1.title")} desc={t("areas.items.a1.desc")} svg={<IntegratedSecuritySVG />} delay={0.1} />
+                      <AreaCard title={t("areas.items.a2.title")} desc={t("areas.items.a2.desc")} svg={<MeteorologySVG />} delay={0.2} />
+                      <AreaCard title={t("areas.items.a3.title")} desc={t("areas.items.a3.desc")} svg={<PlaneSVG />} delay={0.3} />
+                      <AreaCard title={t("areas.items.a4.title")} desc={t("areas.items.a4.desc")} svg={<IctSVG />} delay={0.4} />
+                      <AreaCard title={t("areas.items.a5.title")} desc={t("areas.items.a5.desc")} svg={<MarineSVG />} delay={0.5} />
+                      <AreaCard title={t("areas.items.a6.title")} desc={t("areas.items.a6.desc")} svg={<EngineeringSVG />} delay={0.6} />
+                    </>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
-          </div>
-        )}
+          </LazyMount>
 
-        {/* Areas We Serve Section */}
-        <div className="mt-20 border-t border-foreground/5 pt-16">
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-light mb-4 text-foreground">{cmsData.areas?.title || t("areas.title")}</h2>
-            <p className="text-lg text-foreground/60 max-w-2xl mx-auto">{cmsData.areas?.subtitle || t("areas.subtitle")}</p>
-          </motion.div>
+          <LazyMount minHeight={480} fallback={<SectionFallback h={480} />}>
+            <Suspense fallback={<SectionFallback h={480} />}>
+              <LocationsSection data={cmsData.locations} />
+            </Suspense>
+          </LazyMount>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <AnimatePresence>
-              {cmsData.areas?.items?.length > 0 ? (
-                cmsData.areas.items.map((area: any, i: number) => (
-                  <AreaCard 
-                    key={i}
-                    title={area.title} 
-                    desc={area.desc} 
-                    imageUrl={area.image_url} 
-                    svg={[
-                      <IntegratedSecuritySVG />, 
-                      <MeteorologySVG />, 
-                      <PlaneSVG />, 
-                      <IctSVG />, 
-                      <MarineSVG />, 
-                      <EngineeringSVG />
-                    ][i % 6]}
-                    delay={0.1 + (i * 0.1)}
-                  />
-                ))
-              ) : (
-                <>
-                  <AreaCard title={t("areas.items.a1.title")} desc={t("areas.items.a1.desc")} svg={<IntegratedSecuritySVG />} delay={0.1} />
-                  <AreaCard title={t("areas.items.a2.title")} desc={t("areas.items.a2.desc")} svg={<MeteorologySVG />} delay={0.2} />
-                  <AreaCard title={t("areas.items.a3.title")} desc={t("areas.items.a3.desc")} svg={<PlaneSVG />} delay={0.3} />
-                  <AreaCard title={t("areas.items.a4.title")} desc={t("areas.items.a4.desc")} svg={<IctSVG />} delay={0.4} />
-                  <AreaCard title={t("areas.items.a5.title")} desc={t("areas.items.a5.desc")} svg={<MarineSVG />} delay={0.5} />
-                  <AreaCard title={t("areas.items.a6.title")} desc={t("areas.items.a6.desc")} svg={<EngineeringSVG />} delay={0.6} />
-                </>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-          <LocationsSection data={cmsData.locations} />
-          <ShowcaseSection data={cmsData.showcase} />
-          <ClientsSection data={cmsData.clients} />
-          <ServicesSection data={cmsData.services} />
-          <CTASection data={cmsData.cta} />
+          <LazyMount minHeight={400} fallback={<SectionFallback h={400} />}>
+            <ShowcaseSection data={cmsData.showcase} />
+          </LazyMount>
+
+          <LazyMount minHeight={320} fallback={<SectionFallback h={320} />}>
+            <ClientsSection data={cmsData.clients} />
+          </LazyMount>
+
+          <LazyMount minHeight={360} fallback={<SectionFallback h={360} />}>
+            <ServicesSection data={cmsData.services} />
+          </LazyMount>
+
+          <LazyMount minHeight={280} fallback={<SectionFallback h={280} />}>
+            <CTASection data={cmsData.cta} />
+          </LazyMount>
         </main>
         <Footer />
       </div>
@@ -151,13 +195,13 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
   const [phase, setPhase] = useState(0);
 
   useEffect(() => {
-    // 7.5 seconds total to allow the final phase to hold longer.
+    // Keep intro snappy so the page can feel responsive
     const sequence = [
-      setTimeout(() => setPhase(1), 1200),
-      setTimeout(() => setPhase(2), 2400),
-      setTimeout(() => setPhase(3), 3600),
+      setTimeout(() => setPhase(1), 700),
+      setTimeout(() => setPhase(2), 1400),
+      setTimeout(() => setPhase(3), 2100),
     ];
-    const timer = setTimeout(onDone, 7500);
+    const timer = setTimeout(onDone, 3200);
 
     return () => {
       sequence.forEach(clearTimeout);
@@ -397,6 +441,8 @@ export function HeroSection({ data }: { data?: any }) {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 1.4, ease: "easeInOut" }}
+                loading={currentImage === 0 ? "eager" : "lazy"}
+                decoding="async"
                 className="w-full h-full object-cover absolute inset-0"
               />
             </AnimatePresence>
@@ -429,6 +475,8 @@ export function HeroSection({ data }: { data?: any }) {
             <img
               src="https://res.cloudinary.com/dcefror3c/image/upload/v1782911817/Luxurious_black_and_gold_logo_design-removebg-preview_pztvcs.png"
               alt="VISO Group Logo"
+              loading="eager"
+              decoding="async"
               className="w-[70%] h-[70%] object-contain drop-shadow-[0_10px_20px_rgba(212,175,55,0.2)]"
             />
           </motion.div>
@@ -442,16 +490,17 @@ export function HeroSection({ data }: { data?: any }) {
    SERVICES SECTION (Swiss Editorial Layout)
    ============================================================ */
 function ServicesSection({ data }: { data?: any }) {
+  const { t } = useTranslation();
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.2 });
 
-  const title1 = data?.title1 || "Architectural";
-  const title2 = data?.title2 || "Precision.";
-  const desc = data?.desc || "Our approach favors minimalism and strict geometric order, ensuring that safety protocols disappear into the elegance of the structure.";
+  const title1 = data?.title1 || t("home_extra.architectural");
+  const title2 = data?.title2 || t("home_extra.integrity");
+  const desc = data?.desc || t("home_extra.approach_desc");
   const services = data?.items?.length > 0 ? data.items : [
-    { num: "01", title: "Master Planning", desc: "Holistic site analysis and macro-scale architectural defensive zoning." },
-    { num: "02", title: "Facade Engineering", desc: "Integrating blast-resistant aesthetics without compromising visual purity." },
-    { num: "03", title: "Access Topography", desc: "Seamless flow management blending security gates into environmental design." },
+    { num: "01", title: t("home_extra.master_planning"), desc: t("home_extra.master_planning_desc") },
+    { num: "02", title: t("home_extra.facade"), desc: t("home_extra.facade_desc") },
+    { num: "03", title: t("home_extra.access"), desc: t("home_extra.access_desc") },
   ];
 
   return (
@@ -598,7 +647,7 @@ function ShowcaseSection({ data }: { data?: any }) {
       <div className="max-w-[1600px] mx-auto px-8 md:px-16">
         <div className="relative h-[70vh] rounded-xl overflow-hidden group">
           <motion.div style={{ y: y1 }} className="absolute inset-[-20%]">
-            <img src={bgImage} alt="Showcase" className="w-full h-full object-cover" />
+            <img src={bgImage} alt="Showcase" loading="lazy" decoding="async" className="w-full h-full object-cover" />
           </motion.div>
           <div className="absolute inset-0 bg-primary/20 group-hover:bg-primary/10 transition-colors duration-700" />
         </div>
@@ -671,7 +720,7 @@ function ClientsSection({ data }: { data?: any }) {
                 <div className="flex flex-col items-center justify-center text-center transition-all duration-300 h-full w-full whitespace-normal hover:-translate-y-1">
                   <div className="text-5xl mb-4 h-16 flex items-center justify-center transition-all duration-500">
                     {client.icon && (client.icon.startsWith('http') || client.icon.startsWith('/')) ? (
-                      <img src={client.icon} alt={client.name} className="max-h-full max-w-full object-contain" />
+                      <img src={client.icon} alt={client.name} loading="lazy" decoding="async" className="max-h-full max-w-full object-contain" />
                     ) : (
                       client.icon
                     )}
@@ -694,7 +743,7 @@ function ClientsSection({ data }: { data?: any }) {
                 <div className="flex flex-col items-center justify-center text-center transition-all duration-300 h-full w-full whitespace-normal hover:-translate-y-1">
                   <div className="text-5xl mb-4 h-16 flex items-center justify-center transition-all duration-500">
                     {client.icon && (client.icon.startsWith('http') || client.icon.startsWith('/')) ? (
-                      <img src={client.icon} alt={client.name} className="max-h-full max-w-full object-contain" />
+                      <img src={client.icon} alt={client.name} loading="lazy" decoding="async" className="max-h-full max-w-full object-contain" />
                     ) : (
                       client.icon
                     )}
@@ -773,7 +822,7 @@ function GallerySection() {
               transition={{ duration: 0.6, delay: 0.3 + (i * 0.1) }}
               className="group relative h-[300px] rounded-xl overflow-hidden shadow-lg border border-foreground/5 cursor-pointer"
             >
-              <img src={src} alt={`Gallery Image ${i + 1}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+              <img src={src} alt={`Gallery Image ${i + 1}`} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
               <div className="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
                 <span className="text-white font-mono text-xs tracking-widest uppercase">View</span>
               </div>
@@ -818,11 +867,11 @@ function StatsSection({ data }: { data?: any }) {
   const inView = useInView(ref, { once: false, amount: 0.3 });
 
   const stats = data?.items || [
-    { target: 2, prefix: "$", suffix: "B+", label: "Assets Protected" },
-    { target: 45, prefix: "", suffix: "", label: "Global Partners" },
-    { target: 99, prefix: "", suffix: "%", label: "Design Compliance" },
+    { target: 2, prefix: "$", suffix: "B+", label: t("home_extra.assets") },
+    { target: 45, prefix: "", suffix: "", label: t("home_extra.partners") },
+    { target: 99, prefix: "", suffix: "%", label: t("home_extra.compliance") },
   ];
-  const title = data?.title || "Measurable Excellence";
+  const title = data?.title || t("home_extra.measurable");
 
   return (
     <section ref={ref} className="py-20 bg-surface border-y border-foreground/5">
@@ -869,10 +918,11 @@ function StatsSection({ data }: { data?: any }) {
    CTA SECTION
    ============================================================ */
 function CTASection({ data }: { data?: any }) {
-  const title1 = data?.title1 || "Ready to shape";
-  const title2 = data?.title2 || "the future?";
-  const desc = data?.desc || "Connect with our lead architects and security consultants to begin your project.";
-  const buttonText = data?.buttonText || "SCHEDULE CONSULTATION";
+  const { t } = useTranslation();
+  const title1 = data?.title1 || t("home_extra.ready_title1");
+  const title2 = data?.title2 || t("home_extra.ready_title2");
+  const desc = data?.desc || t("home_extra.ready_desc");
+  const buttonText = data?.buttonText || t("home_extra.get_in_touch");
   const imageUrl = data?.imageUrl;
 
   return (
@@ -893,7 +943,7 @@ function CTASection({ data }: { data?: any }) {
         <div className="flex-1 w-full relative h-[400px] rounded-xl overflow-hidden shadow-2xl border border-foreground/10 z-10 group bg-surface">
           <div className="absolute inset-0 bg-primary/5 pointer-events-none z-10"></div>
           {imageUrl ? (
-            <img src={imageUrl} alt="Call to Action" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <img src={imageUrl} alt="Call to Action" loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
           ) : (
           <iframe 
             src="https://maps.google.com/maps?q=VISO+Group,+Riyadh&t=&z=14&ie=UTF8&iwloc=&output=embed" 
@@ -1058,7 +1108,7 @@ function ValueCard({ title, desc, points, imageUrl, delay }: { title: string, de
       {/* Default State */}
       <div className="absolute inset-0 p-8 flex flex-col items-center transition-transform duration-700 ease-out group-hover:-translate-y-[120%]">
         <div className="h-40 w-40 mb-6 mt-2 rounded-xl overflow-hidden border border-foreground/10 group-hover:border-gold transition-colors duration-500 shadow-md">
-          <img src={imageUrl} alt={title} className="w-full h-full object-cover" />
+          <img src={imageUrl} alt={title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
         </div>
         <h3 className="font-display text-2xl mb-4 text-foreground">{title}</h3>
         <p className="font-sans text-sm text-foreground/60 leading-relaxed">
@@ -1069,7 +1119,7 @@ function ValueCard({ title, desc, points, imageUrl, delay }: { title: string, de
       {/* Hover State (Points) */}
       <div className="absolute inset-0 p-8 flex flex-col items-center justify-center translate-y-full opacity-0 transition-all duration-700 ease-out group-hover:translate-y-0 group-hover:opacity-100 bg-surface">
         <div className="h-20 w-20 mb-4 rounded-xl overflow-hidden border-2 border-gold shadow-lg shadow-gold/20">
-          <img src={imageUrl} alt={title} className="w-full h-full object-cover" />
+          <img src={imageUrl} alt={title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
         </div>
         <h3 className="font-display text-xl mb-4 text-foreground">{title}</h3>
         <ul className="text-left w-full space-y-4">
@@ -1131,7 +1181,7 @@ function AreaCard({ title, desc, svg, imageUrl, delay }: { title: string, desc: 
     >
       <div className="h-16 w-16 mb-6 text-primary group-hover:text-gold transition-colors duration-500 relative">
         <div className="absolute inset-0 bg-primary/5 group-hover:bg-gold/10 rounded-full scale-150 transition-colors duration-500 -z-10 blur-xl"></div>
-        {imageUrl ? <img src={imageUrl} alt={title} className="w-full h-full object-contain" /> : svg}
+        {imageUrl ? <img src={imageUrl} alt={title} loading="lazy" decoding="async" className="w-full h-full object-contain" /> : svg}
       </div>
       <h3 className="font-display font-semibold text-lg tracking-wide mb-3 text-foreground">{title}</h3>
       <p className="font-sans text-sm text-foreground/60 leading-relaxed">
@@ -1370,7 +1420,9 @@ function ServiceLifecycle({ data }: { data?: any }) {
                   <div className="absolute inset-0 bg-background/20 group-hover:bg-transparent transition-colors duration-500 z-10" />
                   <img 
                     src={stage.imageUrl} 
-                    alt={stage.title} 
+                    alt={stage.title}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent md:hidden z-10" />
@@ -1446,7 +1498,9 @@ function Footer() {
           <div className="space-y-6">
             <img 
               src="https://res.cloudinary.com/dcefror3c/image/upload/v1782911668/Luxurious_black_and_gold_logo_design_kjv4np.png" 
-              alt="VISO Logo" 
+              alt="VISO Logo"
+              loading="lazy"
+              decoding="async"
               className="h-16 w-auto object-contain brightness-0 invert" 
             />
             <p className="font-sans text-background/70 text-sm leading-relaxed max-w-xs">

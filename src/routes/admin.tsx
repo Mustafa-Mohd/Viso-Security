@@ -16,6 +16,131 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
+type FieldChange = {
+  path: string;
+  label: string;
+  from: string;
+  to: string;
+};
+
+function formatValue(value: unknown): string {
+  if (value === null || value === undefined || value === "") return "—";
+  if (typeof value === "string") return value;
+  if (typeof value === "number" || typeof value === "boolean") return String(value);
+  if (Array.isArray(value)) {
+    if (value.length === 0) return "—";
+    if (value.every((v) => typeof v === "string")) return value.join(", ");
+    return JSON.stringify(value);
+  }
+  if (typeof value === "object") return JSON.stringify(value);
+  return String(value);
+}
+
+function humanizeKey(key: string): string {
+  return key
+    .replace(/([A-Z])/g, " $1")
+    .replace(/[_\-.]/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+    .trim();
+}
+
+function collectChanges(
+  oldObj: any,
+  newObj: any,
+  prefix = ""
+): FieldChange[] {
+  const changes: FieldChange[] = [];
+  const oldSafe = oldObj && typeof oldObj === "object" ? oldObj : {};
+  const newSafe = newObj && typeof newObj === "object" ? newObj : {};
+  const keys = Array.from(new Set([...Object.keys(oldSafe), ...Object.keys(newSafe)]));
+
+  for (const key of keys) {
+    const path = prefix ? `${prefix}.${key}` : key;
+    const a = oldSafe[key];
+    const b = newSafe[key];
+
+    const bothObjects =
+      a &&
+      b &&
+      typeof a === "object" &&
+      typeof b === "object" &&
+      !Array.isArray(a) &&
+      !Array.isArray(b);
+
+    if (bothObjects) {
+      changes.push(...collectChanges(a, b, path));
+      continue;
+    }
+
+    const from = formatValue(a);
+    const to = formatValue(b);
+    if (from === to) continue;
+
+    const leaf = path.includes(".") ? path.split(".").slice(-1)[0] : path;
+    const parentBits = path.split(".").slice(0, -1);
+    const label =
+      parentBits.length > 0
+        ? `${humanizeKey(leaf)} (${parentBits.map(humanizeKey).join(" › ")})`
+        : humanizeKey(leaf);
+
+    changes.push({ path, label, from, to });
+  }
+
+  return changes;
+}
+
+function CmsChangeDiff({
+  oldContent,
+  newContent,
+}: {
+  oldContent: any;
+  newContent: any;
+}) {
+  if (!oldContent) {
+    return (
+      <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-400">
+        Section created — all fields are new.
+      </div>
+    );
+  }
+
+  const changes = collectChanges(oldContent, newContent);
+
+  if (changes.length === 0) {
+    return (
+      <div className="rounded-lg border border-foreground/10 bg-foreground/[0.02] px-4 py-3 text-sm text-foreground/50">
+        No visible field changes.
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-3">
+      {changes.map((change) => (
+        <div
+          key={change.path}
+          className="rounded-lg border border-foreground/8 bg-surface-2/80 px-4 py-3"
+        >
+          <p className="text-[11px] font-bold uppercase tracking-widest text-foreground/45 mb-2">
+            {change.label}
+          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 text-sm">
+            <span className="flex-1 rounded-md bg-red-500/10 border border-red-500/20 px-3 py-2 text-red-600 dark:text-red-400 line-through decoration-red-500/40 break-words">
+              {change.from}
+            </span>
+            <span className="shrink-0 text-foreground/35 font-medium text-xs uppercase tracking-wider text-center">
+              →
+            </span>
+            <span className="flex-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 text-emerald-700 dark:text-emerald-400 font-medium break-words">
+              {change.to}
+            </span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function AdminPage() {
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -1025,21 +1150,8 @@ function AdminPage() {
                       </div>
                       <span className="text-sm text-foreground/50">{new Date(log.changed_at).toLocaleString()}</span>
                     </div>
-                    
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div>
-                        <h4 className="text-xs font-bold uppercase tracking-widest text-red-500 mb-2">Previous Content</h4>
-                        <pre className="bg-red-500/5 border border-red-500/20 p-4 rounded-lg text-xs overflow-x-auto whitespace-pre-wrap max-h-60 overflow-y-auto font-mono text-red-500/80">
-                          {log.old_content ? JSON.stringify(log.old_content, null, 2) : "None (Created)"}
-                        </pre>
-                      </div>
-                      <div>
-                        <h4 className="text-xs font-bold uppercase tracking-widest text-emerald-500 mb-2">New Content</h4>
-                        <pre className="bg-emerald-500/5 border border-emerald-500/20 p-4 rounded-lg text-xs overflow-x-auto whitespace-pre-wrap max-h-60 overflow-y-auto font-mono text-emerald-500/80">
-                          {JSON.stringify(log.new_content, null, 2)}
-                        </pre>
-                      </div>
-                    </div>
+
+                    <CmsChangeDiff oldContent={log.old_content} newContent={log.new_content} />
                   </div>
                 ))}
               </div>

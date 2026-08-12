@@ -1,11 +1,18 @@
 {
   "nav": {
+    "home": "Home",
+    "about": "About",
     "overview": "Overview",
     "security": "Security",
+    "clients": "Clients",
     "expertise": "Expertise",
     "certifications": "Certifications",
+    "gallery": "Gallery",
+    "careers": "Careers",
+    "contact": "Contact",
     "engage": "OTHERS",
-    "lang_toggle": "اردو"
+    "lang_toggle": "العربية",
+    "lang_switch": "Switch to العربية"
   },
   "home": {
     "strategic_architecture": "Strategic Architecture",
@@ -359,6 +366,170 @@
         "name": "Tabuk",
         "region": "Northern Region"
       }
+    },
+    "presence": "Presence",
+    "cities_count": "Cities",
+    "regions_count": "Regions",
+    "coverage": "Coverage",
+    "nationwide_short": "Nationwide",
+    "blurbs": {
+      "riyadh": "Headquarters & national operations hub.",
+      "jeddah": "Gateway to western coastal projects.",
+      "makkah": "High-security heritage & pilgrimage environments.",
+      "madina": "Regional coverage for sacred-city assets.",
+      "dammam": "Eastern Province commercial corridor.",
+      "jubail": "Industrial & petrochemical security programs.",
+      "yanbu": "Red Sea industrial facility coverage.",
+      "neom": "Next-gen mega-project security consulting.",
+      "taif": "Highland regional support.",
+      "tabuk": "Northern Kingdom project delivery."
     }
+  },
+  "contact": {
+    "eyebrow": "REACH OUT",
+    "title": "GET IN",
+    "title_italic": "TOUCH",
+    "desc": "Connect with our lead architects and security consultants to discuss how we can secure your critical infrastructure and future-proof your assets.",
+    "email_label": "Email Us",
+    "hq_label": "Headquarters",
+    "hq_text": "Riyadh, Kingdom of Saudi Arabia\nAlso operating in Khobar, Jubail, Jeddah and Yanbu",
+    "form_title": "Send a Message",
+    "name": "Full Name *",
+    "name_ph": "John Doe",
+    "email": "Email Address *",
+    "email_ph": "john@company.com",
+    "company": "Company (Optional)",
+    "company_ph": "Your Organization",
+    "message": "Message *",
+    "message_ph": "How can we assist you?",
+    "submit": "Submit Request",
+    "sending": "Sending...",
+    "sent": "Message Sent!",
+    "error_fallback": "Failed to send message. Please try again later."
+  },
+  "gallery": {
+    "eyebrow": "Explore",
+    "title": "Visual",
+    "title_italic": "Gallery.",
+    "loading": "Loading images...",
+    "view": "View Fullscreen",
+    "empty": "No images yet."
+  },
+  "clients": {
+    "eyebrow": "Partnerships",
+    "title": "Clients who",
+    "title_italic": "picked VISO.",
+    "desc": "From oil & gas titans to mega projects redrawing the map — we've designed the security spine for the names below.",
+    "visit": "Visit Site"
+  },
+  "career": {
+    "eyebrow": "Join Our Team",
+    "title": "Careers at",
+    "desc": "Build the future of physical security with a team that values honesty, excellence, leadership, and innovation across the Kingdom.",
+    "view_roles": "VIEW OPEN ROLES",
+    "about_viso": "ABOUT VISO",
+    "founded": "Founded",
+    "offices": "Offices",
+    "nationwide": "Nationwide",
+    "now_hiring": "Now hiring",
+    "open_roles_count": "{{count}} open roles",
+    "roles_eyebrow": "Open Positions",
+    "roles_title": "Roles that shape security",
+    "roles_desc": "Select a role to apply. Our HR team reviews every submission carefully.",
+    "apply": "Apply",
+    "full_time": "Full-Time",
+    "culture_title": "A culture built for precision, integrity, and long-term craft.",
+    "culture": {
+      "c1": { "title": "Meaningful work", "desc": "Work on critical infrastructure and premium facilities across Saudi Arabia." },
+      "c2": { "title": "Growth path", "desc": "Clear progression, mentorship, and exposure to end-to-end security lifecycles." },
+      "c3": { "title": "Modern tools", "desc": "Operate with DMS, ESS, and structured delivery frameworks built for scale." }
+    },
+    "pillars": {
+      "p1": { "title": "Honesty & Integrity", "desc": "Transparent work, fair practices, and professionalism in every engagement." },
+      "p2": { "title": "Excellence", "desc": "Premium delivery standards that match the critical nature of our projects." },
+      "p3": { "title": "Leadership", "desc": "Lead by example — building a strong security culture across teams." }
+    },
+    "jobs": {
+      "doc": {
+        "title": "Document Controller",
+        "department": "Projects / Document Control",
+        "location": "Riyadh, KSA",
+        "description": "Manage project documentation, track revisions, and oversee the correspondence flow between internal teams and clients using our proprietary DMS platform."
+      },
+      "security": {
+        "title": "Senior Security Officer",
+        "department": "Operations",
+        "location": "Jeddah, KSA",
+        "description": "Ensure the highest level of physical security for premium assets. Manage field operations and oversee junior officers across critical sites."
+      },
+      "hr": {
+        "title": "HR Specialist",
+        "department": "Human Resources",
+        "location": "Riyadh, KSA",
+        "description": "Drive employee engagement, handle onboarding, and manage records in our internal ESS platform while supporting growth across the Kingdom."
+      }
+    },
+    "cta_title": "Don't see your role?",
+    "cta_desc": "Send a general application — we review every submission carefully.",
+    "cta_btn": "GENERAL APPLICATION",
+    "contact_hr": "Contact HR →",
+    "modal_title": "Apply for",
+    "modal_success": "Application submitted",
+    "modal_success_desc": "Our HR team will review your application shortly.",
+    "modal_name": "Full Name *",
+    "modal_email": "Email *",
+    "modal_phone": "Phone",
+    "modal_cv": "CV / Resume URL",
+    "modal_cover": "Cover Letter",
+    "modal_submit": "Submit Application",
+    "modal_sending": "Submitting...",
+    "modal_close": "Close"
+  },
+  "about_page": {
+    "eyebrow": "About VISO",
+    "hero_title": "Where security meets",
+    "hero_title_italic": "peace of mind",
+    "hero_desc": "Premier physical security consultancy protecting critical assets across the Kingdom of Saudi Arabia.",
+    "cta": "Start a conversation",
+    "explore": "Explore services",
+    "story_title": "Where Security Meets",
+    "story_italic": "Peace of Mind",
+    "focus": "Focus",
+    "focus_value": "Physical Security",
+    "journey_title": "Our journey",
+    "ready_title": "Ready to secure your",
+    "ready_italic": "facility?",
+    "ready_desc": "Talk with our consultants about risk assessment, design, and operational readiness for your facility.",
+    "contact_team": "Contact our team",
+    "view_framework": "View framework"
+  },
+  "home_extra": {
+    "architectural": "Architectural",
+    "integrity": "Integrity",
+    "approach_desc": "Our approach favors minimalism and strict geometric order, ensuring that safety protocols disappear into the elegance of the structure.",
+    "master_planning": "Master Planning",
+    "master_planning_desc": "Holistic site analysis and macro-scale architectural defensive zoning.",
+    "facade": "Facade Engineering",
+    "facade_desc": "Integrating blast-resistant aesthetics without compromising visual purity.",
+    "access": "Access Topography",
+    "access_desc": "Seamless flow management blending security gates into environmental design.",
+    "measurable": "Measurable Excellence",
+    "assets": "Assets Protected",
+    "partners": "Global Partners",
+    "compliance": "Design Compliance",
+    "ready_title1": "Ready to shape",
+    "ready_title2": "the future?",
+    "ready_desc": "Connect with our lead architects and security consultants to begin your project.",
+    "get_in_touch": "Get in Touch"
+  },
+  "common": {
+    "go_home": "Go home",
+    "page_not_found": "Page not found",
+    "something_wrong": "Something went wrong",
+    "try_again": "Try again"
+  },
+  "chatbot": {
+    "greeting": "Hello! I am the VISO assistant. How can I help you with our security services today?",
+    "placeholder": "Type your message..."
   }
 }

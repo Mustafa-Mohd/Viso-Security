@@ -54,7 +54,7 @@ function ClientsPage() {
             transition={{ duration: 0.8 }}
             className="font-mono text-xs font-bold tracking-[0.3em] text-primary mb-6 uppercase"
           >
-            Partnerships
+            {t("clients.eyebrow")}
           </motion.div>
 
           <motion.h1
@@ -63,7 +63,7 @@ function ClientsPage() {
             transition={{ duration: 0.8, delay: 0.1 }}
             className="font-display text-5xl md:text-7xl leading-tight text-foreground mb-8"
           >
-            Clients who <span className="italic text-primary">picked VISO.</span>
+            {t("clients.title")} <span className="italic text-primary">{t("clients.title_italic")}</span>
           </motion.h1>
 
           <motion.p
@@ -72,7 +72,7 @@ function ClientsPage() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="font-sans text-lg text-foreground/60 max-w-3xl mx-auto leading-relaxed mb-24"
           >
-            From oil & gas titans to mega projects redrawing the map — we've designed the security spine for the names below.
+            {t("clients.desc")}
           </motion.p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 text-left">
@@ -99,7 +99,7 @@ function ClientsPage() {
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 font-mono text-[10px] font-bold tracking-[0.2em] text-primary group-hover:text-gold transition-colors uppercase"
                     >
-                      Visit site
+                      {t("clients.visit")}
                       <span className="text-sm group-hover:translate-x-1 transition-transform">→</span>
                     </a>
                   </div>

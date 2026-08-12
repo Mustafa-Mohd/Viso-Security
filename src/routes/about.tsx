@@ -121,6 +121,7 @@ function AboutPage() {
 
 /* ---------- Hero ---------- */
 function AboutHero() {
+  const { t } = useTranslation();
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -139,6 +140,9 @@ function AboutHero() {
         <img
           src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2400&q=80"
           alt="Architectural structure"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
           className="h-[120%] w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/75 to-background/25" />
@@ -182,8 +186,8 @@ function AboutHero() {
           transition={{ duration: 1, delay: 0.35, ease }}
           className="mt-6 md:mt-8 font-display text-2xl md:text-4xl lg:text-5xl text-foreground/90 max-w-2xl leading-[1.15] tracking-tight"
         >
-          Where security meets{" "}
-          <em className="text-primary not-italic font-light">peace of mind</em>
+          {t("about_page.hero_title")}{" "}
+          <em className="text-primary not-italic font-light">{t("about_page.hero_title_italic")}</em>
         </motion.p>
 
         <motion.p
@@ -192,8 +196,7 @@ function AboutHero() {
           transition={{ duration: 0.9, delay: 0.5, ease }}
           className="mt-5 max-w-lg text-sm md:text-base text-foreground/55 leading-relaxed font-light"
         >
-          Premier physical security consultancy protecting critical assets across
-          five offices in the Kingdom.
+          {t("about_page.hero_desc")}
         </motion.p>
 
         <motion.div
@@ -206,13 +209,13 @@ function AboutHero() {
             href="#who"
             className="rounded-sm bg-primary px-8 py-4 font-sans text-xs font-bold tracking-[0.2em] text-white transition-all duration-400 hover:bg-secondary hover:scale-[1.03]"
           >
-            OUR STORY
+            {t("about.who_we_are")}
           </a>
           <Link
             to="/security"
             className="font-sans text-xs font-bold tracking-[0.2em] text-foreground/60 hover:text-primary transition-colors"
           >
-            VIEW SERVICES →
+            {t("about_page.explore")} →
           </Link>
         </motion.div>
       </motion.div>
@@ -246,6 +249,7 @@ function WhoWeAre({
   desc: string;
   secondary: string;
 }) {
+  const { t } = useTranslation();
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -272,16 +276,16 @@ function WhoWeAre({
             <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-6">
               <span className="text-gold">01</span>
               <span className="h-px w-8 bg-border" />
-              <span>Who We Are</span>
+              <span>{t("about.who_we_are")}</span>
             </div>
           </Reveal>
           <Reveal delay={0.1}>
             <h2 className="font-display text-4xl md:text-5xl lg:text-6xl leading-[1.05] tracking-tight text-foreground">
-              {title.includes("Peace") || title.includes("meets") ? (
+              {title.includes("Peace") || title.includes("meets") || title.includes("يلتقي") ? (
                 <>
-                  Where Security Meets{" "}
+                  {t("about_page.story_title")}{" "}
                   <em className="text-primary not-italic font-light">
-                    Peace of Mind
+                    {t("about_page.story_italic")}
                   </em>
                 </>
               ) : (
@@ -636,12 +640,15 @@ function ProfileJourney({
 
 /* ---------- CTA ---------- */
 function AboutCta() {
+  const { t } = useTranslation();
   return (
     <section className="relative px-8 md:px-16 py-28 md:py-40 overflow-hidden">
       <div className="absolute inset-0">
         <img
           src="https://images.unsplash.com/photo-1431576901776-e539bd916ba2?auto=format&fit=crop&w=2400&q=80"
           alt=""
+          loading="lazy"
+          decoding="async"
           className="h-full w-full object-cover opacity-30"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/70" />
@@ -650,14 +657,13 @@ function AboutCta() {
       <div className="relative z-10 max-w-[1600px] mx-auto">
         <Reveal>
           <h2 className="font-display text-4xl md:text-6xl lg:text-7xl tracking-tight max-w-3xl leading-[1.05]">
-            Ready to secure your{" "}
-            <em className="text-primary not-italic font-light">next project</em>?
+            {t("about_page.ready_title")}{" "}
+            <em className="text-primary not-italic font-light">{t("about_page.ready_italic")}</em>
           </h2>
         </Reveal>
         <Reveal delay={0.15}>
           <p className="mt-6 text-foreground/55 max-w-md font-light leading-relaxed">
-            Talk with our consultants about risk assessment, design, and
-            operational readiness for your facility.
+            {t("about_page.ready_desc")}
           </p>
         </Reveal>
         <Reveal delay={0.25}>
@@ -666,13 +672,13 @@ function AboutCta() {
               to="/contact"
               className="rounded-sm bg-primary px-8 py-4 font-sans text-xs font-bold tracking-[0.2em] text-white transition-all duration-400 hover:bg-secondary hover:scale-[1.03]"
             >
-              CONTACT VISO
+              {t("about_page.contact_team")}
             </Link>
             <Link
               to="/security"
               className="rounded-sm border border-foreground/15 px-8 py-4 font-sans text-xs font-bold tracking-[0.2em] text-foreground/70 transition-all duration-400 hover:border-primary hover:text-primary"
             >
-              SECURITY FRAMEWORK
+              {t("about_page.view_framework")}
             </Link>
           </div>
         </Reveal>
@@ -688,6 +694,8 @@ function AboutFooter() {
         <img
           src="https://res.cloudinary.com/dcefror3c/image/upload/v1782911668/Luxurious_black_and_gold_logo_design_kjv4np.png"
           alt="VISO"
+          loading="lazy"
+          decoding="async"
           className="h-10 w-auto object-contain brightness-0 invert"
         />
         <p className="font-sans text-xs text-background/50 tracking-wide">

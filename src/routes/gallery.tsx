@@ -51,7 +51,7 @@ function GalleryPage() {
             transition={{ duration: 0.8 }}
             className="font-mono text-xs font-bold tracking-[0.3em] text-primary mb-6 uppercase"
           >
-            Explore
+            {t("gallery.eyebrow")}
           </motion.div>
 
           <motion.h1
@@ -60,11 +60,13 @@ function GalleryPage() {
             transition={{ duration: 0.8, delay: 0.1 }}
             className="font-display text-5xl md:text-7xl leading-tight text-foreground mb-16"
           >
-            Visual <span className="italic text-primary">Gallery.</span>
+            {t("gallery.title")} <span className="italic text-primary">{t("gallery.title_italic")}</span>
           </motion.h1>
 
           {loading ? (
-            <div className="text-foreground/60 py-20">Loading images...</div>
+            <div className="text-foreground/60 py-20">{t("gallery.loading")}</div>
+          ) : galleryImages.length === 0 ? (
+            <div className="text-foreground/60 py-20">{t("gallery.empty")}</div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {galleryImages.map((src, i) => (
@@ -75,17 +77,12 @@ function GalleryPage() {
                   transition={{ duration: 0.6, delay: 0.3 + (i * 0.1) }}
                   className="group relative h-[400px] rounded-xl overflow-hidden shadow-lg border border-foreground/5 cursor-pointer"
                 >
-                  <img src={src} alt={`Gallery Image ${i + 1}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                  <img src={src} alt={`Gallery Image ${i + 1}`} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                   <div className="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
-                    <span className="text-white font-mono text-xs tracking-widest uppercase">View Fullscreen</span>
+                    <span className="text-white font-mono text-xs tracking-widest uppercase">{t("gallery.view")}</span>
                   </div>
                 </motion.div>
               ))}
-              {galleryImages.length === 0 && (
-                <div className="col-span-full py-20 text-foreground/60">
-                  No images found in the gallery.
-                </div>
-              )}
             </div>
           )}
         </div>

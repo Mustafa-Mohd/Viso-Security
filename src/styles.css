@@ -43,29 +43,30 @@
 :root {
   --radius: 0.5rem;
 
-  --background: #F8F8F6;
-  --foreground: #222222;
+  /* Soft pearl whites — still white, less harsh than pure #FFF */
+  --background: #F3F2EF;
+  --foreground: #1F1E1C;
   
-  --surface: #FFFFFF;
-  --surface-2: #F0F0EE;
+  --surface: #F9F8F5;
+  --surface-2: #EBE9E4;
 
-  --card: #FFFFFF;
-  --card-foreground: #222222;
+  --card: #F9F8F5;
+  --card-foreground: #1F1E1C;
   
-  --popover: #FFFFFF;
-  --popover-foreground: #222222;
+  --popover: #F9F8F5;
+  --popover-foreground: #1F1E1C;
 
   --primary: #D4AF37;
-  --primary-foreground: #FFFFFF;
+  --primary-foreground: #1F1E1C;
   
   --gold: #D4AF37;
-  --gold-foreground: #FFFFFF;
+  --gold-foreground: #1F1E1C;
 
   --secondary: #B8860B;
   --secondary-foreground: #FFFFFF;
   
-  --muted: #E5E5E5;
-  --muted-foreground: #777777;
+  --muted: #E5E3DE;
+  --muted-foreground: #6F6C66;
   
   --accent: #B8860B;
   --accent-foreground: #FFFFFF;
@@ -73,8 +74,8 @@
   --destructive: #D32F2F;
   --destructive-foreground: #FFFFFF;
   
-  --border: rgba(34, 34, 34, 0.1);
-  --input: rgba(34, 34, 34, 0.15);
+  --border: rgba(31, 30, 28, 0.1);
+  --input: rgba(31, 30, 28, 0.14);
   --ring: #D4AF37;
 
   --chart-1: #D4AF37;

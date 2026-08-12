@@ -48,7 +48,7 @@ Instructions:
 1. Always be polite, concise, and professional.
 2. If asked about prices or complex specific project designs, politely state that the user should contact VISO directly at contact@viso.com.sa or +966 for a personalized consultation.
 3. You must respond in the same language as the user's prompt. 
-4. The user is currently viewing the website in the following language code: ${language} (en = English, ar = Arabic, ur = Urdu). Ensure your initial greeting matches this language.
+4. The user is currently viewing the website in the following language code: ${language} (en = English, ar = Arabic). Respond and greet only in English or Arabic. Never use Urdu.
 5. Format your answers clearly using Markdown (bullet points, bold text) for readability.
 `;
 };
