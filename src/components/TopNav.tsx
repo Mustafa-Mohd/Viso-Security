@@ -28,6 +28,7 @@ export function TopNav() {
         {/* Links - Center */}
         <div className="hidden md:flex flex-1 justify-center items-center gap-10">
           <Link to="/" className="font-sans text-sm font-medium tracking-wide text-foreground/80 hover:text-primary transition-colors duration-300">Home</Link>
+          <Link to="/about" className="font-sans text-sm font-medium tracking-wide text-foreground/80 hover:text-primary transition-colors duration-300">About</Link>
           <Link to="/security" className="font-sans text-sm font-medium tracking-wide text-foreground/80 hover:text-primary transition-colors duration-300">{t("nav.security")}</Link>
           <Link to="/clients" className="font-sans text-sm font-medium tracking-wide text-foreground/80 hover:text-primary transition-colors duration-300">Clients</Link>
           <Link to="/certificates" className="font-sans text-sm font-medium tracking-wide text-foreground/80 hover:text-primary transition-colors duration-300">{t("nav.certifications")}</Link>
@@ -63,6 +64,7 @@ export function TopNav() {
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-[140] bg-background/95 backdrop-blur-lg flex flex-col items-center justify-center space-y-8 md:hidden px-6 text-center animate-in fade-in duration-300">
           <Link to="/" onClick={() => setMobileMenuOpen(false)} className="font-display text-2xl tracking-wide hover:text-primary transition-colors">Home</Link>
+          <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="font-display text-2xl tracking-wide hover:text-primary transition-colors">About</Link>
           <Link to="/security" onClick={() => setMobileMenuOpen(false)} className="font-display text-2xl tracking-wide hover:text-primary transition-colors">{t("nav.security")}</Link>
           <Link to="/clients" onClick={() => setMobileMenuOpen(false)} className="font-display text-2xl tracking-wide hover:text-primary transition-colors">Clients</Link>
           <Link to="/certificates" onClick={() => setMobileMenuOpen(false)} className="font-display text-2xl tracking-wide hover:text-primary transition-colors">{t("nav.certifications")}</Link>

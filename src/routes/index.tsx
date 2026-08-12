@@ -8,6 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { TopNav } from "@/components/TopNav";
 import { LocationsSection } from "@/components/LocationsSection";
 import { supabase } from "@/lib/supabase";
+import { AboutInteractive } from "@/components/AboutInteractive";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
@@ -244,7 +245,7 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
 }
 
 /* ============================================================
-   HERO SECTION (60/40 Split, Faded BG Text, Floating Render)
+   HERO SECTION — Split layout (matches original VISO design)
    ============================================================ */
 const heroImages = [
   "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
@@ -252,14 +253,19 @@ const heroImages = [
   "https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
   "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
   "https://images.unsplash.com/photo-1431576901776-e539bd916ba2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1473186578172-c141e6798cf4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"
+  "https://images.unsplash.com/photo-1473186578172-c141e6798cf4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
 ];
+
+const heroEase = [0.16, 1, 0.3, 1] as const;
 
 export function HeroSection({ data }: { data?: any }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"],
+  });
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "28%"]);
 
   const [currentImage, setCurrentImage] = useState(0);
 
@@ -267,98 +273,166 @@ export function HeroSection({ data }: { data?: any }) {
   const title2 = data?.title2 || t("home.the_future");
   const subtitle = data?.subtitle || t("home.subtitle");
   const desc = data?.desc || t("home.desc");
-  const activeImages = data?.images?.filter(Boolean).length > 0 ? data.images.filter(Boolean) : heroImages;
+  const activeImages =
+    data?.images?.filter(Boolean).length > 0
+      ? data.images.filter(Boolean)
+      : heroImages;
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImage((prev) => (prev + 1) % activeImages.length);
-    }, 3000);
+    }, 4000);
     return () => clearInterval(interval);
   }, [activeImages.length]);
 
   return (
-    <section ref={ref} className="relative min-h-[100dvh] pt-20 pb-20 overflow-hidden flex items-center">
-      {/* Oversized Faded Background Typography */}
+    <section
+      ref={ref}
+      className="relative min-h-[100dvh] pt-24 md:pt-28 pb-16 md:pb-20 overflow-hidden flex items-center bg-background"
+    >
+      {/* Oversized faded background typography */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none w-full flex justify-center z-0">
         <motion.h1
           style={{ y }}
-          className="font-display font-bold text-[18vw] leading-none text-foreground/[0.02] tracking-tighter whitespace-nowrap"
+          className="font-display font-bold text-[18vw] leading-none text-foreground/[0.035] tracking-tighter whitespace-nowrap"
         >
           INNOVATION
         </motion.h1>
       </div>
 
-      <div className="max-w-[1600px] w-full mx-auto px-8 md:px-16 grid lg:grid-cols-[60%_40%] gap-12 items-center relative z-10">
-
-        {/* Left Side: Massive Typography */}
+      <div className="max-w-[1600px] w-full mx-auto px-8 md:px-16 grid lg:grid-cols-[58%_42%] gap-10 lg:gap-12 items-center relative z-10">
+        {/* Left — typography + CTAs */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 36 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 1, delay: 0.2, ease: heroEase }}
           className="flex flex-col"
         >
-          <div className="font-sans text-xs font-bold tracking-[0.3em] text-primary mb-6 uppercase flex items-center gap-4">
-            <span className="w-12 h-px bg-primary"></span>
+          <div className="font-sans text-[11px] font-bold tracking-[0.32em] text-primary mb-6 uppercase flex items-center gap-4">
+            <motion.span
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.9, delay: 0.35, ease: heroEase }}
+              className="origin-left inline-block w-12 h-px bg-primary"
+            />
             {t("home.strategic_architecture")}
           </div>
-          <h2 className="font-display text-6xl md:text-8xl lg:text-[110px] leading-[0.9] tracking-[-0.02em] text-foreground uppercase">
-            {title1} <br />
-            <span className="text-primary italic font-light">{title2}</span>
-          </h2>
-          <h3 className="font-sans text-xl md:text-2xl font-light text-foreground/70 mt-8 max-w-xl leading-snug">
-            {subtitle}
-          </h3>
-          <p className="font-sans text-base text-foreground/50 mt-6 max-w-lg leading-relaxed whitespace-pre-wrap">
-            {desc}
-          </p>
 
-          <div className="flex flex-wrap items-center gap-6 mt-12">
-            <Link to="/about" className="rounded-sm bg-primary px-8 py-4 font-sans text-xs font-bold tracking-[0.2em] text-white transition-all duration-400 hover:bg-secondary hover:scale-[1.03] shadow-[0_10px_30px_rgba(39,55,77,0.15)]">
+          <h2 className="font-display font-bold text-5xl sm:text-6xl md:text-7xl lg:text-[92px] leading-[0.92] tracking-[-0.03em] text-foreground uppercase">
+            <motion.span
+              initial={{ opacity: 0, y: 28 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 0.3, ease: heroEase }}
+              className="block"
+            >
+              {title1}
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, y: 28 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 0.42, ease: heroEase }}
+              className="block text-primary italic font-serif font-medium normal-case tracking-[-0.02em]"
+            >
+              {title2}
+            </motion.span>
+          </h2>
+
+          <motion.h3
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.85, delay: 0.55, ease: heroEase }}
+            className="font-sans text-lg md:text-xl font-light text-foreground/65 mt-7 md:mt-8 max-w-xl leading-snug"
+          >
+            {subtitle}
+          </motion.h3>
+
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.85, delay: 0.65, ease: heroEase }}
+            className="font-sans text-sm md:text-base text-foreground/45 mt-5 max-w-lg leading-relaxed whitespace-pre-wrap"
+          >
+            {desc}
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.78, ease: heroEase }}
+            className="flex flex-wrap items-center gap-4 md:gap-5 mt-10 md:mt-12"
+          >
+            <Link
+              to="/about"
+              className="rounded-sm bg-primary px-8 py-4 font-sans text-[11px] font-bold tracking-[0.2em] text-white transition-all duration-400 hover:bg-secondary hover:scale-[1.03] shadow-[0_10px_30px_rgba(212,175,55,0.25)]"
+            >
               DISCOVER MORE
             </Link>
-            <Link to="/home" className="rounded-sm border border-primary/20 bg-transparent px-8 py-4 font-sans text-xs font-bold tracking-[0.2em] text-primary transition-all duration-400 hover:border-primary hover:bg-primary/5 hover:scale-[1.03]">
+            <Link
+              to="/gallery"
+              className="rounded-sm border border-primary/25 bg-transparent px-8 py-4 font-sans text-[11px] font-bold tracking-[0.2em] text-primary transition-all duration-400 hover:border-primary hover:bg-primary/5 hover:scale-[1.03]"
+            >
               VIEW PROJECTS
             </Link>
-          </div>
+          </motion.div>
         </motion.div>
 
-        {/* Right Side: Floating Renders */}
+        {/* Right — floating render + logo badge */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="relative h-[600px] hidden lg:block"
+          initial={{ opacity: 0, scale: 0.96, x: 24 }}
+          animate={{ opacity: 1, scale: 1, x: 0 }}
+          transition={{ duration: 1.15, delay: 0.4, ease: heroEase }}
+          className="relative h-[420px] sm:h-[520px] lg:h-[600px] mt-8 lg:mt-0"
         >
-          {/* Main Floating Render */}
           <motion.div
-            animate={{ y: [-15, 15, -15] }}
+            animate={{ y: [-12, 12, -12] }}
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute right-0 top-10 w-[95%] h-[550px] rounded overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.08)] z-10 bg-surface"
+            className="absolute right-0 top-4 lg:top-10 w-full lg:w-[95%] h-[380px] sm:h-[480px] lg:h-[550px] rounded overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.1)] z-10 bg-surface"
           >
-            <AnimatePresence>
-              <motion.img 
+            <AnimatePresence mode="sync">
+              <motion.img
                 key={currentImage}
-                src={activeImages[currentImage]} 
-                alt="Premium Architecture" 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                src={activeImages[currentImage]}
+                alt="Premium Architecture"
+                initial={{ opacity: 0, scale: 1.04 }}
+                animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 1.5, ease: "easeInOut" }}
+                transition={{ duration: 1.4, ease: "easeInOut" }}
                 className="w-full h-full object-cover absolute inset-0"
               />
             </AnimatePresence>
+
+            {/* Soft image vignette */}
+            <div className="absolute inset-0 bg-gradient-to-t from-foreground/15 via-transparent to-transparent pointer-events-none" />
+
+            {/* Slide indicators */}
+            <div className="absolute bottom-4 right-4 z-20 flex gap-1.5">
+              {activeImages.map((_: string, i: number) => (
+                <button
+                  key={i}
+                  type="button"
+                  aria-label={`Image ${i + 1}`}
+                  onClick={() => setCurrentImage(i)}
+                  className={`h-1 rounded-full transition-all duration-400 ${
+                    i === currentImage ? "w-6 bg-primary" : "w-2 bg-white/50 hover:bg-white/80"
+                  }`}
+                />
+              ))}
+            </div>
           </motion.div>
 
-          {/* Circular Overlapping Image */}
+          {/* Circular overlapping logo */}
           <motion.div
-            animate={{ y: [15, -15, 15] }}
+            animate={{ y: [10, -10, 10] }}
             transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            className="absolute left-[-15%] bottom-16 w-72 h-72 rounded-full overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.12)] border-8 border-background z-20 bg-surface flex items-center justify-center"
+            className="absolute left-[-4%] sm:left-[-8%] lg:left-[-12%] bottom-8 sm:bottom-14 w-44 h-44 sm:w-56 sm:h-56 lg:w-72 lg:h-72 rounded-full overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.12)] border-[6px] sm:border-8 border-background z-20 bg-surface flex items-center justify-center"
           >
-            <img src="https://res.cloudinary.com/dcefror3c/image/upload/v1782911817/Luxurious_black_and_gold_logo_design-removebg-preview_pztvcs.png" alt="VISO Group Logo" className="w-[70%] h-[70%] object-contain drop-shadow-[0_10px_20px_rgba(212,175,55,0.2)]" />
+            <img
+              src="https://res.cloudinary.com/dcefror3c/image/upload/v1782911817/Luxurious_black_and_gold_logo_design-removebg-preview_pztvcs.png"
+              alt="VISO Group Logo"
+              className="w-[70%] h-[70%] object-contain drop-shadow-[0_10px_20px_rgba(212,175,55,0.2)]"
+            />
           </motion.div>
         </motion.div>
-
       </div>
     </section>
   );
@@ -1179,49 +1253,81 @@ function SectionLabel({ n, label }: { n: string; label: string }) {
 
 /* ---------- About ---------- */
 function About({ data }: { data?: any }) {
-  const title1 = data?.title1 || "Where security meets";
-  const title2 = data?.title2 || "peace of mind.";
-  const desc = data?.desc || "VISO is a premier physical security consultancy specializing in safeguarding our clients' most valuable assets. Founded in January 2020 and headquartered in Riyadh, we now operate from five offices across the Kingdom — delivering tailored solutions that align with national authorities and the highest international benchmarks.\n\nOur team brings decades of combined experience in security analysis, risk assessment and integrated protective measures across critical national infrastructure, energy, industrial, financial and government sectors.";
+  const { t } = useTranslation();
+  const title = data?.title || "A Professional Digital Company Profile";
+  const subtitle =
+    data?.subtitle ||
+    "A structured presentation of VISO's identity, security consultancy lifecycle, capabilities, sectors, credentials and integrated digital services.";
+  const whoWeAreTitle = data?.whoWeAreTitle || "VISO Security Consultancy";
+  const whoWeAreDesc =
+    data?.whoWeAreDesc ||
+    "VISO provides security consultancy services across the lifecycle of security risk assessment, concept and detailed design, construction supervision, testing, commissioning and operational readiness.";
 
-  const stats = [
-    ["2020", "Established"],
-    ["5", "Regional Offices"],
-    ["92+", "Projects Delivered"],
-    ["52.53%", "Local Content"],
-  ] as const;
+  const services =
+    data?.services?.length > 0
+      ? data.services.map((s: any) => ({ title: s.title, desc: s.desc }))
+      : [
+          { title: "Security Consulting", desc: "Physical security lifecycle" },
+          { title: "Translation", desc: "Certified translation services" },
+          { title: "Digital Portal", desc: "Employee + DMS access" },
+          { title: "SAIS", desc: "Regulatory alignment" },
+        ];
+
+  const profileContents =
+    data?.profileContents?.length > 0
+      ? data.profileContents
+      : [
+          {
+            num: "01",
+            title: "Identity & Positioning",
+            desc: "Clear corporate introduction, value proposition and service positioning.",
+          },
+          {
+            num: "02",
+            title: "Capabilities & Lifecycle",
+            desc: "Four connected security consultancy stages.",
+          },
+          {
+            num: "03",
+            title: "Sectors & Clients",
+            desc: "Approved client logos, sectors and project environments.",
+          },
+          {
+            num: "04",
+            title: "Credentials & Verification",
+            desc: "Licensing, qualification and official verification links.",
+          },
+        ];
+
   return (
-    <section id="about" className="relative px-6 py-16 md:py-16">
-      <div className="mx-auto grid max-w-7xl gap-16 lg:grid-cols-12">
-        <div className="lg:col-span-4">
-          <Reveal>
-            <SectionLabel n="01" label="About VISO" />
-          </Reveal>
-          <Reveal delay={0.1}>
-            <h2 className="mt-6 font-display text-5xl leading-[1.05] text-balance md:text-6xl">
-              {title1} <em className="text-gradient-gold">{title2}</em>
-            </h2>
-          </Reveal>
-        </div>
-        <div className="lg:col-span-7 lg:col-start-6">
-          <Reveal delay={0.15}>
-            <p className="text-lg leading-relaxed text-muted-foreground whitespace-pre-wrap">
-              {desc}
-            </p>
-          </Reveal>
+    <section
+      id="about"
+      className="relative px-8 md:px-16 py-20 md:py-32 bg-background overflow-hidden border-t border-foreground/5"
+    >
+      <div className="pointer-events-none absolute -top-24 right-0 font-display font-extrabold text-[20vw] leading-none text-foreground/[0.03] tracking-tighter select-none">
+        VISO
+      </div>
+      <div className="absolute top-1/4 -left-32 w-[50vw] h-[50vw] bg-primary/[0.05] rounded-full blur-[140px] pointer-events-none" />
 
-          <div className="mt-14 grid grid-cols-2 gap-px border border-border bg-border md:grid-cols-4">
-            {stats.map(([n, l], i) => (
-              <Reveal key={l} delay={0.3 + i * 0.08}>
-                <div className="bg-background p-6">
-                  <div className="font-display text-4xl text-gold">{n}</div>
-                  <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                    {l}
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
+      <div className="mx-auto max-w-[1600px] relative z-10">
+        <AboutInteractive
+          title={title}
+          subtitle={subtitle}
+          whoWeAreTitle={whoWeAreTitle}
+          whoWeAreDesc={whoWeAreDesc}
+          services={services}
+          profileContents={profileContents}
+        />
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="mt-16 text-center text-xs text-foreground/35 font-light tracking-wide"
+        >
+          {t("about.stats.established")} 2020 · {t("about.stats.offices")}: 5 ·
+          Riyadh · Khobar · Jubail · Jeddah · Yanbu
+        </motion.p>
       </div>
     </section>
   );

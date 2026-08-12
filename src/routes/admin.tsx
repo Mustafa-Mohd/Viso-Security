@@ -89,10 +89,30 @@ function AdminPage() {
     desc: "We merge high-end architectural design with rigorous security protocols to create spaces that are both exceptionally safe and visually stunning. Inspired by global innovation leaders.", 
     images: ["https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80", "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80", "https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"] 
   });
-  const [aboutData, setAboutData] = useState({ 
-    title1: "Where Security Meets", 
-    title2: "Peace of Mind", 
-    desc: "VISO is a premier physical security consultancy specializing in safeguarding our clients' most valuable assets. Founded in January 2020 and headquartered in Riyadh, we now operate from five offices across the Kingdom—Riyadh, Khobar, Jubail, Jeddah and Yanbu—delivering tailored security solutions that align with national authorities and the highest international benchmarks.\n\nOur team of seasoned experts brings decades of combined experience in security analysis, risk assessment, and the implementation of integrated protective measures across critical national infrastructure, energy, industrial, financial and government sectors." 
+  const [aboutData, setAboutData] = useState<{
+    title: string;
+    subtitle: string;
+    whoWeAreTitle: string;
+    whoWeAreDesc: string;
+    services: { title: string; desc: string }[];
+    profileContents: { num: string; title: string; desc: string }[];
+  }>({ 
+    title: "A Professional Digital Company Profile", 
+    subtitle: "A structured presentation of VISO's identity, security consultancy lifecycle, capabilities, sectors, credentials and integrated digital services.", 
+    whoWeAreTitle: "VISO Security Consultancy",
+    whoWeAreDesc: "VISO provides security consultancy services across the lifecycle of security risk assessment, concept and detailed design, construction supervision, testing, commissioning and operational readiness. The website is intended to present this capability clearly while connecting supporting services and secure internal portals.",
+    services: [
+      { title: "Security Consulting", desc: "Physical security lifecycle" },
+      { title: "Translation", desc: "Certified translation services" },
+      { title: "Digital Portal", desc: "Employee + DMS access" },
+      { title: "SAIS", desc: "Regulatory alignment" }
+    ],
+    profileContents: [
+      { num: "01", title: "Identity & Positioning", desc: "Clear corporate introduction, value proposition and service positioning." },
+      { num: "02", title: "Capabilities & Lifecycle", desc: "Four connected security consultancy stages." },
+      { num: "03", title: "Sectors & Clients", desc: "Approved client logos, sectors and project environments." },
+      { num: "04", title: "Credentials & Verification", desc: "Licensing, qualification and official verification links." }
+    ]
   });
   const [coreValuesData, setCoreValuesData] = useState<{ title: string, subtitle: string, items: any[] }>({
     title: "Our Core Values",
@@ -1186,39 +1206,85 @@ function AdminPage() {
               )}
 
               {cmsSection === 'about' && (
-                <div className="flex flex-col gap-4">
-                  <h2 className="text-2xl font-display mb-4">Edit About Section</h2>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Title Part 1</label>
-                    <input
-                      type="text"
-                      value={aboutData.title1}
-                      onChange={(e) => setAboutData({ ...aboutData, title1: e.target.value })}
-                      className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
-                    />
+                <div className="flex flex-col gap-6">
+                  <h2 className="text-2xl font-display mb-2">Edit Digital Company Profile</h2>
+                  
+                  <div className="bg-background p-6 rounded border border-foreground/10 space-y-4">
+                    <h3 className="font-bold text-lg border-b border-foreground/10 pb-2 mb-4">Header</h3>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Title</label>
+                      <input
+                        type="text"
+                        value={aboutData.title}
+                        onChange={(e) => setAboutData({ ...aboutData, title: e.target.value })}
+                        className="w-full px-4 py-2 rounded bg-surface border border-foreground/20 focus:border-primary focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Subtitle</label>
+                      <textarea
+                        value={aboutData.subtitle}
+                        onChange={(e) => setAboutData({ ...aboutData, subtitle: e.target.value })}
+                        className="w-full px-4 py-2 rounded bg-surface border border-foreground/20 focus:border-primary focus:outline-none h-20"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Title Part 2 (Italicized)</label>
-                    <input
-                      type="text"
-                      value={aboutData.title2}
-                      onChange={(e) => setAboutData({ ...aboutData, title2: e.target.value })}
-                      className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
-                    />
+
+                  <div className="bg-background p-6 rounded border border-foreground/10 space-y-4">
+                    <h3 className="font-bold text-lg border-b border-foreground/10 pb-2 mb-4">Who We Are</h3>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Title</label>
+                      <input
+                        type="text"
+                        value={aboutData.whoWeAreTitle}
+                        onChange={(e) => setAboutData({ ...aboutData, whoWeAreTitle: e.target.value })}
+                        className="w-full px-4 py-2 rounded bg-surface border border-foreground/20 focus:border-primary focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Description</label>
+                      <textarea
+                        value={aboutData.whoWeAreDesc}
+                        onChange={(e) => setAboutData({ ...aboutData, whoWeAreDesc: e.target.value })}
+                        className="w-full px-4 py-2 rounded bg-surface border border-foreground/20 focus:border-primary focus:outline-none h-32"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Description Paragraph</label>
-                    <textarea
-                      value={aboutData.desc}
-                      onChange={(e) => setAboutData({ ...aboutData, desc: e.target.value })}
-                      className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none h-40"
-                    />
+
+                  <div className="bg-background p-6 rounded border border-foreground/10 space-y-4">
+                    <div className="flex items-center justify-between border-b border-foreground/10 pb-2 mb-4">
+                      <h3 className="font-bold text-lg">Digital Services</h3>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {aboutData.services.map((srv, idx) => (
+                        <div key={idx} className="bg-surface p-4 rounded border border-foreground/10 relative">
+                          <div><label className="block text-xs font-bold mb-1 opacity-70">Title</label><input type="text" value={srv.title} onChange={(e) => { const newSrv = [...aboutData.services]; newSrv[idx].title = e.target.value; setAboutData({ ...aboutData, services: newSrv }); }} className="w-full px-3 py-2 rounded bg-background border border-foreground/20 mb-2" /></div>
+                          <div><label className="block text-xs font-bold mb-1 opacity-70">Description</label><input type="text" value={srv.desc} onChange={(e) => { const newSrv = [...aboutData.services]; newSrv[idx].desc = e.target.value; setAboutData({ ...aboutData, services: newSrv }); }} className="w-full px-3 py-2 rounded bg-background border border-foreground/20" /></div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
+
+                  <div className="bg-background p-6 rounded border border-foreground/10 space-y-4">
+                    <div className="flex items-center justify-between border-b border-foreground/10 pb-2 mb-4">
+                      <h3 className="font-bold text-lg">Profile Contents</h3>
+                    </div>
+                    <div className="space-y-4">
+                      {aboutData.profileContents.map((pc, idx) => (
+                        <div key={idx} className="bg-surface p-4 rounded border border-foreground/10 grid md:grid-cols-12 gap-4 items-center">
+                          <div className="md:col-span-2"><label className="block text-xs font-bold mb-1 opacity-70">Num</label><input type="text" value={pc.num} onChange={(e) => { const newPc = [...aboutData.profileContents]; newPc[idx].num = e.target.value; setAboutData({ ...aboutData, profileContents: newPc }); }} className="w-full px-3 py-2 rounded bg-background border border-foreground/20" /></div>
+                          <div className="md:col-span-4"><label className="block text-xs font-bold mb-1 opacity-70">Title</label><input type="text" value={pc.title} onChange={(e) => { const newPc = [...aboutData.profileContents]; newPc[idx].title = e.target.value; setAboutData({ ...aboutData, profileContents: newPc }); }} className="w-full px-3 py-2 rounded bg-background border border-foreground/20" /></div>
+                          <div className="md:col-span-6"><label className="block text-xs font-bold mb-1 opacity-70">Description</label><input type="text" value={pc.desc} onChange={(e) => { const newPc = [...aboutData.profileContents]; newPc[idx].desc = e.target.value; setAboutData({ ...aboutData, profileContents: newPc }); }} className="w-full px-3 py-2 rounded bg-background border border-foreground/20" /></div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
                   <button
                     onClick={() => handleSaveCmsSection('about', aboutData)}
                     className="mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors w-fit font-medium"
                   >
-                    Save About Section
+                    Save Digital Company Profile
                   </button>
                 </div>
               )}
