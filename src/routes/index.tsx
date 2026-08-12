@@ -195,13 +195,12 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
   const [phase, setPhase] = useState(0);
 
   useEffect(() => {
-    // Keep intro snappy so the page can feel responsive
     const sequence = [
-      setTimeout(() => setPhase(1), 700),
-      setTimeout(() => setPhase(2), 1400),
-      setTimeout(() => setPhase(3), 2100),
+      setTimeout(() => setPhase(1), 900),
+      setTimeout(() => setPhase(2), 2000),
+      setTimeout(() => setPhase(3), 3100),
     ];
-    const timer = setTimeout(onDone, 3200);
+    const timer = setTimeout(onDone, 5000);
 
     return () => {
       sequence.forEach(clearTimeout);
@@ -217,7 +216,7 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
   return (
     <motion.div
       initial={{ opacity: 1 }}
-      exit={{ opacity: 0, y: "-20%", filter: "blur(20px)", transition: { duration: 1.2, ease: [0.77, 0, 0.175, 1] } }}
+      exit={{ opacity: 0, y: "-20%", filter: "blur(20px)", transition: { duration: 1.0, ease: [0.77, 0, 0.175, 1] } }}
       className="fixed inset-0 z-[200] flex items-center justify-center bg-background"
     >
       <div className="flex flex-col items-center justify-center w-full h-full relative overflow-hidden">
@@ -235,10 +234,10 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
           {phase < 3 ? (
             <motion.div
               key={phase}
-              initial={{ opacity: 0, y: 50, skewY: 5, filter: "blur(10px)", scale: 0.9 }}
+              initial={{ opacity: 0, y: 40, skewY: 3, filter: "blur(10px)", scale: 0.92 }}
               animate={{ opacity: 1, y: 0, skewY: 0, filter: "blur(0px)", scale: 1 }}
-              exit={{ opacity: 0, y: -50, skewY: -5, filter: "blur(10px)", scale: 1.1 }}
-              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              exit={{ opacity: 0, y: -40, skewY: -3, filter: "blur(10px)", scale: 1.08 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
               className="font-display font-bold text-5xl md:text-7xl lg:text-[100px] text-foreground tracking-tighter uppercase absolute"
             >
               {currentWord}
@@ -253,10 +252,10 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
               <motion.img 
                 src="https://res.cloudinary.com/dcefror3c/image/upload/v1782911668/Luxurious_black_and_gold_logo_design_kjv4np.png"
                 alt="Viso Group Logo"
-                initial={{ opacity: 0, scale: 0.5, y: -30 }}
+                initial={{ opacity: 0, scale: 0.5, y: -20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ 
-                  duration: 1.5, 
+                  duration: 0.8, 
                   ease: [0.16, 1, 0.3, 1],
                 }}
                 className="w-48 h-auto md:w-64 mb-10 drop-shadow-[0_10px_30px_rgba(212,175,55,0.5)] object-contain"
@@ -271,7 +270,7 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ 
                       duration: 0.2, 
-                      delay: i * 0.1 + 0.8, // starts typing after logo appears
+                      delay: i * 0.06 + 0.3, // starts typing after logo appears
                       ease: "easeOut"
                     }}
                     className={`font-display font-black text-5xl md:text-8xl lg:text-[110px] tracking-tight uppercase text-primary drop-shadow-md ${l === " " ? "w-4 md:w-8" : ""}`}

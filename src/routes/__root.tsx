@@ -7,7 +7,6 @@ import {
   useLocation,
 } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
-import { LanguagePicker } from "@/components/LanguagePicker";
 import "../styles.css";
 
 const CustomCursor = lazy(() =>
@@ -87,7 +86,6 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {!isAdmin && <LanguagePicker />}
       <Suspense fallback={null}>
         <CustomCursor />
       </Suspense>
