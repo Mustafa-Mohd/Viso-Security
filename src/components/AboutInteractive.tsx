@@ -1,22 +1,193 @@
-import { Suspense, useEffect, useRef, useState, type MouseEvent } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, Environment, MeshDistortMaterial, ContactShadows } from "@react-three/drei";
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import {
   motion,
   useMotionTemplate,
   useMotionValue,
   useSpring,
   useTransform,
-  AnimatePresence,
-  type MotionValue,
 } from "framer-motion";
-import type { Group } from "three";
 import { Link } from "@tanstack/react-router";
 
 type Service = { title: string; desc: string };
 type ProfileItem = { num: string; title: string; desc: string };
 
 const ease = [0.16, 1, 0.3, 1] as const;
+
+const TAG_POINTS = [
+  "Risk Assessment",
+  "Preliminary Design",
+  "Detailed Design",
+  "Operational Readiness",
+  "SAIS Compliance",
+  "Physical Security",
+  "Project Management",
+  "Security Philosophy",
+  "Owner's Engineer",
+  "Construction Monitoring",
+  "Concept of Design",
+  "Threat Analysis",
+  "System Architecture",
+  "Access Control",
+  "CCTV Coverage",
+  "FAT & SAT",
+  "Regulatory Coordination",
+  "Technical Oversight",
+  "Site Supervision",
+  "Handover Support",
+];
+
+type Vec3 = { x: number; y: number; z: number };
+
+function fibonacciSphere(count: number, radius: number): Vec3[] {
+  const pts: Vec3[] = [];
+  const golden = Math.PI * (3 - Math.sqrt(5));
+  for (let i = 0; i < count; i++) {
+    const y = 1 - (i / (count - 1)) * 2;
+    const r = Math.sqrt(1 - y * y);
+    const theta = golden * i;
+    pts.push({
+      x: Math.cos(theta) * r * radius,
+      y: y * radius,
+      z: Math.sin(theta) * r * radius,
+    });
+  }
+  return pts;
+}
+
+function rotateY(p: Vec3, a: number): Vec3 {
+  const c = Math.cos(a);
+  const s = Math.sin(a);
+  return { x: p.x * c - p.z * s, y: p.y, z: p.x * s + p.z * c };
+}
+
+function rotateX(p: Vec3, a: number): Vec3 {
+  const c = Math.cos(a);
+  const s = Math.sin(a);
+  return { x: p.x, y: p.y * c - p.z * s, z: p.y * s + p.z * c };
+}
+
+/** Continuously rotating 3D word sphere — main VISO security points */
+function TagCloudSphere({ tags = TAG_POINTS }: { tags?: string[] }) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState(420);
+  const [nodes, setNodes] = useState<
+    { text: string; x: number; y: number; scale: number; opacity: number; z: number }[]
+  >([]);
+
+  const base = useMemo(() => fibonacciSphere(tags.length, 1), [tags.length]);
+  const angle = useRef({ x: 0.18, y: 0 });
+  const drift = useRef({ x: 0.0012, y: 0.0042 });
+  const drag = useRef({ active: false, lx: 0, ly: 0 });
+
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      const w = entry.contentRect.width;
+      const h = entry.contentRect.height;
+      setSize(Math.min(w, h) * 0.42);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  useEffect(() => {
+    let raf = 0;
+    const tick = () => {
+      if (!drag.current.active) {
+        angle.current.y += drift.current.y;
+        angle.current.x += drift.current.x;
+      }
+
+      const next = tags.map((text, i) => {
+        let p = base[i];
+        p = rotateY(p, angle.current.y);
+        p = rotateX(p, angle.current.x);
+        const depth = (p.z + 1) / 2;
+        const scale = 0.55 + depth * 0.85;
+        const opacity = 0.22 + depth * 0.78;
+        return {
+          text,
+          x: p.x * size,
+          y: p.y * size,
+          z: p.z,
+          scale,
+          opacity,
+        };
+      });
+
+      next.sort((a, b) => a.z - b.z);
+      setNodes(next);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [base, size, tags]);
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    drag.current = { active: true, lx: e.clientX, ly: e.clientY };
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!drag.current.active) return;
+    const dx = e.clientX - drag.current.lx;
+    const dy = e.clientY - drag.current.ly;
+    drag.current.lx = e.clientX;
+    drag.current.ly = e.clientY;
+    angle.current.y += dx * 0.005;
+    angle.current.x -= dy * 0.005;
+  };
+
+  const onPointerUp = () => {
+    drag.current.active = false;
+  };
+
+  return (
+    <div
+      ref={wrapRef}
+      className="relative h-full w-full select-none touch-none overflow-hidden rounded-sm bg-transparent"
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+      role="img"
+      aria-label="VISO security topics rotating sphere"
+    >
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(212,175,55,0.08)_0%,transparent_58%)]" />
+      <div className="pointer-events-none absolute inset-6 rounded-full border border-foreground/[0.06]" />
+
+      <div className="absolute left-1/2 top-1/2 h-0 w-0">
+        {nodes.map((n) => (
+          <span
+            key={n.text}
+            className="absolute whitespace-nowrap font-display tracking-tight will-change-transform"
+            style={{
+              transform: `translate(-50%, -50%) translate(${n.x}px, ${n.y}px) scale(${n.scale})`,
+              opacity: n.opacity,
+              fontSize: "clamp(11px, 1.55vw, 17px)",
+              fontWeight: n.opacity > 0.7 ? 600 : 400,
+              textShadow:
+                n.opacity > 0.65
+                  ? "0 0 16px rgba(212,175,55,0.22)"
+                  : "none",
+              color:
+                n.opacity > 0.72
+                  ? "#1a1917"
+                  : `rgba(26, 25, 23, ${0.28 + n.opacity * 0.55})`,
+            }}
+          >
+            {n.text}
+          </span>
+        ))}
+      </div>
+
+      <p className="pointer-events-none absolute bottom-4 left-0 right-0 text-center font-mono text-[9px] tracking-[0.28em] uppercase text-foreground/30">
+        Drag to explore · Continuous motion
+      </p>
+    </div>
+  );
+}
 
 const serviceVisuals = [
   {
@@ -52,83 +223,6 @@ const serviceVisuals = [
       "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=900&q=80",
   },
 ];
-
-/* ---------- 3D Gold Shield ---------- */
-function GoldForm({ mouseX, mouseY }: { mouseX: MotionValue<number>; mouseY: MotionValue<number> }) {
-  const group = useRef<Group>(null);
-  const target = useRef({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const unsubX = mouseX.on("change", (v) => {
-      target.current.x = (v - 0.5) * 0.8;
-    });
-    const unsubY = mouseY.on("change", (v) => {
-      target.current.y = (v - 0.5) * 0.5;
-    });
-    return () => {
-      unsubX();
-      unsubY();
-    };
-  }, [mouseX, mouseY]);
-
-  useFrame((_, delta) => {
-    if (!group.current) return;
-    group.current.rotation.y += delta * 0.25;
-    group.current.rotation.x +=
-      (target.current.y * 0.6 - group.current.rotation.x) * 0.06;
-    group.current.rotation.z +=
-      (target.current.x * 0.35 - group.current.rotation.z) * 0.06;
-  });
-
-  return (
-    <Float speed={1.4} rotationIntensity={0.35} floatIntensity={0.9}>
-      <group ref={group}>
-        <mesh castShadow>
-          <icosahedronGeometry args={[1.35, 1]} />
-          <MeshDistortMaterial
-            color="#D4AF37"
-            metalness={0.92}
-            roughness={0.18}
-            distort={0.18}
-            speed={1.6}
-            envMapIntensity={1.4}
-          />
-        </mesh>
-        <mesh scale={1.08}>
-          <icosahedronGeometry args={[1.35, 1]} />
-          <meshBasicMaterial color="#F5E6A8" wireframe transparent opacity={0.18} />
-        </mesh>
-      </group>
-    </Float>
-  );
-}
-
-function ShieldCanvas({ mouseX, mouseY }: { mouseX: MotionValue<number>; mouseY: MotionValue<number> }) {
-  return (
-    <Canvas
-      dpr={[1, 1.75]}
-      camera={{ position: [0, 0, 4.2], fov: 42 }}
-      gl={{ antialias: true, alpha: true }}
-      style={{ background: "transparent" }}
-    >
-      <ambientLight intensity={0.55} />
-      <directionalLight position={[4, 6, 3]} intensity={1.4} color="#fff6d6" />
-      <directionalLight position={[-4, -2, -3]} intensity={0.35} color="#8a7340" />
-      <Suspense fallback={null}>
-        <GoldForm mouseX={mouseX} mouseY={mouseY} />
-        <Environment preset="city" />
-        <ContactShadows
-          position={[0, -1.85, 0]}
-          opacity={0.35}
-          scale={8}
-          blur={2.4}
-          far={4}
-          color="#1a1508"
-        />
-      </Suspense>
-    </Canvas>
-  );
-}
 
 /* ---------- Magnetic / tilt service card ---------- */
 function ServiceCard({
@@ -190,9 +284,7 @@ function ServiceCard({
       }}
       transition={{ duration: 0.45, ease }}
       className={`relative text-left overflow-hidden rounded-sm border p-6 md:p-7 min-h-[220px] md:min-h-[260px] transition-colors duration-500 ${
-        active
-          ? "text-background"
-          : "border-foreground/10 bg-surface/70"
+        active ? "text-background" : "border-foreground/10 bg-surface/70"
       }`}
     >
       <div
@@ -201,7 +293,6 @@ function ServiceCard({
           backgroundImage: `url(${visual.image})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
-          transform: "translateZ(0)",
         }}
       />
       <div
@@ -210,27 +301,16 @@ function ServiceCard({
           background: active
             ? `linear-gradient(145deg, ${visual.accent} 0%, #151515 58%, #0d0d0d 100%)`
             : `linear-gradient(160deg, ${visual.soft} 0%, rgba(255,255,255,0.88) 55%, rgba(248,248,246,0.95) 100%)`,
+          opacity: active ? 0.92 : 1,
         }}
       />
-
-      <div className="relative z-10 flex flex-col h-full" style={{ transform: "translateZ(40px)" }}>
-        <div className="flex items-start justify-between mb-8">
-          <span
-            className="font-mono text-[11px] tracking-[0.3em]"
-            style={{ color: active ? "#F5E6A8" : visual.accent }}
-          >
-            0{index + 1}
-          </span>
-          <motion.span
-            animate={{ rotate: active ? 90 : 0, scale: active ? 1.15 : 1 }}
-            transition={{ duration: 0.5, ease }}
-            className="font-serif text-3xl leading-none"
-            style={{ color: active ? "#F5E6A8" : visual.accent }}
-          >
-            {visual.glyph}
-          </motion.span>
-        </div>
-
+      <div className="relative z-10 flex h-full flex-col">
+        <span
+          className="font-display text-3xl mb-6"
+          style={{ color: active ? "#D4AF37" : visual.accent }}
+        >
+          {visual.glyph}
+        </span>
         <h4
           className={`font-display text-xl md:text-2xl tracking-tight mb-3 ${
             active ? "text-white" : "text-foreground"
@@ -240,115 +320,48 @@ function ServiceCard({
         </h4>
         <p
           className={`text-sm font-light leading-relaxed mt-auto ${
-            active ? "text-white/70" : "text-foreground/50"
+            active ? "text-white/70" : "text-foreground/55"
           }`}
         >
           {service.desc}
         </p>
-
-        <motion.div
-          animate={{ width: active ? "100%" : "28%" }}
-          transition={{ duration: 0.55, ease }}
-          className="absolute bottom-0 left-0 h-[3px]"
-          style={{ backgroundColor: active ? "#F5E6A8" : visual.accent }}
-        />
       </div>
     </motion.button>
   );
 }
 
-/* ---------- Profile interactive stepper ---------- */
 function ProfileJourney({ items }: { items: ProfileItem[] }) {
-  const [active, setActive] = useState(0);
-  const progress = ((active + 1) / items.length) * 100;
-
   return (
     <div className="relative">
-      <div className="flex items-center gap-4 mb-10 md:mb-12">
-        <h3 className="font-mono text-[10px] tracking-[0.3em] text-foreground/40 uppercase shrink-0">
-          Profile Contents
-        </h3>
-        <div className="flex-1 h-px bg-foreground/10 relative overflow-hidden">
-          <motion.div
-            className="absolute inset-y-0 left-0 bg-primary"
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.55, ease }}
-          />
+      <div className="flex items-end justify-between gap-6 mb-10">
+        <div>
+          <p className="font-mono text-[10px] tracking-[0.3em] text-foreground/40 uppercase mb-2">
+            Profile path
+          </p>
+          <h3 className="font-display text-2xl md:text-3xl tracking-tight">
+            From identity to delivery
+          </h3>
         </div>
-        <span className="font-mono text-[10px] tracking-widest text-primary tabular-nums">
-          0{active + 1} / 0{items.length}
-        </span>
       </div>
-
-      <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
-        <div className="lg:col-span-5 space-y-2">
-          {items.map((item, i) => (
-            <button
-              key={item.num}
-              type="button"
-              onMouseEnter={() => setActive(i)}
-              onFocus={() => setActive(i)}
-              onClick={() => setActive(i)}
-              className={`w-full text-left group flex items-center gap-5 px-4 py-4 rounded-sm border transition-all duration-400 ${
-                active === i
-                  ? "border-primary/40 bg-primary/[0.06]"
-                  : "border-transparent hover:border-foreground/10"
-              }`}
-            >
-              <span
-                className={`font-display text-3xl md:text-4xl tracking-tight transition-colors duration-400 ${
-                  active === i ? "text-primary" : "text-foreground/20 group-hover:text-foreground/40"
-                }`}
-              >
-                {item.num}
-              </span>
-              <span
-                className={`font-display text-base md:text-lg tracking-tight transition-colors duration-400 ${
-                  active === i ? "text-foreground" : "text-foreground/45"
-                }`}
-              >
-                {item.title}
-              </span>
-            </button>
-          ))}
-        </div>
-
-        <div className="lg:col-span-7 relative min-h-[260px] md:min-h-[320px]">
-          <div className="absolute inset-0 rounded-sm overflow-hidden border border-foreground/10 bg-foreground">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={active}
-                initial={{ opacity: 0, y: 24, filter: "blur(8px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                exit={{ opacity: 0, y: -16, filter: "blur(8px)" }}
-                transition={{ duration: 0.45, ease }}
-                className="absolute inset-0 p-8 md:p-12 flex flex-col justify-between"
-              >
-                <div
-                  className="absolute inset-0 opacity-30"
-                  style={{
-                    backgroundImage: `url(${serviceVisuals[active % serviceVisuals.length].image})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-br from-foreground via-foreground/95 to-foreground/75" />
-
-                <div className="relative z-10">
-                  <p className="font-mono text-[10px] tracking-[0.3em] text-primary uppercase mb-4">
-                    Chapter {items[active].num}
-                  </p>
-                  <h4 className="font-display text-3xl md:text-5xl text-white tracking-tight leading-[1.05] max-w-lg">
-                    {items[active].title}
-                  </h4>
-                </div>
-                <p className="relative z-10 text-base md:text-lg text-white/65 font-light leading-relaxed max-w-xl">
-                  {items[active].desc}
-                </p>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {items.map((item, i) => (
+          <motion.div
+            key={item.num + item.title}
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.55, delay: i * 0.08, ease }}
+            className="border border-foreground/10 bg-surface/70 p-5 md:p-6 rounded-sm"
+          >
+            <div className="font-mono text-xs tracking-[0.25em] text-primary mb-3">
+              {item.num}
+            </div>
+            <h4 className="font-display text-lg tracking-tight mb-2">{item.title}</h4>
+            <p className="text-sm text-foreground/50 font-light leading-relaxed">
+              {item.desc}
+            </p>
+          </motion.div>
+        ))}
       </div>
     </div>
   );
@@ -411,7 +424,6 @@ export function AboutInteractive({
         className="pointer-events-none absolute -inset-8 rounded-3xl"
       />
 
-      {/* Intro + 3D */}
       <div className="grid lg:grid-cols-12 gap-10 lg:gap-6 items-center mb-16 md:mb-24">
         <div className="lg:col-span-6 relative z-10">
           <motion.div
@@ -476,33 +488,14 @@ export function AboutInteractive({
         <div className="lg:col-span-6 relative h-[320px] md:h-[420px] lg:h-[480px]">
           <div className="absolute inset-0 rounded-sm overflow-hidden">
             {mounted ? (
-              <ShieldCanvas mouseX={mouseX} mouseY={mouseY} />
+              <TagCloudSphere />
             ) : (
-              <div className="h-full w-full bg-gradient-to-br from-primary/10 via-transparent to-foreground/5" />
+              <div className="h-full w-full bg-transparent" />
             )}
           </div>
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
-            className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[88%] aspect-square opacity-40"
-          >
-            <svg viewBox="0 0 100 100" className="w-full h-full">
-              <path
-                id="visoRing"
-                d="M 50, 50 m -42, 0 a 42,42 0 1,1 84,0 a 42,42 0 1,1 -84,0"
-                fill="none"
-              />
-              <text className="font-mono text-[4.5px] tracking-[0.35em] uppercase" fill="#D4AF37">
-                <textPath href="#visoRing" startOffset="0%">
-                  VISO GROUP · SECURITY ARCHITECTURE · CONSULTANCY ·
-                </textPath>
-              </text>
-            </svg>
-          </motion.div>
         </div>
       </div>
 
-      {/* Interactive services */}
       <div className="mb-20 md:mb-28" style={{ perspective: 1200 }}>
         <div className="flex items-end justify-between gap-6 mb-8">
           <div className="max-w-2xl">
@@ -513,7 +506,8 @@ export function AboutInteractive({
               Interactive service map
             </h3>
             <p className="mt-3 text-sm md:text-base text-foreground/55 font-light leading-relaxed">
-              Four core VISO offerings — hover any panel to explore how consulting, translation, digital access, and SAIS alignment work together.
+              Four core VISO offerings — hover any panel to explore how consulting,
+              translation, digital access, and SAIS alignment work together.
             </p>
           </div>
           <p className="hidden md:block text-xs text-foreground/35 font-light max-w-[180px] text-right">

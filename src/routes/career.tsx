@@ -53,7 +53,7 @@ function CareerPage() {
   return (
     <div className="min-h-[100dvh] bg-background text-foreground font-sans selection:bg-primary/20 selection:text-primary overflow-x-hidden flex flex-col">
       <TopNav />
-
+      
       <main className="flex-1">
         <CareerHero jobCount={jobs.length} />
         <ValuesStrip />
@@ -560,7 +560,7 @@ function ApplicationModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+    
     const { error } = await supabase.from("job_applications").insert([
       {
         name,
@@ -580,14 +580,14 @@ function ApplicationModal({
   };
 
   return (
-    <motion.div
+    <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/85 backdrop-blur-md overflow-y-auto"
       onClick={onClose}
     >
-      <motion.div
+      <motion.div 
         initial={{ scale: 0.96, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.96, y: 16 }}
@@ -595,7 +595,7 @@ function ApplicationModal({
         className="bg-surface border border-foreground/10 p-7 md:p-9 shadow-2xl w-full max-w-lg relative my-8"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
+        <button 
           type="button"
           onClick={onClose}
           className="absolute top-5 right-5 text-foreground/40 hover:text-foreground transition-colors"
@@ -633,7 +633,7 @@ function ApplicationModal({
                 {t("career.modal_title")} {jobTitle}
               </h2>
             </div>
-
+            
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-[10px] font-bold text-foreground/50 uppercase tracking-wider mb-2">
@@ -683,7 +683,7 @@ function ApplicationModal({
                   className="w-full bg-background border border-foreground/15 rounded-sm px-4 py-3 outline-none focus:border-primary transition-colors text-sm resize-none"
                 />
               </div>
-
+              
               <button
                 type="submit"
                 disabled={loading}

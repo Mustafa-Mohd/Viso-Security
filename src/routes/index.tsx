@@ -189,18 +189,19 @@ function HomePage() {
 }
 
 /* ============================================================
-   LOADING SCREEN (5-SECOND CRAZY TEXT ANIMATION)
+   LOADING SCREEN — even pacing across each stage
    ============================================================ */
 function LoadingScreen({ onDone }: { onDone: () => void }) {
   const [phase, setPhase] = useState(0);
 
   useEffect(() => {
+    // ~1.7s per stage word, then hold logo — even rhythm (not accelerating)
     const sequence = [
-      setTimeout(() => setPhase(1), 900),
-      setTimeout(() => setPhase(2), 2000),
-      setTimeout(() => setPhase(3), 3100),
+      setTimeout(() => setPhase(1), 1700),
+      setTimeout(() => setPhase(2), 3400),
+      setTimeout(() => setPhase(3), 5100),
     ];
-    const timer = setTimeout(onDone, 5000);
+    const timer = setTimeout(onDone, 7200);
 
     return () => {
       sequence.forEach(clearTimeout);
@@ -209,7 +210,12 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
   }, [onDone]);
 
   const { t } = useTranslation();
-  const words = [t("security.stages.s1.title"), t("security.stages.s2.title"), t("security.stages.s3.title"), "VISO GROUP"];
+  const words = [
+    t("security.stages.s1.title"),
+    t("security.stages.s2.title"),
+    t("security.stages.s3.title"),
+    "VISO GROUP",
+  ];
   const currentWord = words[phase];
   const finalLetters = "VISO GROUP".split("");
 
@@ -224,7 +230,7 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
         {/* Background decorative text moving for extra motion */}
         <motion.div
           animate={{ x: ["0%", "-50%"] }}
-          transition={{ duration: 5, ease: "linear", repeat: Infinity }}
+          transition={{ duration: 12, ease: "linear", repeat: Infinity }}
           className="absolute font-display text-[25vw] font-bold text-foreground/[0.02] whitespace-nowrap pointer-events-none"
         >
           SECURITY ARCHITECTURE SECURITY ARCHITECTURE
@@ -234,11 +240,11 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
           {phase < 3 ? (
             <motion.div
               key={phase}
-              initial={{ opacity: 0, y: 40, skewY: 3, filter: "blur(10px)", scale: 0.92 }}
+              initial={{ opacity: 0, y: 36, skewY: 2, filter: "blur(8px)", scale: 0.94 }}
               animate={{ opacity: 1, y: 0, skewY: 0, filter: "blur(0px)", scale: 1 }}
-              exit={{ opacity: 0, y: -40, skewY: -3, filter: "blur(10px)", scale: 1.08 }}
-              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="font-display font-bold text-5xl md:text-7xl lg:text-[100px] text-foreground tracking-tighter uppercase absolute"
+              exit={{ opacity: 0, y: -36, skewY: -2, filter: "blur(8px)", scale: 1.05 }}
+              transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+              className="font-display font-bold text-4xl md:text-6xl lg:text-[88px] text-foreground tracking-tighter uppercase absolute text-center px-6 max-w-[92vw]"
             >
               {currentWord}
             </motion.div>
@@ -269,8 +275,8 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ 
-                      duration: 0.2, 
-                      delay: i * 0.06 + 0.3, // starts typing after logo appears
+                      duration: 0.28, 
+                      delay: i * 0.08 + 0.35,
                       ease: "easeOut"
                     }}
                     className={`font-display font-black text-5xl md:text-8xl lg:text-[110px] tracking-tight uppercase text-primary drop-shadow-md ${l === " " ? "w-4 md:w-8" : ""}`}
