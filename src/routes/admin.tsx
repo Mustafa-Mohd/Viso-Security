@@ -884,7 +884,7 @@ function AdminPage() {
         </div>
         <div className="max-w-md w-full bg-foreground/5 p-8 rounded-xl border border-foreground/10 text-center">
           <div className="flex justify-center mb-6">
-            <img src="https://res.cloudinary.com/dcefror3c/image/upload/v1782911668/Luxurious_black_and_gold_logo_design_kjv4np.png" alt="VISO Logo" className="h-16 w-auto object-contain" />
+            <img src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png" alt="VISO Logo" className="h-16 w-auto object-contain" />
           </div>
           <h1 className="text-2xl font-bold mb-6 font-display">Admin Login</h1>
           <form onSubmit={handleLogin} className="flex flex-col gap-4 text-left">
@@ -956,7 +956,7 @@ function AdminPage() {
             
             {/* Logo */}
             <div className="flex flex-col items-center justify-center flex-shrink-0 pt-1">
-              <img src="https://res.cloudinary.com/dcefror3c/image/upload/v1782911668/Luxurious_black_and_gold_logo_design_kjv4np.png" alt="VISO Logo" className="h-6 md:h-8 w-auto object-contain" />
+              <img src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png" alt="VISO Logo" className="h-6 md:h-8 w-auto object-contain" />
               <span className="mt-0.5 font-bold uppercase tracking-widest text-foreground/50 text-[9px] hidden md:block">Admin Console</span>
             </div>
 

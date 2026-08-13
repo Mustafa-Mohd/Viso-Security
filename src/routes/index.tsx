@@ -256,7 +256,7 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
             >
               {/* Animated Logo */}
               <motion.img 
-                src="https://res.cloudinary.com/dcefror3c/image/upload/v1782911668/Luxurious_black_and_gold_logo_design_kjv4np.png"
+                src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
                 alt="Viso Group Logo"
                 initial={{ opacity: 0, scale: 0.5, y: -20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -288,6 +288,17 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Skip Intro Button */}
+        <motion.button
+          onClick={onDone}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 0.6, y: 0 }}
+          whileHover={{ opacity: 1, scale: 1.05 }}
+          className="absolute bottom-8 right-8 z-[210] font-mono text-[10px] font-bold tracking-[0.2em] text-foreground bg-foreground/5 hover:bg-foreground/10 px-4 py-2 border border-foreground/10 rounded-sm transition-all duration-300 uppercase cursor-pointer"
+        >
+          {t("home.skip_intro")}
+        </motion.button>
       </div>
     </motion.div>
   );
@@ -399,7 +410,7 @@ export function HeroSection({ data }: { data?: any }) {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.85, delay: 0.65, ease: heroEase }}
-            className="font-sans text-sm md:text-base text-foreground/45 mt-5 max-w-lg leading-relaxed whitespace-pre-wrap"
+            className="font-sans text-sm md:text-base text-foreground/45 mt-5 max-w-lg leading-relaxed whitespace-pre-wrap text-justify"
           >
             {desc}
           </motion.p>
@@ -478,7 +489,7 @@ export function HeroSection({ data }: { data?: any }) {
             className="absolute left-[-4%] sm:left-[-8%] lg:left-[-12%] bottom-8 sm:bottom-14 w-44 h-44 sm:w-56 sm:h-56 lg:w-72 lg:h-72 rounded-full overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.12)] border-[6px] sm:border-8 border-background z-20 bg-surface flex items-center justify-center"
           >
             <img
-              src="https://res.cloudinary.com/dcefror3c/image/upload/v1782911817/Luxurious_black_and_gold_logo_design-removebg-preview_pztvcs.png"
+              src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
               alt="VISO Group Logo"
               loading="eager"
               decoding="async"
@@ -520,7 +531,7 @@ function ServicesSection({ data }: { data?: any }) {
               <h2 className="font-display text-5xl md:text-7xl leading-tight text-foreground tracking-tight">
                 {title1} <br /><span className="text-primary italic">{title2}</span>
               </h2>
-              <p className="font-sans mt-8 text-lg text-foreground/60 max-w-md leading-relaxed">
+              <p className="font-sans mt-8 text-lg text-foreground/60 max-w-md leading-relaxed text-justify">
                 {desc}
               </p>
             </motion.div>
@@ -590,7 +601,7 @@ function FrameworkSection({ data }: { data?: any }) {
 
         <motion.p 
           initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.2 }}
-          className="font-sans text-lg text-foreground/60 max-w-3xl mx-auto mt-8 leading-relaxed mb-16 whitespace-pre-wrap"
+          className="font-sans text-lg text-foreground/60 max-w-3xl mx-auto mt-8 leading-relaxed mb-16 whitespace-pre-wrap text-justify"
         >
           {desc}
         </motion.p>
@@ -938,7 +949,7 @@ function CTASection({ data }: { data?: any }) {
           <h2 className="font-display text-5xl md:text-7xl text-foreground leading-tight">
             {title1} <br /><span className="text-primary italic">{title2}</span>
           </h2>
-          <p className="font-sans text-lg text-foreground/60 mt-6 max-w-md mb-8 whitespace-pre-wrap">
+          <p className="font-sans text-lg text-foreground/60 mt-6 max-w-md mb-8 whitespace-pre-wrap text-justify">
             {desc}
           </p>
           <Link to="/others" className="inline-flex rounded-sm bg-primary px-10 py-5 font-sans text-sm font-bold tracking-[0.2em] text-white transition-all duration-400 hover:bg-gold hover:scale-[1.03] shadow-xl uppercase">
@@ -1116,7 +1127,7 @@ function ValueCard({ title, desc, points, imageUrl, delay }: { title: string, de
           <img src={imageUrl} alt={title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
         </div>
         <h3 className="font-display text-2xl mb-4 text-foreground">{title}</h3>
-        <p className="font-sans text-sm text-foreground/60 leading-relaxed">
+        <p className="font-sans text-sm text-foreground/60 leading-relaxed text-justify">
           {desc}
         </p>
       </div>
@@ -1189,7 +1200,7 @@ function AreaCard({ title, desc, svg, imageUrl, delay }: { title: string, desc: 
         {imageUrl ? <img src={imageUrl} alt={title} loading="lazy" decoding="async" className="w-full h-full object-contain" /> : svg}
       </div>
       <h3 className="font-display font-semibold text-lg tracking-wide mb-3 text-foreground">{title}</h3>
-      <p className="font-sans text-sm text-foreground/60 leading-relaxed">
+      <p className="font-sans text-sm text-foreground/60 leading-relaxed text-justify">
         {desc}
       </p>
     </motion.div>
@@ -1502,13 +1513,13 @@ function Footer() {
           {/* Brand Col */}
           <div className="space-y-6">
             <img 
-              src="https://res.cloudinary.com/dcefror3c/image/upload/v1782911668/Luxurious_black_and_gold_logo_design_kjv4np.png" 
+              src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png" 
               alt="VISO Logo"
               loading="lazy"
               decoding="async"
               className="h-16 w-auto object-contain brightness-0 invert" 
             />
-            <p className="font-sans text-background/70 text-sm leading-relaxed max-w-xs">
+            <p className="font-sans text-background/70 text-sm leading-relaxed max-w-xs text-justify">
               Pioneering high-end security architecture, consulting, and seamless defensive integration for mega-projects worldwide.
             </p>
           </div>

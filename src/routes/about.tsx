@@ -692,7 +692,7 @@ function AboutFooter() {
     <footer className="bg-foreground text-background py-12 border-t border-gold/20">
       <div className="max-w-[1600px] mx-auto px-8 md:px-16 flex flex-col md:flex-row items-center justify-between gap-6">
         <img
-          src="https://res.cloudinary.com/dcefror3c/image/upload/v1782911668/Luxurious_black_and_gold_logo_design_kjv4np.png"
+          src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
           alt="VISO"
           loading="lazy"
           decoding="async"

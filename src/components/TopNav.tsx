@@ -28,13 +28,13 @@ export function TopNav() {
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-[150] flex items-center justify-between px-6 md:px-16 py-4 md:py-6 backdrop-blur-md bg-background/80 border-b border-foreground/5 transition-all duration-500">
+      <div className="fixed top-0 left-0 right-0 z-[150] flex items-center justify-between px-6 md:px-16 py-3 md:py-4.5 backdrop-blur-md bg-background/80 border-b border-foreground/5 transition-all duration-500">
         <div className="flex-1 flex items-center">
           <Link to="/" className="flex items-center gap-3 group">
             <img
-              src="https://res.cloudinary.com/dcefror3c/image/upload/v1782911668/Luxurious_black_and_gold_logo_design_kjv4np.png"
+              src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
               alt="Viso Group"
-              className="h-8 md:h-12 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
+              className="h-10 md:h-15 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
             />
             <span className="font-display font-semibold text-lg md:text-xl tracking-wide text-primary hidden sm:inline-block">
               VISO GROUP

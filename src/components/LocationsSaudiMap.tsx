@@ -98,7 +98,7 @@ export function LocationsSaudiMap({ cities, activeId, onSelect }: Props) {
                       d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0z"
                       fill={isActive ? "#D4AF37" : "#1F1E1C"}
                     />
-                    <circle cx="12" cy="12" r="4.5" fill="#F9F8F5" />
+                    <circle cx="12" cy="12" r="4.5" fill="var(--background)" />
                   </svg>
                 </motion.span>
               </button>

@@ -4,6 +4,8 @@ import { TopNav } from "@/components/TopNav";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { TiltCard } from "@/components/TiltCard";
 import { useTranslation } from "react-i18next";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/clients")({
   head: () => ({
@@ -40,6 +42,31 @@ const clientsData = [
 
 function ClientsPage() {
   const { t } = useTranslation();
+  const [clients, setClients] = useState(clientsData);
+
+  useEffect(() => {
+    async function fetchClients() {
+      try {
+        const { data } = await supabase.from('cms_content').select('*').eq('section_key', 'clients').single();
+        if (data && data.content && data.content.items) {
+          const dbItems = data.content.items;
+          const merged = dbItems.map((dbItem: any) => {
+            const match = clientsData.find(c => c.name.toLowerCase() === dbItem.name.toLowerCase());
+            return {
+              name: dbItem.name,
+              sector: dbItem.sector,
+              icon: dbItem.icon,
+              url: match ? match.url : (dbItem.url || "#")
+            };
+          });
+          setClients(merged);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    fetchClients();
+  }, []);
 
   return (
     <>
@@ -70,13 +97,23 @@ function ClientsPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="font-sans text-lg text-foreground/60 max-w-3xl mx-auto leading-relaxed mb-24"
+            className="font-sans text-lg text-foreground/60 max-w-3xl mx-auto leading-relaxed mb-8"
           >
             {t("clients.desc")}
           </motion.p>
 
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.25 }}
+            style={{ textAlign: "justify" }}
+            className="font-sans text-sm text-foreground/50 max-w-3xl mx-auto leading-relaxed mb-24 text-justify"
+          >
+            A unified digital experience presenting VISO security consultancy and translation capabilities, while connecting employees, document control and project tracking through one corporate platform.
+          </motion.p>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 text-left">
-            {clientsData.map((client, i) => (
+            {clients.map((client, i) => (
               <TiltCard key={client.name} className="h-full">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -87,7 +124,13 @@ function ClientsPage() {
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                   <div>
-                    <div className="text-4xl mb-4 group-hover:scale-110 transition-transform origin-left duration-300">{client.icon}</div>
+                    <div className="h-12 mb-4 flex items-center group-hover:scale-110 transition-transform origin-left duration-300">
+                      {client.icon && (client.icon.startsWith('http') || client.icon.startsWith('/')) ? (
+                        <img src={client.icon} alt={client.name} className="max-h-full max-w-full object-contain" />
+                      ) : (
+                        <span className="text-4xl">{client.icon}</span>
+                      )}
+                    </div>
                     <h3 className="font-display font-bold text-lg text-foreground mb-1 group-hover:text-primary transition-colors">{client.name}</h3>
                     <p className="font-mono text-[10px] text-foreground/50 uppercase tracking-widest">{client.sector}</p>
                   </div>

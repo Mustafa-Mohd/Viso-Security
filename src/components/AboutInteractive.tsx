@@ -195,36 +195,31 @@ const serviceVisuals = [
     accent: "#1B4F72",
     soft: "rgba(27, 79, 114, 0.14)",
     glow: "rgba(27, 79, 114, 0.35)",
-    image:
-      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=900&q=80",
+    image: "/images/security_consulting_panel.png",
   },
   {
     glyph: "◇",
     accent: "#0E7C66",
     soft: "rgba(14, 124, 102, 0.14)",
     glow: "rgba(14, 124, 102, 0.35)",
-    image:
-      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=900&q=80",
+    image: "/images/translation_services_panel.png",
   },
   {
     glyph: "⬡",
     accent: "#B8860B",
     soft: "rgba(184, 134, 11, 0.16)",
     glow: "rgba(212, 175, 55, 0.4)",
-    image:
-      "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=900&q=80",
+    image: "/images/digital_access_portal_panel.png",
   },
   {
     glyph: "◎",
     accent: "#8B3A2A",
     soft: "rgba(139, 58, 42, 0.14)",
     glow: "rgba(139, 58, 42, 0.35)",
-    image:
-      "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=900&q=80",
+    image: "/images/sais_alignment_panel.png",
   },
 ];
 
-/* ---------- Magnetic / tilt service card ---------- */
 function ServiceCard({
   service,
   index,
@@ -241,12 +236,9 @@ function ServiceCard({
   const y = useMotionValue(0);
   const mx = useSpring(x, { stiffness: 220, damping: 22 });
   const my = useSpring(y, { stiffness: 220, damping: 22 });
-  const rotateX = useTransform(my, [-0.5, 0.5], [9, -9]);
-  const rotateY = useTransform(mx, [-0.5, 0.5], [-11, 11]);
-  const glareX = useTransform(mx, [-0.5, 0.5], [0, 100]);
-  const glareY = useTransform(my, [-0.5, 0.5], [0, 100]);
+  const rotateX = useTransform(my, [-0.5, 0.5], [6, -6]);
+  const rotateY = useTransform(mx, [-0.5, 0.5], [-8, 8]);
   const visual = serviceVisuals[index % serviceVisuals.length];
-  const glare = useMotionTemplate`radial-gradient(420px circle at ${glareX}% ${glareY}%, ${visual.glow}, transparent 55%)`;
 
   const onMove = (e: MouseEvent) => {
     const el = ref.current;
@@ -274,57 +266,43 @@ function ServiceCard({
         rotateX,
         rotateY,
         transformStyle: "preserve-3d",
-        backgroundImage: glare,
-        borderColor: active ? visual.accent : undefined,
-        boxShadow: active ? `0 18px 40px -20px ${visual.glow}` : "none",
+        borderColor: active ? "var(--primary)" : "rgba(0,0,0,0.08)",
+        boxShadow: active ? `0 20px 40px rgba(212, 175, 55, 0.1)` : "none",
       }}
       animate={{
-        scale: active ? 1 : 0.97,
-        opacity: active ? 1 : 0.72,
+        scale: active ? 1.02 : 1,
       }}
       transition={{ duration: 0.45, ease }}
-      className={`relative text-left overflow-hidden rounded-sm border p-6 md:p-7 min-h-[220px] md:min-h-[260px] transition-colors duration-500 ${
-        active ? "text-background" : "border-foreground/10 bg-surface/70"
-      }`}
+      className="relative text-left overflow-hidden rounded-xl border bg-surface flex flex-col transition-all duration-300 h-full w-full cursor-pointer group"
     >
-      <div
-        className="absolute inset-0 opacity-30 mix-blend-luminosity pointer-events-none"
-        style={{
-          backgroundImage: `url(${visual.image})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      />
-      <div
-        className="absolute inset-0 pointer-events-none transition-opacity duration-500"
-        style={{
-          background: active
-            ? `linear-gradient(145deg, ${visual.accent} 0%, #151515 58%, #0d0d0d 100%)`
-            : `linear-gradient(160deg, ${visual.soft} 0%, rgba(255,255,255,0.88) 55%, rgba(248,248,246,0.95) 100%)`,
-          opacity: active ? 0.92 : 1,
-        }}
-      />
-      <div className="relative z-10 flex h-full flex-col">
-        <span
-          className="font-display text-3xl mb-6"
-          style={{ color: active ? "#D4AF37" : visual.accent }}
-        >
-          {visual.glyph}
-        </span>
-        <h4
-          className={`font-display text-xl md:text-2xl tracking-tight mb-3 ${
-            active ? "text-white" : "text-foreground"
-          }`}
-        >
-          {service.title}
-        </h4>
-        <p
-          className={`text-sm font-light leading-relaxed mt-auto ${
-            active ? "text-white/70" : "text-foreground/55"
-          }`}
-        >
-          {service.desc}
-        </p>
+      {/* Top Part: HD Colorful Image */}
+      <div className="w-full h-44 overflow-hidden relative border-b border-foreground/5">
+        <img
+          src={visual.image}
+          alt={service.title}
+          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+        />
+        {/* Soft elegant gradient overlay at the top left showing glyph */}
+        <div className="absolute top-3 left-3 bg-background/80 backdrop-blur-md w-10 h-10 rounded-full flex items-center justify-center border border-foreground/5 shadow-sm">
+          <span
+            className="font-display text-lg"
+            style={{ color: "var(--primary)" }}
+          >
+            {visual.glyph}
+          </span>
+        </div>
+      </div>
+
+      {/* Bottom Part: Content */}
+      <div className="p-6 flex-1 flex flex-col justify-between">
+        <div>
+          <h4 className="font-display text-xl tracking-tight mb-2 text-foreground group-hover:text-primary transition-colors duration-300">
+            {service.title}
+          </h4>
+          <p className="text-sm font-light leading-relaxed text-foreground/60 text-justify">
+            {service.desc}
+          </p>
+        </div>
       </div>
     </motion.button>
   );
@@ -469,7 +447,7 @@ export function AboutInteractive({
               Who We Are
             </p>
             <h3 className="font-display text-xl tracking-tight mb-2">{whoWeAreTitle}</h3>
-            <p className="text-sm text-foreground/55 font-light leading-relaxed">
+            <p className="text-sm text-foreground/55 font-light leading-relaxed text-justify">
               {whoWeAreDesc}
             </p>
           </motion.div>

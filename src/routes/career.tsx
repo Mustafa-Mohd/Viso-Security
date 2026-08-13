@@ -244,12 +244,12 @@ function TeamIllustration({ jobCount }: { jobCount: number }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: p.delay, duration: 0.7, ease }}
           >
-            <circle cx={p.x} cy="250" r="18" stroke="#1F1E1C" strokeWidth="1.75" fill="#F9F8F5" />
+            <circle cx={p.x} cy="250" r="18" stroke="#1F1E1C" strokeWidth="1.75" fill="var(--surface)" />
             <path
               d={`M${p.x - 28} 320 C${p.x - 28} 285, ${p.x - 22} 270, ${p.x} 270 C${p.x + 22} 270, ${p.x + 28} 285, ${p.x + 28} 320`}
               stroke="#1F1E1C"
               strokeWidth="1.75"
-              fill="#F9F8F5"
+              fill="var(--surface)"
             />
             <circle cx={p.x} cy="250" r="4" fill="#D4AF37" />
           </motion.g>

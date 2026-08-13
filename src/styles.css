@@ -43,30 +43,31 @@
 :root {
   --radius: 0.5rem;
 
-  /* Soft pearl whites — still white, less harsh than pure #FFF */
-  --background: #F3F2EF;
-  --foreground: #1F1E1C;
+  /* Google's pure white background */
+  --background: #FFFFFF;
+  --foreground: #1C1B1F;
   
-  --surface: #F9F8F5;
-  --surface-2: #EBE9E4;
+  /* Shaded light surfaces for contrast on white background */
+  --surface: #F8F9FA;
+  --surface-2: #E8EAED;
 
-  --card: #F9F8F5;
-  --card-foreground: #1F1E1C;
+  --card: #F8F9FA;
+  --card-foreground: #1C1B1F;
   
-  --popover: #F9F8F5;
-  --popover-foreground: #1F1E1C;
+  --popover: #FFFFFF;
+  --popover-foreground: #1C1B1F;
 
   --primary: #D4AF37;
-  --primary-foreground: #1F1E1C;
+  --primary-foreground: #1C1B1F;
   
   --gold: #D4AF37;
-  --gold-foreground: #1F1E1C;
+  --gold-foreground: #1C1B1F;
 
   --secondary: #B8860B;
   --secondary-foreground: #FFFFFF;
   
-  --muted: #E5E3DE;
-  --muted-foreground: #6F6C66;
+  --muted: #F1F3F4;
+  --muted-foreground: #5F6368;
   
   --accent: #B8860B;
   --accent-foreground: #FFFFFF;
@@ -74,8 +75,8 @@
   --destructive: #D32F2F;
   --destructive-foreground: #FFFFFF;
   
-  --border: rgba(31, 30, 28, 0.1);
-  --input: rgba(31, 30, 28, 0.14);
+  --border: rgba(0, 0, 0, 0.08);
+  --input: rgba(0, 0, 0, 0.1);
   --ring: #D4AF37;
 
   --chart-1: #D4AF37;
