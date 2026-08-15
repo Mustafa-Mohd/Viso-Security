@@ -19,21 +19,72 @@ export const Route = createFileRoute("/admin")({
 type FieldChange = {
   path: string;
   label: string;
+  kind: "changed" | "added" | "removed";
   from: string;
   to: string;
+  details?: { label: string; from: string; to: string }[];
 };
 
-function formatValue(value: unknown): string {
-  if (value === null || value === undefined || value === "") return "—";
+function isUrl(v: unknown): v is string {
+  return typeof v === "string" && (/^https?:\/\//i.test(v) || v.startsWith("/") || v.startsWith("data:"));
+}
+
+function formatPlain(value: unknown): string {
+  if (value === null || value === undefined || value === "") return "(empty)";
   if (typeof value === "string") return value;
   if (typeof value === "number" || typeof value === "boolean") return String(value);
   if (Array.isArray(value)) {
-    if (value.length === 0) return "—";
+    if (value.length === 0) return "(empty list)";
     if (value.every((v) => typeof v === "string")) return value.join(", ");
-    return JSON.stringify(value);
+    return value.map((item, i) => summarizeItem(item, i)).join("; ");
   }
-  if (typeof value === "object") return JSON.stringify(value);
+  if (typeof value === "object") return summarizeItem(value);
   return String(value);
+}
+
+/** Readable one-line summary including image/link URLs when present. */
+function summarizeItem(item: unknown, index?: number): string {
+  if (item === null || item === undefined) return "(empty)";
+  if (typeof item !== "object") return String(item);
+
+  const obj = item as Record<string, unknown>;
+  const parts: string[] = [];
+
+  const title =
+    (typeof obj.name === "string" && obj.name) ||
+    (typeof obj.title === "string" && obj.title) ||
+    (typeof obj.label === "string" && obj.label) ||
+    (typeof obj.city === "string" && obj.city) ||
+    null;
+
+  if (title) parts.push(title);
+
+  for (const key of ["sector", "subtitle", "desc", "description", "region", "num", "type", "role"]) {
+    const v = obj[key];
+    if (typeof v === "string" && v.trim() && v !== title) {
+      const short = v.length > 80 ? v.slice(0, 80) + "…" : v;
+      parts.push(`${humanizeKey(key)}: ${short}`);
+    }
+  }
+
+  for (const key of ["icon", "imageUrl", "image_url", "url", "link", "href", "src"]) {
+    const v = obj[key];
+    if (typeof v === "string" && v.trim()) {
+      if (isUrl(v)) parts.push(`${humanizeKey(key)}: ${v}`);
+      else if (v.length <= 8) parts.push(`${humanizeKey(key)}: ${v}`);
+    }
+  }
+
+  if (parts.length === 0) {
+    const simple = Object.entries(obj)
+      .filter(([, v]) => typeof v === "string" || typeof v === "number")
+      .slice(0, 5)
+      .map(([k, v]) => `${humanizeKey(k)}: ${v}`);
+    if (simple.length) return simple.join(" · ");
+    return index !== undefined ? `Item ${index + 1}` : "Item";
+  }
+
+  return parts.join(" · ");
 }
 
 function humanizeKey(key: string): string {
@@ -44,11 +95,143 @@ function humanizeKey(key: string): string {
     .trim();
 }
 
-function collectChanges(
-  oldObj: any,
-  newObj: any,
-  prefix = ""
+function itemKey(item: unknown, index: number): string {
+  if (item && typeof item === "object") {
+    const o = item as Record<string, unknown>;
+    if (typeof o.id === "string" || typeof o.id === "number") return `id:${o.id}`;
+    if (typeof o.name === "string") return `name:${o.name.toLowerCase()}`;
+    if (typeof o.title === "string") return `title:${o.title.toLowerCase()}`;
+    if (typeof o.num === "string") return `num:${o.num}`;
+  }
+  return `idx:${index}`;
+}
+
+function fieldLabelForUrlKey(key: string): string {
+  if (key === "icon" || key === "imageUrl" || key === "image_url" || key === "src") return "Image URL";
+  if (key === "url" || key === "link" || key === "href") return "Link";
+  return humanizeKey(key);
+}
+
+function diffObjects(
+  oldObj: Record<string, unknown>,
+  newObj: Record<string, unknown>
+): { label: string; from: string; to: string }[] {
+  const keys = Array.from(new Set([...Object.keys(oldObj), ...Object.keys(newObj)]));
+  const details: { label: string; from: string; to: string }[] = [];
+
+  for (const key of keys) {
+    if (key === "id") continue;
+
+    const a = oldObj[key];
+    const b = newObj[key];
+    if (JSON.stringify(a) === JSON.stringify(b)) continue;
+
+    if (a && b && typeof a === "object" && typeof b === "object" && !Array.isArray(a) && !Array.isArray(b)) {
+      details.push(...diffObjects(a as Record<string, unknown>, b as Record<string, unknown>));
+      continue;
+    }
+
+    const urlKeys = ["icon", "imageUrl", "image_url", "url", "link", "href", "src"];
+    details.push({
+      label: urlKeys.includes(key) ? fieldLabelForUrlKey(key) : humanizeKey(key),
+      from: a === null || a === undefined || a === "" ? "(empty)" : String(a),
+      to: b === null || b === undefined || b === "" ? "(empty)" : String(b),
+    });
+  }
+
+  return details;
+}
+
+function diffArrays(
+  oldArr: unknown[],
+  newArr: unknown[],
+  fieldLabel: string
 ): FieldChange[] {
+  const changes: FieldChange[] = [];
+  const oldMap = new Map<string, { item: unknown; index: number }>();
+  const newMap = new Map<string, { item: unknown; index: number }>();
+
+  oldArr.forEach((item, i) => oldMap.set(itemKey(item, i), { item, index: i }));
+  newArr.forEach((item, i) => newMap.set(itemKey(item, i), { item, index: i }));
+
+  for (const [key, { item }] of oldMap) {
+    if (!newMap.has(key)) {
+      changes.push({
+        path: `${fieldLabel}.removed.${key}`,
+        label: fieldLabel,
+        kind: "removed",
+        from: summarizeItem(item),
+        to: "(removed)",
+      });
+    }
+  }
+
+  for (const [key, { item }] of newMap) {
+    if (!oldMap.has(key)) {
+      changes.push({
+        path: `${fieldLabel}.added.${key}`,
+        label: fieldLabel,
+        kind: "added",
+        from: "(new)",
+        to: summarizeItem(item),
+      });
+    }
+  }
+
+  for (const [key, newEntry] of newMap) {
+    const oldEntry = oldMap.get(key);
+    if (!oldEntry) continue;
+    if (JSON.stringify(oldEntry.item) === JSON.stringify(newEntry.item)) continue;
+
+    if (
+      oldEntry.item &&
+      newEntry.item &&
+      typeof oldEntry.item === "object" &&
+      typeof newEntry.item === "object" &&
+      !Array.isArray(oldEntry.item) &&
+      !Array.isArray(newEntry.item)
+    ) {
+      const details = diffObjects(
+        oldEntry.item as Record<string, unknown>,
+        newEntry.item as Record<string, unknown>
+      );
+      const name =
+        (newEntry.item as any).name ||
+        (newEntry.item as any).title ||
+        summarizeItem(newEntry.item).split(" · ")[0];
+      changes.push({
+        path: `${fieldLabel}.changed.${key}`,
+        label: `${fieldLabel}: ${name}`,
+        kind: "changed",
+        from: summarizeItem(oldEntry.item),
+        to: summarizeItem(newEntry.item),
+        details: details.length ? details : undefined,
+      });
+    } else {
+      changes.push({
+        path: `${fieldLabel}.changed.${key}`,
+        label: fieldLabel,
+        kind: "changed",
+        from: formatPlain(oldEntry.item),
+        to: formatPlain(newEntry.item),
+      });
+    }
+  }
+
+  if (changes.length === 0 && JSON.stringify(oldArr) !== JSON.stringify(newArr)) {
+    changes.push({
+      path: `${fieldLabel}.list`,
+      label: fieldLabel,
+      kind: "changed",
+      from: formatPlain(oldArr),
+      to: formatPlain(newArr),
+    });
+  }
+
+  return changes;
+}
+
+function collectChanges(oldObj: any, newObj: any, prefix = ""): FieldChange[] {
   const changes: FieldChange[] = [];
   const oldSafe = oldObj && typeof oldObj === "object" ? oldObj : {};
   const newSafe = newObj && typeof newObj === "object" ? newObj : {};
@@ -58,35 +241,83 @@ function collectChanges(
     const path = prefix ? `${prefix}.${key}` : key;
     const a = oldSafe[key];
     const b = newSafe[key];
+    const label = humanizeKey(key);
 
-    const bothObjects =
+    if (
       a &&
       b &&
       typeof a === "object" &&
       typeof b === "object" &&
       !Array.isArray(a) &&
-      !Array.isArray(b);
-
-    if (bothObjects) {
+      !Array.isArray(b)
+    ) {
       changes.push(...collectChanges(a, b, path));
       continue;
     }
 
-    const from = formatValue(a);
-    const to = formatValue(b);
+    if (Array.isArray(a) || Array.isArray(b)) {
+      const oldArr = Array.isArray(a) ? a : [];
+      const newArr = Array.isArray(b) ? b : [];
+      if (JSON.stringify(oldArr) === JSON.stringify(newArr)) continue;
+      changes.push(...diffArrays(oldArr, newArr, label));
+      continue;
+    }
+
+    const from = a === null || a === undefined || a === "" ? "(empty)" : String(a);
+    const to = b === null || b === undefined || b === "" ? "(empty)" : String(b);
     if (from === to) continue;
 
-    const leaf = path.includes(".") ? path.split(".").slice(-1)[0] : path;
+    const urlKeys = ["icon", "imageUrl", "image_url", "url", "link", "href", "src"];
     const parentBits = path.split(".").slice(0, -1);
-    const label =
-      parentBits.length > 0
-        ? `${humanizeKey(leaf)} (${parentBits.map(humanizeKey).join(" › ")})`
-        : humanizeKey(leaf);
+    const displayLabel = urlKeys.includes(key)
+      ? parentBits.length
+        ? `${fieldLabelForUrlKey(key)} (${parentBits.map(humanizeKey).join(" › ")})`
+        : fieldLabelForUrlKey(key)
+      : parentBits.length > 0
+        ? `${label} (${parentBits.map(humanizeKey).join(" › ")})`
+        : label;
 
-    changes.push({ path, label, from, to });
+    changes.push({
+      path,
+      label: displayLabel,
+      kind:
+        a === undefined || a === null || a === ""
+          ? "added"
+          : b === undefined || b === null || b === ""
+            ? "removed"
+            : "changed",
+      from,
+      to,
+    });
   }
 
   return changes;
+}
+
+function DiffValue({ value, tone }: { value: string; tone: "before" | "after" | "neutral" }) {
+  const isLink = isUrl(value);
+  const color =
+    tone === "before"
+      ? "text-red-600 dark:text-red-400"
+      : tone === "after"
+        ? "text-emerald-700 dark:text-emerald-400"
+        : "text-foreground/70";
+
+  if (isLink) {
+    return (
+      <a
+        href={value}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`${color} underline underline-offset-2 break-all text-[12px] hover:opacity-80`}
+        title={value}
+      >
+        {value}
+      </a>
+    );
+  }
+
+  return <span className={`${color} break-words text-[13px]`}>{value}</span>;
 }
 
 function CmsChangeDiff({
@@ -98,45 +329,83 @@ function CmsChangeDiff({
 }) {
   if (!oldContent) {
     return (
-      <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-400">
-        Section created — all fields are new.
-      </div>
+      <p className="text-sm text-emerald-700 dark:text-emerald-400">
+        Section created — all content is new.
+      </p>
     );
   }
 
   const changes = collectChanges(oldContent, newContent);
 
   if (changes.length === 0) {
-    return (
-      <div className="rounded-lg border border-foreground/10 bg-foreground/[0.02] px-4 py-3 text-sm text-foreground/50">
-        No visible field changes.
-      </div>
-    );
+    return <p className="text-sm text-foreground/50">No visible changes.</p>;
   }
 
+  const added = changes.filter((c) => c.kind === "added").length;
+  const removed = changes.filter((c) => c.kind === "removed").length;
+  const updated = changes.filter((c) => c.kind === "changed").length;
+
   return (
-    <div className="flex flex-col gap-3">
-      {changes.map((change) => (
-        <div
-          key={change.path}
-          className="rounded-lg border border-foreground/8 bg-surface-2/80 px-4 py-3"
-        >
-          <p className="text-[11px] font-bold uppercase tracking-widest text-foreground/45 mb-2">
-            {change.label}
-          </p>
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 text-sm">
-            <span className="flex-1 rounded-md bg-red-500/10 border border-red-500/20 px-3 py-2 text-red-600 dark:text-red-400 line-through decoration-red-500/40 break-words">
-              {change.from}
-            </span>
-            <span className="shrink-0 text-foreground/35 font-medium text-xs uppercase tracking-wider text-center">
-              →
-            </span>
-            <span className="flex-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 text-emerald-700 dark:text-emerald-400 font-medium break-words">
-              {change.to}
-            </span>
+    <div className="flex flex-col gap-2">
+      <p className="text-[11px] text-foreground/45">
+        {[
+          added ? `${added} added` : null,
+          removed ? `${removed} removed` : null,
+          updated ? `${updated} updated` : null,
+        ]
+          .filter(Boolean)
+          .join(" · ")}
+      </p>
+
+      <div className="rounded-lg border border-foreground/10 divide-y divide-foreground/8 overflow-hidden">
+        {changes.map((change) => (
+          <div key={change.path} className="px-3 py-2 bg-background">
+            <div className="flex items-baseline gap-2 mb-1">
+              <span
+                className={`text-[10px] font-bold uppercase tracking-wide shrink-0 ${
+                  change.kind === "added"
+                    ? "text-emerald-600"
+                    : change.kind === "removed"
+                      ? "text-red-500"
+                      : "text-amber-600"
+                }`}
+              >
+                {change.kind === "added" ? "Added" : change.kind === "removed" ? "Removed" : "Changed"}
+              </span>
+              <span className="text-xs font-semibold text-foreground/80 truncate">{change.label}</span>
+            </div>
+
+            {change.details && change.details.length > 0 ? (
+              <div className="flex flex-col gap-1 pl-0 sm:pl-1">
+                {change.details.map((d, i) => (
+                  <div key={i} className="text-[13px] leading-snug">
+                    <span className="text-foreground/45 text-xs mr-1.5">{d.label}:</span>
+                    <DiffValue value={d.from} tone="before" />
+                    <span className="text-foreground/30 mx-1.5">→</span>
+                    <DiffValue value={d.to} tone="after" />
+                  </div>
+                ))}
+              </div>
+            ) : change.kind === "added" ? (
+              <div className="leading-snug">
+                <DiffValue value={change.to} tone="after" />
+              </div>
+            ) : change.kind === "removed" ? (
+              <div className="leading-snug">
+                <DiffValue value={change.from} tone="before" />
+              </div>
+            ) : (
+              <div className="leading-snug">
+                <span className="text-[10px] uppercase text-foreground/35 mr-1">Before</span>
+                <DiffValue value={change.from} tone="before" />
+                <span className="text-foreground/30 mx-1.5">→</span>
+                <span className="text-[10px] uppercase text-foreground/35 mr-1">After</span>
+                <DiffValue value={change.to} tone="after" />
+              </div>
+            )}
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
@@ -1140,15 +1409,19 @@ function AdminPage() {
                 No changes have been recorded yet.
               </div>
             ) : (
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-3">
                 {auditLogs.map((log) => (
-                  <div key={log.id} className="bg-surface p-6 rounded-xl border border-foreground/10 flex flex-col gap-4">
-                    <div className="flex items-center justify-between border-b border-foreground/10 pb-4">
-                      <div className="flex items-center gap-3">
-                        <span className="bg-primary/20 text-primary font-bold px-3 py-1 rounded text-xs uppercase tracking-wider">{log.section_key}</span>
-                        <span className="text-foreground/70 text-sm">Changed by <strong className="text-foreground">{log.changed_by}</strong></span>
+                  <div key={log.id} className="bg-surface px-4 py-3 rounded-lg border border-foreground/10 flex flex-col gap-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="bg-primary/20 text-primary font-bold px-2 py-0.5 rounded text-[10px] uppercase tracking-wider">
+                          {String(log.section_key || "").replace(/_/g, " ")}
+                        </span>
+                        <span className="text-foreground/60 text-xs">
+                          by <strong className="text-foreground font-medium">{log.changed_by}</strong>
+                        </span>
                       </div>
-                      <span className="text-sm text-foreground/50">{new Date(log.changed_at).toLocaleString()}</span>
+                      <span className="text-xs text-foreground/45">{new Date(log.changed_at).toLocaleString()}</span>
                     </div>
 
                     <CmsChangeDiff oldContent={log.old_content} newContent={log.new_content} />
