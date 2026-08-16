@@ -2504,6 +2504,7 @@ function AdminPage() {
                         <th className="px-6 py-4">Applicant</th>
                         <th className="px-6 py-4">Position</th>
                         <th className="px-6 py-4">Contact</th>
+                        <th className="px-6 py-4">Resume</th>
                         <th className="px-6 py-4">Status</th>
                         <th className="px-6 py-4 text-right">Date</th>
                       </tr>
@@ -2516,6 +2517,21 @@ function AdminPage() {
                           <td className="px-6 py-4 text-foreground/70">
                             <div>{app.email}</div>
                             {app.phone && <div className="text-xs">{app.phone}</div>}
+                          </td>
+                          <td className="px-6 py-4">
+                            {app.resume_url ? (
+                              <a
+                                href={app.resume_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1.5 text-primary font-semibold hover:underline"
+                              >
+                                <FileText className="w-3.5 h-3.5" />
+                                View PDF
+                              </a>
+                            ) : (
+                              <span className="text-foreground/35 text-xs">No file</span>
+                            )}
                           </td>
                           <td className="px-6 py-4">
                             <span className="bg-emerald-500/10 text-emerald-500 px-2 py-1 rounded text-xs font-bold uppercase">{app.status}</span>

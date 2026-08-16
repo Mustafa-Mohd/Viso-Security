@@ -554,40 +554,87 @@ function ApplicationModal({
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [coverLetter, setCoverLetter] = useState("");
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  const onResumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      setResumeFile(null);
+      return;
+    }
+    if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+      alert(t("career.modal_cv_invalid"));
+      e.target.value = "";
+      setResumeFile(null);
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert(t("career.modal_cv_large"));
+      e.target.value = "";
+      setResumeFile(null);
+      return;
+    }
+    setResumeFile(file);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    
-    const { error } = await supabase.from("job_applications").insert([
-      {
-        name,
-        email,
-        phone,
-        position: jobTitle,
-        cover_letter: coverLetter,
-      },
-    ]);
+    if (!resumeFile) {
+      alert(t("career.modal_cv_required"));
+      return;
+    }
 
-    setLoading(false);
-    if (error) {
-      alert("Error submitting application: " + error.message);
-    } else {
+    setLoading(true);
+
+    try {
+      const safeName = resumeFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const filePath = `applications/${Date.now()}_${safeName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("resumes")
+        .upload(filePath, resumeFile, {
+          contentType: "application/pdf",
+          upsert: false,
+        });
+
+      if (uploadError) throw uploadError;
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("resumes").getPublicUrl(filePath);
+
+      const { error } = await supabase.from("job_applications").insert([
+        {
+          name,
+          email,
+          phone,
+          position: jobTitle,
+          cover_letter: coverLetter,
+          resume_url: publicUrl,
+        },
+      ]);
+
+      if (error) throw error;
       setSuccess(true);
+    } catch (err: any) {
+      console.error(err);
+      alert("Error submitting application: " + (err?.message || "Unknown error"));
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/85 backdrop-blur-md overflow-y-auto"
       onClick={onClose}
     >
-      <motion.div 
+      <motion.div
         initial={{ scale: 0.96, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.96, y: 16 }}
@@ -595,7 +642,7 @@ function ApplicationModal({
         className="bg-surface border border-foreground/10 p-7 md:p-9 shadow-2xl w-full max-w-lg relative my-8"
         onClick={(e) => e.stopPropagation()}
       >
-        <button 
+        <button
           type="button"
           onClick={onClose}
           className="absolute top-5 right-5 text-foreground/40 hover:text-foreground transition-colors"
@@ -633,7 +680,7 @@ function ApplicationModal({
                 {t("career.modal_title")} {jobTitle}
               </h2>
             </div>
-            
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-[10px] font-bold text-foreground/50 uppercase tracking-wider mb-2">
@@ -683,14 +730,35 @@ function ApplicationModal({
                   className="w-full bg-background border border-foreground/15 rounded-sm px-4 py-3 outline-none focus:border-primary transition-colors text-sm resize-none"
                 />
               </div>
-              
+
+              <div>
+                <label className="block text-[10px] font-bold text-foreground/50 uppercase tracking-wider mb-2">
+                  {t("career.modal_cv")} *
+                </label>
+                <label className="flex flex-col gap-2 w-full cursor-pointer rounded-sm border border-dashed border-foreground/20 bg-background px-4 py-4 hover:border-primary/50 transition-colors">
+                  <input
+                    type="file"
+                    accept="application/pdf,.pdf"
+                    required
+                    onChange={onResumeChange}
+                    className="sr-only"
+                  />
+                  <span className="text-sm text-foreground/80">
+                    {resumeFile
+                      ? `${t("career.modal_cv_chosen")}: ${resumeFile.name}`
+                      : t("career.modal_cv_choose")}
+                  </span>
+                  <span className="text-[11px] text-foreground/40">{t("career.modal_cv_hint")}</span>
+                </label>
+              </div>
+
               <button
                 type="submit"
                 disabled={loading}
                 className="w-full bg-foreground text-background py-3.5 rounded-sm font-bold text-[11px] tracking-[0.18em] hover:bg-primary hover:text-primary-foreground transition-colors mt-2 flex items-center justify-center gap-2 disabled:opacity-60"
               >
                 {loading ? (
-                  t("career.modal_sending")
+                  t("career.modal_cv_uploading")
                 ) : (
                   <>
                     <Send size={16} /> {t("career.modal_submit")}

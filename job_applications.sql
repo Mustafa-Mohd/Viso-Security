@@ -18,3 +18,5 @@ ALTER TABLE job_applications DISABLE ROW LEVEL SECURITY;
 -- If you prefer keeping RLS enabled, uncomment the lines below instead of disabling it:
 -- ALTER TABLE job_applications ENABLE ROW LEVEL SECURITY;
 -- CREATE POLICY "Allow public all access" ON job_applications FOR ALL USING (true);
+
+-- Also run resumes_storage.sql to create the public "resumes" storage bucket for PDF uploads.
