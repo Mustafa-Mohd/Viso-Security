@@ -211,9 +211,9 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
 
   const { t } = useTranslation();
   const words = [
-    t("security.stages.s1.title"),
-    t("security.stages.s2.title"),
-    t("security.stages.s3.title"),
+    t("loader.w1"),
+    t("loader.w2"),
+    t("loader.w3"),
     "VISO GROUP",
   ];
   const currentWord = words[phase];
@@ -446,7 +446,7 @@ export function HeroSection({ data }: { data?: any }) {
           <motion.div
             animate={{ y: [-12, 12, -12] }}
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute right-0 top-4 lg:top-10 w-full lg:w-[95%] h-[380px] sm:h-[480px] lg:h-[550px] rounded overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.1)] z-10 bg-surface"
+            className="absolute right-0 top-4 lg:top-10 w-full lg:w-[95%] h-[380px] sm:h-[480px] lg:h-[550px] rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.1)] z-10 bg-surface"
           >
             <AnimatePresence mode="sync">
               <motion.img
@@ -464,7 +464,7 @@ export function HeroSection({ data }: { data?: any }) {
             </AnimatePresence>
 
             {/* Soft image vignette */}
-            <div className="absolute inset-0 bg-gradient-to-t from-foreground/15 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-foreground/15 via-transparent to-transparent pointer-events-none rounded-2xl sm:rounded-3xl" />
 
             {/* Slide indicators */}
             <div className="absolute bottom-4 right-4 z-20 flex gap-1.5">
@@ -482,11 +482,11 @@ export function HeroSection({ data }: { data?: any }) {
             </div>
           </motion.div>
 
-          {/* Circular overlapping logo */}
+          {/* Circular overlapping logo — smaller */}
           <motion.div
             animate={{ y: [10, -10, 10] }}
             transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            className="absolute left-[-4%] sm:left-[-8%] lg:left-[-12%] bottom-8 sm:bottom-14 w-44 h-44 sm:w-56 sm:h-56 lg:w-72 lg:h-72 rounded-full overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.12)] border-[6px] sm:border-8 border-background z-20 bg-surface flex items-center justify-center"
+            className="absolute left-[-2%] sm:left-[-4%] lg:left-[-6%] bottom-10 sm:bottom-16 w-28 h-28 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full overflow-hidden shadow-[0_16px_40px_rgba(0,0,0,0.12)] border-[4px] sm:border-[5px] border-background z-20 bg-surface flex items-center justify-center"
           >
             <img
               src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
@@ -1404,10 +1404,30 @@ function ServiceLifecycle({ data }: { data?: any }) {
     { num: "01", title: "Security Risk Assessment", desc: "Assessment of threats, vulnerabilities, perimeter, gates, access points, critical assets and the initial security concept around the facility.", points: "Threat and vulnerability assessment\nPerimeter, gate and access-point review\nCritical asset identification\nInitial protection requirements", deliverable: "Risk & Threat Matrix", imageUrl: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80", color: "from-blue-900/40 to-blue-900/5", accent: "text-blue-400", bgAccent: "bg-blue-400", border: "border-blue-900/30", bgHover: "group-hover:bg-blue-900/10" },
     { num: "02", title: "Concept / Preliminary Design", desc: "Translate risk findings into a protection philosophy, security zoning, system concepts, preliminary layouts and technology requirements.", points: "Protection philosophy\nConcept CCTV coverage\nAccess control and zoning\nPreliminary control-room concept", deliverable: "Preliminary Design Report", imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80", color: "from-emerald-900/40 to-emerald-900/5", accent: "text-emerald-400", bgAccent: "bg-emerald-400", border: "border-emerald-900/30", bgHover: "group-hover:bg-emerald-900/10" },
     { num: "03", title: "Detailed Design", desc: "Develop implementation-level drawings, specifications, schedules, interfaces and integration requirements suitable for procurement and construction.", points: "Detailed layouts and schematics\nEquipment and device schedules\nTechnical specifications\nSystems integration requirements", deliverable: "Tender-Ready Blueprints", imageUrl: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80", color: "from-purple-900/40 to-purple-900/5", accent: "text-purple-400", bgAccent: "bg-purple-400", border: "border-purple-900/30", bgHover: "group-hover:bg-purple-900/10" },
-    { num: "04", title: "Construction & Readiness", desc: "Supervision, technical submittal review, inspections, testing, commissioning, handover and confirmation of operational readiness.", points: "Construction supervision\nFAT / SAT and commissioning\nDefect and closeout tracking\nOperational readiness and handover", deliverable: "Operational Handover", imageUrl: "https://images.unsplash.com/photo-1541888086925-0c770f066eb7?w=800&q=80", color: "from-orange-900/40 to-orange-900/5", accent: "text-orange-400", bgAccent: "bg-orange-400", border: "border-orange-900/30", bgHover: "group-hover:bg-orange-900/10" }
+    { num: "04", title: "Construction & Readiness", desc: "Supervision, technical submittal review, inspections, testing, commissioning, handover and confirmation of operational readiness.", points: "Construction supervision\nFAT / SAT and commissioning\nDefect and closeout tracking\nOperational readiness and handover", deliverable: "Operational Handover", imageUrl: "https://www.planswift.com/wp-content/uploads/2019/02/shutterstock_303643469.jpg", color: "from-orange-900/40 to-orange-900/5", accent: "text-orange-400", bgAccent: "bg-orange-400", border: "border-orange-900/30", bgHover: "group-hover:bg-orange-900/10" }
   ];
 
-  const stages = data?.items?.length > 0 ? data.items : defaultStages;
+  const constructionImg =
+    "https://www.planswift.com/wp-content/uploads/2019/02/shutterstock_303643469.jpg";
+
+  const stages = (data?.items?.length > 0 ? data.items : defaultStages).map(
+    (stage: any, i: number) => {
+      const merged = { ...defaultStages[i], ...stage };
+      const isConstruction =
+        String(merged.num) === "04" ||
+        String(merged.title || "").toLowerCase().includes("construction");
+      const missingOrOld =
+        !merged.imageUrl ||
+        String(merged.imageUrl).includes("photo-1541888086925");
+      return {
+        ...merged,
+        imageUrl:
+          isConstruction && missingOrOld
+            ? constructionImg
+            : merged.imageUrl || defaultStages[i]?.imageUrl || "",
+      };
+    }
+  );
   const title = data?.title || "Security Services";
   const subtitle = data?.subtitle || "Four Stages. One Security Lifecycle.";
 

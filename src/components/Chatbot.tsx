@@ -69,32 +69,73 @@ export function Chatbot() {
       { id: assistantMessageId, role: "assistant", content: "" },
     ]);
 
-    try {
-      const stream = await openai.chat.completions.create({
-        model: "Meta-Llama-3.3-70B-Instruct",
-        messages: apiMessages,
-        stream: true,
-      });
+    const modelsToTry = [
+      "Meta-Llama-3.3-70B-Instruct",
+      "Meta-Llama-3.1-8B-Instruct",
+      "Meta-Llama-3.1-70B-Instruct",
+      "Qwen2.5-72B-Instruct"
+    ];
 
-      for await (const chunk of stream) {
-        const text = chunk.choices[0]?.delta?.content || "";
+    let success = false;
+    let lastError: any = null;
+
+    for (const modelName of modelsToTry) {
+      try {
+        console.log(`Attempting chat completion with model: ${modelName}`);
+        const stream = await openai.chat.completions.create({
+          model: modelName,
+          messages: apiMessages,
+          stream: true,
+        });
+
+        for await (const chunk of stream) {
+          const text = chunk.choices[0]?.delta?.content || "";
+          setMessages((prev) => 
+            prev.map((msg) => 
+              msg.id === assistantMessageId 
+                ? { ...msg, content: msg.content + text }
+                : msg
+            )
+          );
+        }
+        success = true;
+        break; 
+      } catch (error: any) {
+        console.warn(`Model ${modelName} failed:`, error);
+        lastError = error;
+        // Reset the streaming message content for the next attempt
         setMessages((prev) => 
           prev.map((msg) => 
             msg.id === assistantMessageId 
-              ? { ...msg, content: msg.content + text }
+              ? { ...msg, content: "" }
               : msg
           )
         );
       }
-    } catch (error) {
-      console.error("Chatbot Error:", error);
-      setMessages((prev) => [
-        ...prev,
-        { id: Date.now().toString(), role: "assistant", content: "I'm sorry, I encountered an error. Please try again later or contact us directly." },
-      ]);
-    } finally {
-      setIsLoading(false);
     }
+
+    if (!success) {
+      console.error("All chatbot models failed. Last error:", lastError);
+      
+      let errorMessage = t("chatbot.error_default", "I'm sorry, I encountered an error. Please try again later or contact us directly.");
+      
+      const errorStr = String(lastError?.message || lastError || "").toLowerCase();
+      const status = lastError?.status || lastError?.statusCode;
+      
+      if (status === 429 || errorStr.includes("429") || errorStr.includes("rate limit") || errorStr.includes("credit") || errorStr.includes("demand")) {
+        errorMessage = t("chatbot.error_rate_limit", "The chatbot service is currently experiencing extremely high demand or the API credit/rate limit has been reached. Please try again later or contact us directly at info@visogroup.com.");
+      } else if (status === 401 || errorStr.includes("401") || errorStr.includes("unauthorized") || errorStr.includes("api key")) {
+        errorMessage = t("chatbot.error_auth", "Chatbot authentication failed (API key expired or invalid). Please contact us directly at info@visogroup.com.");
+      }
+
+      setMessages((prev) => 
+        prev.filter((msg) => msg.id !== assistantMessageId).concat([
+          { id: Date.now().toString(), role: "assistant", content: errorMessage }
+        ])
+      );
+    }
+    
+    setIsLoading(false);
   };
 
   return (

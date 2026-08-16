@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TranslationRouteImport } from './routes/translation'
 import { Route as SecurityRouteImport } from './routes/security'
 import { Route as OthersRouteImport } from './routes/others'
 import { Route as GalleryRouteImport } from './routes/gallery'
@@ -20,6 +21,11 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TranslationRoute = TranslationRouteImport.update({
+  id: '/translation',
+  path: '/translation',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SecurityRoute = SecurityRouteImport.update({
   id: '/security',
   path: '/security',
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/gallery': typeof GalleryRoute
   '/others': typeof OthersRoute
   '/security': typeof SecurityRoute
+  '/translation': typeof TranslationRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/gallery': typeof GalleryRoute
   '/others': typeof OthersRoute
   '/security': typeof SecurityRoute
+  '/translation': typeof TranslationRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,6 +115,7 @@ export interface FileRoutesById {
   '/gallery': typeof GalleryRoute
   '/others': typeof OthersRoute
   '/security': typeof SecurityRoute
+  '/translation': typeof TranslationRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/others'
     | '/security'
+    | '/translation'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/others'
     | '/security'
+    | '/translation'
   id:
     | '__root__'
     | '/'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/others'
     | '/security'
+    | '/translation'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -158,10 +170,18 @@ export interface RootRouteChildren {
   GalleryRoute: typeof GalleryRoute
   OthersRoute: typeof OthersRoute
   SecurityRoute: typeof SecurityRoute
+  TranslationRoute: typeof TranslationRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/translation': {
+      id: '/translation'
+      path: '/translation'
+      fullPath: '/translation'
+      preLoaderRoute: typeof TranslationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/security': {
       id: '/security'
       path: '/security'
@@ -246,6 +266,7 @@ const rootRouteChildren: RootRouteChildren = {
   GalleryRoute: GalleryRoute,
   OthersRoute: OthersRoute,
   SecurityRoute: SecurityRoute,
+  TranslationRoute: TranslationRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

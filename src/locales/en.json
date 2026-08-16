@@ -4,6 +4,7 @@
     "about": "About",
     "overview": "Overview",
     "security": "Security",
+    "translation": "Translation",
     "clients": "Clients",
     "expertise": "Expertise",
     "certifications": "Certifications",
@@ -23,6 +24,11 @@
     "scroll_down": "SCROLL DOWN",
     "learn_more": "Learn More",
     "skip_intro": "Skip Intro"
+  },
+  "loader": {
+    "w1": "Security Consultations",
+    "w2": "Project Management",
+    "w3": "Certified Translation"
   },
   "framework": {
     "title_mono": "Security Consulting Framework",
@@ -532,5 +538,73 @@
   "chatbot": {
     "greeting": "Hello! I am the VISO assistant. How can I help you with our security services today?",
     "placeholder": "Type your message..."
+  },
+  "translation_page": {
+    "eyebrow": "CERTIFIED TRANSLATION SERVICES",
+    "title": "Officially Accredited",
+    "title_italic": "Translation Services",
+    "desc": "Delivering officially accredited translation services that bridge languages with precision, accuracy, and absolute confidentiality.",
+    "toggle_security": "Security Consultations",
+    "toggle_translation": "Certified Translation",
+    "read_more": "Read More",
+    "breadcrumb_base": "Vision of Solutions for Security Consultations and Translation Services",
+    "breadcrumb_mid": "Our Services",
+    "services": {
+      "official": {
+        "title": "Official Documents Translation",
+        "short_desc": "The documents vary in terms of their purpose. However, the need to translate official documents appears when there are requirements...",
+        "desc": "The documents vary in terms of their purpose. However, the need to translate official documents appears when there are requirements with which to translate those documents into English or another language. Therefore, we offer in this section a number of services as follows:",
+        "items": [
+          "Translation of academic degrees certificates.",
+          "Translation of the driving licenses.",
+          "Translation of title certificate of ownership.",
+          "Correspondence and communication with foreign authorities."
+        ]
+      },
+      "medical": {
+        "title": "Medical Translation",
+        "short_desc": "Medical translation is of high importance in terms of the accuracy of translation and the attainment of scientific precision...",
+        "desc": "Medical translation is of high importance in terms of the accuracy of translation and the attainment of scientific precision. It requires professional expertise in medical terminology to ensure correct interpretation of documents, diagnoses, and medical literature. Therefore, we provide:",
+        "items": [
+          "Translation of medical reports and diagnoses.",
+          "Translation of pharmaceutical guides and manuals.",
+          "Translation of medical research and academic papers.",
+          "Translation of clinical trial documents."
+        ]
+      },
+      "legal": {
+        "title": "Legal Translation",
+        "short_desc": "Legal requirements are considered highly sensitive. Thus, an experienced translator in legal terminology is considered mandatory...",
+        "desc": "Legal requirements are considered highly sensitive. Thus, an experienced translator in legal terminology is considered mandatory as he is able to transfer legal content to another language or legal interpretation. Therefore, we are keen in this section to provide the following legal translations:",
+        "items": [
+          "Translation of contracts Arabic - English.",
+          "Translating final judicial decisions Arabic - English.",
+          "Translation of the agreements Arabic - English.",
+          "Translation of agencies' licences, power of attorney and authorizations Arabic - English."
+        ]
+      },
+      "media": {
+        "title": "Media Translation",
+        "short_desc": "Media materials are diverse according to the different needs. There are multiple media purposes that the recipient or the reporters is interested in...",
+        "desc": "Media materials are diverse according to the different needs. There are multiple media purposes that the recipient or the reporters or others is interested in to be a clear message, hence translation will have an effective role that helps the media or marketing writer to find content appropriate to the purpose. Therefore, we will provide translations in this regard or Arabic-English consulting for every media person, according to the following:",
+        "items": [
+          "Translation of informational and news articles.",
+          "Preparing propaganda brochures Arabic - English.",
+          "Auditing media contents Arabic - English.",
+          "Translating marketing content Arabic - English."
+        ]
+      },
+      "security": {
+        "title": "Security Translation",
+        "short_desc": "We are interested in Vision of solutions by providing certified security translation of foreign expertise to translate physical security manuals...",
+        "desc": "We are interested in Vision of Solutions by providing certified security translation of foreign expertise. This service is crucial for transferring security procedures, frameworks, and technical manuals. Therefore, we provide:",
+        "items": [
+          "Translation of physical security manuals and guidelines.",
+          "Translation of risk assessment and security survey reports.",
+          "Translation of security equipment catalogs and technical specifications.",
+          "Translation of training materials for security personnel."
+        ]
+      }
+    }
   }
 }

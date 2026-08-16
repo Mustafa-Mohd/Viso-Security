@@ -19,6 +19,7 @@ export function TopNav() {
     { to: "/", label: t("nav.home") },
     { to: "/about", label: t("nav.about") },
     { to: "/security", label: t("nav.security") },
+    { to: "/translation", label: t("nav.translation") },
     { to: "/clients", label: t("nav.clients") },
     { to: "/certificates", label: t("nav.certifications") },
     { to: "/gallery", label: t("nav.gallery") },
