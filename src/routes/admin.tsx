@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabase";
 import { Eye, EyeOff, LayoutDashboard, Image as ImageIcon, Settings, LogOut, ChevronRight, Save, Plus, Trash2, Upload, AlertCircle, MessageSquare, Users, Briefcase, FileText, History } from "lucide-react";
 import { DmsDashboard } from "@/components/DmsDashboard";
 import { EmployeeDashboard } from "@/components/EmployeeDashboard";
+import { CertificatesDashboard } from "@/components/CertificatesDashboard";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const Route = createFileRoute("/admin")({
@@ -438,7 +439,7 @@ function AdminPage() {
   const seedAttempted = useRef(false);
   
   // Tabs
-  const [activeTab, setActiveTab] = useState<"gallery" | "core_values" | "homepage" | "inquiries" | "users" | "job_apps" | "dms" | "hr" | "cms_history">("homepage");
+  const [activeTab, setActiveTab] = useState<"gallery" | "core_values" | "homepage" | "inquiries" | "users" | "job_apps" | "dms" | "hr" | "cms_history" | "certificates">("homepage");
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Job Apps State
@@ -1205,6 +1206,7 @@ function AdminPage() {
   const navItems = [
     { id: 'homepage', label: 'Homepage CMS', icon: LayoutDashboard, roles: ['super_admin', 'admin'] },
     { id: 'cms_history', label: 'CMS History', icon: History, roles: ['super_admin', 'admin'] },
+    { id: 'certificates', label: 'Certificates', icon: FileText, roles: ['super_admin', 'admin'] },
     { id: 'gallery', label: 'Gallery', icon: ImageIcon, roles: ['super_admin', 'admin'] },
     { id: 'inquiries', label: 'Inquiries', icon: MessageSquare, roles: ['super_admin', 'admin'], badge: inquiries.filter((inq) => inq.status === 'unread').length, badgeColor: 'bg-red-500 text-white' },
     { id: 'job_apps', label: 'Job Applications', icon: Briefcase, roles: ['super_admin', 'hr', 'admin'], badge: jobApps.filter((app) => app.status === 'New').length, badgeColor: 'bg-primary text-primary-foreground' },
@@ -2558,6 +2560,13 @@ function AdminPage() {
         {activeTab === 'hr' && (session?.role === 'super_admin' || session?.role === 'hr' || session?.role === 'employee') && (
           <div className="flex-1 flex flex-col p-6 overflow-y-auto">
             <EmployeeDashboard user={session} />
+          </div>
+        )}
+
+        {/* CERTIFICATES DASHBOARD */}
+        {activeTab === 'certificates' && (session?.role === 'super_admin' || session?.role === 'admin') && (
+          <div className="flex-1 flex flex-col p-6 overflow-y-auto">
+            <CertificatesDashboard />
           </div>
         )}
         

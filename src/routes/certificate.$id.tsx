@@ -8,6 +8,20 @@ const MOCK_CERT_DB: Record<string, any> = {
   "VISO-TR-2026-000404": { nationalId: "1055566677", status: "REVOKED", source: "English", target: "Arabic", issue: "01 Dec 2025", expiry: "01 Dec 2026", name: "Financial Audit Report" },
 };
 
+const getCertificates = (): Record<string, any> => {
+  if (typeof window === "undefined") return MOCK_CERT_DB;
+  const stored = localStorage.getItem("viso_certificates");
+  if (!stored) {
+    localStorage.setItem("viso_certificates", JSON.stringify(MOCK_CERT_DB));
+    return MOCK_CERT_DB;
+  }
+  try {
+    return JSON.parse(stored);
+  } catch (e) {
+    return MOCK_CERT_DB;
+  }
+};
+
 export const Route = createFileRoute('/certificate/$id')({
   component: CertificatePdfView,
 })
@@ -15,7 +29,8 @@ export const Route = createFileRoute('/certificate/$id')({
 function CertificatePdfView() {
   const { id } = Route.useParams()
   const certId = id.toUpperCase()
-  const certData = MOCK_CERT_DB[certId]
+  const db = getCertificates()
+  const certData = db[certId]
 
   if (!certData) {
     return (

@@ -93,7 +93,22 @@ const MOCK_CERT_DB: Record<string, any> = {
   "VISO-TR-2026-000404": { nationalId: "1055566677", status: "REVOKED", source: "English", target: "Arabic", issue: "01 Dec 2025", expiry: "01 Dec 2026", name: "Financial Audit Report" },
 };
 
+const getCertificates = (): Record<string, any> => {
+  if (typeof window === "undefined") return MOCK_CERT_DB;
+  const stored = localStorage.getItem("viso_certificates");
+  if (!stored) {
+    localStorage.setItem("viso_certificates", JSON.stringify(MOCK_CERT_DB));
+    return MOCK_CERT_DB;
+  }
+  try {
+    return JSON.parse(stored);
+  } catch (e) {
+    return MOCK_CERT_DB;
+  }
+};
+
 function VerificationSection({ isAr }: { isAr: boolean }) {
+  const db = getCertificates();
   const [certId, setCertId] = useState("");
   const [nationalId, setNationalId] = useState("");
   const [loading, setLoading] = useState(false);
@@ -118,7 +133,7 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
 
         setTimeout(() => {
           setLoading(false);
-          const cert = MOCK_CERT_DB[verifyId.trim().toUpperCase()];
+          const cert = db[verifyId.trim().toUpperCase()];
           if (!cert || cert.nationalId !== verifyNationalId.trim()) {
             setError("Invalid Certificate ID or National ID.");
             return;
@@ -139,7 +154,7 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
 
     setTimeout(() => {
       setLoading(false);
-      const cert = MOCK_CERT_DB[certId.trim().toUpperCase()];
+      const cert = db[certId.trim().toUpperCase()];
       if (!cert) {
         setError("Certificate not found. Please check the ID.");
         return;
@@ -311,7 +326,7 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
           </div>
           
           <div className="grid md:grid-cols-3 gap-6">
-            {Object.entries(MOCK_CERT_DB).map(([id, data]) => (
+            {Object.entries(db).map(([id, data]) => (
               <div 
                 key={id} 
                 className="bg-white rounded-xl p-6 border border-neutral-200 shadow-sm hover:shadow-md transition-all group"
