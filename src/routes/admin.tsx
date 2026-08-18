@@ -25,7 +25,7 @@ type FieldChange = {
   details?: { label: string; from: string; to: string }[];
 };
 
-function isUrl(v: unknown): v is string {
+function isUrl(v: unknown): boolean {
   return typeof v === "string" && (/^https?:\/\//i.test(v) || v.startsWith("/") || v.startsWith("data:"));
 }
 
