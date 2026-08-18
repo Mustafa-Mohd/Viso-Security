@@ -1,0 +1,362 @@
+# TECHNICAL PROPOSAL
+## Corporate Portal & Certipedia Explorer Verification System
+
+**Document ID:** VISO-PROPOSAL-2026-V1  
+**Confidentiality:** Confidential - For Internal Review Only  
+
+---
+
+## 1. Cover Page
+
+* **Project Name:** VISO Corporate Portal & Certipedia Explorer Verification System
+* **Client/Company Name:** VISO Group
+* **Prepared For:** CEO & VISO Group Management Team
+* **Prepared By:** VISO Development Team
+* **Date:** August 18, 2026
+* **Proposal Version:** 1.0 (Final Draft)
+* **Subtitle:** A Premium Multilingual Showcase & Secure Certificate Verification Platform
+
+---
+
+## 2. Executive Summary
+
+### Background
+VISO Group requires a high-end, modern digital presence that matches its reputation as a leading provider of professional, accredited translation and consulting services. In addition to a showcase website, there is a critical business need to protect translation documents against forgery, unauthorized duplication, and manipulation.
+
+### Proposed Solution
+We propose a dual-purpose platform:
+1. **Multilingual Corporate Showcase**: A fast, premium, fully responsive portal supporting both English (LTR) and Arabic (RTL) reading flows.
+2. **Certipedia Explorer**: A secure verification engine allowing clients, legal entities, and government bodies to instantly authenticate certificates using a Certificate ID and National ID, or via scanning an encrypted QR code.
+
+### Expected Business Outcomes
+* **Enhanced Credibility**: High-fidelity UI establishes VISO Group as an industry benchmark.
+* **Security & Trust**: Verification engine prevents forgery, assuring third-party entities of the authenticity of VISO's stamps.
+* **Efficiency**: QR-code-driven auto-verification eliminates manual verification emails/calls.
+
+---
+
+## 3. Project Understanding
+
+### Business Objectives
+* Establish a premium digital identity that reflects corporate excellence.
+* Deliver a secure verification database (Certipedia Explorer) that is intuitive for corporate partners.
+* Enable fluid language toggling (English/Arabic) with correct cultural alignments (LTL/RTL).
+
+### Target Users
+1. **Public Visitors / Clients**: Seeking translation, media, legal, and consulting services.
+2. **Third-Party Reviewers**: HR departments, government agencies, and legal departments verifying VISO translations.
+3. **System Administrators**: Creating, updating, or revoking certificates (mockup implementation phase).
+
+### Current Challenges
+* High vulnerability of printed certificates to forgery.
+* Manual verification processes require administrative overhead.
+* Traditional websites lack optimal RTL styling and smooth layout transitions.
+
+---
+
+## 4. Proposed Solution
+
+The VISO Group platform consists of a modern Single Page Application (SPA). The public-facing portal introduces VISO's services, while the **Certipedia Explorer** database acts as the single source of truth for issued translations.
+
+```mermaid
+graph TD
+    User([User / Reviewer]) -->|Accesses Portal| FE[Frontend: React / Vite]
+    User -->|Scans QR Code| QR[Mobile Browser]
+    QR -->|Dynamic Redirect| FE
+    FE -->|API Query / Verification| BE[Mock Database / Supabase Interface]
+    BE -->|Retrieves Record| DB[(Translation Certificates Table)]
+```
+
+### Flow of Interactions
+1. **Traditional Query**: The verifier types the *Certificate ID* and *National ID* into the Certipedia explorer on the website. The frontend validates the input, queries the database, and displays a detailed record.
+2. **QR Query**: The verifier scans the QR code on a VISO certificate. The phone opens the browser directly to `https://alternate-v.netlify.app/translation?verify=ID&nationalId=ID`. The site parses the parameters, processes the authentication, auto-fills the inputs, and reveals the valid/invalid record immediately.
+
+---
+
+## 5. Scope of Work
+
+### Module 1: Public Corporate Portal
+* **Purpose**: Showcase VISO Group's services, portfolio, and value proposition.
+* **Functionality**:
+  * Home, About Us, Core Services (Official, Medical, Legal, Media, Security), Clients, Gallery, and Careers.
+  * Fully responsive fluid grid.
+  * Luxury micro-animations (Framer Motion).
+* **User Roles**: Anonymous Guest, Client.
+
+### Module 2: Certipedia Explorer (Verification Portal)
+* **Purpose**: The front-facing search engine for document authentication.
+* **Functionality**:
+  * Clean Lookup Form (Certificate ID + National ID inputs).
+  * Smooth loading animations and states.
+  * Structured results display showing exact document parameters (Languages, Issue Date, Expiry Date, Name).
+  * Color-coded status alerts (VALID: Green, EXPIRED: Red, REVOKED: Grey).
+* **User Roles**: Guest Verifier, Corporate Auditor.
+
+### Module 3: Standalone Digital Certificates (PDF Mockup)
+* **Purpose**: Present official certificates in a print-ready A4-style layout in a new tab.
+* **Functionality**:
+  * Clean, border-accented document view.
+  * Live status dynamic QR Code generation.
+  * Authorized signature placeholder.
+  * Native browser zoom, scroll, and print support.
+* **User Roles**: Guest Verifier, Client.
+
+### Module 4: Administrative Operations (Mockup)
+* **Purpose**: Administrative dashboard skeleton for certificate management.
+* **Functionality**:
+  * Layout structure for certificate CRUD (Create, Read, Update, Delete).
+  * Interface for revoking or updating certificate statuses.
+* **User Roles**: Admin (Mocked).
+
+---
+
+## 6. User Roles & Permissions
+
+| Feature / Page | Public Guest | Auditor / Reviewer | Admin |
+| :--- | :--- | :--- | :--- |
+| Public Website | View | View | View |
+| Certificate Lookup | View Form | View Form | View Form |
+| Document Verification | No | Execute Lookup | Execute Lookup |
+| View Digital Certificate | No | View / Print | View / Print |
+| Certificate Management | No | No | Full Control (Mocked) |
+
+---
+
+## 7. System Architecture
+
+```mermaid
+flowchart LR
+    Browser[Client Browser] -->|HTTPS Requests| CDN[Netlify CDN]
+    Browser -->|API Calls / Auth| DB[Supabase / Mock Database Client]
+    Browser -->|Fetches QR Codes| QR[api.qrserver.com]
+```
+
+### Component Details
+* **Frontend Application**: React client deployed globally on Netlify's CDN edge servers for sub-second load times.
+* **Registry Client**: Supabase/Local JSON client handles retrieval of metadata records matching verification keys.
+* **Asset Storage**: Cloudinary holds high-resolution corporate logos and visuals, optimizing delivery size.
+* **QR Server API**: Dynamic PNG generator creates unique verification links for each certificate dynamically.
+
+---
+
+## 8. Technology Stack
+
+### Frontend & Core
+* **React.js & Vite**: Standard for lightweight, modular interfaces with instant hot reloading.
+* **TypeScript**: Enforces strict typings on certificate schemas, preventing null errors during verification.
+* **Tailwind CSS**: Rapid utility layout styling ensuring strict pixel margins and padding.
+
+### Hosting & Deployment
+* **Netlify**: Hosted on Netlify (`https://alternate-v.netlify.app`) with automatic CDN caching and edge-routing fallbacks for TanStack routing paths.
+
+### Version Control
+* **Git & GitHub**: Version tracking and codebase branch management.
+
+---
+
+## 9. API Architecture
+
+The Certipedia Explorer client initiates secure lookup queries. In the production transition phase, the endpoints will be structured as follows:
+
+```http
+# Perform Certificate Lookups
+GET /api/certificates?verify={id}&nationalId={nationalId}
+
+# Admin Actions (Requires JWT Auth)
+POST /api/certificates
+PUT /api/certificates/:id
+DELETE /api/certificates/:id
+```
+
+### Verification Payload Example (Response)
+```json
+{
+  "id": "VISO-TR-2026-001245",
+  "nationalId": "1023456789",
+  "status": "VALID",
+  "source": "Arabic",
+  "target": "English",
+  "issue": "16 Aug 2026",
+  "expiry": "16 Aug 2027",
+  "name": "Corporate Legal Contract"
+}
+```
+
+* **Request Validation**: Certificate IDs are parsed to uppercase and stripped of extra whitespaces. National IDs must be validated as 10-digit strings.
+* **Error Handling**: API errors (e.g., 404 Certificate Not Found, 401 Unauthorized PIN/ID) return unified messages to protect database vulnerability.
+
+---
+
+## 10. Database Architecture
+
+The certificate registry structure contains the following core table schema layout:
+
+```mermaid
+erDiagram
+    CERTIFICATES {
+        string certificate_id PK
+        string national_id
+        string status
+        string source_lang
+        string target_lang
+        date issue_date
+        date expiry_date
+        string project_name
+    }
+```
+
+---
+
+## 11. Security
+
+### Implemented Measures
+* **HTTPS/SSL (Production)**: Enforced via Netlify's Let’s Encrypt integration for complete transit encryption.
+* **Input Scrubbing**: Strict regex checks on inputs (e.g., stripping characters from National IDs and certificate parameters).
+* **Environment Separation**: API configurations and keys kept strictly in root environment configurations.
+
+### Recommended Future Enhancements
+* **Rate Limiting**: Block client IPs after 5 unsuccessful certificate verification attempts to prevent brute-force querying.
+* **Signed JWT Tokens**: Protect the future administrative panel using HTTP-only secure cookie tokens.
+
+---
+
+## 12. UI/UX & Responsive Design
+
+* **Fluid Breakpoints**: Optimized for mobile phones (375px+ up to full 4K screens).
+* **RTL Translation Layout**: Text alignments, arrows (`ArrowLeft` / `ArrowRight`), and grid columns mirror smoothly when switching from English to Arabic.
+* **Aesthetic Palette**: Gold (`#D4AF37`) and deep slate grey accents, avoiding generic bright colors to emphasize a high-end consulting brand.
+* **No Scrollbar Constraints**: Isolated document viewing routes (`/certificate/$id`) rely on native browser zoom, making it extremely easy to read on mobile devices.
+
+---
+
+## 13. Development Methodology
+
+```
+Requirement Analysis ➔ System Architecture ➔ Frontend Prototyping ➔ Route Configuration ➔ Testing & QA ➔ Live Deployment
+```
+
+1. **Requirement Analysis**: Alignment on verification goals and Arabic-support needs.
+2. **System Architecture**: Setup of project router and asset caching.
+3. **Frontend Prototyping**: Implementing the responsive, interactive UI.
+4. **Testing & QA**: Checking parameters on different mobile screens.
+5. **Live Deployment**: Distributing to production edge.
+
+---
+
+## 14. Development Timeline
+
+| Phase | Estimated Duration |
+| :--- | :--- |
+| **Phase 1: Requirement Analysis & Design Spec** | 3 Days |
+| **Phase 2: Frontend Layout & i18n Translation Setup** | 7 Days |
+| **Phase 3: Certipedia Registry Integration** | 5 Days |
+| **Phase 4: Standalone Document Engine** | 3 Days |
+| **Phase 5: Deploy & Testing** | 4 Days |
+| **Total Estimated Duration** | **22 Days** (Subject to final scope confirmation) |
+
+---
+
+## 15. Testing & Quality Assurance
+
+* **Verification Accuracy Tests**: Validating parameter parsing (`verify` + `nationalId`) via QR scanning.
+* **RTL Mirroring Tests**: Visual layout checks on all pages in Arabic translation view.
+* **Responsiveness Tests**: Simulating screen widths matching iPhone, iPad, and high-end desktop monitors.
+* **Cross-Browser Verification**: Checking performance on Google Chrome, Safari, Firefox, and Microsoft Edge.
+
+---
+
+## 16. Deployment & Infrastructure
+
+The application runs as a static React SPA deployed on **Netlify CDN**. 
+* **SSL Certificates**: Automated renewal using Let's Encrypt.
+* **Deep Linking**: Configured redirects (`_redirects`) map wildcard routes (`/*`) to `index.html` to allow direct access to dynamically generated routing paths.
+
+---
+
+## 17. Deliverables
+
+* Production-ready website (`alternate-v.netlify.app`).
+* Source code repository (Git).
+* Certipedia document verification system UI.
+* Standalone dynamic certificate page framework.
+* Technical document files.
+
+---
+
+## 18. Third-Party Services & Dependencies
+
+| Service | Purpose | Included | Subscription Cost |
+| :--- | :--- | :--- | :--- |
+| **Netlify** | Edge web hosting | Yes | Free/Team Tier (Client responsibility) |
+| **Cloudinary** | Asset and image storage CDN | Yes | Free Tier |
+| **QR Code API** | QR Code generation | Yes | Free Open Source |
+
+---
+
+## 19. Assumptions
+
+* VISO Group will provide all localized translated copy for both languages.
+* High-resolution logos and color guidelines will be provided by VISO Group branding teams.
+* Netlify account ownership will be registered by the VISO team.
+
+---
+
+## 20. Exclusions
+
+* Data migration of old physical certificate records (unless provided in standard JSON format).
+* Multi-tenant agency accounts or external reviewer authentication.
+* Third-party subscription fees or domain registration charges.
+
+---
+
+## 21. Support & Maintenance
+
+### Included (First 30 Days Post-Launch)
+* Bug fixes related to UI rendering.
+* Assistance with Netlify configuration updates.
+* Translation dictionary updates.
+
+### Excluded
+* Developing new service sections.
+* Database structure refactoring.
+
+---
+
+## 22. Commercial Structure
+
+| Component | Cost |
+| :--- | :--- |
+| UI/UX Layout Styling | To be discussed |
+| Certipedia Setup & Integration | To be discussed |
+| Deployment & Launch QA | To be discussed |
+| **Total** | **To be discussed** |
+
+### Payment Milestone Schedule
+* **30% Advance** (On project kickoff)
+* **40% Development Milestone** (After completion of phase 3)
+* **30% Final Delivery** (Upon Netlify handover)
+
+---
+
+## 23. Change Request Policy
+
+* Approved document scope serves as the baseline.
+* Features requested post-kickoff will be scoped separately.
+* Changes in timeline/costs will require client sign-off.
+
+---
+
+## 24. Acceptance & Approval
+
+### VISO Group (Client)
+**Authorized Signatory:** ___________________________  
+**Date:** ____ / ____ / ________  
+
+---
+
+### VISO Development Team
+**Authorized Signatory:** ___________________________  
+**Date:** ____ / ____ / ________  
+
+---
+*VISO Group | Confidential Technical Proposal*
