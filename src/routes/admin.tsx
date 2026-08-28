@@ -1152,11 +1152,11 @@ function AdminPage() {
         <div className="absolute top-6 right-8">
           <ThemeToggle />
         </div>
-        <div className="max-w-md w-full bg-foreground/5 p-8 rounded-xl border border-foreground/10 text-center">
+        <div className="max-w-md w-full bg-white dark:bg-[#1C2541] p-8 rounded border border-foreground/10 text-center">
           <div className="flex justify-center mb-6">
             <img src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png" alt="VISO Logo" className="h-16 w-auto object-contain" />
           </div>
-          <h1 className="text-2xl font-bold mb-6 font-display">Admin Login</h1>
+          <h1 className="text-2xl font-bold mb-6">Admin Login</h1>
           <form onSubmit={handleLogin} className="flex flex-col gap-4 text-left">
             <div>
               <label className="block text-sm font-medium mb-1">Email</label>
@@ -1218,113 +1218,91 @@ function AdminPage() {
   const visibleNavItems = navItems.filter(item => item.roles.includes(session?.role || ''));
 
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden">
+    <div className="flex h-screen bg-surface-2 text-foreground overflow-hidden font-sans">
       
-      {/* Top Navbar */}
-      <header className="flex-none z-[40] w-full border-b border-foreground/10 bg-surface/95 backdrop-blur-xl">
-        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            
-            {/* Logo */}
-            <div className="flex flex-col items-center justify-center flex-shrink-0 pt-1">
-              <img src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png" alt="VISO Logo" className="h-6 md:h-8 w-auto object-contain" />
-              <span className="mt-0.5 font-bold uppercase tracking-widest text-foreground/50 text-[9px] hidden md:block">Admin Console</span>
-            </div>
-
-            {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex space-x-1.5 flex-1 justify-center px-2 flex-wrap">
-              {visibleNavItems.map(item => {
-                const Icon = item.icon;
-                const isActive = activeTab === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => setActiveTab(item.id as any)}
-                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md transition-all duration-300 text-xs whitespace-nowrap ${isActive ? 'bg-primary/10 text-primary font-bold' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
-                  >
-                    <Icon size={14} />
-                    {item.label}
-                    {(item.badge || 0) > 0 && (
-                      <span className={`ml-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full ${item.badgeColor}`}>
-                        {item.badge}
-                      </span>
-                    )}
-                  </button>
-                )
-              })}
-            </nav>
-
-            {/* Right Side (Theme, Logout, Mobile Menu) */}
-            <div className="flex items-center gap-3 md:gap-4">
-              <div className="hidden sm:block">
-                <ThemeToggle />
-              </div>
-
-
-              {/* Mobile Menu Button */}
-              <button 
-                onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-                className="lg:hidden p-2 border border-foreground/10 rounded focus:outline-none bg-surface"
-              >
-                <div className={`w-5 h-0.5 bg-foreground mb-1 transition-transform ${mobileSidebarOpen ? 'rotate-45 translate-y-1.5' : ''}`}></div>
-                <div className={`w-5 h-0.5 bg-foreground mb-1 transition-opacity ${mobileSidebarOpen ? 'opacity-0' : ''}`}></div>
-                <div className={`w-5 h-0.5 bg-foreground transition-transform ${mobileSidebarOpen ? '-rotate-45 -translate-y-1.5' : ''}`}></div>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Navigation Dropdown */}
-        <div className={`lg:hidden transition-all duration-300 ease-in-out border-t border-foreground/10 absolute w-full bg-surface/95 backdrop-blur-xl z-[35] shadow-lg ${mobileSidebarOpen ? 'max-h-[80vh] opacity-100 overflow-y-auto' : 'max-h-0 opacity-0 overflow-hidden'}`}>
-           <div className="px-4 py-4 space-y-1 flex flex-col">
-              {visibleNavItems.map(item => {
-                const Icon = item.icon;
-                const isActive = activeTab === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => { setActiveTab(item.id as any); setMobileSidebarOpen(false); }}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 text-sm ${isActive ? 'bg-primary text-primary-foreground font-medium shadow-md shadow-primary/20' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground'}`}
-                  >
-                    <Icon size={18} />
-                    {item.label}
-                    {(item.badge || 0) > 0 && (
-                      <span className={`ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full ${item.badgeColor}`}>
-                        {item.badge}
-                      </span>
-                    )}
-                  </button>
-                )
-              })}
-              
-              <div className="flex items-center justify-between p-2 mt-4 border-t border-foreground/10 sm:hidden">
-                 <ThemeToggle />
-                 <button onClick={handleLogout} className="flex items-center gap-2 text-red-500 font-medium px-2 py-2 hover:bg-red-500/10 rounded-md transition-colors"><LogOut size={16}/> Sign Out</button>
-              </div>
-           </div>
-        </div>
-      </header>
+      {/* Sidebar Navigation */}
+      <aside className={`flex-none z-[40] bg-[#0B1329] text-white border-r border-[#1C2541] transition-all duration-300 ${mobileSidebarOpen ? 'w-64 absolute h-full shadow-2xl' : 'w-0 lg:w-64 hidden lg:flex'} flex-col overflow-y-auto`}>
+         <div className="h-16 flex items-center px-6 border-b border-white/10 shrink-0">
+             <img src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png" alt="VISO Logo" className="h-8 w-auto object-contain mr-3" />
+             <span className="font-bold text-sm tracking-wider">VISO ADMIN</span>
+         </div>
+         
+         <div className="flex-1 py-4 flex flex-col gap-1 px-3">
+            <div className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2 px-3">Modules</div>
+            {visibleNavItems.map(item => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => { setActiveTab(item.id as any); setMobileSidebarOpen(false); }}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded transition-all duration-200 text-sm w-full text-left ${isActive ? 'bg-primary text-[#0B1329] font-medium' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}
+                >
+                  <Icon size={16} />
+                  <span className="flex-1">{item.label}</span>
+                  {(item.badge || 0) > 0 && (
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${isActive ? 'bg-[#0B1329] text-primary' : 'bg-primary text-[#0B1329]'}`}>
+                      {item.badge}
+                    </span>
+                  )}
+                </button>
+              )
+            })}
+         </div>
+      </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto bg-background relative">
-        <div className="absolute top-4 right-4 sm:right-6 md:right-10 z-30 hidden sm:flex">
-          <button
-            onClick={handleLogout}
-            className="flex items-center justify-center gap-2 px-3 py-1.5 bg-red-500/10 text-red-500 rounded-md hover:bg-red-500 hover:text-white transition-colors text-xs font-medium shadow-sm backdrop-blur-sm"
-          >
-            <LogOut size={14} />
-            Sign Out
-          </button>
-        </div>
-        <div className="p-4 sm:p-6 md:p-10 max-w-screen-2xl mx-auto w-full pt-14 sm:pt-6 md:pt-10">
+      <div className="flex-1 flex flex-col min-w-0 bg-[#F8F9FA] dark:bg-[#050505]">
+        
+        {/* Top Header */}
+        <header className="h-16 flex-none bg-white dark:bg-[#070B14] border-b border-foreground/10 px-4 sm:px-6 flex items-center justify-between shrink-0 shadow-sm z-30">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+              className="lg:hidden p-2 rounded hover:bg-white dark:bg-[#1C2541] text-foreground/70"
+            >
+              <div className="space-y-1">
+                <div className="w-5 h-0.5 bg-current"></div>
+                <div className="w-5 h-0.5 bg-current"></div>
+                <div className="w-5 h-0.5 bg-current"></div>
+              </div>
+            </button>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-foreground/50">Admin Console</span>
+              <ChevronRight size={14} className="text-foreground/30" />
+              <h1 className="text-sm font-semibold text-foreground/90 tracking-tight">
+                {navItems.find(i => i.id === activeTab)?.label || 'Dashboard'}
+              </h1>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+             <div className="text-sm font-medium text-foreground/60 hidden md:flex items-center gap-2">
+               <span>{session.email}</span>
+               <span className="bg-primary/10 text-primary px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider">{session.role.replace('_', ' ')}</span>
+             </div>
+             <div className="w-px h-6 bg-foreground/10 mx-2 hidden sm:block"></div>
+             <ThemeToggle />
+             <button
+               onClick={handleLogout}
+               className="flex items-center gap-2 px-3 py-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors text-sm font-medium"
+             >
+               <LogOut size={16} />
+               <span className="hidden sm:inline">Sign Out</span>
+             </button>
+          </div>
+        </header>
+
+        {/* Content Body */}
+        <main className="flex-1 overflow-y-auto bg-[#F8F9FA] dark:bg-[#050505] relative">
+          <div className="p-4 sm:p-6 lg:p-8 max-w-[1600px] mx-auto w-full h-full">
 
         {activeTab === 'gallery' && (
           <>
-            <div className="bg-foreground/5 p-6 rounded-xl border border-foreground/10 mb-8 grid md:grid-cols-2 gap-8">
+            <div className="bg-white dark:bg-[#1C2541] p-6 rounded border border-foreground/10 mb-8 grid md:grid-cols-2 gap-8">
               <div>
-                <h2 className="text-xl mb-4 font-display">Upload New Image</h2>
+                <h2 className="text-xl mb-4">Upload New Image</h2>
                 <div 
-                  className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-foreground/20 hover:border-primary/50'}`}
+                  className={`border-2 border-dashed rounded p-8 text-center transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-foreground/20 hover:border-primary/50'}`}
                   onDragOver={onDragOver}
                   onDragLeave={onDragLeave}
                   onDrop={onDrop}
@@ -1345,8 +1323,8 @@ function AdminPage() {
               </div>
               
               <div>
-                <h2 className="text-xl mb-4 font-display">Or Add via URL</h2>
-                <form onSubmit={handleUrlSubmit} className="flex flex-col gap-4 bg-surface p-6 rounded-xl border border-foreground/10 h-full justify-center">
+                <h2 className="text-xl mb-4">Or Add via URL</h2>
+                <form onSubmit={handleUrlSubmit} className="flex flex-col gap-4 bg-surface p-6 rounded border border-foreground/10 h-full justify-center">
                   <div>
                     <label className="block text-sm font-medium mb-2 opacity-70">Image Address (URL)</label>
                     <input 
@@ -1396,7 +1374,7 @@ function AdminPage() {
         {activeTab === 'cms_history' && (
           <div className="flex flex-col gap-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-display">CMS Revision History</h2>
+              <h2 className="text-2xl">CMS Revision History</h2>
               <button 
                 onClick={fetchAuditLogs}
                 className="bg-primary/10 text-primary px-4 py-2 rounded hover:bg-primary/20 transition-colors text-sm font-medium"
@@ -1407,7 +1385,7 @@ function AdminPage() {
             {auditLogsLoading ? (
               <p>Loading history...</p>
             ) : auditLogs.length === 0 ? (
-              <div className="bg-surface p-8 rounded-xl border border-foreground/10 text-center text-foreground/50">
+              <div className="bg-surface p-8 rounded border border-foreground/10 text-center text-foreground/50">
                 No changes have been recorded yet.
               </div>
             ) : (
@@ -1441,73 +1419,73 @@ function AdminPage() {
               <h3 className="font-bold text-foreground/60 mb-2 uppercase tracking-widest text-xs">Sections</h3>
               <button
                 onClick={() => setCmsSection('hero')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'hero' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-foreground/5'}`}
+                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'hero' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
               >
                 Hero Section
               </button>
               <button
                 onClick={() => setCmsSection('about')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'about' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-foreground/5'}`}
+                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'about' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
               >
                 About Section
               </button>
               <button
                 onClick={() => setCmsSection('core_values')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'core_values' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-foreground/5'}`}
+                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'core_values' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
               >
                 Core Values
               </button>
               <button
                 onClick={() => setCmsSection('areas')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'areas' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-foreground/5'}`}
+                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'areas' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
               >
                 Areas We Serve
               </button>
               <button
                 onClick={() => setCmsSection('services')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'services' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-foreground/5'}`}
+                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'services' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
               >
                 Services
               </button>
               <button
                 onClick={() => setCmsSection('framework')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'framework' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-foreground/5'}`}
+                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'framework' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
               >
                 Framework
               </button>
               <button
                 onClick={() => setCmsSection('showcase')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'showcase' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-foreground/5'}`}
+                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'showcase' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
               >
                 Showcase
               </button>
               <button
                 onClick={() => setCmsSection('clients')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'clients' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-foreground/5'}`}
+                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'clients' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
               >
                 Industry Titans (Clients)
               </button>
               <button
                 onClick={() => setCmsSection('lifecycle')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'lifecycle' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-foreground/5'}`}
+                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'lifecycle' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
               >
                 Service Lifecycle
               </button>
               <button
                 onClick={() => setCmsSection('locations')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'locations' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-foreground/5'}`}
+                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'locations' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
               >
                 Locations
               </button>
               <button
                 onClick={() => setCmsSection('stats')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'stats' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-foreground/5'}`}
+                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'stats' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
               >
                 Stats
               </button>
               <button
                 onClick={() => setCmsSection('cta')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'cta' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-foreground/5'}`}
+                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'cta' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
               >
                 Call to Action
               </button>
@@ -1527,10 +1505,10 @@ function AdminPage() {
             </div>
 
             {/* CMS Editor Area */}
-            <div className="flex-1 bg-surface p-6 rounded-xl border border-foreground/10">
+            <div className="flex-1 bg-surface p-6 rounded border border-foreground/10">
               {cmsSection === 'hero' && (
                 <div className="flex flex-col gap-4">
-                  <h2 className="text-2xl font-display mb-4">Edit Hero Section</h2>
+                  <h2 className="text-2xl mb-4">Edit Hero Section</h2>
                   <div>
                     <label className="block text-sm font-medium mb-1">Title Part 1</label>
                     <input
@@ -1594,7 +1572,7 @@ function AdminPage() {
 
               {cmsSection === 'about' && (
                 <div className="flex flex-col gap-6">
-                  <h2 className="text-2xl font-display mb-2">Edit Digital Company Profile</h2>
+                  <h2 className="text-2xl mb-2">Edit Digital Company Profile</h2>
                   
                   <div className="bg-background p-6 rounded border border-foreground/10 space-y-4">
                     <h3 className="font-bold text-lg border-b border-foreground/10 pb-2 mb-4">Header</h3>
@@ -1677,7 +1655,7 @@ function AdminPage() {
               )}
               {cmsSection === 'core_values' && (
                 <div className="flex flex-col gap-6">
-                  <h2 className="text-2xl font-display mb-2">Edit Core Values</h2>
+                  <h2 className="text-2xl mb-2">Edit Core Values</h2>
                   <div className="bg-background p-6 rounded border border-foreground/10 space-y-4">
                     <div>
                       <label className="block text-sm font-medium mb-1">Section Title</label>
@@ -1770,7 +1748,7 @@ function AdminPage() {
               )}
               {cmsSection === 'areas' && (
                 <div className="flex flex-col gap-4">
-                  <h2 className="text-2xl font-display mb-4">Edit Areas We Serve</h2>
+                  <h2 className="text-2xl mb-4">Edit Areas We Serve</h2>
                   
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -1881,7 +1859,7 @@ function AdminPage() {
               {/* SERVICES CMS */}
               {cmsSection === 'services' && (
                 <div className="flex flex-col gap-4">
-                  <h2 className="text-2xl font-display mb-4">Edit Services</h2>
+                  <h2 className="text-2xl mb-4">Edit Services</h2>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium mb-1">Title Part 1</label>
@@ -1986,7 +1964,7 @@ function AdminPage() {
               {/* FRAMEWORK CMS */}
               {cmsSection === 'framework' && (
                 <div className="flex flex-col gap-4">
-                  <h2 className="text-2xl font-display mb-4">Edit Framework Section</h2>
+                  <h2 className="text-2xl mb-4">Edit Framework Section</h2>
                   <div>
                     <label className="block text-sm font-medium mb-1">Small Top Title</label>
                     <input
@@ -2100,7 +2078,7 @@ function AdminPage() {
               {/* SHOWCASE CMS */}
               {cmsSection === 'showcase' && (
                 <div className="flex flex-col gap-4">
-                  <h2 className="text-2xl font-display mb-4">Edit Showcase Section</h2>
+                  <h2 className="text-2xl mb-4">Edit Showcase Section</h2>
                   <div>
                     <label className="block text-sm font-medium mb-1">Background Image URL</label>
                     <input
@@ -2126,7 +2104,7 @@ function AdminPage() {
               {/* CLIENTS CMS */}
               {cmsSection === 'clients' && (
                 <div className="flex flex-col gap-4">
-                  <h2 className="text-2xl font-display mb-4">Edit Industry Titans (Clients) Section</h2>
+                  <h2 className="text-2xl mb-4">Edit Industry Titans (Clients) Section</h2>
                   
                   <div>
                     <label className="block text-sm font-medium mb-1">Small Top Title</label>
@@ -2278,7 +2256,7 @@ function AdminPage() {
               {/* LIFECYCLE CMS */}
               {cmsSection === 'lifecycle' && (
                 <div className="flex flex-col gap-4">
-                  <h2 className="text-2xl font-display mb-4">Edit Service Lifecycle Section</h2>
+                  <h2 className="text-2xl mb-4">Edit Service Lifecycle Section</h2>
                   <div>
                     <label className="block text-sm font-medium mb-1">Title</label>
                     <input type="text" value={lifecycleData.title} onChange={(e) => setLifecycleData({ ...lifecycleData, title: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" />
@@ -2317,7 +2295,7 @@ function AdminPage() {
               {/* LOCATIONS CMS */}
               {cmsSection === 'locations' && (
                 <div className="flex flex-col gap-4">
-                  <h2 className="text-2xl font-display mb-4">Edit Locations Section</h2>
+                  <h2 className="text-2xl mb-4">Edit Locations Section</h2>
                   <div><label className="block text-sm font-medium mb-1">Title</label><input type="text" value={locationsData.title} onChange={(e) => setLocationsData({ ...locationsData, title: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" /></div>
                   <div><label className="block text-sm font-medium mb-1">Subtitle</label><input type="text" value={locationsData.subtitle} onChange={(e) => setLocationsData({ ...locationsData, subtitle: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" /></div>
                   <p className="text-sm text-foreground/50 mt-4 italic">Note: The interactive map markers and specific cities are currently hardcoded in the component for geographic precision, but the titles above can be edited here.</p>
@@ -2328,7 +2306,7 @@ function AdminPage() {
               {/* STATS CMS */}
               {cmsSection === 'stats' && (
                 <div className="flex flex-col gap-4">
-                  <h2 className="text-2xl font-display mb-4">Edit Stats Section</h2>
+                  <h2 className="text-2xl mb-4">Edit Stats Section</h2>
                   <div><label className="block text-sm font-medium mb-1">Title</label><input type="text" value={statsData.title} onChange={(e) => setStatsData({ ...statsData, title: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" /></div>
                   <div className="mt-8 border-t border-foreground/10 pt-8">
                     <h3 className="font-bold mb-4">Statistics</h3>
@@ -2354,7 +2332,7 @@ function AdminPage() {
               {/* CTA CMS */}
               {cmsSection === 'cta' && (
                 <div className="flex flex-col gap-4">
-                  <h2 className="text-2xl font-display mb-4">Edit Call to Action Section</h2>
+                  <h2 className="text-2xl mb-4">Edit Call to Action Section</h2>
                   <div><label className="block text-sm font-medium mb-1">Title Part 1</label><input type="text" value={ctaData.title1} onChange={(e) => setCtaData({ ...ctaData, title1: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" /></div>
                   <div><label className="block text-sm font-medium mb-1">Title Part 2</label><input type="text" value={ctaData.title2} onChange={(e) => setCtaData({ ...ctaData, title2: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" /></div>
                   <div><label className="block text-sm font-medium mb-1">Description</label><textarea value={ctaData.desc} onChange={(e) => setCtaData({ ...ctaData, desc: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none h-20" /></div>
@@ -2370,7 +2348,7 @@ function AdminPage() {
         {/* INQUIRIES TAB */}
         {activeTab === 'inquiries' && (
           <div className="flex-1 flex flex-col p-6 overflow-y-auto">
-            <h1 className="text-3xl font-display mb-2">Inquiries</h1>
+            <h1 className="text-3xl mb-2">Inquiries</h1>
             <p className="text-foreground/60 mb-8">View and manage contact submissions.</p>
 
             {inquiriesLoading ? (
@@ -2378,13 +2356,13 @@ function AdminPage() {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               </div>
             ) : inquiries.length === 0 ? (
-              <div className="bg-surface/50 border border-foreground/10 rounded-xl p-12 text-center">
+              <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded p-12 text-center">
                 <p className="text-foreground/60">No inquiries found.</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {inquiries.map((inq: any) => (
-                  <div key={inq.id} className="bg-surface/50 border border-foreground/10 rounded-xl p-6 shadow-sm flex flex-col md:flex-row gap-6">
+                  <div key={inq.id} className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded p-6 shadow-sm flex flex-col md:flex-row gap-6">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
@@ -2410,10 +2388,10 @@ function AdminPage() {
         {/* USERS & ROLES TAB */}
         {activeTab === 'users' && session?.role === 'super_admin' && (
           <div className="flex-1 flex flex-col p-6 overflow-y-auto">
-            <h1 className="text-3xl font-display mb-2">Users & Roles</h1>
+            <h1 className="text-3xl mb-2">Users & Roles</h1>
             <p className="text-foreground/60 mb-8">Manage employee credentials and portal access.</p>
 
-            <div className="bg-surface/50 border border-foreground/10 rounded-xl p-6 mb-8">
+            <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded p-6 mb-8">
               <h2 className="text-lg font-bold mb-4 flex items-center gap-2"><Plus size={18} /> Create New User</h2>
               <form onSubmit={handleCreateUser} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -2448,10 +2426,10 @@ function AdminPage() {
               </form>
             </div>
 
-            <div className="bg-surface/50 border border-foreground/10 rounded-xl overflow-hidden">
+            <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm whitespace-nowrap">
-                  <thead className="bg-foreground/5 text-foreground/60 font-medium border-b border-foreground/10">
+                  <thead className="bg-white dark:bg-[#1C2541] text-foreground/60 font-medium border-b border-foreground/10">
                     <tr>
                       <th className="px-6 py-4">Name</th>
                       <th className="px-6 py-4">Email</th>
@@ -2462,7 +2440,7 @@ function AdminPage() {
                   </thead>
                   <tbody className="divide-y divide-foreground/5">
                     {users.map(user => (
-                      <tr key={user.id} className="hover:bg-foreground/5 transition-colors">
+                      <tr key={user.id} className="hover:bg-white dark:bg-[#1C2541] transition-colors">
                         <td className="px-6 py-4 font-medium">{user.name}</td>
                         <td className="px-6 py-4 text-foreground/70">{user.email}</td>
                         <td className="px-6 py-4">
@@ -2486,7 +2464,7 @@ function AdminPage() {
         {/* JOB APPLICATIONS TAB */}
         {activeTab === 'job_apps' && (session?.role === 'super_admin' || session?.role === 'hr' || session?.role === 'admin') && (
           <div className="flex-1 flex flex-col p-6 overflow-y-auto">
-            <h1 className="text-3xl font-display mb-2">Job Applications</h1>
+            <h1 className="text-3xl mb-2">Job Applications</h1>
             <p className="text-foreground/60 mb-8">Review candidates from the public Careers portal.</p>
 
             {jobAppsLoading ? (
@@ -2494,14 +2472,14 @@ function AdminPage() {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               </div>
             ) : jobApps.length === 0 ? (
-              <div className="bg-surface/50 border border-foreground/10 rounded-xl p-12 text-center">
+              <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded p-12 text-center">
                 <p className="text-foreground/60">No applications received yet.</p>
               </div>
             ) : (
-              <div className="bg-surface/50 border border-foreground/10 rounded-xl overflow-hidden">
+              <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-sm whitespace-nowrap">
-                    <thead className="bg-foreground/5 text-foreground/60 font-medium border-b border-foreground/10">
+                    <thead className="bg-white dark:bg-[#1C2541] text-foreground/60 font-medium border-b border-foreground/10">
                       <tr>
                         <th className="px-6 py-4">Applicant</th>
                         <th className="px-6 py-4">Position</th>
@@ -2513,7 +2491,7 @@ function AdminPage() {
                     </thead>
                     <tbody className="divide-y divide-foreground/5">
                       {jobApps.map(app => (
-                        <tr key={app.id} className="hover:bg-foreground/5 transition-colors">
+                        <tr key={app.id} className="hover:bg-white dark:bg-[#1C2541] transition-colors">
                           <td className="px-6 py-4 font-medium">{app.name}</td>
                           <td className="px-6 py-4 text-primary font-bold">{app.position}</td>
                           <td className="px-6 py-4 text-foreground/70">
@@ -2569,9 +2547,9 @@ function AdminPage() {
             <CertificatesDashboard />
           </div>
         )}
-        
         </div>
       </main>
+      </div>
     </div>
   );
 }

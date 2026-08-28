@@ -57,7 +57,7 @@ export function DmsDashboard({ user }: { user: any }) {
       className="w-full relative"
     >
       <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-display font-bold uppercase mb-2 tracking-tight">Document Management</h1>
+        <h1 className="text-3xl md:text-4xl font-bold uppercase mb-2 tracking-tight">Document Management</h1>
         <p className="text-foreground/60 max-w-3xl">
           Centralized electronic document management system (EDMS) for uploading, reviewing, approving, and archiving critical project documents.
         </p>
@@ -66,7 +66,7 @@ export function DmsDashboard({ user }: { user: any }) {
       <div className="grid lg:grid-cols-[220px_1fr] gap-8">
         {/* Left Sidebar */}
         <div className="space-y-6">
-          <div className="bg-surface border border-foreground/10 rounded-2xl p-4 sticky top-6">
+          <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded p-4 sticky top-6">
             <div className="space-y-1">
               {[
                 { id: "dashboard", label: "Dashboard" },
@@ -109,22 +109,22 @@ export function DmsDashboard({ user }: { user: any }) {
               {activeTab === "dashboard" && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <div className="bg-surface/50 border border-foreground/10 p-4 rounded-xl">
-                      <div className="text-2xl font-display font-bold text-gold mb-1">{documents.length}</div>
+                    <div className="bg-white dark:bg-[#1C2541]/50 border border-foreground/10 p-4 rounded">
+                      <div className="text-2xl font-bold text-gold mb-1">{documents.length}</div>
                       <div className="text-xs font-medium text-foreground/60 uppercase tracking-wider">Total Documents</div>
                     </div>
-                    <div className="bg-surface/50 border border-foreground/10 p-4 rounded-xl">
-                      <div className="text-2xl font-display font-bold mb-1 text-emerald-500">{documents.filter(d=>d.status==='Approved').length}</div>
+                    <div className="bg-white dark:bg-[#1C2541]/50 border border-foreground/10 p-4 rounded">
+                      <div className="text-2xl font-bold mb-1 text-emerald-500">{documents.filter(d=>d.status==='Approved').length}</div>
                       <div className="text-xs font-medium text-foreground/60 uppercase tracking-wider">Approved</div>
                     </div>
-                    <div className="bg-surface/50 border border-foreground/10 p-4 rounded-xl">
-                      <div className="text-2xl font-display font-bold mb-1 text-amber-500">{documents.filter(d=>["Under Review", "Pending Approval"].includes(d.status)).length}</div>
+                    <div className="bg-white dark:bg-[#1C2541]/50 border border-foreground/10 p-4 rounded">
+                      <div className="text-2xl font-bold mb-1 text-amber-500">{documents.filter(d=>["Under Review", "Pending Approval"].includes(d.status)).length}</div>
                       <div className="text-xs font-medium text-foreground/60 uppercase tracking-wider">Pending Action</div>
                     </div>
                   </div>
 
                   {canUpload && (
-                    <div className="bg-surface border-2 border-dashed border-foreground/20 rounded-xl p-8 text-center flex flex-col items-center justify-center">
+                    <div className="bg-white dark:bg-[#1C2541] border-2 border-dashed border-foreground/20 rounded p-8 text-center flex flex-col items-center justify-center">
                       <div className="w-12 h-12 bg-gold/10 text-gold rounded-full flex items-center justify-center mb-4">
                         <UploadCloud className="w-6 h-6" />
                       </div>
@@ -153,7 +153,7 @@ export function DmsDashboard({ user }: { user: any }) {
                     )}
                   </div>
 
-                  <div className="bg-surface border border-foreground/10 rounded-xl p-2 flex flex-col md:flex-row gap-2">
+                  <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded p-2 flex flex-col md:flex-row gap-2">
                     <input 
                       type="text" 
                       placeholder="Search doc number or title..." 
@@ -177,7 +177,7 @@ export function DmsDashboard({ user }: { user: any }) {
                     )}
                   </div>
 
-                  <div className="bg-surface border border-foreground/10 rounded-xl overflow-hidden">
+                  <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded overflow-hidden">
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-sm whitespace-nowrap">
                         <thead className="bg-foreground/5 text-foreground/60 font-medium">
@@ -328,7 +328,7 @@ function UploadModal({ onClose, onSuccess, user, documentId = null, existingDoc 
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm overflow-y-auto pt-20">
-      <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }} className="bg-surface border border-foreground/10 p-6 rounded-2xl shadow-2xl w-full max-w-2xl relative my-auto">
+      <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }} className="bg-white dark:bg-[#1C2541] border border-foreground/10 p-6 rounded shadow-2xl w-full max-w-2xl relative my-auto">
         <button onClick={onClose} className="absolute top-4 right-4 text-foreground/50 hover:text-foreground"><X size={20}/></button>
         <h3 className="text-xl font-bold mb-6">{isNewVersion ? "Upload New Version" : "New Document Entry"}</h3>
         
@@ -387,7 +387,7 @@ function UploadModal({ onClose, onSuccess, user, documentId = null, existingDoc 
             </div>
           )}
 
-          <div className="border-2 border-dashed border-foreground/20 rounded-xl p-6 text-center hover:border-gold/50 transition-colors">
+          <div className="border-2 border-dashed border-foreground/20 rounded p-6 text-center hover:border-gold/50 transition-colors">
             <input type="file" onChange={e => setFile(e.target.files?.[0] || null)} className="hidden" id="file-upload" />
             <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center">
               <UploadCloud className="w-8 h-8 text-foreground/50 mb-2" />
@@ -465,7 +465,7 @@ function DocumentDetailModal({ documentId, onClose, onUpdate, user, canApprove, 
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm overflow-y-auto">
-      <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }} className="bg-surface border border-foreground/10 p-0 rounded-2xl shadow-2xl w-full max-w-5xl relative flex flex-col md:flex-row min-h-[70vh] my-auto">
+      <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }} className="bg-white dark:bg-[#1C2541] border border-foreground/10 p-0 rounded shadow-2xl w-full max-w-5xl relative flex flex-col md:flex-row min-h-[70vh] my-auto">
         
         {/* Left Col: Details & Actions */}
         <div className="w-full md:w-2/3 p-6 md:border-r border-foreground/10">

@@ -202,7 +202,7 @@ export function CertificatesDashboard() {
   return (
     <div className="space-y-6">
       {/* Header Card */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface p-6 rounded-2xl border border-foreground/5 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-[#1C2541] p-6 rounded border border-foreground/5 shadow-sm">
         <div>
           <h2 className="text-xl font-bold text-foreground">Translation Certificates</h2>
           <p className="text-xs text-foreground/50 mt-1">Manage, issue, update, and revoke official VISO translation certificates synced with the live Certipedia database.</p>
@@ -225,7 +225,7 @@ export function CertificatesDashboard() {
       </div>
 
       {/* Main Filter & Table Card */}
-      <div className="bg-surface rounded-2xl border border-foreground/5 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-[#1C2541] rounded border border-foreground/5 shadow-sm overflow-hidden">
         {/* Filter Controls Bar */}
         <div className="p-4 border-b border-foreground/5 bg-foreground/[0.01] flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="relative w-full md:max-w-md">
@@ -354,7 +354,7 @@ export function CertificatesDashboard() {
       {/* Issuing / Editing Modal Overlay */}
       {showForm && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-surface border border-foreground/10 w-full max-w-lg rounded-2xl shadow-2xl p-6 md:p-8 text-foreground flex flex-col relative max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 w-full max-w-lg rounded shadow-2xl p-6 md:p-8 text-foreground flex flex-col relative max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-bold text-foreground border-b border-foreground/5 pb-4 mb-6">
               {editingId ? `Edit Certificate: ${editingId}` : "Issue New Certificate"}
             </h3>
@@ -482,12 +482,12 @@ export function CertificatesDashboard() {
                 </select>
               </div>
 
-              <div className="pt-6 flex justify-end gap-3 border-t border-foreground/5 mt-8 font-sans">
+              <div className="pt-6 flex justify-end gap-3 border-t border-foreground/5 mt-8">
                 <button
                   type="button"
                   disabled={isSubmitting}
                   onClick={() => setShowForm(false)}
-                  className="px-4 py-2.5 rounded-lg border border-foreground/10 text-foreground/75 hover:bg-foreground/5 hover:text-foreground text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-50"
+                  className="px-4 py-2 rounded-sm border border-foreground/10 text-foreground/75 hover:bg-foreground/5 hover:text-foreground text-xs uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-50"
                 >
                   Cancel
                 </button>

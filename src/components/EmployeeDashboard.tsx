@@ -13,7 +13,7 @@ export function EmployeeDashboard({ user }: { user: any }) {
       className="w-full"
     >
       <div className="mb-12">
-        <h1 className="text-3xl md:text-4xl font-display font-bold uppercase mb-2 tracking-tight">EMPLOYEE SELF-SERVICE</h1>
+        <h1 className="text-3xl md:text-4xl font-bold uppercase mb-2 tracking-tight">EMPLOYEE SELF-SERVICE</h1>
         <h2 className="text-xl md:text-2xl text-primary font-medium mb-4">My Employee File</h2>
         <p className="text-foreground/60 max-w-2xl bg-primary/5 p-4 rounded-lg border border-primary/10">
           Prototype workspace managed by HR where each employee can view only their own file, documents, reports and requests.
@@ -22,7 +22,7 @@ export function EmployeeDashboard({ user }: { user: any }) {
 
       <div className="grid lg:grid-cols-[300px_1fr] gap-8">
         {/* Left Sidebar Profile */}
-        <div className="bg-surface border border-foreground/10 rounded-2xl p-6 h-fit sticky top-6">
+        <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded p-6 h-fit sticky top-6">
           <div className="flex flex-col items-center text-center border-b border-foreground/10 pb-6 mb-6">
             <div className="w-24 h-24 bg-foreground/5 rounded-full flex items-center justify-center mb-4 border border-foreground/10">
               <span className="text-3xl">👤</span>
@@ -83,37 +83,37 @@ export function EmployeeDashboard({ user }: { user: any }) {
               <h3 className="text-xl font-bold border-b border-foreground/10 pb-4">Employment Profile</h3>
               <div className="grid md:grid-cols-2 gap-6">
                 {/* Document Card 1 */}
-                <div className="bg-background border border-foreground/10 rounded-xl p-6 group hover:border-primary/30 transition-colors shadow-sm">
+                <div className="bg-background border border-foreground/10 rounded p-6 group hover:border-primary/30 transition-colors shadow-sm">
                   <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mb-4 text-primary">
                     <FileText className="w-5 h-5" />
                   </div>
                   <h4 className="font-bold mb-2">Employment Contract</h4>
                   <p className="text-sm text-foreground/50 font-mono mb-6">PDF · 2026</p>
-                  <button className="w-full flex items-center justify-center gap-2 bg-surface border border-foreground/10 px-4 py-2 rounded-lg hover:bg-primary hover:text-white hover:border-primary transition-all">
+                  <button className="w-full flex items-center justify-center gap-2 bg-white dark:bg-[#1C2541] border border-foreground/10 px-4 py-2 rounded-lg hover:bg-primary hover:text-white hover:border-primary transition-all">
                     <Download className="w-4 h-4" /> View
                   </button>
                 </div>
 
                 {/* Document Card 2 */}
-                <div className="bg-background border border-foreground/10 rounded-xl p-6 group hover:border-primary/30 transition-colors shadow-sm">
+                <div className="bg-background border border-foreground/10 rounded p-6 group hover:border-primary/30 transition-colors shadow-sm">
                   <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mb-4 text-primary">
                     <FileText className="w-5 h-5" />
                   </div>
                   <h4 className="font-bold mb-2">Job Description</h4>
                   <p className="text-sm text-foreground/50 font-mono mb-6">PDF · Current</p>
-                  <button className="w-full flex items-center justify-center gap-2 bg-surface border border-foreground/10 px-4 py-2 rounded-lg hover:bg-primary hover:text-white hover:border-primary transition-all">
+                  <button className="w-full flex items-center justify-center gap-2 bg-white dark:bg-[#1C2541] border border-foreground/10 px-4 py-2 rounded-lg hover:bg-primary hover:text-white hover:border-primary transition-all">
                     <Download className="w-4 h-4" /> View
                   </button>
                 </div>
 
                 {/* Document Card 3 */}
-                <div className="bg-background border border-foreground/10 rounded-xl p-6 group hover:border-primary/30 transition-colors shadow-sm">
+                <div className="bg-background border border-foreground/10 rounded p-6 group hover:border-primary/30 transition-colors shadow-sm">
                   <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mb-4 text-primary">
                     <FileText className="w-5 h-5" />
                   </div>
                   <h4 className="font-bold mb-2">Annual Performance Review</h4>
                   <p className="text-sm text-foreground/50 font-mono mb-6">2025</p>
-                  <button className="w-full flex items-center justify-center gap-2 bg-surface border border-foreground/10 px-4 py-2 rounded-lg hover:bg-primary hover:text-white hover:border-primary transition-all">
+                  <button className="w-full flex items-center justify-center gap-2 bg-white dark:bg-[#1C2541] border border-foreground/10 px-4 py-2 rounded-lg hover:bg-primary hover:text-white hover:border-primary transition-all">
                     <Download className="w-4 h-4" /> View
                   </button>
                 </div>
@@ -127,7 +127,7 @@ export function EmployeeDashboard({ user }: { user: any }) {
                 <h3 className="text-xl font-bold">My Reports</h3>
                 <button className="text-sm font-medium bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">+ Submit Report</button>
               </div>
-              <div className="bg-surface border border-foreground/10 rounded-xl overflow-hidden">
+              <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded overflow-hidden">
                 <table className="w-full text-left text-sm">
                   <thead className="bg-foreground/5 text-foreground/60 font-medium">
                     <tr>
@@ -172,7 +172,7 @@ export function EmployeeDashboard({ user }: { user: any }) {
                 <button className="text-sm font-medium bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">+ New Request</button>
               </div>
 
-              <div className="bg-surface border border-foreground/10 p-6 rounded-xl mb-8">
+              <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 p-6 rounded mb-8">
                 <h4 className="font-bold mb-4">Quick Request Form</h4>
                 <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
                   <div className="grid md:grid-cols-2 gap-4">
@@ -199,7 +199,7 @@ export function EmployeeDashboard({ user }: { user: any }) {
               </div>
 
               <h4 className="font-bold mb-4">Recent Requests</h4>
-              <div className="bg-surface border border-foreground/10 rounded-xl overflow-hidden">
+              <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded overflow-hidden">
                 <table className="w-full text-left text-sm">
                   <thead className="bg-foreground/5 text-foreground/60 font-medium">
                     <tr>
