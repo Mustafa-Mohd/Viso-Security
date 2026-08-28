@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { TopNav } from "@/components/TopNav";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, FileText, Search, CheckCircle, XCircle, AlertTriangle, ShieldCheck, Lock } from "lucide-react";
+import { certsApi, TranslationCertificate } from "@/lib/certsApi";
 
 export const Route = createFileRoute("/translation")({
   component: TranslationPage,
@@ -87,38 +88,22 @@ function SecurityShieldIcon() {
   );
 }
 
-const MOCK_CERT_DB: Record<string, any> = {
-  "VISO-TR-2026-001245": { nationalId: "1023456789", status: "VALID", source: "Arabic", target: "English", issue: "16 Aug 2026", expiry: "16 Aug 2027", name: "Corporate Legal Contract" },
-  "VISO-TR-2025-009812": { nationalId: "1100223344", status: "EXPIRED", source: "French", target: "Arabic", issue: "10 Jan 2025", expiry: "10 Jan 2026", name: "Medical Device Manual" },
-  "VISO-TR-2026-000404": { nationalId: "1055566677", status: "REVOKED", source: "English", target: "Arabic", issue: "01 Dec 2025", expiry: "01 Dec 2026", name: "Financial Audit Report" },
-};
-
-const getCertificates = (): Record<string, any> => {
-  if (typeof window === "undefined") return MOCK_CERT_DB;
-  const stored = localStorage.getItem("viso_certificates");
-  if (!stored) {
-    localStorage.setItem("viso_certificates", JSON.stringify(MOCK_CERT_DB));
-    return MOCK_CERT_DB;
-  }
-  try {
-    return JSON.parse(stored);
-  } catch (e) {
-    return MOCK_CERT_DB;
-  }
-};
-
 function VerificationSection({ isAr }: { isAr: boolean }) {
-  const db = getCertificates();
   const [certId, setCertId] = useState("");
   const [nationalId, setNationalId] = useState("");
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<TranslationCertificate | null>(null);
   const [error, setError] = useState("");
-  const [currentOrigin, setCurrentOrigin] = useState("");
+  
+  const [recentCerts, setRecentCerts] = useState<TranslationCertificate[]>([]);
 
   useEffect(() => {
+    // Load recent certificates for the demo section
+    certsApi.fetchCertificates().then(data => {
+      setRecentCerts(data.slice(0, 3));
+    }).catch(console.error);
+
     if (typeof window !== "undefined") {
-      setCurrentOrigin(window.location.origin);
       const params = new URLSearchParams(window.location.search);
       const verifyId = params.get("verify");
       const verifyNationalId = params.get("nationalId");
@@ -126,45 +111,43 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
       if (verifyId && verifyNationalId) {
         setCertId(verifyId);
         setNationalId(verifyNationalId);
-        
-        setLoading(true);
-        setError("");
-        setResult(null);
-
-        setTimeout(() => {
-          setLoading(false);
-          const cert = db[verifyId.trim().toUpperCase()];
-          if (!cert || cert.nationalId !== verifyNationalId.trim()) {
-            setError("Invalid Certificate ID or National ID.");
-            return;
-          }
-          setResult(cert);
-          
-          window.history.replaceState({}, '', window.location.pathname);
-        }, 800);
+        handleVerification(verifyId, verifyNationalId);
       }
     }
   }, []);
 
-  const handleVerify = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleVerification = async (idToVerify: string, natIdToVerify: string) => {
     setLoading(true);
     setError("");
     setResult(null);
 
-    setTimeout(() => {
-      setLoading(false);
-      const cert = db[certId.trim().toUpperCase()];
+    try {
+      const cert = await certsApi.getCertificateById(idToVerify.trim().toUpperCase());
+      
       if (!cert) {
         setError("Certificate not found. Please check the ID.");
         return;
       }
-      if (cert.nationalId !== nationalId.trim()) {
+      if (cert.national_id !== natIdToVerify.trim()) {
         setError("Invalid National ID.");
         return;
       }
       setResult(cert);
-    }, 800);
+      
+      // Clean up URL if it came from query params
+      if (typeof window !== "undefined") {
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    } catch (err) {
+      setError("An error occurred while verifying the certificate.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerify = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleVerification(certId, nationalId);
   };
 
   const getStatusColor = (status: string) => {
@@ -267,8 +250,8 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
               <div className="p-8 md:p-12 border-b border-neutral-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
                   <div className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-2">Verified Document Record</div>
-                  <h4 className="text-3xl md:text-4xl font-display text-neutral-900 mb-2">{result.name}</h4>
-                  <p className="font-mono text-neutral-500 text-sm">Certificate No: {certId.toUpperCase()}</p>
+                  <h4 className="text-3xl md:text-4xl font-display text-neutral-900 mb-2">{result.project_name}</h4>
+                  <p className="font-mono text-neutral-500 text-sm">Certificate No: {result.id}</p>
                 </div>
                 <div className={`px-6 py-2.5 rounded-full font-bold uppercase tracking-widest text-sm border flex items-center gap-2 shadow-sm ${getStatusColor(result.status)}`}>
                   {getStatusIcon(result.status)} {result.status}
@@ -282,19 +265,19 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
                   <div className="space-y-6">
                     <div>
                       <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">Source Language</div>
-                      <div className="text-neutral-900 font-medium">{result.source}</div>
+                      <div className="text-neutral-900 font-medium">{result.source_lang}</div>
                     </div>
                     <div>
                       <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">Target Language</div>
-                      <div className="text-neutral-900 font-medium">{result.target}</div>
+                      <div className="text-neutral-900 font-medium">{result.target_lang}</div>
                     </div>
                     <div>
                       <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">Date of Issuance</div>
-                      <div className="text-neutral-900 font-medium">{result.issue}</div>
+                      <div className="text-neutral-900 font-medium">{result.issue_date}</div>
                     </div>
                     <div>
                       <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">Valid Until</div>
-                      <div className="text-neutral-900 font-medium">{result.expiry}</div>
+                      <div className="text-neutral-900 font-medium">{result.expiry_date}</div>
                     </div>
                   </div>
                 </div>
@@ -305,7 +288,7 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
                     This certification record is actively monitored. The information displayed reflects the current status in the VISO central registry.
                   </p>
                   <a 
-                    href={`/certificate/${certId.toUpperCase()}`}
+                    href={`/certificate/${result.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 text-primary font-bold hover:text-neutral-900 transition-colors bg-white px-6 py-3 rounded-lg border border-neutral-200 shadow-sm hover:shadow-md cursor-pointer"
@@ -319,48 +302,50 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
         </AnimatePresence>
 
         {/* Demo Database Section */}
-        <div className="pt-16 mt-8 border-t border-neutral-200 relative z-10">
-          <div className="text-center mb-10">
-            <h3 className="text-xl font-bold text-neutral-800 mb-2">Demo Repository</h3>
-            <p className="text-sm text-neutral-500">Use these sample records to explore the verification capabilities.</p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-6">
-            {Object.entries(db).map(([id, data]) => (
-              <div 
-                key={id} 
-                className="bg-white rounded-xl p-6 border border-neutral-200 shadow-sm hover:shadow-md transition-all group"
-              >
-                <div className="flex justify-between items-start mb-6">
-                  <div>
-                    <h4 className="font-sans font-bold text-sm text-neutral-800 mb-1">{data.name}</h4>
-                    <p className="font-mono text-xs text-neutral-400">ID: {id}</p>
+        {recentCerts.length > 0 && (
+          <div className="pt-16 mt-8 border-t border-neutral-200 relative z-10">
+            <div className="text-center mb-10">
+              <h3 className="text-xl font-bold text-neutral-800 mb-2">Live Registry Example</h3>
+              <p className="text-sm text-neutral-500">Recently verified records in the database.</p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-6">
+              {recentCerts.map((data) => (
+                <div 
+                  key={data.id} 
+                  className="bg-white rounded-xl p-6 border border-neutral-200 shadow-sm hover:shadow-md transition-all group"
+                >
+                  <div className="flex justify-between items-start mb-6">
+                    <div>
+                      <h4 className="font-sans font-bold text-sm text-neutral-800 mb-1 truncate max-w-[150px]">{data.project_name}</h4>
+                      <p className="font-mono text-xs text-neutral-400">ID: {data.id}</p>
+                    </div>
+                    <div className={`px-2 py-0.5 rounded text-[9px] font-bold tracking-wider uppercase border ${getStatusColor(data.status)}`}>
+                      {data.status}
+                    </div>
                   </div>
-                  <div className={`px-2 py-0.5 rounded text-[9px] font-bold tracking-wider uppercase border ${getStatusColor(data.status)}`}>
-                    {data.status}
+                  
+                  <div className="flex gap-2">
+                    <a 
+                      href={`/certificate/${data.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 py-2.5 rounded-md bg-neutral-50 hover:bg-neutral-100 text-neutral-700 transition-colors text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 border border-neutral-200 cursor-pointer"
+                    >
+                      <FileText className="w-3.5 h-3.5" /> View PDF
+                    </a>
+                    <button 
+                      onClick={() => { setCertId(data.id); setNationalId(data.national_id); setResult(null); setError(""); window.scrollTo({top: document.getElementById('verify-form')?.offsetTop || 0, behavior: 'smooth'}); }}
+                      className="flex-1 py-2.5 rounded-md bg-primary/5 hover:bg-primary/10 text-primary transition-colors text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 border border-primary/10 cursor-pointer"
+                    >
+                      <Search className="w-3.5 h-3.5" /> Auto-Fill
+                    </button>
                   </div>
                 </div>
-                
-                <div className="flex gap-2">
-                  <a 
-                    href={`/certificate/${id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 py-2.5 rounded-md bg-neutral-50 hover:bg-neutral-100 text-neutral-700 transition-colors text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 border border-neutral-200 cursor-pointer"
-                  >
-                    <FileText className="w-3.5 h-3.5" /> View PDF
-                  </a>
-                  <button 
-                    onClick={() => { setCertId(id); setNationalId(data.nationalId); setResult(null); setError(""); window.scrollTo({top: document.getElementById('verify-form')?.offsetTop || 0, behavior: 'smooth'}); }}
-                    className="flex-1 py-2.5 rounded-md bg-primary/5 hover:bg-primary/10 text-primary transition-colors text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 border border-primary/10 cursor-pointer"
-                  >
-                    <Search className="w-3.5 h-3.5" /> Auto-Fill
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );

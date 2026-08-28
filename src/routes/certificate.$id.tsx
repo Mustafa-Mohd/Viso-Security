@@ -1,26 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { FileText } from 'lucide-react'
-
-// Duplicated mock DB for standalone certificate rendering
-const MOCK_CERT_DB: Record<string, any> = {
-  "VISO-TR-2026-001245": { nationalId: "1023456789", status: "VALID", source: "Arabic", target: "English", issue: "16 Aug 2026", expiry: "16 Aug 2027", name: "Corporate Legal Contract" },
-  "VISO-TR-2025-009812": { nationalId: "1100223344", status: "EXPIRED", source: "French", target: "Arabic", issue: "10 Jan 2025", expiry: "10 Jan 2026", name: "Medical Device Manual" },
-  "VISO-TR-2026-000404": { nationalId: "1055566677", status: "REVOKED", source: "English", target: "Arabic", issue: "01 Dec 2025", expiry: "01 Dec 2026", name: "Financial Audit Report" },
-};
-
-const getCertificates = (): Record<string, any> => {
-  if (typeof window === "undefined") return MOCK_CERT_DB;
-  const stored = localStorage.getItem("viso_certificates");
-  if (!stored) {
-    localStorage.setItem("viso_certificates", JSON.stringify(MOCK_CERT_DB));
-    return MOCK_CERT_DB;
-  }
-  try {
-    return JSON.parse(stored);
-  } catch (e) {
-    return MOCK_CERT_DB;
-  }
-};
+import { FileText, RefreshCw } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { certsApi, TranslationCertificate } from '@/lib/certsApi'
 
 export const Route = createFileRoute('/certificate/$id')({
   component: CertificatePdfView,
@@ -29,8 +10,35 @@ export const Route = createFileRoute('/certificate/$id')({
 function CertificatePdfView() {
   const { id } = Route.useParams()
   const certId = id.toUpperCase()
-  const db = getCertificates()
-  const certData = db[certId]
+  const [certData, setCertData] = useState<TranslationCertificate | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchCert = async () => {
+      setIsLoading(true)
+      try {
+        const data = await certsApi.getCertificateById(certId)
+        setCertData(data)
+      } catch (err) {
+        console.error("Failed to load certificate", err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchCert()
+  }, [certId])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-neutral-100 font-sans">
+        <div className="text-center flex flex-col items-center">
+          <RefreshCw className="w-12 h-12 text-primary animate-spin mb-4" />
+          <h1 className="text-xl font-bold text-neutral-800">Verifying Certificate...</h1>
+          <p className="text-neutral-500 mt-2">Connecting to VISO secure registry</p>
+        </div>
+      </div>
+    )
+  }
 
   if (!certData) {
     return (
@@ -44,9 +52,9 @@ function CertificatePdfView() {
     )
   }
 
-  // Hardcode to production Netlify URL so QR codes scanned from localhost still work on mobile
-  const origin = 'https://alternate-v.netlify.app';
-  const qrUrl = `${origin}/translation?verify=${certId}&nationalId=${certData.nationalId}`;
+  // Use the current origin for the QR Code to scan back to the live site
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://viso-group.com';
+  const qrUrl = `${origin}/translation?verify=${certId}&nationalId=${certData.national_id}`;
 
   return (
     <div className="min-h-screen bg-neutral-300 flex flex-col items-center py-8 px-4 font-sans selection:bg-primary/20 selection:text-primary">
@@ -54,7 +62,20 @@ function CertificatePdfView() {
         This div acts as the A4-like "PDF" page. 
         It has no fixed height, letting it expand naturally or be scrolled natively by the browser.
       */}
-      <div className="bg-white w-full max-w-[800px] min-h-[1130px] shadow-2xl relative p-12 md:p-20 text-black flex flex-col mx-auto my-auto">
+      <div className="bg-white w-full max-w-[800px] min-h-[1130px] shadow-2xl relative p-12 md:p-20 text-black flex flex-col mx-auto my-auto overflow-hidden">
+        
+        {/* Dynamic Status Banner */}
+        {certData.status === 'EXPIRED' && (
+           <div className="absolute top-12 left-[-60px] bg-amber-500 text-white font-bold tracking-widest uppercase text-sm py-2 w-[300px] text-center -rotate-45 shadow-md border-y border-amber-600 z-10 opacity-90">
+             EXPIRED
+           </div>
+        )}
+        {certData.status === 'REVOKED' && (
+           <div className="absolute top-12 left-[-60px] bg-red-600 text-white font-bold tracking-widest uppercase text-sm py-2 w-[300px] text-center -rotate-45 shadow-md border-y border-red-700 z-10 opacity-90">
+             REVOKED
+           </div>
+        )}
+
         <div className="absolute top-0 left-0 w-full h-4 bg-primary" />
         
         <div className="text-center mt-12 mb-16 flex flex-col items-center">
@@ -66,40 +87,52 @@ function CertificatePdfView() {
           <h3 className="text-2xl font-serif text-neutral-800 uppercase tracking-widest border-b-2 border-neutral-300 pb-4 inline-block">Certificate of Translation</h3>
         </div>
 
-        <div className="flex-grow">
+        <div className="flex-grow relative z-0">
           <p className="text-base text-neutral-700 mb-12 leading-relaxed text-justify">
-            This document officially certifies that the translation provided for the project <strong className="text-neutral-900">{certData.name}</strong> has been completed by certified professionals and verified for accuracy and fidelity to the source document.
+            This document officially certifies that the translation provided for the project <strong className="text-neutral-900">{certData.project_name}</strong> has been completed by certified professionals and verified for accuracy and fidelity to the source document.
           </p>
 
-          <div className="grid grid-cols-2 gap-y-8 gap-x-12 text-sm mb-16 border border-neutral-200 p-10 rounded-xl bg-neutral-50/50">
-            <div>
+          <div className="grid grid-cols-2 gap-y-8 gap-x-12 text-sm mb-16 border border-neutral-200 p-10 rounded-xl bg-neutral-50/50 relative">
+            
+            {/* Watermark for Expired/Revoked */}
+            {certData.status !== 'VALID' && (
+               <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.05] z-0 overflow-hidden">
+                 <span className="text-[120px] font-bold uppercase -rotate-12 whitespace-nowrap">
+                   {certData.status}
+                 </span>
+               </div>
+            )}
+
+            <div className="relative z-10">
               <span className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-2">Certificate ID</span>
               <span className="font-mono font-medium text-neutral-800 text-base">{certId}</span>
             </div>
-            <div>
+            <div className="relative z-10">
               <span className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-2">National ID</span>
-              <span className="font-mono font-medium text-neutral-800 text-base">{certData.nationalId}</span>
+              <span className="font-mono font-medium text-neutral-800 text-base">{certData.national_id}</span>
             </div>
-            <div>
+            <div className="relative z-10">
               <span className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-2">Source Language</span>
-              <span className="font-medium text-neutral-800 text-base">{certData.source}</span>
+              <span className="font-medium text-neutral-800 text-base">{certData.source_lang}</span>
             </div>
-            <div>
+            <div className="relative z-10">
               <span className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-2">Target Language</span>
-              <span className="font-medium text-neutral-800 text-base">{certData.target}</span>
+              <span className="font-medium text-neutral-800 text-base">{certData.target_lang}</span>
             </div>
-            <div>
+            <div className="relative z-10">
               <span className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-2">Issue Date</span>
-              <span className="font-medium text-neutral-800 text-base">{certData.issue}</span>
+              <span className="font-medium text-neutral-800 text-base">{certData.issue_date}</span>
             </div>
-            <div>
+            <div className="relative z-10">
               <span className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-2">Valid Until</span>
-              <span className="font-medium text-neutral-800 text-base">{certData.expiry}</span>
+              <span className={`font-medium text-base ${certData.status === 'EXPIRED' ? 'text-red-600 line-through' : 'text-neutral-800'}`}>
+                {certData.expiry_date}
+              </span>
             </div>
           </div>
         </div>
 
-        <div className="mt-auto pt-10 border-t border-neutral-200 flex justify-between items-end">
+        <div className="mt-auto pt-10 border-t border-neutral-200 flex justify-between items-end relative z-10">
           <div>
             <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-3">Scan to Verify Live Status</p>
             <div className="p-2 bg-white border border-neutral-200 rounded-lg inline-block shadow-sm">

@@ -1,28 +1,12 @@
 import { useState, useEffect } from "react";
 import { Plus, Trash2, Edit, ShieldCheck, AlertTriangle, XCircle, Search, RefreshCw, Check } from "lucide-react";
-
-// Standard mock data used as fallback
-const DEFAULT_CERTS = {
-  "VISO-TR-2026-001245": { nationalId: "1023456789", status: "VALID", source: "Arabic", target: "English", issue: "16 Aug 2026", expiry: "16 Aug 2027", name: "Corporate Legal Contract" },
-  "VISO-TR-2025-009812": { nationalId: "1100223344", status: "EXPIRED", source: "French", target: "Arabic", issue: "10 Jan 2025", expiry: "10 Jan 2026", name: "Medical Device Manual" },
-  "VISO-TR-2026-000404": { nationalId: "1055566677", status: "REVOKED", source: "English", target: "Arabic", issue: "01 Dec 2025", expiry: "01 Dec 2026", name: "Financial Audit Report" },
-};
-
-interface Certificate {
-  id: string;
-  nationalId: string;
-  name: string;
-  source: string;
-  target: string;
-  issue: string;
-  expiry: string;
-  status: "VALID" | "EXPIRED" | "REVOKED";
-}
+import { certsApi, TranslationCertificate } from "../lib/certsApi";
 
 export function CertificatesDashboard() {
-  const [certs, setCerts] = useState<Record<string, Certificate>>({});
+  const [certs, setCerts] = useState<TranslationCertificate[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<"ALL" | "VALID" | "EXPIRED" | "REVOKED">("ALL");
+  const [isLoading, setIsLoading] = useState(true);
   
   // Form state
   const [showForm, setShowForm] = useState(false);
@@ -37,19 +21,18 @@ export function CertificatesDashboard() {
   const [formExpiry, setFormExpiry] = useState("");
   const [formStatus, setFormStatus] = useState<"VALID" | "EXPIRED" | "REVOKED">("VALID");
   const [formError, setFormError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Load certificates
-  const loadCerts = () => {
-    const stored = localStorage.getItem("viso_certificates");
-    if (!stored) {
-      localStorage.setItem("viso_certificates", JSON.stringify(DEFAULT_CERTS));
-      setCerts(DEFAULT_CERTS as any);
-    } else {
-      try {
-        setCerts(JSON.parse(stored));
-      } catch (e) {
-        setCerts(DEFAULT_CERTS as any);
-      }
+  const loadCerts = async () => {
+    setIsLoading(true);
+    try {
+      const data = await certsApi.fetchCertificates();
+      setCerts(data);
+    } catch (err) {
+      console.error("Failed to load certificates", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -57,16 +40,11 @@ export function CertificatesDashboard() {
     loadCerts();
   }, []);
 
-  const saveCerts = (newCerts: Record<string, Certificate>) => {
-    localStorage.setItem("viso_certificates", JSON.stringify(newCerts));
-    setCerts(newCerts);
-  };
-
   // Helper to open form for creating
   const openCreateForm = () => {
     setFormError("");
     setEditingId(null);
-    setFormId(`VISO-TR-2026-00${Math.floor(1000 + Math.random() * 9000)}`); // Prefill clean random ID
+    setFormId(`VISO-TR-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`); // Prefill clean random ID
     setFormNationalId("");
     setFormName("");
     setFormSource("Arabic");
@@ -85,22 +63,22 @@ export function CertificatesDashboard() {
   };
 
   // Helper to open form for editing
-  const openEditForm = (id: string, cert: Certificate) => {
+  const openEditForm = (cert: TranslationCertificate) => {
     setFormError("");
-    setEditingId(id);
-    setFormId(id);
-    setFormNationalId(cert.nationalId);
-    setFormName(cert.name);
-    setFormSource(cert.source);
-    setFormTarget(cert.target);
-    setFormIssue(cert.issue);
-    setFormExpiry(cert.expiry);
+    setEditingId(cert.id);
+    setFormId(cert.id);
+    setFormNationalId(cert.national_id);
+    setFormName(cert.project_name);
+    setFormSource(cert.source_lang);
+    setFormTarget(cert.target_lang);
+    setFormIssue(cert.issue_date);
+    setFormExpiry(cert.expiry_date);
     setFormStatus(cert.status);
     setShowForm(true);
   };
 
   // Handle Form Submit
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError("");
 
@@ -121,58 +99,74 @@ export function CertificatesDashboard() {
     }
 
     // Check duplicate if creating
-    if (!editingId && certs[upperId]) {
+    if (!editingId && certs.some(c => c.id === upperId)) {
       setFormError(`A certificate with ID "${upperId}" already exists.`);
       return;
     }
 
-    const updatedCerts = { ...certs };
-    updatedCerts[upperId] = {
-      id: upperId,
-      nationalId: formNationalId.trim(),
-      name: formName.trim(),
-      source: formSource,
-      target: formTarget,
-      issue: formIssue,
-      expiry: formExpiry,
-      status: formStatus,
-    };
+    setIsSubmitting(true);
+    try {
+      await certsApi.upsertCertificate({
+        id: upperId,
+        national_id: formNationalId.trim(),
+        project_name: formName.trim(),
+        source_lang: formSource,
+        target_lang: formTarget,
+        issue_date: formIssue,
+        expiry_date: formExpiry,
+        status: formStatus,
+      });
 
-    saveCerts(updatedCerts);
-    setShowForm(false);
-    setEditingId(null);
+      await loadCerts(); // Refresh list
+      setShowForm(false);
+      setEditingId(null);
+    } catch (err: any) {
+      setFormError(err.message || "Failed to save certificate.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Handle Delete
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm(`Are you sure you want to delete certificate ${id}?`)) {
-      const updatedCerts = { ...certs };
-      delete updatedCerts[id];
-      saveCerts(updatedCerts);
+      try {
+        await certsApi.deleteCertificate(id);
+        setCerts(certs.filter(c => c.id !== id));
+      } catch (err) {
+        alert("Failed to delete certificate.");
+      }
     }
   };
 
   // Quick Toggle Status
-  const toggleStatus = (id: string, currentStatus: "VALID" | "EXPIRED" | "REVOKED") => {
+  const toggleStatus = async (cert: TranslationCertificate) => {
     const nextStatusMap: Record<string, "VALID" | "EXPIRED" | "REVOKED"> = {
       VALID: "EXPIRED",
       EXPIRED: "REVOKED",
       REVOKED: "VALID"
     };
-    const updatedCerts = { ...certs };
-    updatedCerts[id] = {
-      ...updatedCerts[id],
-      status: nextStatusMap[currentStatus]
-    };
-    saveCerts(updatedCerts);
+    
+    const nextStatus = nextStatusMap[cert.status];
+    
+    // Optimistic update
+    setCerts(certs.map(c => c.id === cert.id ? { ...c, status: nextStatus } : c));
+    
+    try {
+      await certsApi.upsertCertificate({ ...cert, status: nextStatus });
+    } catch (err) {
+      // Revert on error
+      setCerts(certs.map(c => c.id === cert.id ? cert : c));
+      alert("Failed to update status.");
+    }
   };
 
   // Filtered Certificates list
-  const filteredCerts = Object.entries(certs).filter(([id, data]) => {
+  const filteredCerts = certs.filter((data) => {
     const matchesSearch = 
-      id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      data.nationalId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      data.name.toLowerCase().includes(searchTerm.toLowerCase());
+      data.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      data.national_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      data.project_name.toLowerCase().includes(searchTerm.toLowerCase());
       
     const matchesStatus = statusFilter === "ALL" || data.status === statusFilter;
     
@@ -213,12 +207,21 @@ export function CertificatesDashboard() {
           <h2 className="text-xl font-bold text-foreground">Translation Certificates</h2>
           <p className="text-xs text-foreground/50 mt-1">Manage, issue, update, and revoke official VISO translation certificates synced with the live Certipedia database.</p>
         </div>
-        <button
-          onClick={openCreateForm}
-          className="bg-primary hover:bg-primary/95 text-white flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold tracking-wider uppercase shadow-md transition-all shrink-0 cursor-pointer"
-        >
-          <Plus className="w-4 h-4" /> Issue Certificate
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={loadCerts}
+            className="p-2.5 rounded-lg border border-foreground/10 text-foreground/70 hover:bg-foreground/5 transition-colors cursor-pointer"
+            title="Refresh database"
+          >
+            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          </button>
+          <button
+            onClick={openCreateForm}
+            className="bg-primary hover:bg-primary/95 text-white flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold tracking-wider uppercase shadow-md transition-all shrink-0 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" /> Issue Certificate
+          </button>
+        </div>
       </div>
 
       {/* Main Filter & Table Card */}
@@ -254,91 +257,97 @@ export function CertificatesDashboard() {
         </div>
 
         {/* Table View */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs whitespace-nowrap">
-            <thead className="bg-foreground/[0.02] text-foreground/60 font-bold uppercase tracking-wider border-b border-foreground/5">
-              <tr>
-                <th className="px-6 py-4">Certificate ID</th>
-                <th className="px-6 py-4">National ID</th>
-                <th className="px-6 py-4">Document Details</th>
-                <th className="px-6 py-4">Languages</th>
-                <th className="px-6 py-4">Timeline</th>
-                <th className="px-6 py-4 text-center">Status</th>
-                <th className="px-6 py-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-foreground/5">
-              {filteredCerts.length === 0 ? (
+        <div className="overflow-x-auto min-h-[300px]">
+          {isLoading ? (
+            <div className="flex items-center justify-center h-[300px] text-foreground/40 font-medium">
+              <RefreshCw className="w-6 h-6 animate-spin mr-2" /> Loading certificates...
+            </div>
+          ) : (
+            <table className="w-full text-left text-xs whitespace-nowrap">
+              <thead className="bg-foreground/[0.02] text-foreground/60 font-bold uppercase tracking-wider border-b border-foreground/5">
                 <tr>
-                  <td colSpan={7} className="text-center py-12 text-foreground/40 font-medium">
-                    No certificate records found matching the criteria.
-                  </td>
+                  <th className="px-6 py-4">Certificate ID</th>
+                  <th className="px-6 py-4">National ID</th>
+                  <th className="px-6 py-4">Document Details</th>
+                  <th className="px-6 py-4">Languages</th>
+                  <th className="px-6 py-4">Timeline</th>
+                  <th className="px-6 py-4 text-center">Status</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
-              ) : (
-                filteredCerts.map(([id, cert]) => (
-                  <tr key={id} className="hover:bg-foreground/[0.01] transition-colors group">
-                    <td className="px-6 py-4">
-                      <span className="font-mono font-bold text-foreground">{id}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="font-mono text-foreground/80">{cert.nationalId}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="font-bold text-foreground text-sm max-w-xs truncate">{cert.name}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-1.5 font-medium text-foreground/85">
-                        <span>{cert.source}</span>
-                        <span className="text-foreground/40">➔</span>
-                        <span>{cert.target}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-foreground/60">
-                      <div>Issued: <span className="font-semibold text-foreground/80">{cert.issue}</span></div>
-                      <div className="mt-0.5">Expires: <span className="font-semibold text-foreground/80">{cert.expiry}</span></div>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <button
-                        onClick={() => toggleStatus(id, cert.status)}
-                        title="Click to cycle status"
-                        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full border text-[10px] font-bold uppercase cursor-pointer hover:scale-105 active:scale-95 transition-all ${getStatusStyle(cert.status)}`}
-                      >
-                        {getStatusIcon(cert.status)}
-                        {cert.status}
-                      </button>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex justify-end gap-2">
-                        <a
-                          href={`/certificate/${id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-3 py-1.5 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 transition-colors font-semibold shadow-sm hover:shadow"
-                          title="View PDF Document"
-                        >
-                          View PDF
-                        </a>
-                        <button
-                          onClick={() => openEditForm(id, cert)}
-                          className="p-2 rounded bg-primary/10 hover:bg-primary text-primary hover:text-white transition-colors cursor-pointer"
-                          title="Edit Record"
-                        >
-                          <Edit className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(id)}
-                          className="p-2 rounded bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white transition-colors cursor-pointer"
-                          title="Delete Record"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
+              </thead>
+              <tbody className="divide-y divide-foreground/5">
+                {filteredCerts.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="text-center py-12 text-foreground/40 font-medium">
+                      No certificate records found matching the criteria.
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  filteredCerts.map((cert) => (
+                    <tr key={cert.id} className="hover:bg-foreground/[0.01] transition-colors group">
+                      <td className="px-6 py-4">
+                        <span className="font-mono font-bold text-foreground">{cert.id}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-mono text-foreground/80">{cert.national_id}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="font-bold text-foreground text-sm max-w-xs truncate">{cert.project_name}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-1.5 font-medium text-foreground/85">
+                          <span>{cert.source_lang}</span>
+                          <span className="text-foreground/40">➔</span>
+                          <span>{cert.target_lang}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-foreground/60">
+                        <div>Issued: <span className="font-semibold text-foreground/80">{cert.issue_date}</span></div>
+                        <div className="mt-0.5">Expires: <span className="font-semibold text-foreground/80">{cert.expiry_date}</span></div>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <button
+                          onClick={() => toggleStatus(cert)}
+                          title="Click to cycle status"
+                          className={`inline-flex items-center gap-1 px-3 py-1 rounded-full border text-[10px] font-bold uppercase cursor-pointer hover:scale-105 active:scale-95 transition-all ${getStatusStyle(cert.status)}`}
+                        >
+                          {getStatusIcon(cert.status)}
+                          {cert.status}
+                        </button>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex justify-end gap-2">
+                          <a
+                            href={`/certificate/${cert.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-3 py-1.5 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 transition-colors font-semibold shadow-sm hover:shadow"
+                            title="View PDF Document"
+                          >
+                            View PDF
+                          </a>
+                          <button
+                            onClick={() => openEditForm(cert)}
+                            className="p-2 rounded bg-primary/10 hover:bg-primary text-primary hover:text-white transition-colors cursor-pointer"
+                            title="Edit Record"
+                          >
+                            <Edit className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(cert.id)}
+                            className="p-2 rounded bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white transition-colors cursor-pointer"
+                            title="Delete Record"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
 
@@ -372,7 +381,16 @@ export function CertificatesDashboard() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2">Saudi National ID</label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60">Saudi National ID / Order No.</label>
+                  <button
+                    type="button"
+                    onClick={() => setFormNationalId(`1${Math.floor(100000000 + Math.random() * 900000000)}`)}
+                    className="text-[9px] font-bold uppercase tracking-wider text-primary hover:text-primary/80 transition-colors cursor-pointer"
+                  >
+                    Auto-Generate
+                  </button>
+                </div>
                 <input
                   type="text"
                   value={formNationalId}
@@ -467,16 +485,24 @@ export function CertificatesDashboard() {
               <div className="pt-6 flex justify-end gap-3 border-t border-foreground/5 mt-8 font-sans">
                 <button
                   type="button"
+                  disabled={isSubmitting}
                   onClick={() => setShowForm(false)}
-                  className="px-4 py-2.5 rounded-lg border border-foreground/10 text-foreground/75 hover:bg-foreground/5 hover:text-foreground text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                  className="px-4 py-2.5 rounded-lg border border-foreground/10 text-foreground/75 hover:bg-foreground/5 hover:text-foreground text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-lg bg-primary hover:bg-primary/95 text-white text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer shadow-md"
+                  disabled={isSubmitting}
+                  className="px-6 py-2.5 rounded-lg bg-primary hover:bg-primary/95 text-white text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer shadow-md flex items-center gap-2 disabled:opacity-70"
                 >
-                  {editingId ? "Save Changes" : "Issue Certificate"}
+                  {isSubmitting ? (
+                    <><RefreshCw className="w-4 h-4 animate-spin" /> Saving...</>
+                  ) : editingId ? (
+                    "Save Changes"
+                  ) : (
+                    "Issue Certificate"
+                  )}
                 </button>
               </div>
             </form>

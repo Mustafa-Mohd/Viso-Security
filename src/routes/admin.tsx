@@ -1210,7 +1210,7 @@ function AdminPage() {
     { id: 'gallery', label: 'Gallery', icon: ImageIcon, roles: ['super_admin', 'admin'] },
     { id: 'inquiries', label: 'Inquiries', icon: MessageSquare, roles: ['super_admin', 'admin'], badge: inquiries.filter((inq) => inq.status === 'unread').length, badgeColor: 'bg-red-500 text-white' },
     { id: 'job_apps', label: 'Job Applications', icon: Briefcase, roles: ['super_admin', 'hr', 'admin'], badge: jobApps.filter((app) => app.status === 'New').length, badgeColor: 'bg-primary text-primary-foreground' },
-    { id: 'dms', label: 'DMS Platform', icon: FileText, roles: ['super_admin', 'document_controller'] },
+    { id: 'dms', label: 'DMS Platform', icon: FileText, roles: ['super_admin', 'admin', 'manager', 'reviewer', 'employee', 'viewer', 'document_controller'] },
     { id: 'hr', label: 'HR / ESS Portal', icon: Users, roles: ['super_admin', 'hr', 'employee'] },
     { id: 'users', label: 'Users & Roles', icon: Settings, roles: ['super_admin'] },
   ];
