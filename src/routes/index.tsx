@@ -91,7 +91,7 @@ function HomePage() {
                   className="text-center mb-16"
                 >
                   <h2 className="text-4xl md:text-5xl font-light mb-4 text-foreground">{cmsData.core_values.title}</h2>
-                  <p className="text-lg text-foreground/60">{cmsData.core_values.subtitle}</p>
+                  <p className="text-lg text-black">{cmsData.core_values.subtitle}</p>
                 </motion.div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -122,7 +122,7 @@ function HomePage() {
                 className="text-center mb-16"
               >
                 <h2 className="text-4xl md:text-5xl font-light mb-4 text-foreground">{cmsData.areas?.title || t("areas.title")}</h2>
-                <p className="text-lg text-foreground/60 max-w-2xl mx-auto">{cmsData.areas?.subtitle || t("areas.subtitle")}</p>
+                <p className="text-lg text-black max-w-2xl mx-auto">{cmsData.areas?.subtitle || t("areas.subtitle")}</p>
               </motion.div>
 
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -401,7 +401,7 @@ export function HeroSection({ data }: { data?: any }) {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.85, delay: 0.55, ease: heroEase }}
-            className="font-sans text-lg md:text-xl font-light text-foreground/65 mt-7 md:mt-8 max-w-xl leading-snug"
+            className="font-sans text-lg md:text-xl text-black mt-7 md:mt-8 max-w-xl leading-snug"
           >
             {subtitle}
           </motion.h3>
@@ -410,7 +410,7 @@ export function HeroSection({ data }: { data?: any }) {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.85, delay: 0.65, ease: heroEase }}
-            className="font-sans text-sm md:text-base text-foreground/45 mt-5 max-w-lg leading-relaxed whitespace-pre-wrap text-justify"
+            className="font-sans text-sm md:text-base text-black mt-5 max-w-lg leading-relaxed whitespace-pre-wrap"
           >
             {desc}
           </motion.p>
@@ -531,7 +531,7 @@ function ServicesSection({ data }: { data?: any }) {
               <h2 className="font-display text-5xl md:text-7xl leading-tight text-foreground tracking-tight">
                 {title1} <br /><span className="text-primary italic">{title2}</span>
               </h2>
-              <p className="font-sans mt-8 text-lg text-foreground/60 max-w-md leading-relaxed text-justify">
+              <p className="font-sans mt-8 text-lg text-black max-w-md leading-relaxed">
                 {desc}
               </p>
             </motion.div>
@@ -549,7 +549,7 @@ function ServicesSection({ data }: { data?: any }) {
                 <div className="font-mono text-xs text-primary pt-2 group-hover:text-gold transition-colors duration-400">{srv.num} //</div>
                 <div>
                   <h3 className="font-display text-3xl text-foreground group-hover:text-primary transition-colors duration-400">{srv.title}</h3>
-                  <p className="font-sans text-sm text-foreground/50 mt-3 max-w-sm">{srv.desc}</p>
+                  <p className="font-sans text-sm text-black mt-3 max-w-sm">{srv.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -601,7 +601,7 @@ function FrameworkSection({ data }: { data?: any }) {
 
         <motion.p 
           initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.2 }}
-          className="font-sans text-lg text-foreground/60 max-w-3xl mx-auto mt-8 leading-relaxed mb-16 whitespace-pre-wrap text-justify"
+          className="font-sans text-lg text-black max-w-3xl mx-auto mt-8 leading-relaxed mb-16 whitespace-pre-wrap"
         >
           {desc}
         </motion.p>
@@ -629,7 +629,7 @@ function FrameworkSection({ data }: { data?: any }) {
                     {t("security.stage")} {stage.num}
                   </div>
                   <h3 className="font-display text-2xl leading-snug mb-3 text-foreground group-hover:text-primary transition-colors duration-300">{stage.title}</h3>
-                  <p className="font-sans text-sm text-foreground/60 mb-8 max-w-[90%]">{stage.subtitle}</p>
+                  <p className="font-sans text-sm text-black mb-8 max-w-[90%]">{stage.subtitle}</p>
                   
                   <div className="mt-auto pt-8 border-t border-foreground/5 group-hover:border-gold/20 transition-colors duration-500">
                     <Link to="/security" className="inline-flex items-center gap-2 text-xs font-bold tracking-widest text-primary group-hover:text-gold uppercase transition-colors">
@@ -949,7 +949,7 @@ function CTASection({ data }: { data?: any }) {
           <h2 className="font-display text-5xl md:text-7xl text-foreground leading-tight">
             {title1} <br /><span className="text-primary italic">{title2}</span>
           </h2>
-          <p className="font-sans text-lg text-foreground/60 mt-6 max-w-md mb-8 whitespace-pre-wrap text-justify">
+          <p className="font-sans text-lg text-black mt-6 max-w-md mb-8 whitespace-pre-wrap">
             {desc}
           </p>
           <Link to="/others" className="inline-flex rounded-sm bg-primary px-10 py-5 font-sans text-sm font-bold tracking-[0.2em] text-white transition-all duration-400 hover:bg-gold hover:scale-[1.03] shadow-xl uppercase">
@@ -1127,7 +1127,7 @@ function ValueCard({ title, desc, points, imageUrl, delay }: { title: string, de
           <img src={imageUrl} alt={title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
         </div>
         <h3 className="font-display text-2xl mb-4 text-foreground">{title}</h3>
-        <p className="font-sans text-sm text-foreground/60 leading-relaxed text-justify">
+        <p className="font-sans text-sm text-black leading-relaxed">
           {desc}
         </p>
       </div>
@@ -1200,7 +1200,7 @@ function AreaCard({ title, desc, svg, imageUrl, delay }: { title: string, desc: 
         {imageUrl ? <img src={imageUrl} alt={title} loading="lazy" decoding="async" className="w-full h-full object-contain" /> : svg}
       </div>
       <h3 className="font-display font-semibold text-lg tracking-wide mb-3 text-foreground">{title}</h3>
-      <p className="font-sans text-sm text-foreground/60 leading-relaxed text-justify">
+      <p className="font-sans text-sm text-black leading-relaxed">
         {desc}
       </p>
     </motion.div>
@@ -1389,7 +1389,7 @@ function About({ data }: { data?: any }) {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="mt-16 text-center text-xs text-foreground/35 font-light tracking-wide"
+          className="mt-16 text-center text-xs text-black tracking-wide"
         >
           {t("about.stats.established")} 2020 · {t("about.stats.offices")}: 5 ·
           Riyadh · Khobar · Jubail · Jeddah · Yanbu
@@ -1478,7 +1478,7 @@ function ServiceLifecycle({ data }: { data?: any }) {
                     <div className="h-px w-12 bg-border"></div>
                   </div>
                   <h3 className="font-display text-2xl md:text-3xl mb-4">{stage.title}</h3>
-                  <p className="text-foreground/70 mb-8 leading-relaxed">
+                  <p className="text-black mb-8 leading-relaxed">
                     {stage.desc}
                   </p>
                   
@@ -1486,7 +1486,7 @@ function ServiceLifecycle({ data }: { data?: any }) {
                     {(typeof stage.points === 'string' ? stage.points.split('\n') : stage.points).map((point: string, idx: number) => (
                       <li key={idx} className="flex items-start gap-3">
                         <div className={`mt-1.5 w-1.5 h-1.5 rounded-full ${stage.bgAccent} flex-shrink-0`} />
-                        <span className="text-sm text-foreground/80">{point}</span>
+                        <span className="text-sm text-black">{point}</span>
                       </li>
                     ))}
                   </ul>

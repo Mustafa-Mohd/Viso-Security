@@ -299,7 +299,7 @@ function ServiceCard({
           <h4 className="font-display text-xl tracking-tight mb-2 text-foreground group-hover:text-primary transition-colors duration-300">
             {service.title}
           </h4>
-          <p className="text-sm font-light leading-relaxed text-foreground/60 text-justify">
+          <p className="text-sm leading-relaxed text-black">
             {service.desc}
           </p>
         </div>
@@ -335,7 +335,7 @@ function ProfileJourney({ items }: { items: ProfileItem[] }) {
               {item.num}
             </div>
             <h4 className="font-display text-lg tracking-tight mb-2">{item.title}</h4>
-            <p className="text-sm text-foreground/50 font-light leading-relaxed">
+            <p className="text-sm text-black leading-relaxed">
               {item.desc}
             </p>
           </motion.div>
@@ -431,7 +431,7 @@ export function AboutInteractive({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.16, ease }}
-            className="mt-5 text-sm md:text-base text-foreground/50 leading-relaxed font-light max-w-md"
+            className="mt-5 text-sm md:text-base text-black leading-relaxed max-w-md"
           >
             {subtitle}
           </motion.p>
@@ -447,7 +447,7 @@ export function AboutInteractive({
               Who We Are
             </p>
             <h3 className="font-display text-xl tracking-tight mb-2">{whoWeAreTitle}</h3>
-            <p className="text-sm text-foreground/55 font-light leading-relaxed text-justify">
+            <p className="text-sm text-black leading-relaxed">
               {whoWeAreDesc}
             </p>
           </motion.div>
@@ -483,12 +483,12 @@ export function AboutInteractive({
             <h3 className="font-display text-2xl md:text-3xl tracking-tight">
               Interactive service map
             </h3>
-            <p className="mt-3 text-sm md:text-base text-foreground/55 font-light leading-relaxed">
+            <p className="mt-3 text-sm md:text-base text-black leading-relaxed">
               Four core VISO offerings — hover any panel to explore how consulting,
               translation, digital access, and SAIS alignment work together.
             </p>
           </div>
-          <p className="hidden md:block text-xs text-foreground/35 font-light max-w-[180px] text-right">
+          <p className="hidden md:block text-xs text-black max-w-[180px] text-right">
             Hover to explore — panels respond in 3D space
           </p>
         </div>

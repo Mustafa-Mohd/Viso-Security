@@ -66,7 +66,7 @@ export function LocationsSection({ data }: { data?: any }) {
             <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight uppercase leading-[0.95]">
               {title}
             </h2>
-            <p className="mt-2 text-sm md:text-base text-foreground/50 font-light max-w-lg">
+            <p className="mt-2 text-sm md:text-base text-black max-w-lg">
               {subtitle}
             </p>
           </motion.div>
@@ -137,7 +137,7 @@ export function LocationsSection({ data }: { data?: any }) {
                 <p className="font-display text-base tracking-tight">
                   {t(`locations.cities.${active.id}.name`, active.name)}
                 </p>
-                <p className="text-xs text-foreground/50 font-light mt-0.5 leading-relaxed">
+                <p className="text-xs text-black mt-0.5 leading-relaxed">
                   {t(`locations.blurbs.${active.id}`, active.blurb)}
                 </p>
               </motion.div>
