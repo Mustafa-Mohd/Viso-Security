@@ -640,8 +640,9 @@ function AdminPage() {
         if (storedSession.role === 'super_admin' || storedSession.role === 'hr') fetchJobApps();
 
         // Default tab based on role if they re-open the page
-        if (storedSession.role === 'document_controller' && !["dms"].includes(activeTab)) setActiveTab("dms");
-        else if ((storedSession.role === 'employee' || storedSession.role === 'hr') && !["hr", "job_apps"].includes(activeTab)) setActiveTab("hr");
+        const dmsRoles = ['document_controller', 'manager', 'reviewer', 'viewer'];
+        if (dmsRoles.includes(storedSession.role) && !["dms"].includes(activeTab)) setActiveTab("dms");
+        else if ((storedSession.role === 'employee' || storedSession.role === 'hr') && !["hr", "job_apps", "dms"].includes(activeTab)) setActiveTab("hr");
       } catch (e) {
         localStorage.removeItem('viso_admin_session');
       }
@@ -675,7 +676,7 @@ function AdminPage() {
        if (data.role === 'super_admin') fetchUsers();
        if (data.role === 'super_admin' || data.role === 'hr') fetchJobApps();
        
-       if (data.role === 'document_controller') setActiveTab("dms");
+       if (['document_controller', 'manager', 'reviewer', 'viewer'].includes(data.role)) setActiveTab("dms");
        else if (data.role === 'employee' || data.role === 'hr') setActiveTab("hr");
        else setActiveTab("homepage");
     }
@@ -2415,9 +2416,12 @@ function AdminPage() {
                   <select value={newUserRole} onChange={e => setNewUserRole(e.target.value)} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none">
                     <option value="super_admin">Super Admin (Full Admin Access)</option>
                     <option value="admin">Admin (CMS & Inquiries Only)</option>
-                    <option value="document_controller">Document Controller (DMS Portal)</option>
+                    <option value="document_controller">Document Controller (EDMS)</option>
+                    <option value="manager">Manager (EDMS approvals)</option>
+                    <option value="reviewer">Reviewer (EDMS review)</option>
+                    <option value="viewer">Viewer (EDMS read-only)</option>
                     <option value="hr">HR (ESS Portal)</option>
-                    <option value="employee">Employee (ESS Portal)</option>
+                    <option value="employee">Employee (EDMS + ESS)</option>
                   </select>
                 </div>
                 <div className="md:col-span-2 mt-2">
@@ -2528,7 +2532,7 @@ function AdminPage() {
         )}
 
         {/* DMS DASHBOARD */}
-        {activeTab === 'dms' && (session?.role === 'super_admin' || session?.role === 'document_controller') && (
+        {activeTab === 'dms' && ['super_admin', 'admin', 'document_controller', 'manager', 'reviewer', 'employee', 'viewer'].includes(session?.role || '') && (
           <div className="flex-1 flex flex-col p-6 overflow-y-auto">
             <DmsDashboard user={session} />
           </div>

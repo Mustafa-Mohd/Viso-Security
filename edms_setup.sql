@@ -44,6 +44,11 @@ CREATE TABLE IF NOT EXISTS public.edms_documents (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Optional columns for review workflow (safe to re-run)
+ALTER TABLE public.edms_documents ADD COLUMN IF NOT EXISTS assigned_reviewer_id UUID REFERENCES public.portal_users(id) ON DELETE SET NULL;
+ALTER TABLE public.edms_documents ADD COLUMN IF NOT EXISTS assigned_reviewer_name TEXT;
+ALTER TABLE public.edms_documents ADD COLUMN IF NOT EXISTS review_notes TEXT;
+
 -- 4. edms_document_versions table
 CREATE TABLE IF NOT EXISTS public.edms_document_versions (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,

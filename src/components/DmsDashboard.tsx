@@ -1,251 +1,263 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, UploadCloud, X, History, Eye, CheckCircle, XCircle, AlertCircle, Download } from "lucide-react";
-import { edmsApi, EdmsDocument, EdmsDocumentVersion, EdmsAuditLog } from "@/lib/edmsApi";
+import {
+  FileText,
+  UploadCloud,
+  X,
+  History,
+  Download,
+  RefreshCw,
+  Search,
+  UserCircle,
+  Archive,
+  RotateCcw,
+  Pencil,
+  Info,
+} from "lucide-react";
+import { toast } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { edmsApi, EdmsDocument, EdmsDocumentVersion, EdmsAuditLog, PortalUserOption } from "@/lib/edmsApi";
+import {
+  EDMS_CONFIDENTIALITY,
+  EDMS_DEPARTMENTS,
+  EDMS_DOCUMENT_TYPES,
+  EDMS_PROJECTS,
+  EDMS_STATUSES,
+  PENDING_STATUSES,
+  generateDocumentNumber,
+  statusBadgeClass,
+  validateEdmsFile,
+} from "@/lib/edmsConstants";
+import {
+  canApproveDocuments,
+  canArchiveDocument,
+  canAssignReviewer,
+  canEditMetadata,
+  canUploadDocuments,
+  canViewDocument,
+  isDocumentOwner,
+  type EdmsSessionUser,
+} from "@/lib/edmsPermissions";
 
-export function DmsDashboard({ user }: { user: any }) {
-  const [activeTab, setActiveTab] = useState<"dashboard" | "documents" | "pending" | "archived">("dashboard");
+type LibraryTab = "dashboard" | "documents" | "mine" | "pending" | "archived";
+
+export function DmsDashboard({ user }: { user: EdmsSessionUser }) {
+  const [activeTab, setActiveTab] = useState<LibraryTab>("dashboard");
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [selectedDocId, setSelectedDocId] = useState<string | null>(null);
-  
-  // Data State
   const [documents, setDocuments] = useState<EdmsDocument[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // Search & Filter State
   const [searchQuery, setSearchQuery] = useState("");
   const [projectFilter, setProjectFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [typeFilter, setTypeFilter] = useState("All");
 
-  // Permissions based on user.role
-  const role = user?.role || "viewer";
-  const canUpload = ["super_admin", "admin", "manager", "employee", "document_controller"].includes(role);
-  const canApprove = ["super_admin", "admin", "manager", "reviewer"].includes(role);
+  const canUpload = canUploadDocuments(user);
+  const canApprove = canApproveDocuments(user);
+  const showMyDocuments = user.role === "employee" || user.role === "reviewer";
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const docs = await edmsApi.getDocuments();
-      setDocuments(docs);
+      setDocuments(docs.filter((d) => canViewDocument(d, user)));
     } catch (e) {
       console.error(e);
+      toast.error("Could not load documents. Check Supabase connection and run edms_setup.sql.");
     }
     setLoading(false);
-  };
+  }, [user]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
-  const filteredDocuments = documents.filter(doc => {
-    if (activeTab === "archived" && doc.status !== "Archived") return false;
-    if (activeTab === "pending" && !["Under Review", "Pending Approval"].includes(doc.status)) return false;
-    if (activeTab === "documents" && doc.status === "Archived") return false;
+  const filteredDocuments = useMemo(() => {
+    return documents.filter((doc) => {
+      if (activeTab === "archived" && doc.status !== "Archived") return false;
+      if (activeTab === "pending" && !PENDING_STATUSES.includes(doc.status as typeof PENDING_STATUSES[number])) {
+        return false;
+      }
+      if (activeTab === "documents" && doc.status === "Archived") return false;
+      if (activeTab === "mine" && !isDocumentOwner(doc, user)) return false;
 
-    const matchesSearch = doc.document_number.toLowerCase().includes(searchQuery.toLowerCase()) || doc.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesProject = projectFilter === "All" || doc.project === projectFilter;
-    const matchesStatus = statusFilter === "All" || doc.status === statusFilter;
-    return matchesSearch && matchesProject && matchesStatus;
-  });
+      const q = searchQuery.toLowerCase();
+      const matchesSearch =
+        !q ||
+        doc.document_number.toLowerCase().includes(q) ||
+        doc.title.toLowerCase().includes(q) ||
+        (doc.tags || "").toLowerCase().includes(q);
+      const matchesProject = projectFilter === "All" || doc.project === projectFilter;
+      const matchesStatus = statusFilter === "All" || doc.status === statusFilter;
+      const matchesType = typeFilter === "All" || doc.type === typeFilter;
+      return matchesSearch && matchesProject && matchesStatus && matchesType;
+    });
+  }, [documents, activeTab, searchQuery, projectFilter, statusFilter, typeFilter, user]);
+
+  const pendingCount = documents.filter((d) => PENDING_STATUSES.includes(d.status as typeof PENDING_STATUSES[number])).length;
+  const myCount = documents.filter((d) => isDocumentOwner(d, user)).length;
+
+  const roleHint =
+    user.role === "viewer"
+      ? "You can browse approved public documents only."
+      : user.role === "employee"
+        ? "You see your own documents and approved non-confidential records."
+        : user.role === "reviewer"
+          ? "Review documents assigned to you or in the review queue."
+          : "Full document control register access.";
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -30 }}
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       className="w-full relative"
     >
-      <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold uppercase mb-2 tracking-tight">Document Management</h1>
-        <p className="text-foreground/60 max-w-3xl">
-          Centralized electronic document management system (EDMS) for uploading, reviewing, approving, and archiving critical project documents.
-        </p>
-      </div>
+      <Toaster position="top-right" />
 
-      <div className="grid lg:grid-cols-[220px_1fr] gap-8">
-        {/* Left Sidebar */}
-        <div className="space-y-6">
-          <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded p-4 sticky top-6">
-            <div className="space-y-1">
-              {[
-                { id: "dashboard", label: "Dashboard" },
-                { id: "documents", label: "Document Library" },
-                { id: "pending", label: "Pending Review", count: documents.filter(d => ["Under Review", "Pending Approval"].includes(d.status)).length },
-                { id: "archived", label: "Archived" },
-              ].map((tab) => (
-                <button 
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`w-full flex items-center justify-between text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeTab === tab.id ? 'bg-gold/10 text-gold' : 'hover:bg-foreground/5 text-foreground/70'}`}
-                >
-                  {tab.label}
-                  {tab.count !== undefined && tab.count > 0 && (
-                    <span className="bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded-full text-[10px] font-bold">
-                      {tab.count}
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
-            
-            <div className="mt-8 border-t border-foreground/10 pt-6">
-              <h4 className="text-xs font-bold text-foreground/50 uppercase tracking-wider mb-4 px-2">Document Statuses</h4>
-              <div className="space-y-3 px-2">
-                <div className="flex justify-between text-sm"><span className="text-foreground/70">Draft</span><span className="font-mono font-medium">{documents.filter(d=>d.status==='Draft').length}</span></div>
-                <div className="flex justify-between text-sm"><span className="text-foreground/70">Under Review</span><span className="font-mono font-medium">{documents.filter(d=>["Under Review", "Pending Approval"].includes(d.status)).length}</span></div>
-                <div className="flex justify-between text-sm"><span className="text-foreground/70 text-emerald-500">Approved</span><span className="font-mono font-medium text-emerald-500">{documents.filter(d=>d.status==='Approved').length}</span></div>
-              </div>
-            </div>
-          </div>
+      <div className="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-bold uppercase mb-2 tracking-tight">EDMS</h1>
+          <p className="text-foreground/60 max-w-2xl text-sm md:text-base">
+            Electronic document management — register, version, review, approve, and archive project records.
+          </p>
         </div>
-
-        {/* Right Content */}
-        <div className="space-y-8 min-h-[500px]">
-          {loading ? (
-            <div className="flex justify-center py-20 text-foreground/50">Loading documents...</div>
-          ) : (
-            <>
-              {activeTab === "dashboard" && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <div className="bg-white dark:bg-[#1C2541]/50 border border-foreground/10 p-4 rounded">
-                      <div className="text-2xl font-bold text-gold mb-1">{documents.length}</div>
-                      <div className="text-xs font-medium text-foreground/60 uppercase tracking-wider">Total Documents</div>
-                    </div>
-                    <div className="bg-white dark:bg-[#1C2541]/50 border border-foreground/10 p-4 rounded">
-                      <div className="text-2xl font-bold mb-1 text-emerald-500">{documents.filter(d=>d.status==='Approved').length}</div>
-                      <div className="text-xs font-medium text-foreground/60 uppercase tracking-wider">Approved</div>
-                    </div>
-                    <div className="bg-white dark:bg-[#1C2541]/50 border border-foreground/10 p-4 rounded">
-                      <div className="text-2xl font-bold mb-1 text-amber-500">{documents.filter(d=>["Under Review", "Pending Approval"].includes(d.status)).length}</div>
-                      <div className="text-xs font-medium text-foreground/60 uppercase tracking-wider">Pending Action</div>
-                    </div>
-                  </div>
-
-                  {canUpload && (
-                    <div className="bg-white dark:bg-[#1C2541] border-2 border-dashed border-foreground/20 rounded p-8 text-center flex flex-col items-center justify-center">
-                      <div className="w-12 h-12 bg-gold/10 text-gold rounded-full flex items-center justify-center mb-4">
-                        <UploadCloud className="w-6 h-6" />
-                      </div>
-                      <h3 className="text-lg font-bold mb-2">Upload Document</h3>
-                      <p className="text-sm text-foreground/60 max-w-md mx-auto mb-6">
-                        Upload a new document to the register. It will start as a Draft.
-                      </p>
-                      <button onClick={() => setShowUploadModal(true)} className="bg-gold text-background px-6 py-2.5 rounded-lg font-medium hover:bg-gold/90 transition-colors">
-                        New Document Entry
-                      </button>
-                    </div>
-                  )}
-                </motion.div>
-              )}
-
-              {["documents", "pending", "archived"].includes(activeTab) && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-                  <div className="flex justify-between items-center border-b border-foreground/10 pb-4">
-                    <h3 className="text-xl font-bold">
-                      {activeTab === "documents" ? "Document Library" : activeTab === "pending" ? "Pending Reviews" : "Archived Documents"}
-                    </h3>
-                    {canUpload && (
-                      <button onClick={() => setShowUploadModal(true)} className="bg-gold text-background px-4 py-2 rounded-lg font-medium hover:bg-gold/90 transition-colors text-sm">
-                        + Upload Document
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded p-2 flex flex-col md:flex-row gap-2">
-                    <input 
-                      type="text" 
-                      placeholder="Search doc number or title..." 
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="flex-1 bg-background border border-foreground/10 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-gold" 
-                    />
-                    <select value={projectFilter} onChange={e => setProjectFilter(e.target.value)} className="bg-background border border-foreground/10 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-gold">
-                      <option value="All">All projects</option>
-                      {Array.from(new Set(documents.map(d => d.project))).map(p => (
-                        <option key={p} value={p}>{p}</option>
-                      ))}
-                    </select>
-                    {activeTab === "documents" && (
-                      <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="bg-background border border-foreground/10 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-gold">
-                        <option value="All">All statuses</option>
-                        <option value="Approved">Approved</option>
-                        <option value="Draft">Draft</option>
-                        <option value="Under Review">Under Review</option>
-                      </select>
-                    )}
-                  </div>
-
-                  <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded overflow-hidden">
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-left text-sm whitespace-nowrap">
-                        <thead className="bg-foreground/5 text-foreground/60 font-medium">
-                          <tr>
-                            <th className="px-4 py-3">Doc No.</th>
-                            <th className="px-4 py-3">Title</th>
-                            <th className="px-4 py-3">Project</th>
-                            <th className="px-4 py-3">Status</th>
-                            <th className="px-4 py-3">Owner</th>
-                            <th className="px-4 py-3 text-right">Action</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-foreground/5">
-                          {filteredDocuments.length === 0 ? (
-                            <tr>
-                              <td colSpan={6} className="px-4 py-8 text-center text-foreground/50">No documents found.</td>
-                            </tr>
-                          ) : filteredDocuments.map((doc) => (
-                            <tr key={doc.id} className="hover:bg-foreground/5 transition-colors group">
-                              <td className="px-4 py-3 font-mono text-gold">{doc.document_number}</td>
-                              <td className="px-4 py-3 font-medium max-w-[200px] truncate" title={doc.title}>{doc.title}</td>
-                              <td className="px-4 py-3 text-foreground/70">{doc.project}</td>
-                              <td className="px-4 py-3">
-                                <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${
-                                  doc.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-500' :
-                                  ["Under Review", "Pending Approval"].includes(doc.status) ? 'bg-amber-500/10 text-amber-500' :
-                                  doc.status === 'Rejected' ? 'bg-red-500/10 text-red-500' :
-                                  'bg-foreground/10 text-foreground/60'
-                                }`}>
-                                  {doc.status}
-                                </span>
-                              </td>
-                              <td className="px-4 py-3 text-foreground/70">{doc.owner_name}</td>
-                              <td className="px-4 py-3 text-right">
-                                <button onClick={() => setSelectedDocId(doc.id)} className="text-gold hover:underline text-xs font-medium">View Details</button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => fetchData()}
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-foreground/15 text-sm hover:bg-foreground/5"
+          >
+            <RefreshCw size={16} /> Refresh
+          </button>
+          {canUpload && (
+            <button
+              type="button"
+              onClick={() => setShowUploadModal(true)}
+              className="inline-flex items-center gap-2 bg-gold text-background px-4 py-2 rounded-lg text-sm font-medium hover:bg-gold/90"
+            >
+              <UploadCloud size={16} /> New document
+            </button>
           )}
         </div>
       </div>
 
-      {/* Modals */}
+      <div className="mb-6 flex items-start gap-3 rounded-lg border border-gold/20 bg-gold/5 px-4 py-3 text-sm text-foreground/80">
+        <Info className="w-5 h-5 text-gold shrink-0 mt-0.5" />
+        <div>
+          <span className="font-medium capitalize">{user.role?.replace("_", " ")}</span>
+          <span className="text-foreground/50"> — </span>
+          {roleHint}
+        </div>
+      </div>
+
+      <div className="grid lg:grid-cols-[240px_1fr] gap-8">
+        <aside className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded-lg p-3 lg:sticky lg:top-6 h-fit">
+          <nav className="space-y-1">
+            {(
+              [
+                { id: "dashboard" as const, label: "Overview" },
+                { id: "documents" as const, label: "All documents" },
+                ...(showMyDocuments ? [{ id: "mine" as const, label: "My documents", count: myCount }] : []),
+                { id: "pending" as const, label: "In progress", count: pendingCount },
+                { id: "archived" as const, label: "Archive" },
+              ] as { id: LibraryTab; label: string; count?: number }[]
+            ).map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`w-full flex items-center justify-between text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  activeTab === tab.id ? "bg-gold/10 text-gold" : "hover:bg-foreground/5 text-foreground/70"
+                }`}
+              >
+                {tab.label}
+                {tab.count !== undefined && tab.count > 0 && (
+                  <span className="bg-amber-500/15 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded-full text-[10px] font-bold">
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            ))}
+          </nav>
+          <div className="mt-6 pt-4 border-t border-foreground/10 space-y-2 px-1">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-foreground/45">Status summary</p>
+            {EDMS_STATUSES.filter((s) => s !== "Archived").map((status) => {
+              const n = documents.filter((d) => d.status === status).length;
+              if (n === 0) return null;
+              return (
+                <div key={status} className="flex justify-between text-xs">
+                  <span className="text-foreground/60">{status}</span>
+                  <span className="font-mono">{n}</span>
+                </div>
+              );
+            })}
+          </div>
+        </aside>
+
+        <main className="min-h-[480px]">
+          {loading ? (
+            <div className="flex justify-center py-24 text-foreground/50">Loading register…</div>
+          ) : activeTab === "dashboard" ? (
+            <DashboardOverview
+              documents={documents}
+              canUpload={canUpload}
+              onUpload={() => setShowUploadModal(true)}
+            />
+          ) : (
+            <DocumentTable
+              title={
+                activeTab === "documents"
+                  ? "Document register"
+                  : activeTab === "mine"
+                    ? "My documents"
+                    : activeTab === "pending"
+                      ? "Documents in progress"
+                      : "Archived documents"
+              }
+              documents={filteredDocuments}
+              canUpload={canUpload}
+              onUpload={() => setShowUploadModal(true)}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              projectFilter={projectFilter}
+              onProjectFilterChange={setProjectFilter}
+              statusFilter={statusFilter}
+              onStatusFilterChange={setStatusFilter}
+              typeFilter={typeFilter}
+              onTypeFilterChange={setTypeFilter}
+              showStatusFilter={activeTab === "documents"}
+              onOpen={(id) => setSelectedDocId(id)}
+            />
+          )}
+        </main>
+      </div>
+
       <AnimatePresence>
         {showUploadModal && (
-          <UploadModal 
-            onClose={() => setShowUploadModal(false)} 
+          <UploadModal
+            onClose={() => setShowUploadModal(false)}
             onSuccess={() => {
               setShowUploadModal(false);
               fetchData();
               setActiveTab("documents");
+              toast.success("Document saved to the register.");
             }}
             user={user}
           />
         )}
-        
         {selectedDocId && (
           <DocumentDetailModal
             documentId={selectedDocId}
             onClose={() => setSelectedDocId(null)}
-            onUpdate={() => fetchData()}
+            onUpdate={fetchData}
             user={user}
             canApprove={canApprove}
             canUpload={canUpload}
@@ -256,150 +268,433 @@ export function DmsDashboard({ user }: { user: any }) {
   );
 }
 
-// -----------------------------------------------------------------------------
-// Upload Modal Component
-// -----------------------------------------------------------------------------
-function UploadModal({ onClose, onSuccess, user, documentId = null, existingDoc = null }: any) {
+function DashboardOverview({
+  documents,
+  canUpload,
+  onUpload,
+}: {
+  documents: EdmsDocument[];
+  canUpload: boolean;
+  onUpload: () => void;
+}) {
+  const cards = [
+    { label: "Total in register", value: documents.length, accent: "text-gold" },
+    { label: "Approved", value: documents.filter((d) => d.status === "Approved").length, accent: "text-emerald-500" },
+    { label: "In progress", value: documents.filter((d) => PENDING_STATUSES.includes(d.status as typeof PENDING_STATUSES[number])).length, accent: "text-amber-500" },
+    { label: "Archived", value: documents.filter((d) => d.status === "Archived").length, accent: "text-foreground/60" },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {cards.map((c) => (
+          <div key={c.label} className="bg-white dark:bg-[#1C2541]/50 border border-foreground/10 p-4 rounded-lg">
+            <div className={`text-2xl font-bold mb-1 ${c.accent}`}>{c.value}</div>
+            <div className="text-xs font-medium text-foreground/55 uppercase tracking-wide">{c.label}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded-lg p-6">
+        <h3 className="font-bold mb-4 flex items-center gap-2">
+          <FileText size={18} className="text-gold" /> Standard workflow
+        </h3>
+        <ol className="grid md:grid-cols-2 gap-3 text-sm text-foreground/75 list-decimal list-inside space-y-1">
+          <li>Author creates a draft and uploads the controlled file.</li>
+          <li>Author submits; document control may assign a reviewer.</li>
+          <li>Reviewer approves, requests changes, or rejects.</li>
+          <li>Manager gives final approval when required.</li>
+          <li>Approved records are published; controllers archive when obsolete.</li>
+        </ol>
+      </div>
+
+      {canUpload && (
+        <button
+          type="button"
+          onClick={onUpload}
+          className="w-full border-2 border-dashed border-foreground/15 rounded-lg p-8 text-center hover:border-gold/40 transition-colors"
+        >
+          <UploadCloud className="w-10 h-10 text-gold mx-auto mb-3" />
+          <p className="font-semibold">Register a new controlled document</p>
+          <p className="text-sm text-foreground/55 mt-1">Starts in Draft until submitted for review.</p>
+        </button>
+      )}
+    </div>
+  );
+}
+
+function DocumentTable({
+  title,
+  documents,
+  canUpload,
+  onUpload,
+  searchQuery,
+  onSearchChange,
+  projectFilter,
+  onProjectFilterChange,
+  statusFilter,
+  onStatusFilterChange,
+  typeFilter,
+  onTypeFilterChange,
+  showStatusFilter,
+  onOpen,
+}: {
+  title: string;
+  documents: EdmsDocument[];
+  canUpload: boolean;
+  onUpload: () => void;
+  searchQuery: string;
+  onSearchChange: (v: string) => void;
+  projectFilter: string;
+  onProjectFilterChange: (v: string) => void;
+  statusFilter: string;
+  onStatusFilterChange: (v: string) => void;
+  typeFilter: string;
+  onTypeFilterChange: (v: string) => void;
+  showStatusFilter: boolean;
+  onOpen: (id: string) => void;
+}) {
+  const projects = Array.from(new Set(documents.map((d) => d.project)));
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-xl font-bold">{title}</h2>
+        {canUpload && (
+          <button type="button" onClick={onUpload} className="text-sm bg-gold text-background px-3 py-1.5 rounded-lg font-medium">
+            + New
+          </button>
+        )}
+      </div>
+
+      <div className="flex flex-col lg:flex-row gap-2 bg-white dark:bg-[#1C2541] border border-foreground/10 rounded-lg p-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/40" />
+          <input
+            type="search"
+            placeholder="Search number, title, or tags…"
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="w-full pl-9 pr-3 py-2.5 text-sm rounded-lg bg-background border border-foreground/10 focus:border-gold outline-none"
+          />
+        </div>
+        <select
+          value={projectFilter}
+          onChange={(e) => onProjectFilterChange(e.target.value)}
+          className="bg-background border border-foreground/10 rounded-lg px-3 py-2.5 text-sm"
+        >
+          <option value="All">All projects</option>
+          {projects.map((p) => (
+            <option key={p} value={p}>{p}</option>
+          ))}
+        </select>
+        <select
+          value={typeFilter}
+          onChange={(e) => onTypeFilterChange(e.target.value)}
+          className="bg-background border border-foreground/10 rounded-lg px-3 py-2.5 text-sm"
+        >
+          <option value="All">All types</option>
+          {EDMS_DOCUMENT_TYPES.map((t) => (
+            <option key={t} value={t}>{t}</option>
+          ))}
+        </select>
+        {showStatusFilter && (
+          <select
+            value={statusFilter}
+            onChange={(e) => onStatusFilterChange(e.target.value)}
+            className="bg-background border border-foreground/10 rounded-lg px-3 py-2.5 text-sm"
+          >
+            <option value="All">All statuses</option>
+            {EDMS_STATUSES.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+        )}
+      </div>
+
+      <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded-lg overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-foreground/5 text-foreground/60 text-xs uppercase tracking-wide">
+              <tr>
+                <th className="px-4 py-3">Document no.</th>
+                <th className="px-4 py-3">Title</th>
+                <th className="px-4 py-3">Project</th>
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3">Reviewer</th>
+                <th className="px-4 py-3 text-right">Open</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-foreground/5">
+              {documents.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-4 py-12 text-center text-foreground/50">
+                    No documents match your filters.
+                  </td>
+                </tr>
+              ) : (
+                documents.map((doc) => (
+                  <tr key={doc.id} className="hover:bg-foreground/[0.03]">
+                    <td className="px-4 py-3 font-mono text-gold text-xs">{doc.document_number}</td>
+                    <td className="px-4 py-3 font-medium max-w-[200px] truncate" title={doc.title}>{doc.title}</td>
+                    <td className="px-4 py-3 text-foreground/70">{doc.project}</td>
+                    <td className="px-4 py-3">
+                      <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${statusBadgeClass(doc.status)}`}>
+                        {doc.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-foreground/60 text-xs">
+                      {doc.assigned_reviewer_name || "—"}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <button type="button" onClick={() => onOpen(doc.id)} className="text-gold text-xs font-semibold hover:underline">
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function WorkflowSteps({ status }: { status: string }) {
+  const steps = ["Draft", "Submitted", "Under Review", "Approved"];
+  const statusIndex =
+    status === "Changes Requested" ? 2
+    : status === "Pending Approval" ? 3
+    : status === "Rejected" || status === "Archived" ? -1
+    : steps.indexOf(status === "Under Review" ? "Under Review" : status === "Submitted" ? "Submitted" : status);
+
+  return (
+    <div className="flex flex-wrap gap-2 mb-6">
+      {steps.map((step, i) => {
+        const active = statusIndex >= i && statusIndex !== -1;
+        const current = (status === "Pending Approval" && step === "Approved") || step === status;
+        return (
+          <div
+            key={step}
+            className={`text-[10px] uppercase font-bold px-2 py-1 rounded-full border ${
+              current ? "border-gold bg-gold/10 text-gold" : active ? "border-emerald-500/30 text-emerald-600" : "border-foreground/10 text-foreground/40"
+            }`}
+          >
+            {step}
+          </div>
+        );
+      })}
+      {(status === "Rejected" || status === "Archived") && (
+        <span className={`text-[10px] uppercase font-bold px-2 py-1 rounded-full ${statusBadgeClass(status)}`}>{status}</span>
+      )}
+    </div>
+  );
+}
+
+function UploadModal({
+  onClose,
+  onSuccess,
+  user,
+  documentId = null,
+  existingDoc = null,
+}: {
+  onClose: () => void;
+  onSuccess: () => void;
+  user: EdmsSessionUser;
+  documentId?: string | null;
+  existingDoc?: EdmsDocument | null;
+}) {
   const [loading, setLoading] = useState(false);
-  const [docNo, setDocNo] = useState(existingDoc?.document_number || "");
+  const [docNo, setDocNo] = useState(existingDoc?.document_number || generateDocumentNumber("General"));
   const [title, setTitle] = useState(existingDoc?.title || "");
   const [type, setType] = useState(existingDoc?.type || "Report");
-  const [dept, setDept] = useState(existingDoc?.department || "Operations");
+  const [dept, setDept] = useState(existingDoc?.department || user.department || "Operations");
   const [project, setProject] = useState(existingDoc?.project || "General");
   const [desc, setDesc] = useState(existingDoc?.description || "");
   const [tags, setTags] = useState(existingDoc?.tags || "");
   const [confidentiality, setConfidentiality] = useState(existingDoc?.confidentiality || "Internal");
-  
   const [file, setFile] = useState<File | null>(null);
   const [changeDesc, setChangeDesc] = useState("");
-  
   const isNewVersion = !!documentId;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!file) {
-      alert("Please select a file to upload.");
+      toast.error("Please attach a file.");
+      return;
+    }
+    const fileError = validateEdmsFile(file);
+    if (fileError) {
+      toast.error(fileError);
       return;
     }
     setLoading(true);
     try {
       let doc = existingDoc;
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${docNo}_v${isNewVersion ? 'new' : '1'}_${Date.now()}.${fileExt}`;
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${docNo.replace(/[^a-zA-Z0-9-]/g, "_")}_v${Date.now()}.${fileExt}`;
       const filePath = await edmsApi.uploadFile(file, fileName);
-      
+
       if (!isNewVersion) {
         doc = await edmsApi.createDocument({
           document_number: docNo,
-          title, type, department: dept, project, description: desc, tags, confidentiality,
+          title,
+          type,
+          department: dept,
+          project,
+          description: desc,
+          tags,
+          confidentiality,
           owner_name: user?.name || "Unknown",
           owner_id: user?.id,
-          status: "Draft"
+          status: "Draft",
         });
-        await edmsApi.logAudit({ document_id: doc.id, user_name: user?.name, user_id: user?.id, action: "Uploaded", details: `Uploaded initial version: ${file.name}` });
-      } else {
-        await edmsApi.logAudit({ document_id: doc.id, user_name: user?.name, user_id: user?.id, action: "New Version Uploaded", details: `Uploaded new version: ${file.name} - ${changeDesc}` });
+        await edmsApi.logAudit({
+          document_id: doc.id,
+          user_name: user?.name || "Unknown",
+          user_id: user?.id,
+          action: "Registered",
+          details: `Initial upload: ${file.name}`,
+        });
+      } else if (doc) {
+        await edmsApi.logAudit({
+          document_id: doc.id,
+          user_name: user?.name || "Unknown",
+          user_id: user?.id,
+          action: "New version",
+          details: `${file.name} — ${changeDesc}`,
+        });
       }
 
-      // Add Version
-      // We need to fetch current max version number if it's a new version
+      if (!doc) throw new Error("Document missing");
+
       let versionNum = 1;
       if (isNewVersion) {
         const versions = await edmsApi.getDocumentVersions(doc.id);
         versionNum = versions.length > 0 ? versions[0].version_number + 1 : 1;
       }
-      
+
       await edmsApi.addDocumentVersion({
         document_id: doc.id,
         version_number: versionNum,
         file_url: filePath,
         created_by_name: user?.name || "Unknown",
         created_by_id: user?.id,
-        change_description: isNewVersion ? changeDesc : "Initial Upload"
+        change_description: isNewVersion ? changeDesc : "Initial upload",
       });
 
       onSuccess();
-    } catch (err: any) {
-      console.error(err);
-      alert("Upload failed: " + err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Upload failed";
+      toast.error(message);
     }
     setLoading(false);
   };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm overflow-y-auto pt-20">
-      <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }} className="bg-white dark:bg-[#1C2541] border border-foreground/10 p-6 rounded shadow-2xl w-full max-w-2xl relative my-auto">
-        <button onClick={onClose} className="absolute top-4 right-4 text-foreground/50 hover:text-foreground"><X size={20}/></button>
-        <h3 className="text-xl font-bold mb-6">{isNewVersion ? "Upload New Version" : "New Document Entry"}</h3>
-        
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm overflow-y-auto"
+    >
+      <motion.div
+        initial={{ scale: 0.96, y: 12 }}
+        animate={{ scale: 1, y: 0 }}
+        className="bg-white dark:bg-[#1C2541] border border-foreground/10 p-6 rounded-xl shadow-2xl w-full max-w-2xl relative my-8"
+      >
+        <button type="button" onClick={onClose} className="absolute top-4 right-4 text-foreground/50 hover:text-foreground">
+          <X size={20} />
+        </button>
+        <h3 className="text-xl font-bold mb-1">{isNewVersion ? "Upload new revision" : "Register document"}</h3>
+        <p className="text-sm text-foreground/55 mb-6">Controlled files are versioned; metadata can be edited while in Draft.</p>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           {!isNewVersion && (
             <>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-foreground/60 uppercase mb-2">Document Number</label>
-                  <input required value={docNo} onChange={e => setDocNo(e.target.value)} type="text" placeholder="e.g. VISO-PRJ-001" className="w-full bg-background border border-foreground/20 rounded-lg px-3 py-2 text-sm outline-none focus:border-gold" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-foreground/60 uppercase mb-2">Title</label>
-                  <input required value={title} onChange={e => setTitle(e.target.value)} type="text" placeholder="Document Title" className="w-full bg-background border border-foreground/20 rounded-lg px-3 py-2 text-sm outline-none focus:border-gold" />
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Field label="Document number">
+                  <div className="flex gap-2">
+                    <input
+                      required
+                      value={docNo}
+                      onChange={(e) => setDocNo(e.target.value)}
+                      className="field-input flex-1"
+                    />
+                    <button
+                      type="button"
+                      className="text-xs px-2 rounded border border-foreground/15 hover:bg-foreground/5"
+                      onClick={() => setDocNo(generateDocumentNumber(project))}
+                    >
+                      Auto
+                    </button>
+                  </div>
+                </Field>
+                <Field label="Title">
+                  <input required value={title} onChange={(e) => setTitle(e.target.value)} className="field-input" />
+                </Field>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-foreground/60 uppercase mb-2">Project</label>
-                  <input required value={project} onChange={e => setProject(e.target.value)} type="text" className="w-full bg-background border border-foreground/20 rounded-lg px-3 py-2 text-sm outline-none focus:border-gold" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-foreground/60 uppercase mb-2">Department</label>
-                  <input required value={dept} onChange={e => setDept(e.target.value)} type="text" className="w-full bg-background border border-foreground/20 rounded-lg px-3 py-2 text-sm outline-none focus:border-gold" />
-                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-foreground/60 uppercase mb-2">Type</label>
-                  <select value={type} onChange={e => setType(e.target.value)} className="w-full bg-background border border-foreground/20 rounded-lg px-3 py-2 text-sm outline-none focus:border-gold">
-                    <option>Report</option><option>Drawings</option><option>Specifications</option><option>Contract</option><option>Other</option>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Field label="Project">
+                  <select value={project} onChange={(e) => setProject(e.target.value)} className="field-input">
+                    {EDMS_PROJECTS.map((p) => (
+                      <option key={p} value={p}>{p}</option>
+                    ))}
                   </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-foreground/60 uppercase mb-2">Confidentiality</label>
-                  <select value={confidentiality} onChange={e => setConfidentiality(e.target.value)} className="w-full bg-background border border-foreground/20 rounded-lg px-3 py-2 text-sm outline-none focus:border-gold">
-                    <option>Public</option><option>Internal</option><option>Confidential</option>
+                </Field>
+                <Field label="Department">
+                  <select value={dept} onChange={(e) => setDept(e.target.value)} className="field-input">
+                    {EDMS_DEPARTMENTS.map((d) => (
+                      <option key={d} value={d}>{d}</option>
+                    ))}
                   </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-foreground/60 uppercase mb-2">Tags</label>
-                  <input value={tags} onChange={e => setTags(e.target.value)} type="text" placeholder="e.g. urgent, draft" className="w-full bg-background border border-foreground/20 rounded-lg px-3 py-2 text-sm outline-none focus:border-gold" />
-                </div>
+                </Field>
               </div>
-              <div>
-                <label className="block text-xs font-bold text-foreground/60 uppercase mb-2">Description</label>
-                <textarea value={desc} onChange={e => setDesc(e.target.value)} rows={2} className="w-full bg-background border border-foreground/20 rounded-lg px-3 py-2 text-sm outline-none focus:border-gold" />
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <Field label="Type">
+                  <select value={type} onChange={(e) => setType(e.target.value)} className="field-input">
+                    {EDMS_DOCUMENT_TYPES.map((t) => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
+                </Field>
+                <Field label="Confidentiality">
+                  <select value={confidentiality} onChange={(e) => setConfidentiality(e.target.value)} className="field-input">
+                    {EDMS_CONFIDENTIALITY.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </Field>
+                <Field label="Tags">
+                  <input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="comma separated" className="field-input" />
+                </Field>
               </div>
+              <Field label="Description">
+                <textarea value={desc} onChange={(e) => setDesc(e.target.value)} rows={2} className="field-input" />
+              </Field>
             </>
           )}
 
           {isNewVersion && (
-            <div>
-              <label className="block text-xs font-bold text-foreground/60 uppercase mb-2">Change Description</label>
-              <textarea required value={changeDesc} onChange={e => setChangeDesc(e.target.value)} rows={2} placeholder="What changed in this version?" className="w-full bg-background border border-foreground/20 rounded-lg px-3 py-2 text-sm outline-none focus:border-gold" />
-            </div>
+            <Field label="Change description (required)">
+              <textarea required value={changeDesc} onChange={(e) => setChangeDesc(e.target.value)} rows={2} className="field-input" />
+            </Field>
           )}
 
-          <div className="border-2 border-dashed border-foreground/20 rounded p-6 text-center hover:border-gold/50 transition-colors">
-            <input type="file" onChange={e => setFile(e.target.files?.[0] || null)} className="hidden" id="file-upload" />
-            <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center">
-              <UploadCloud className="w-8 h-8 text-foreground/50 mb-2" />
-              <span className="text-sm font-medium">{file ? file.name : "Click to select file or drag & drop"}</span>
-              <span className="text-xs text-foreground/50 mt-1">PDF, DOCX, XLSX up to 50MB</span>
-            </label>
-          </div>
+          <label className="block border-2 border-dashed border-foreground/15 rounded-lg p-6 text-center cursor-pointer hover:border-gold/40">
+            <input type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+            <UploadCloud className="w-8 h-8 mx-auto text-foreground/45 mb-2" />
+            <span className="text-sm font-medium">{file ? file.name : "Choose file (max 50 MB)"}</span>
+          </label>
 
-          <div className="pt-4 flex justify-end gap-3">
-            <button type="button" onClick={onClose} className="px-4 py-2 border border-foreground/20 rounded-lg font-medium hover:bg-foreground/5 transition-colors">Cancel</button>
-            <button type="submit" disabled={loading} className="px-4 py-2 bg-gold text-background rounded-lg font-medium hover:bg-gold/90 transition-colors disabled:opacity-50">
-              {loading ? "Uploading..." : isNewVersion ? "Upload Version" : "Save Document"}
+          <div className="flex justify-end gap-2 pt-2">
+            <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg border border-foreground/15 text-sm">
+              Cancel
+            </button>
+            <button type="submit" disabled={loading} className="px-4 py-2 rounded-lg bg-gold text-background text-sm font-medium disabled:opacity-50">
+              {loading ? "Saving…" : isNewVersion ? "Upload revision" : "Save to register"}
             </button>
           </div>
         </form>
@@ -408,165 +703,424 @@ function UploadModal({ onClose, onSuccess, user, documentId = null, existingDoc 
   );
 }
 
-// -----------------------------------------------------------------------------
-// Document Detail Modal
-// -----------------------------------------------------------------------------
-function DocumentDetailModal({ documentId, onClose, onUpdate, user, canApprove, canUpload }: any) {
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="block text-[10px] font-bold uppercase tracking-wide text-foreground/50 mb-1.5">{label}</label>
+      {children}
+    </div>
+  );
+}
+
+function DocumentDetailModal({
+  documentId,
+  onClose,
+  onUpdate,
+  user,
+  canApprove,
+  canUpload,
+}: {
+  documentId: string;
+  onClose: () => void;
+  onUpdate: () => void;
+  user: EdmsSessionUser;
+  canApprove: boolean;
+  canUpload: boolean;
+}) {
   const [doc, setDoc] = useState<EdmsDocument | null>(null);
   const [versions, setVersions] = useState<EdmsDocumentVersion[]>([]);
   const [audits, setAudits] = useState<EdmsAuditLog[]>([]);
+  const [reviewers, setReviewers] = useState<PortalUserOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [showNewVersion, setShowNewVersion] = useState(false);
+  const [editingMeta, setEditingMeta] = useState(false);
+  const [commentDialog, setCommentDialog] = useState<null | { action: string; nextStatus: string; requireComment: boolean }>(null);
+  const [commentText, setCommentText] = useState("");
+  const [selectedReviewer, setSelectedReviewer] = useState("");
+
+  const [metaForm, setMetaForm] = useState({
+    title: "",
+    description: "",
+    tags: "",
+    confidentiality: "Internal",
+    type: "Report",
+    project: "General",
+    department: "Operations",
+  });
+
+  const loadDocData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const found = await edmsApi.getDocument(documentId);
+      setDoc(found);
+      setMetaForm({
+        title: found.title,
+        description: found.description || "",
+        tags: found.tags || "",
+        confidentiality: found.confidentiality,
+        type: found.type,
+        project: found.project,
+        department: found.department,
+      });
+      setSelectedReviewer(found.assigned_reviewer_id || "");
+      const [v, a, r] = await Promise.all([
+        edmsApi.getDocumentVersions(documentId),
+        edmsApi.getAuditLogs(documentId),
+        edmsApi.getAssignableReviewers(),
+      ]);
+      setVersions(v);
+      setAudits(a);
+      setReviewers(r);
+    } catch (e) {
+      console.error(e);
+      toast.error("Could not load document details.");
+    }
+    setLoading(false);
+  }, [documentId]);
 
   useEffect(() => {
     loadDocData();
-  }, [documentId]);
+  }, [loadDocData]);
 
-  const loadDocData = async () => {
-    setLoading(true);
+  const runStatusChange = async (action: string, newStatus: string, details?: string) => {
     try {
-      const docs = await edmsApi.getDocuments();
-      const found = docs.find(d => d.id === documentId);
-      if (found) setDoc(found);
-      
-      const v = await edmsApi.getDocumentVersions(documentId);
-      setVersions(v);
-      
-      const a = await edmsApi.getAuditLogs(documentId);
-      setAudits(a);
-    } catch (e) {
-      console.error(e);
-    }
-    setLoading(false);
-  };
-
-  const handleAction = async (action: "Submit" | "Approve" | "Reject" | "Request Changes", newStatus: string) => {
-    const reason = action === "Reject" || action === "Request Changes" ? prompt("Please enter a reason/comment:") : "";
-    if ((action === "Reject" || action === "Request Changes") && reason === null) return;
-    
-    try {
-      await edmsApi.updateDocumentStatus(documentId, newStatus);
+      await edmsApi.updateDocumentStatus(documentId, newStatus, details ? { review_notes: details } : undefined);
       await edmsApi.logAudit({
         document_id: documentId,
-        user_name: user?.name,
+        user_name: user?.name || "Unknown",
         user_id: user?.id,
-        action: action,
-        details: reason ? `Reason: ${reason}` : undefined
+        action,
+        details,
       });
-      loadDocData();
+      toast.success(`Status updated to ${newStatus}`);
+      await loadDocData();
       onUpdate();
-    } catch (e) {
-      console.error(e);
-      alert("Failed to update status.");
+    } catch {
+      toast.error("Could not update status.");
     }
   };
 
-  if (!doc && !loading) return null;
+  const handleCommentConfirm = async () => {
+    if (!commentDialog) return;
+    if (commentDialog.requireComment && !commentText.trim()) {
+      toast.error("Please enter a comment.");
+      return;
+    }
+    await runStatusChange(commentDialog.action, commentDialog.nextStatus, commentText.trim() || undefined);
+    setCommentDialog(null);
+    setCommentText("");
+  };
+
+  const handleAssignReviewer = async () => {
+    const reviewer = reviewers.find((r) => r.id === selectedReviewer);
+    if (!reviewer) {
+      toast.error("Select a reviewer.");
+      return;
+    }
+    try {
+      await edmsApi.updateDocument(documentId, {
+        assigned_reviewer_id: reviewer.id,
+        assigned_reviewer_name: reviewer.name,
+        status: "Under Review",
+      });
+      await edmsApi.logAudit({
+        document_id: documentId,
+        user_name: user?.name || "Unknown",
+        user_id: user?.id,
+        action: "Assigned reviewer",
+        details: `Assigned to ${reviewer.name}`,
+      });
+      toast.success("Reviewer assigned — document is under review.");
+      loadDocData();
+      onUpdate();
+    } catch {
+      toast.error("Could not assign reviewer.");
+    }
+  };
+
+  const saveMetadata = async () => {
+    try {
+      await edmsApi.updateDocument(documentId, metaForm);
+      await edmsApi.logAudit({
+        document_id: documentId,
+        user_name: user?.name || "Unknown",
+        user_id: user?.id,
+        action: "Metadata updated",
+      });
+      toast.success("Document details saved.");
+      setEditingMeta(false);
+      loadDocData();
+      onUpdate();
+    } catch {
+      toast.error("Could not save metadata.");
+    }
+  };
+
+  const downloadVersion = async (path: string) => {
+    try {
+      const url = await edmsApi.getFileDownloadUrl(path);
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch {
+      toast.error("Download failed. Check storage bucket permissions.");
+    }
+  };
+
+  if (loading && !doc) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/70">
+        <p className="text-foreground/60">Loading…</p>
+      </div>
+    );
+  }
+
+  if (!doc) return null;
+
+  const owner = isDocumentOwner(doc, user);
+  const mayEdit = canEditMetadata(doc, user);
+  const mayArchive = canArchiveDocument(user);
+  const mayAssign = canAssignReviewer(user);
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm overflow-y-auto">
-      <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }} className="bg-white dark:bg-[#1C2541] border border-foreground/10 p-0 rounded shadow-2xl w-full max-w-5xl relative flex flex-col md:flex-row min-h-[70vh] my-auto">
-        
-        {/* Left Col: Details & Actions */}
-        <div className="w-full md:w-2/3 p-6 md:border-r border-foreground/10">
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <div className="flex items-center gap-3 mb-1">
-                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                  doc?.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-500' :
-                  doc?.status === 'Under Review' ? 'bg-amber-500/10 text-amber-500' :
-                  'bg-foreground/10 text-foreground/60'
-                }`}>{doc?.status}</span>
-                <span className="font-mono text-sm text-foreground/60">{doc?.document_number}</span>
-              </div>
-              <h2 className="text-2xl font-bold">{doc?.title}</h2>
-            </div>
-            <button onClick={onClose} className="p-2 bg-foreground/5 rounded-full hover:bg-foreground/10"><X size={20}/></button>
-          </div>
-
-          <div className="grid grid-cols-2 gap-y-4 gap-x-8 mb-8 text-sm">
-            <div><span className="text-foreground/50 block text-xs uppercase">Project</span><span className="font-medium">{doc?.project}</span></div>
-            <div><span className="text-foreground/50 block text-xs uppercase">Department</span><span className="font-medium">{doc?.department}</span></div>
-            <div><span className="text-foreground/50 block text-xs uppercase">Type</span><span className="font-medium">{doc?.type}</span></div>
-            <div><span className="text-foreground/50 block text-xs uppercase">Owner</span><span className="font-medium">{doc?.owner_name}</span></div>
-            <div className="col-span-2"><span className="text-foreground/50 block text-xs uppercase">Description</span><p className="text-foreground/80 mt-1">{doc?.description || "No description provided."}</p></div>
-          </div>
-
-          <div className="border-t border-foreground/10 pt-6 mb-6">
-            <h3 className="text-lg font-bold mb-4 flex items-center gap-2"><History size={18}/> Version History</h3>
-            <div className="space-y-3">
-              {versions.map(v => (
-                <div key={v.id} className="flex justify-between items-center p-3 border border-foreground/10 rounded-lg bg-background">
-                  <div>
-                    <div className="font-bold text-sm">Version {v.version_number}</div>
-                    <div className="text-xs text-foreground/60">{v.change_description}</div>
-                    <div className="text-[10px] text-foreground/40 mt-1">By {v.created_by_name} on {new Date(v.created_at).toLocaleString()}</div>
-                  </div>
-                  <a href={edmsApi.getFileUrl(v.file_url)} target="_blank" rel="noreferrer" className="p-2 hover:bg-foreground/5 rounded-full text-gold">
-                    <Download size={18} />
-                  </a>
+    <>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm overflow-y-auto"
+      >
+        <motion.div
+          initial={{ scale: 0.98, y: 16 }}
+          animate={{ scale: 1, y: 0 }}
+          className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded-xl shadow-2xl w-full max-w-5xl flex flex-col md:flex-row min-h-[70vh] my-6 overflow-hidden"
+        >
+          <div className="flex-1 p-6 md:border-r border-foreground/10 overflow-y-auto max-h-[85vh]">
+            <div className="flex justify-between items-start gap-4 mb-4">
+              <div>
+                <WorkflowSteps status={doc.status} />
+                <div className="flex flex-wrap items-center gap-2 mb-1">
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${statusBadgeClass(doc.status)}`}>
+                    {doc.status}
+                  </span>
+                  <span className="font-mono text-xs text-foreground/55">{doc.document_number}</span>
                 </div>
-              ))}
-            </div>
-            {canUpload && (
-              <button onClick={() => setShowNewVersion(true)} className="mt-4 text-sm font-medium text-gold hover:underline flex items-center gap-1">
-                <UploadCloud size={16}/> Upload New Version
-              </button>
-            )}
-          </div>
-
-          {/* Workflow Actions */}
-          <div className="border-t border-foreground/10 pt-6">
-            <h3 className="text-lg font-bold mb-4">Workflow Actions</h3>
-            <div className="flex flex-wrap gap-3">
-              {doc?.status === "Draft" && canUpload && (
-                <button onClick={() => handleAction("Submit", "Under Review")} className="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600">Submit for Review</button>
-              )}
-              {doc?.status === "Under Review" && canApprove && (
-                <>
-                  <button onClick={() => handleAction("Approve", "Approved")} className="px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-medium hover:bg-emerald-600">Approve</button>
-                  <button onClick={() => handleAction("Request Changes", "Draft")} className="px-4 py-2 border border-amber-500 text-amber-500 rounded-lg text-sm font-medium hover:bg-amber-500/10">Request Changes</button>
-                  <button onClick={() => handleAction("Reject", "Rejected")} className="px-4 py-2 border border-red-500 text-red-500 rounded-lg text-sm font-medium hover:bg-red-500/10">Reject</button>
-                </>
-              )}
-              {!["Draft", "Under Review"].includes(doc?.status || "") && (
-                <p className="text-sm text-foreground/50">No actions available in current status.</p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Right Col: Audit Trail */}
-        <div className="w-full md:w-1/3 bg-foreground/5 p-6 rounded-r-2xl overflow-y-auto max-h-[70vh]">
-          <h3 className="text-lg font-bold mb-4">Audit Trail</h3>
-          <div className="space-y-4">
-            {audits.map(audit => (
-              <div key={audit.id} className="relative pl-4 border-l-2 border-foreground/10 pb-4 last:border-0 last:pb-0">
-                <div className="absolute w-2.5 h-2.5 bg-gold rounded-full -left-[7px] top-1"></div>
-                <div className="text-sm font-bold">{audit.action}</div>
-                <div className="text-xs text-foreground/70 my-1">{audit.user_name}</div>
-                {audit.details && <div className="text-xs bg-background/50 p-2 rounded text-foreground/80 italic">"{audit.details}"</div>}
-                <div className="text-[10px] text-foreground/40 mt-1">{new Date(audit.created_at).toLocaleString()}</div>
+                <h2 className="text-2xl font-bold">{doc.title}</h2>
               </div>
-            ))}
+              <button type="button" onClick={onClose} className="p-2 rounded-full hover:bg-foreground/10">
+                <X size={20} />
+              </button>
+            </div>
+
+            {editingMeta ? (
+              <div className="space-y-3 mb-6 p-4 rounded-lg border border-foreground/10 bg-foreground/[0.02]">
+                <input value={metaForm.title} onChange={(e) => setMetaForm({ ...metaForm, title: e.target.value })} className="field-input w-full" />
+                <textarea value={metaForm.description} onChange={(e) => setMetaForm({ ...metaForm, description: e.target.value })} rows={2} className="field-input w-full" />
+                <div className="grid grid-cols-2 gap-2">
+                  <select value={metaForm.project} onChange={(e) => setMetaForm({ ...metaForm, project: e.target.value })} className="field-input">
+                    {EDMS_PROJECTS.map((p) => (
+                      <option key={p} value={p}>{p}</option>
+                    ))}
+                  </select>
+                  <select value={metaForm.department} onChange={(e) => setMetaForm({ ...metaForm, department: e.target.value })} className="field-input">
+                    {EDMS_DEPARTMENTS.map((d) => (
+                      <option key={d} value={d}>{d}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex gap-2">
+                  <button type="button" onClick={saveMetadata} className="text-sm bg-gold text-background px-3 py-1.5 rounded-lg">Save</button>
+                  <button type="button" onClick={() => setEditingMeta(false)} className="text-sm px-3 py-1.5 rounded-lg border border-foreground/15">Cancel</button>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
+                <MetaItem label="Project" value={doc.project} />
+                <MetaItem label="Department" value={doc.department} />
+                <MetaItem label="Type" value={doc.type} />
+                <MetaItem label="Confidentiality" value={doc.confidentiality} />
+                <MetaItem label="Owner" value={doc.owner_name} />
+                <MetaItem label="Reviewer" value={doc.assigned_reviewer_name || "Not assigned"} />
+                <div className="col-span-2">
+                  <span className="text-foreground/45 text-xs uppercase block">Description</span>
+                  <p className="text-foreground/80 mt-1">{doc.description || "—"}</p>
+                </div>
+                {mayEdit && (
+                  <button type="button" onClick={() => setEditingMeta(true)} className="col-span-2 text-xs text-gold flex items-center gap-1 font-medium">
+                    <Pencil size={14} /> Edit details
+                  </button>
+                )}
+              </div>
+            )}
+
+            <section className="border-t border-foreground/10 pt-5 mb-6">
+              <h3 className="font-bold mb-3 flex items-center gap-2"><History size={16} /> Revisions</h3>
+              <div className="space-y-2">
+                {versions.map((v) => (
+                  <div key={v.id} className="flex justify-between items-center p-3 rounded-lg border border-foreground/10 bg-background/50">
+                    <div>
+                      <p className="font-semibold text-sm">Rev {v.version_number}</p>
+                      <p className="text-xs text-foreground/60">{v.change_description}</p>
+                      <p className="text-[10px] text-foreground/40 mt-1">{v.created_by_name} · {new Date(v.created_at).toLocaleString()}</p>
+                    </div>
+                    <button type="button" onClick={() => downloadVersion(v.file_url)} className="p-2 rounded-full hover:bg-foreground/10 text-gold" title="Download">
+                      <Download size={18} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              {canUpload && (owner || user.role === "document_controller" || user.role === "super_admin") && doc.status !== "Archived" && (
+                <button type="button" onClick={() => setShowNewVersion(true)} className="mt-3 text-sm text-gold font-medium flex items-center gap-1">
+                  <UploadCloud size={16} /> Upload new revision
+                </button>
+              )}
+            </section>
+
+            <section className="border-t border-foreground/10 pt-5">
+              <h3 className="font-bold mb-3">Actions</h3>
+              <div className="flex flex-wrap gap-2">
+                {doc.status === "Draft" && (owner || canUpload) && (
+                  <ActionBtn onClick={() => runStatusChange("Submitted", "Submitted")}>Submit for review</ActionBtn>
+                )}
+                {doc.status === "Submitted" && mayAssign && (
+                  <div className="flex flex-wrap items-center gap-2 w-full">
+                    <UserCircle size={16} className="text-foreground/50" />
+                    <select value={selectedReviewer} onChange={(e) => setSelectedReviewer(e.target.value)} className="field-input text-sm flex-1 min-w-[160px]">
+                      <option value="">Select reviewer…</option>
+                      {reviewers.map((r) => (
+                        <option key={r.id} value={r.id}>{r.name} ({r.role})</option>
+                      ))}
+                    </select>
+                    <ActionBtn onClick={handleAssignReviewer}>Start review</ActionBtn>
+                  </div>
+                )}
+                {doc.status === "Under Review" && canApprove && (
+                  <>
+                    <ActionBtn variant="success" onClick={() => {
+                      const next = user.role === "manager" || user.role === "super_admin" ? "Approved" : "Pending Approval";
+                      runStatusChange("Reviewed", next);
+                    }}>
+                      {user.role === "manager" || user.role === "super_admin" ? "Approve" : "Recommend approval"}
+                    </ActionBtn>
+                    <ActionBtn variant="warn" onClick={() => setCommentDialog({ action: "Changes requested", nextStatus: "Changes Requested", requireComment: true })}>
+                      Request changes
+                    </ActionBtn>
+                    <ActionBtn variant="danger" onClick={() => setCommentDialog({ action: "Rejected", nextStatus: "Rejected", requireComment: true })}>
+                      Reject
+                    </ActionBtn>
+                  </>
+                )}
+                {doc.status === "Pending Approval" && (user.role === "manager" || user.role === "super_admin" || user.role === "document_controller") && (
+                  <>
+                    <ActionBtn variant="success" onClick={() => runStatusChange("Approved", "Approved")}>Final approve</ActionBtn>
+                    <ActionBtn variant="danger" onClick={() => setCommentDialog({ action: "Rejected", nextStatus: "Rejected", requireComment: true })}>Reject</ActionBtn>
+                  </>
+                )}
+                {doc.status === "Changes Requested" && owner && (
+                  <ActionBtn onClick={() => runStatusChange("Resubmitted", "Submitted")}>Resubmit after changes</ActionBtn>
+                )}
+                {mayArchive && ["Approved", "Rejected"].includes(doc.status) && (
+                  <ActionBtn variant="muted" onClick={() => runStatusChange("Archived", "Archived")}>
+                    <Archive size={14} className="inline mr-1" /> Archive
+                  </ActionBtn>
+                )}
+                {doc.status === "Archived" && user.role === "super_admin" && (
+                  <ActionBtn variant="muted" onClick={() => runStatusChange("Restored", "Approved")}>
+                    <RotateCcw size={14} className="inline mr-1" /> Restore to approved
+                  </ActionBtn>
+                )}
+              </div>
+              {doc.review_notes && (
+                <p className="mt-3 text-sm text-foreground/70 italic border-l-2 border-gold/40 pl-3">{doc.review_notes}</p>
+              )}
+            </section>
           </div>
-        </div>
-        
-        {/* Upload New Version Modal */}
-        {showNewVersion && (
-          <UploadModal 
-            onClose={() => setShowNewVersion(false)} 
-            onSuccess={() => {
-              setShowNewVersion(false);
-              loadDocData();
-              onUpdate();
-            }}
-            user={user}
-            documentId={documentId}
-            existingDoc={doc}
-          />
-        )}
+
+          <aside className="w-full md:w-80 bg-foreground/[0.03] p-5 overflow-y-auto max-h-[85vh]">
+            <h3 className="font-bold mb-4 text-sm uppercase tracking-wide text-foreground/50">Audit trail</h3>
+            <div className="space-y-4">
+              {audits.length === 0 ? (
+                <p className="text-sm text-foreground/45">No activity yet.</p>
+              ) : (
+                audits.map((audit) => (
+                  <div key={audit.id} className="relative pl-4 border-l-2 border-foreground/10">
+                    <div className="absolute w-2 h-2 bg-gold rounded-full -left-[5px] top-1.5" />
+                    <p className="text-sm font-semibold">{audit.action}</p>
+                    <p className="text-xs text-foreground/55">{audit.user_name}</p>
+                    {audit.details && <p className="text-xs mt-1 text-foreground/70">{audit.details}</p>}
+                    <p className="text-[10px] text-foreground/40 mt-1">{new Date(audit.created_at).toLocaleString()}</p>
+                  </div>
+                ))
+              )}
+            </div>
+          </aside>
+
+          {showNewVersion && (
+            <UploadModal
+              onClose={() => setShowNewVersion(false)}
+              onSuccess={() => {
+                setShowNewVersion(false);
+                loadDocData();
+                onUpdate();
+                toast.success("New revision uploaded.");
+              }}
+              user={user}
+              documentId={documentId}
+              existingDoc={doc}
+            />
+          )}
+        </motion.div>
       </motion.div>
-    </motion.div>
+
+      <Dialog open={!!commentDialog} onOpenChange={(open) => !open && setCommentDialog(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Comment required</DialogTitle>
+            <DialogDescription>Provide a short note for the document owner and audit log.</DialogDescription>
+          </DialogHeader>
+          <textarea
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+            rows={4}
+            className="field-input w-full"
+            placeholder="Reason for rejection or requested changes…"
+          />
+          <DialogFooter>
+            <button type="button" className="px-3 py-2 text-sm rounded-lg border" onClick={() => setCommentDialog(null)}>Cancel</button>
+            <button type="button" className="px-3 py-2 text-sm rounded-lg bg-gold text-background" onClick={handleCommentConfirm}>Confirm</button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
+function MetaItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <span className="text-foreground/45 text-xs uppercase">{label}</span>
+      <p className="font-medium">{value}</p>
+    </div>
+  );
+}
+
+function ActionBtn({
+  children,
+  onClick,
+  variant = "primary",
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  variant?: "primary" | "success" | "danger" | "warn" | "muted";
+}) {
+  const styles = {
+    primary: "bg-gold text-background hover:bg-gold/90",
+    success: "bg-emerald-600 text-white hover:bg-emerald-700",
+    danger: "border border-red-500 text-red-600 hover:bg-red-500/10",
+    warn: "border border-amber-500 text-amber-600 hover:bg-amber-500/10",
+    muted: "border border-foreground/20 hover:bg-foreground/5",
+  };
+  return (
+    <button type="button" onClick={onClick} className={`px-3 py-2 rounded-lg text-sm font-medium ${styles[variant]}`}>
+      {children}
+    </button>
   );
 }
