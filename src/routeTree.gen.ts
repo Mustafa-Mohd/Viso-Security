@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TranslationRouteImport } from './routes/translation'
+import { Route as TechnicalProposalRouteImport } from './routes/technical-proposal'
 import { Route as SecurityRouteImport } from './routes/security'
 import { Route as OthersRouteImport } from './routes/others'
 import { Route as GalleryRouteImport } from './routes/gallery'
@@ -25,6 +26,11 @@ import { Route as CertificateIdRouteImport } from './routes/certificate.$id'
 const TranslationRoute = TranslationRouteImport.update({
   id: '/translation',
   path: '/translation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TechnicalProposalRoute = TechnicalProposalRouteImport.update({
+  id: '/technical-proposal',
+  path: '/technical-proposal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SecurityRoute = SecurityRouteImport.update({
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/gallery': typeof GalleryRoute
   '/others': typeof OthersRoute
   '/security': typeof SecurityRoute
+  '/technical-proposal': typeof TechnicalProposalRoute
   '/translation': typeof TranslationRoute
   '/certificate/$id': typeof CertificateIdRoute
 }
@@ -108,6 +115,7 @@ export interface FileRoutesByTo {
   '/gallery': typeof GalleryRoute
   '/others': typeof OthersRoute
   '/security': typeof SecurityRoute
+  '/technical-proposal': typeof TechnicalProposalRoute
   '/translation': typeof TranslationRoute
   '/certificate/$id': typeof CertificateIdRoute
 }
@@ -123,6 +131,7 @@ export interface FileRoutesById {
   '/gallery': typeof GalleryRoute
   '/others': typeof OthersRoute
   '/security': typeof SecurityRoute
+  '/technical-proposal': typeof TechnicalProposalRoute
   '/translation': typeof TranslationRoute
   '/certificate/$id': typeof CertificateIdRoute
 }
@@ -139,6 +148,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/others'
     | '/security'
+    | '/technical-proposal'
     | '/translation'
     | '/certificate/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/others'
     | '/security'
+    | '/technical-proposal'
     | '/translation'
     | '/certificate/$id'
   id:
@@ -167,6 +178,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/others'
     | '/security'
+    | '/technical-proposal'
     | '/translation'
     | '/certificate/$id'
   fileRoutesById: FileRoutesById
@@ -182,6 +194,7 @@ export interface RootRouteChildren {
   GalleryRoute: typeof GalleryRoute
   OthersRoute: typeof OthersRoute
   SecurityRoute: typeof SecurityRoute
+  TechnicalProposalRoute: typeof TechnicalProposalRoute
   TranslationRoute: typeof TranslationRoute
   CertificateIdRoute: typeof CertificateIdRoute
 }
@@ -193,6 +206,13 @@ declare module '@tanstack/react-router' {
       path: '/translation'
       fullPath: '/translation'
       preLoaderRoute: typeof TranslationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/technical-proposal': {
+      id: '/technical-proposal'
+      path: '/technical-proposal'
+      fullPath: '/technical-proposal'
+      preLoaderRoute: typeof TechnicalProposalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/security': {
@@ -286,6 +306,7 @@ const rootRouteChildren: RootRouteChildren = {
   GalleryRoute: GalleryRoute,
   OthersRoute: OthersRoute,
   SecurityRoute: SecurityRoute,
+  TechnicalProposalRoute: TechnicalProposalRoute,
   TranslationRoute: TranslationRoute,
   CertificateIdRoute: CertificateIdRoute,
 }
