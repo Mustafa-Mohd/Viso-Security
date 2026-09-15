@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
-export function CustomCursor() {
+export function CustomCursor({ showRotatingRing = true }: { showRotatingRing?: boolean }) {
   const [isVisible, setIsVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   
@@ -78,29 +78,30 @@ export function CustomCursor() {
           </svg>
         </motion.div>
         
-        {/* The rotating text following with a spring delay */}
-        <motion.div
-          className="absolute left-0 top-0 h-40 w-40 -translate-x-1/2 -translate-y-1/2 pointer-events-none drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] mix-blend-difference"
-          style={{ x: smoothX, y: smoothY, opacity: isVisible ? 1 : 0 }}
-        >
-          <motion.svg 
-            viewBox="0 0 100 100" 
-            className="h-full w-full overflow-visible"
-            animate={{ rotate: 360 }}
-            transition={{ repeat: Infinity, duration: 15, ease: "linear" }}
+        {showRotatingRing && (
+          <motion.div
+            className="absolute left-0 top-0 h-40 w-40 -translate-x-1/2 -translate-y-1/2 pointer-events-none drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] mix-blend-difference"
+            style={{ x: smoothX, y: smoothY, opacity: isVisible ? 1 : 0 }}
           >
-            <path 
-              id="cursorPath" 
-              d="M 50, 50 m -40, 0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0" 
-              fill="none" 
-            />
-            <text className="font-mono text-[9px] font-bold uppercase tracking-[0.25em]" fill="#DF9B2A">
-              <textPath href="#cursorPath" startOffset="0%" textLength="251" lengthAdjust="spacing">
-                VISO GROUP • VISO GROUP • VISO GROUP •
-              </textPath>
-            </text>
-          </motion.svg>
-        </motion.div>
+            <motion.svg
+              viewBox="0 0 100 100"
+              className="h-full w-full overflow-visible"
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 15, ease: "linear" }}
+            >
+              <path
+                id="cursorPath"
+                d="M 50, 50 m -40, 0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0"
+                fill="none"
+              />
+              <text className="font-mono text-[9px] font-bold uppercase tracking-[0.25em]" fill="#DF9B2A">
+                <textPath href="#cursorPath" startOffset="0%" textLength="251" lengthAdjust="spacing">
+                  VISO GROUP • VISO GROUP • VISO GROUP •
+                </textPath>
+              </text>
+            </motion.svg>
+          </motion.div>
+        )}
       </div>
     </>
   );

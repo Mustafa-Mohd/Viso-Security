@@ -87,7 +87,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Suspense fallback={null}>
-        <CustomCursor />
+        <CustomCursor showRotatingRing={!isAdmin} />
       </Suspense>
       <Outlet />
       {!isAdmin && (

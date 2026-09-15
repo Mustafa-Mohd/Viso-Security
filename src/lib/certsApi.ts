@@ -13,17 +13,46 @@ export interface TranslationCertificate {
   updated_at?: string;
 }
 
+const toDateOnly = (value: string | Date): Date => {
+  const d = value instanceof Date ? new Date(value) : new Date(value);
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
+
 /** Helper to evaluate if the certificate is technically expired based on the current date */
 export const isCertificateExpired = (expiryDateStr: string): boolean => {
-  const expiryDate = new Date(expiryDateStr);
-  const currentDate = new Date();
-  
-  // Strip time for accurate date comparison
-  expiryDate.setHours(0, 0, 0, 0);
-  currentDate.setHours(0, 0, 0, 0);
-  
+  const expiryDate = toDateOnly(expiryDateStr);
+  const currentDate = toDateOnly(new Date());
   return currentDate > expiryDate;
 };
+
+/** Public-facing status derived from registry dates (not raw DB enum labels). */
+export type CertificateDisplayStatus = "active" | "expired" | "revoked" | "pending";
+
+export function getCertificateDisplayStatus(
+  cert: Pick<TranslationCertificate, "status" | "issue_date" | "expiry_date">
+): CertificateDisplayStatus {
+  if (cert.status === "REVOKED") return "revoked";
+
+  const today = toDateOnly(new Date());
+  const issueDate = toDateOnly(cert.issue_date);
+  const expiryDate = toDateOnly(cert.expiry_date);
+
+  if (today < issueDate) return "pending";
+  if (today > expiryDate) return "expired";
+  return "active";
+}
+
+/** Status persisted to the database when saving from admin (timeline + optional revocation). */
+export function resolveCertificateStatusForStorage(params: {
+  issue_date: string;
+  expiry_date: string;
+  previousStatus?: TranslationCertificate["status"];
+}): TranslationCertificate["status"] {
+  if (params.previousStatus === "REVOKED") return "REVOKED";
+  if (isCertificateExpired(params.expiry_date)) return "EXPIRED";
+  return "VALID";
+}
 
 export const certsApi = {
   /** Fetch all certificates (Admin) */

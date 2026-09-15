@@ -548,6 +548,12 @@
     "placeholder": "Type your message..."
   },
   "translation_page": {
+    "verify": {
+      "status_active": "Within validity period (until {{date}})",
+      "status_expired": "Validity ended on {{date}}",
+      "status_pending": "Effective from {{date}}",
+      "status_revoked": "This record has been withdrawn from the registry"
+    },
     "eyebrow": "CERTIFIED TRANSLATION SERVICES",
     "title": "Officially Accredited",
     "title_italic": "Translation Services",

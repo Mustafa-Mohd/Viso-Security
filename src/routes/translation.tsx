@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { TopNav } from "@/components/TopNav";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, FileText, Search, CheckCircle, XCircle, AlertTriangle, ShieldCheck, Lock } from "lucide-react";
-import { certsApi, TranslationCertificate } from "@/lib/certsApi";
+import { certsApi, TranslationCertificate, getCertificateDisplayStatus, CertificateDisplayStatus } from "@/lib/certsApi";
 
 export const Route = createFileRoute("/translation")({
   component: TranslationPage,
@@ -89,6 +89,7 @@ function SecurityShieldIcon() {
 }
 
 function VerificationSection({ isAr }: { isAr: boolean }) {
+  const { t } = useTranslation();
   const [certId, setCertId] = useState("");
   const [nationalId, setNationalId] = useState("");
   const [loading, setLoading] = useState(false);
@@ -150,18 +151,36 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
     handleVerification(certId, nationalId);
   };
 
-  const getStatusColor = (status: string) => {
-    if (status === "VALID") return "text-emerald-700 bg-emerald-50 border-emerald-200";
-    if (status === "EXPIRED") return "text-orange-700 bg-orange-50 border-orange-200";
-    if (status === "REVOKED") return "text-red-700 bg-red-50 border-red-200";
+  const getStatusColor = (displayStatus: CertificateDisplayStatus) => {
+    if (displayStatus === "active") return "text-emerald-700 bg-emerald-50 border-emerald-200";
+    if (displayStatus === "expired") return "text-orange-700 bg-orange-50 border-orange-200";
+    if (displayStatus === "revoked") return "text-red-700 bg-red-50 border-red-200";
+    if (displayStatus === "pending") return "text-amber-700 bg-amber-50 border-amber-200";
     return "text-neutral-700 bg-neutral-50 border-neutral-200";
   };
 
-  const getStatusIcon = (status: string) => {
-    if (status === "VALID") return <CheckCircle className="w-5 h-5" />;
-    if (status === "EXPIRED") return <AlertTriangle className="w-5 h-5" />;
-    if (status === "REVOKED") return <XCircle className="w-5 h-5" />;
+  const getStatusIcon = (displayStatus: CertificateDisplayStatus) => {
+    if (displayStatus === "active") return <CheckCircle className="w-5 h-5" />;
+    if (displayStatus === "expired") return <AlertTriangle className="w-5 h-5" />;
+    if (displayStatus === "revoked") return <XCircle className="w-5 h-5" />;
+    if (displayStatus === "pending") return <AlertTriangle className="w-5 h-5" />;
     return <ShieldCheck className="w-5 h-5" />;
+  };
+
+  const getStatusLabel = (cert: TranslationCertificate) => {
+    const displayStatus = getCertificateDisplayStatus(cert);
+    switch (displayStatus) {
+      case "active":
+        return t("translation_page.verify.status_active", { date: cert.expiry_date });
+      case "expired":
+        return t("translation_page.verify.status_expired", { date: cert.expiry_date });
+      case "pending":
+        return t("translation_page.verify.status_pending", { date: cert.issue_date });
+      case "revoked":
+        return t("translation_page.verify.status_revoked");
+      default:
+        return "";
+    }
   };
 
   return (
@@ -253,8 +272,8 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
                   <h4 className="text-3xl md:text-4xl font-display text-neutral-900 mb-2">{result.project_name}</h4>
                   <p className="font-mono text-neutral-500 text-sm">Certificate No: {result.id}</p>
                 </div>
-                <div className={`px-6 py-2.5 rounded-full font-bold uppercase tracking-widest text-sm border flex items-center gap-2 shadow-sm ${getStatusColor(result.status)}`}>
-                  {getStatusIcon(result.status)} {result.status}
+                <div className={`px-6 py-2.5 rounded-full font-bold tracking-wide text-sm border flex items-center gap-2 shadow-sm text-center ${getStatusColor(getCertificateDisplayStatus(result))}`}>
+                  {getStatusIcon(getCertificateDisplayStatus(result))} {getStatusLabel(result)}
                 </div>
               </div>
               
@@ -320,8 +339,8 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
                       <h4 className="font-sans font-bold text-sm text-neutral-800 mb-1 truncate max-w-[150px]">{data.project_name}</h4>
                       <p className="font-mono text-xs text-neutral-400">ID: {data.id}</p>
                     </div>
-                    <div className={`px-2 py-0.5 rounded text-[9px] font-bold tracking-wider uppercase border ${getStatusColor(data.status)}`}>
-                      {data.status}
+                    <div className={`px-2 py-1 rounded text-[9px] font-bold tracking-wide border leading-tight max-w-[120px] text-end ${getStatusColor(getCertificateDisplayStatus(data))}`}>
+                      {getStatusLabel(data)}
                     </div>
                   </div>
                   

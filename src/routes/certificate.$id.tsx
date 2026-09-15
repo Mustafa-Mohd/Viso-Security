@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { FileText, RefreshCw } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { certsApi, TranslationCertificate } from '@/lib/certsApi'
+import { certsApi, TranslationCertificate, getCertificateDisplayStatus } from '@/lib/certsApi'
 
 export const Route = createFileRoute('/certificate/$id')({
   component: CertificatePdfView,
@@ -55,6 +55,23 @@ function CertificatePdfView() {
   // Use the current origin for the QR Code to scan back to the live site
   const origin = typeof window !== 'undefined' ? window.location.origin : 'https://viso-group.com';
   const qrUrl = `${origin}/translation?verify=${certId}&nationalId=${certData.national_id}`;
+  const displayStatus = getCertificateDisplayStatus(certData);
+  const isWithinValidity = displayStatus === 'active';
+  const isPastExpiry = displayStatus === 'expired';
+  const isRevoked = displayStatus === 'revoked';
+  const isPending = displayStatus === 'pending';
+
+  const bannerLabel =
+    isPastExpiry ? `Validity ended ${certData.expiry_date}` :
+    isRevoked ? 'Withdrawn from registry' :
+    isPending ? `Effective from ${certData.issue_date}` :
+    null;
+
+  const watermarkLabel =
+    isPastExpiry ? `Ended ${certData.expiry_date}` :
+    isRevoked ? 'Withdrawn' :
+    isPending ? `From ${certData.issue_date}` :
+    null;
 
   return (
     <div className="min-h-screen bg-neutral-300 flex flex-col items-center py-8 px-4 font-sans selection:bg-primary/20 selection:text-primary">
@@ -64,15 +81,11 @@ function CertificatePdfView() {
       */}
       <div className="bg-white w-full max-w-[800px] min-h-[1130px] shadow-2xl relative p-12 md:p-20 text-black flex flex-col mx-auto my-auto overflow-hidden">
         
-        {/* Dynamic Status Banner */}
-        {certData.status === 'EXPIRED' && (
-           <div className="absolute top-12 left-[-60px] bg-amber-500 text-white font-bold tracking-widest uppercase text-sm py-2 w-[300px] text-center -rotate-45 shadow-md border-y border-amber-600 z-10 opacity-90">
-             EXPIRED
-           </div>
-        )}
-        {certData.status === 'REVOKED' && (
-           <div className="absolute top-12 left-[-60px] bg-red-600 text-white font-bold tracking-widest uppercase text-sm py-2 w-[300px] text-center -rotate-45 shadow-md border-y border-red-700 z-10 opacity-90">
-             REVOKED
+        {bannerLabel && (
+           <div className={`absolute top-12 left-[-60px] text-white font-bold tracking-wide text-sm py-2 w-[300px] text-center -rotate-45 shadow-md border-y z-10 opacity-90 ${
+             isRevoked ? 'bg-red-600 border-red-700' : 'bg-amber-500 border-amber-600'
+           }`}>
+             {bannerLabel}
            </div>
         )}
 
@@ -94,11 +107,10 @@ function CertificatePdfView() {
 
           <div className="grid grid-cols-2 gap-y-8 gap-x-12 text-sm mb-16 border border-neutral-200 p-10 rounded-xl bg-neutral-50/50 relative">
             
-            {/* Watermark for Expired/Revoked */}
-            {certData.status !== 'VALID' && (
+            {watermarkLabel && (
                <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.05] z-0 overflow-hidden">
-                 <span className="text-[120px] font-bold uppercase -rotate-12 whitespace-nowrap">
-                   {certData.status}
+                 <span className="text-[80px] md:text-[120px] font-bold -rotate-12 whitespace-nowrap text-center px-4">
+                   {watermarkLabel}
                  </span>
                </div>
             )}
@@ -125,7 +137,7 @@ function CertificatePdfView() {
             </div>
             <div className="relative z-10">
               <span className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-2">Valid Until</span>
-              <span className={`font-medium text-base ${certData.status === 'EXPIRED' ? 'text-red-600 line-through' : 'text-neutral-800'}`}>
+              <span className={`font-medium text-base ${!isWithinValidity && (isPastExpiry || isRevoked) ? 'text-red-600 line-through' : 'text-neutral-800'}`}>
                 {certData.expiry_date}
               </span>
             </div>

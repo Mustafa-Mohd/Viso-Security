@@ -513,6 +513,12 @@
     "placeholder": "اكتب رسالتك..."
   },
   "translation_page": {
+    "verify": {
+      "status_active": "ضمن فترة الصلاحية (حتى {{date}})",
+      "status_expired": "انتهت الصلاحية في {{date}}",
+      "status_pending": "ساري اعتباراً من {{date}}",
+      "status_revoked": "تم سحب هذا السجل من السجل المركزي"
+    },
     "eyebrow": "خدمات الترجمة المعتمدة",
     "title": "خدمات الترجمة",
     "title_italic": "المعتمدة رسمياً",

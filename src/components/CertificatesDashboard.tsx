@@ -1,11 +1,17 @@
 import { useState, useEffect } from "react";
 import { Plus, Trash2, Edit, ShieldCheck, AlertTriangle, XCircle, Search, RefreshCw, Check } from "lucide-react";
-import { certsApi, TranslationCertificate } from "../lib/certsApi";
+import {
+  certsApi,
+  TranslationCertificate,
+  getCertificateDisplayStatus,
+  resolveCertificateStatusForStorage,
+  CertificateDisplayStatus,
+} from "../lib/certsApi";
 
 export function CertificatesDashboard() {
   const [certs, setCerts] = useState<TranslationCertificate[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"ALL" | "VALID" | "EXPIRED" | "REVOKED">("ALL");
+  const [statusFilter, setStatusFilter] = useState<"ALL" | CertificateDisplayStatus>("ALL");
   const [isLoading, setIsLoading] = useState(true);
   
   // Form state
@@ -19,7 +25,7 @@ export function CertificatesDashboard() {
   const [formTarget, setFormTarget] = useState("English");
   const [formIssue, setFormIssue] = useState("");
   const [formExpiry, setFormExpiry] = useState("");
-  const [formStatus, setFormStatus] = useState<"VALID" | "EXPIRED" | "REVOKED">("VALID");
+  const [formRevoked, setFormRevoked] = useState(false);
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -58,7 +64,7 @@ export function CertificatesDashboard() {
     
     setFormIssue(today);
     setFormExpiry(nextYearStr);
-    setFormStatus("VALID");
+    setFormRevoked(false);
     setShowForm(true);
   };
 
@@ -73,7 +79,7 @@ export function CertificatesDashboard() {
     setFormTarget(cert.target_lang);
     setFormIssue(cert.issue_date);
     setFormExpiry(cert.expiry_date);
-    setFormStatus(cert.status);
+    setFormRevoked(cert.status === "REVOKED");
     setShowForm(true);
   };
 
@@ -104,8 +110,20 @@ export function CertificatesDashboard() {
       return;
     }
 
+    if (formExpiry && formIssue && formExpiry < formIssue) {
+      setFormError("Expiry date must be on or after the issue date.");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
+      const previousStatus = formRevoked ? "REVOKED" : undefined;
+      const status = resolveCertificateStatusForStorage({
+        issue_date: formIssue,
+        expiry_date: formExpiry,
+        previousStatus,
+      });
+
       await certsApi.upsertCertificate({
         id: upperId,
         national_id: formNationalId.trim(),
@@ -114,7 +132,7 @@ export function CertificatesDashboard() {
         target_lang: formTarget,
         issue_date: formIssue,
         expiry_date: formExpiry,
-        status: formStatus,
+        status,
       });
 
       await loadCerts(); // Refresh list
@@ -139,25 +157,20 @@ export function CertificatesDashboard() {
     }
   };
 
-  // Quick Toggle Status
-  const toggleStatus = async (cert: TranslationCertificate) => {
-    const nextStatusMap: Record<string, "VALID" | "EXPIRED" | "REVOKED"> = {
-      VALID: "EXPIRED",
-      EXPIRED: "REVOKED",
-      REVOKED: "VALID"
-    };
-    
-    const nextStatus = nextStatusMap[cert.status];
-    
-    // Optimistic update
-    setCerts(certs.map(c => c.id === cert.id ? { ...c, status: nextStatus } : c));
-    
+  const setRevokedFlag = async (cert: TranslationCertificate, revoked: boolean) => {
+    const nextStatus = revoked
+      ? "REVOKED"
+      : resolveCertificateStatusForStorage({
+          issue_date: cert.issue_date,
+          expiry_date: cert.expiry_date,
+        });
+    const updated = { ...cert, status: nextStatus };
+    setCerts(certs.map((c) => (c.id === cert.id ? updated : c)));
     try {
-      await certsApi.upsertCertificate({ ...cert, status: nextStatus });
-    } catch (err) {
-      // Revert on error
-      setCerts(certs.map(c => c.id === cert.id ? cert : c));
-      alert("Failed to update status.");
+      await certsApi.upsertCertificate(updated);
+    } catch {
+      setCerts(certs.map((c) => (c.id === cert.id ? cert : c)));
+      alert("Failed to update certificate status.");
     }
   };
 
@@ -168,36 +181,69 @@ export function CertificatesDashboard() {
       data.national_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       data.project_name.toLowerCase().includes(searchTerm.toLowerCase());
       
-    const matchesStatus = statusFilter === "ALL" || data.status === statusFilter;
-    
+    const displayStatus = getCertificateDisplayStatus(data);
+    const matchesStatus = statusFilter === "ALL" || displayStatus === statusFilter;
+
     return matchesSearch && matchesStatus;
   });
 
-  const getStatusStyle = (status: string) => {
-    switch (status) {
-      case "VALID":
+  const getDisplayStatusLabel = (cert: TranslationCertificate) => {
+    const displayStatus = getCertificateDisplayStatus(cert);
+    switch (displayStatus) {
+      case "active":
+        return `Active until ${cert.expiry_date}`;
+      case "expired":
+        return `Ended ${cert.expiry_date}`;
+      case "pending":
+        return `Starts ${cert.issue_date}`;
+      case "revoked":
+        return "Withdrawn";
+      default:
+        return "";
+    }
+  };
+
+  const getStatusStyle = (displayStatus: CertificateDisplayStatus) => {
+    switch (displayStatus) {
+      case "active":
         return "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
-      case "EXPIRED":
+      case "expired":
         return "bg-amber-500/10 text-amber-500 border-amber-500/20";
-      case "REVOKED":
+      case "revoked":
         return "bg-rose-500/10 text-rose-500 border-rose-500/20";
+      case "pending":
+        return "bg-sky-500/10 text-sky-600 border-sky-500/20";
       default:
         return "bg-neutral-500/10 text-neutral-500 border-neutral-200";
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "VALID":
+  const getStatusIcon = (displayStatus: CertificateDisplayStatus) => {
+    switch (displayStatus) {
+      case "active":
         return <ShieldCheck className="w-4 h-4" />;
-      case "EXPIRED":
+      case "expired":
         return <AlertTriangle className="w-4 h-4" />;
-      case "REVOKED":
+      case "revoked":
         return <XCircle className="w-4 h-4" />;
+      case "pending":
+        return <AlertTriangle className="w-4 h-4" />;
       default:
         return null;
     }
   };
+
+  const formPreviewCert: TranslationCertificate = {
+    id: formId || "PREVIEW",
+    national_id: formNationalId || "0000000000",
+    project_name: formName || "Preview",
+    source_lang: formSource,
+    target_lang: formTarget,
+    issue_date: formIssue || new Date().toISOString().split("T")[0],
+    expiry_date: formExpiry || new Date().toISOString().split("T")[0],
+    status: formRevoked ? "REVOKED" : "VALID",
+  };
+  const formDisplayStatus = getCertificateDisplayStatus(formPreviewCert);
 
   return (
     <div className="space-y-6">
@@ -240,17 +286,25 @@ export function CertificatesDashboard() {
           </div>
           
           <div className="flex gap-1.5 self-stretch md:self-auto overflow-x-auto pb-1 md:pb-0">
-            {(["ALL", "VALID", "EXPIRED", "REVOKED"] as const).map((filter) => (
+            {(
+              [
+                { id: "ALL", label: "All" },
+                { id: "active", label: "Active" },
+                { id: "pending", label: "Upcoming" },
+                { id: "expired", label: "Ended" },
+                { id: "revoked", label: "Withdrawn" },
+              ] as const
+            ).map((filter) => (
               <button
-                key={filter}
-                onClick={() => setStatusFilter(filter)}
-                className={`px-3 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                  statusFilter === filter
+                key={filter.id}
+                onClick={() => setStatusFilter(filter.id)}
+                className={`px-3 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+                  statusFilter === filter.id
                     ? "bg-primary text-white"
                     : "bg-background text-foreground/60 border border-foreground/10 hover:text-foreground hover:bg-foreground/5"
                 }`}
               >
-                {filter}
+                {filter.label}
               </button>
             ))}
           </div>
@@ -306,14 +360,35 @@ export function CertificatesDashboard() {
                         <div className="mt-0.5">Expires: <span className="font-semibold text-foreground/80">{cert.expiry_date}</span></div>
                       </td>
                       <td className="px-6 py-4 text-center">
-                        <button
-                          onClick={() => toggleStatus(cert)}
-                          title="Click to cycle status"
-                          className={`inline-flex items-center gap-1 px-3 py-1 rounded-full border text-[10px] font-bold uppercase cursor-pointer hover:scale-105 active:scale-95 transition-all ${getStatusStyle(cert.status)}`}
-                        >
-                          {getStatusIcon(cert.status)}
-                          {cert.status}
-                        </button>
+                        <div className="flex flex-col items-center gap-1.5">
+                          <span
+                            className={`inline-flex items-center gap-1 px-3 py-1 rounded-full border text-[10px] font-bold max-w-[180px] leading-tight ${getStatusStyle(getCertificateDisplayStatus(cert))}`}
+                          >
+                            {getStatusIcon(getCertificateDisplayStatus(cert))}
+                            {getDisplayStatusLabel(cert)}
+                          </span>
+                          {cert.status === "REVOKED" ? (
+                            <button
+                              type="button"
+                              onClick={() => setRevokedFlag(cert, false)}
+                              className="text-[9px] font-bold uppercase tracking-wider text-primary hover:underline cursor-pointer"
+                            >
+                              Reinstate
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (confirm(`Withdraw certificate ${cert.id} from the public registry?`)) {
+                                  setRevokedFlag(cert, true);
+                                }
+                              }}
+                              className="text-[9px] font-bold uppercase tracking-wider text-rose-500 hover:underline cursor-pointer"
+                            >
+                              Withdraw
+                            </button>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end gap-2">
@@ -470,16 +545,29 @@ export function CertificatesDashboard() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2">Status</label>
-                <select
-                  value={formStatus}
-                  onChange={(e) => setFormStatus(e.target.value as any)}
-                  className="w-full bg-background border border-foreground/15 rounded-lg py-3 px-4 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all font-bold"
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2">
+                  Registry status (from dates)
+                </label>
+                <div
+                  className={`w-full rounded-lg border py-3 px-4 text-xs font-semibold flex items-center gap-2 ${getStatusStyle(formDisplayStatus)}`}
                 >
-                  <option value="VALID" className="text-emerald-500">VALID (🟢)</option>
-                  <option value="EXPIRED" className="text-amber-500">EXPIRED (🟠)</option>
-                  <option value="REVOKED" className="text-rose-500">REVOKED (🔴)</option>
-                </select>
+                  {getStatusIcon(formDisplayStatus)}
+                  {getDisplayStatusLabel(formPreviewCert)}
+                </div>
+                <p className="text-[10px] text-foreground/45 mt-2 leading-relaxed">
+                  Status is calculated from the issue and expiry dates. Use Withdraw on the list to remove a record from verification.
+                </p>
+                {editingId && (
+                  <label className="mt-3 flex items-center gap-2 text-xs text-foreground/70 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formRevoked}
+                      onChange={(e) => setFormRevoked(e.target.checked)}
+                      className="rounded border-foreground/20"
+                    />
+                    Mark as withdrawn from registry
+                  </label>
+                )}
               </div>
 
               <div className="pt-6 flex justify-end gap-3 border-t border-foreground/5 mt-8">
