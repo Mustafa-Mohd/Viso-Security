@@ -76,7 +76,7 @@ function HomePage() {
             </Suspense>
           </LazyMount>
 
-          <LazyMount minHeight={600} fallback={<SectionFallback h={600} />}>
+          <LazyMount minHeight={520} fallback={<SectionFallback h={520} />}>
             <ServiceLifecycle data={cmsData.lifecycle} />
           </LazyMount>
 
@@ -401,7 +401,7 @@ export function HeroSection({ data }: { data?: any }) {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.85, delay: 0.55, ease: heroEase }}
-            className="font-sans text-lg md:text-xl text-black mt-7 md:mt-8 max-w-xl leading-snug"
+            className="font-sans text-lg md:text-xl text-black mt-7 md:mt-8 max-w-xl leading-snug tracking-tight"
           >
             {subtitle}
           </motion.h3>
@@ -410,7 +410,7 @@ export function HeroSection({ data }: { data?: any }) {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.85, delay: 0.65, ease: heroEase }}
-            className="font-sans text-sm md:text-base text-black mt-5 max-w-lg leading-relaxed whitespace-pre-wrap"
+            className="font-sans text-[15px] md:text-[16px] text-black/80 mt-5 max-w-lg leading-[1.75] whitespace-pre-wrap text-justify tracking-normal"
           >
             {desc}
           </motion.p>
@@ -1399,7 +1399,16 @@ function About({ data }: { data?: any }) {
   );
 }
 
+function teaserText(text: string, max = 110) {
+  const value = String(text || "").trim();
+  if (!value) return "";
+  const sentence = value.split(/(?<=[.!?])\s/)[0];
+  if (sentence.length <= max) return sentence;
+  return `${value.slice(0, max).replace(/\s+\S*$/, "")}…`;
+}
+
 function ServiceLifecycle({ data }: { data?: any }) {
+  const { t } = useTranslation();
   const defaultStages = [
     { num: "01", title: "Security Risk Assessment", desc: "Assessment of threats, vulnerabilities, perimeter, gates, access points, critical assets and the initial security concept around the facility.", points: "Threat and vulnerability assessment\nPerimeter, gate and access-point review\nCritical asset identification\nInitial protection requirements", deliverable: "Risk & Threat Matrix", imageUrl: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80", color: "from-blue-900/40 to-blue-900/5", accent: "text-blue-400", bgAccent: "bg-blue-400", border: "border-blue-900/30", bgHover: "group-hover:bg-blue-900/10" },
     { num: "02", title: "Concept / Preliminary Design", desc: "Translate risk findings into a protection philosophy, security zoning, system concepts, preliminary layouts and technology requirements.", points: "Protection philosophy\nConcept CCTV coverage\nAccess control and zoning\nPreliminary control-room concept", deliverable: "Preliminary Design Report", imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80", color: "from-emerald-900/40 to-emerald-900/5", accent: "text-emerald-400", bgAccent: "bg-emerald-400", border: "border-emerald-900/30", bgHover: "group-hover:bg-emerald-900/10" },
@@ -1434,7 +1443,7 @@ function ServiceLifecycle({ data }: { data?: any }) {
   return (
     <section id="service-lifecycle" className="relative px-6 py-20 md:py-32 bg-background border-t border-border overflow-hidden">
       <div className="mx-auto max-w-7xl">
-        <div className="text-center mb-16 md:mb-24 max-w-3xl mx-auto flex flex-col items-center">
+        <div className="text-center mb-12 md:mb-16 max-w-3xl mx-auto flex flex-col items-center">
           <Reveal>
             <SectionLabel n="02" label={title} />
           </Reveal>
@@ -1443,73 +1452,43 @@ function ServiceLifecycle({ data }: { data?: any }) {
           </Reveal>
         </div>
 
-        <div className="space-y-8 md:space-y-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
           {stages.map((stage: any, i: number) => (
-            <Reveal key={stage.num} delay={0.1 + (i * 0.1)}>
-              <div className={`group relative flex flex-col md:flex-row overflow-hidden rounded-3xl border ${stage.border} bg-foreground/[0.02] ${stage.bgHover} transition-all duration-500 hover:shadow-2xl hover:-translate-y-1`}>
-                
-                {/* Colorful Gradient Background */}
-                <div className={`absolute inset-0 bg-gradient-to-r ${stage.color} opacity-30 group-hover:opacity-50 transition-opacity duration-500`} />
+            <Reveal key={stage.num} delay={0.1 + (i * 0.08)} className="h-full">
+              <Link
+                to="/security"
+                className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border ${stage.border} bg-foreground/[0.02] ${stage.bgHover} transition-all duration-500 hover:shadow-xl hover:-translate-y-1 cursor-pointer`}
+              >
+                <div className={`absolute inset-0 bg-gradient-to-b ${stage.color} opacity-30 group-hover:opacity-50 transition-opacity duration-500`} />
 
-                {/* Image Side (Left or Right alternating) */}
-                <div className={`w-full md:w-5/12 h-64 md:h-auto relative overflow-hidden ${i % 2 === 1 ? 'md:order-last' : ''}`}>
-                  <div className="absolute inset-0 bg-background/20 group-hover:bg-transparent transition-colors duration-500 z-10" />
-                  <img 
-                    src={stage.imageUrl} 
+                <div className="relative h-36 overflow-hidden">
+                  <img
+                    src={stage.imageUrl}
                     alt={stage.title}
                     loading="lazy"
                     decoding="async"
                     className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent md:hidden z-10" />
-                  
-                  {/* Number Overlay */}
-                  <div className="absolute bottom-4 left-6 md:top-6 md:left-6 md:bottom-auto z-20">
-                    <span className="font-display text-6xl md:text-7xl font-bold text-white/90 drop-shadow-lg leading-none">
-                      {stage.num}
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent" />
+                  <span className="absolute bottom-3 left-4 font-display text-4xl font-bold text-white/90 drop-shadow-lg leading-none">
+                    {stage.num}
+                  </span>
+                </div>
+
+                <div className="relative z-10 flex flex-1 flex-col p-5 md:p-6">
+                  <h3 className="font-display text-xl leading-snug mb-3">{stage.title}</h3>
+                  <p className="text-sm text-black leading-relaxed mb-5">
+                    {teaserText(stage.desc)}
+                  </p>
+
+                  <div className="mt-auto pt-4 border-t border-foreground/10">
+                    <span className="inline-flex items-center justify-center gap-2 w-full rounded-md border border-gold/30 bg-gold/10 px-4 py-2.5 text-xs font-bold tracking-widest uppercase text-primary group-hover:bg-gold group-hover:text-foreground group-hover:border-gold transition-colors duration-300">
+                      {t("home.more_info")}
+                      <span className="text-base rtl:rotate-180 inline-block transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1">→</span>
                     </span>
                   </div>
                 </div>
-
-                {/* Content Side */}
-                <div className="w-full md:w-7/12 p-8 md:p-12 flex flex-col justify-center relative z-10">
-                  <div className="flex items-center gap-4 mb-6">
-                    <span className={`font-mono text-xl ${stage.accent}`}>{stage.num}</span>
-                    <div className="h-px w-12 bg-border"></div>
-                  </div>
-                  <h3 className="font-display text-2xl md:text-3xl mb-4">{stage.title}</h3>
-                  <p className="text-black mb-8 leading-relaxed">
-                    {stage.desc}
-                  </p>
-                  
-                  <ul className="space-y-3 mb-8">
-                    {(typeof stage.points === 'string' ? stage.points.split('\n') : stage.points).map((point: string, idx: number) => (
-                      <li key={idx} className="flex items-start gap-3">
-                        <div className={`mt-1.5 w-1.5 h-1.5 rounded-full ${stage.bgAccent} flex-shrink-0`} />
-                        <span className="text-sm text-black">{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="mt-auto pt-6 border-t border-foreground/10 flex items-center justify-between">
-                    <div>
-                      <span className="text-xs text-muted-foreground uppercase tracking-widest block mb-1 font-mono">Key Deliverable</span>
-                      <span className={`text-base font-medium ${stage.accent}`}>{stage.deliverable}</span>
-                    </div>
-                    
-                    {/* Next step indicator */}
-                    {i < stages.length - 1 && (
-                      <div className="hidden sm:flex items-center gap-2 text-muted-foreground group-hover:text-foreground transition-colors">
-                        <span className="text-xs uppercase tracking-widest font-mono">Next</span>
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-              </div>
+              </Link>
             </Reveal>
           ))}
         </div>
