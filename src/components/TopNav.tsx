@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -15,6 +15,8 @@ export function TopNav() {
     setAppLanguage(next, true);
   };
 
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
   const links = [
     { to: "/", label: t("nav.home") },
     { to: "/about", label: t("nav.about") },
@@ -26,6 +28,21 @@ export function TopNav() {
     { to: "/career", label: t("nav.careers") },
     { to: "/contact", label: t("nav.contact") },
   ] as const;
+
+  const isActivePath = (to: string) => {
+    if (to === "/") return pathname === "/";
+    return pathname === to || pathname.startsWith(`${to}/`);
+  };
+
+  const desktopNavClass = (to: string) =>
+    isActivePath(to)
+      ? "font-sans text-sm font-semibold tracking-wide text-primary relative after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-0.5 after:bg-primary after:rounded-full"
+      : "font-sans text-sm font-medium tracking-wide text-foreground/80 hover:text-primary transition-colors duration-300";
+
+  const mobileNavClass = (to: string) =>
+    isActivePath(to)
+      ? "font-display text-2xl tracking-wide text-primary font-semibold"
+      : "font-display text-2xl tracking-wide text-foreground/75 hover:text-primary transition-colors";
 
   return (
     <>
@@ -48,7 +65,8 @@ export function TopNav() {
             <Link
               key={l.to}
               to={l.to}
-              className="font-sans text-sm font-medium tracking-wide text-foreground/80 hover:text-primary transition-colors duration-300"
+              className={desktopNavClass(l.to)}
+              aria-current={isActivePath(l.to) ? "page" : undefined}
             >
               {l.label}
             </Link>
@@ -66,7 +84,12 @@ export function TopNav() {
           </button>
           <Link
             to="/others"
-            className="hidden lg:flex items-center justify-center rounded bg-primary px-6 py-2.5 font-sans text-xs font-semibold tracking-widest text-white hover:bg-secondary transition-all duration-400 hover:scale-[1.03]"
+            className={
+              isActivePath("/others")
+                ? "hidden lg:flex items-center justify-center rounded bg-secondary px-6 py-2.5 font-sans text-xs font-semibold tracking-widest text-white ring-2 ring-primary ring-offset-2 ring-offset-background"
+                : "hidden lg:flex items-center justify-center rounded bg-primary px-6 py-2.5 font-sans text-xs font-semibold tracking-widest text-white hover:bg-secondary transition-all duration-400 hover:scale-[1.03]"
+            }
+            aria-current={isActivePath("/others") ? "page" : undefined}
           >
             {t("nav.engage")}
           </Link>
@@ -96,7 +119,8 @@ export function TopNav() {
               key={l.to}
               to={l.to}
               onClick={() => setMobileMenuOpen(false)}
-              className="font-display text-2xl tracking-wide hover:text-primary transition-colors"
+              className={mobileNavClass(l.to)}
+              aria-current={isActivePath(l.to) ? "page" : undefined}
             >
               {l.label}
             </Link>
@@ -117,7 +141,12 @@ export function TopNav() {
           <Link
             to="/others"
             onClick={() => setMobileMenuOpen(false)}
-            className="w-full max-w-xs rounded bg-primary px-6 py-4 font-sans text-sm font-semibold tracking-widest text-white mt-4 hover:bg-secondary transition-colors text-center"
+            className={
+              isActivePath("/others")
+                ? "w-full max-w-xs rounded bg-secondary px-6 py-4 font-sans text-sm font-semibold tracking-widest text-white mt-4 ring-2 ring-primary text-center"
+                : "w-full max-w-xs rounded bg-primary px-6 py-4 font-sans text-sm font-semibold tracking-widest text-white mt-4 hover:bg-secondary transition-colors text-center"
+            }
+            aria-current={isActivePath("/others") ? "page" : undefined}
           >
             {t("nav.engage")}
           </Link>

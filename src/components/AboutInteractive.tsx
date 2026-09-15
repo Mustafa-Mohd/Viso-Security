@@ -345,6 +345,17 @@ function ProfileJourney({ items }: { items: ProfileItem[] }) {
   );
 }
 
+function renderVisionTitle(title: string) {
+  const split = title.match(/^(.+?\s+to)\s+(.+)$/i);
+  if (!split) return title;
+  return (
+    <>
+      {split[1]}{" "}
+      <span className="text-primary font-light">{split[2]}</span>
+    </>
+  );
+}
+
 /* ---------- Main export ---------- */
 export function AboutInteractive({
   title,
@@ -421,9 +432,9 @@ export function AboutInteractive({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.9, delay: 0.08, ease }}
-            className="font-display text-3xl md:text-5xl lg:text-[3.4rem] leading-[1.05] tracking-tight text-foreground max-w-xl"
+            className="font-display text-3xl md:text-4xl lg:text-[2.75rem] leading-[1.12] tracking-tight text-balance text-foreground max-w-3xl"
           >
-            {title}
+            {renderVisionTitle(title)}
           </motion.h2>
 
           <motion.p
@@ -431,7 +442,7 @@ export function AboutInteractive({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.16, ease }}
-            className="mt-5 text-sm md:text-base text-black leading-relaxed max-w-md"
+            className="mt-6 text-base md:text-lg text-foreground/55 leading-relaxed font-light max-w-3xl text-pretty"
           >
             {subtitle}
           </motion.p>

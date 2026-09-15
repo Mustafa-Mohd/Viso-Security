@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { TopNav } from "@/components/TopNav";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { submitContactInquiry } from "@/lib/inquiriesApi";
 import { CheckCircle2, Loader2, Send } from "lucide-react";
 
 export const Route = createFileRoute("/contact")({
@@ -41,16 +41,12 @@ function ContactPage() {
     setErrorMessage("");
 
     try {
-      const { error } = await supabase.from("contact_submissions").insert([
-        {
-          name: formData.name,
-          email: formData.email,
-          company: formData.company || null,
-          message: formData.message,
-        },
-      ]);
-
-      if (error) throw error;
+      await submitContactInquiry({
+        name: formData.name,
+        email: formData.email,
+        company: formData.company || null,
+        message: formData.message,
+      });
 
       setStatus("success");
       setFormData({ name: "", email: "", company: "", message: "" });

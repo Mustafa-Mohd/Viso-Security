@@ -6,6 +6,13 @@ import { DmsDashboard } from "@/components/DmsDashboard";
 import { EmployeeDashboard } from "@/components/EmployeeDashboard";
 import { CertificatesDashboard } from "@/components/CertificatesDashboard";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { fetchContactSubmissions, markInquiryRead, type ContactSubmission } from "@/lib/inquiriesApi";
+import {
+  uploadGalleryImage,
+  insertGalleryImageRecord,
+  fetchGalleryImageRecords,
+  deleteGalleryImageRecord,
+} from "@/lib/galleryApi";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -607,18 +614,21 @@ function AdminPage() {
   });
 
   // Inquiries State
-  const [inquiries, setInquiries] = useState<any[]>([]);
+  const [inquiries, setInquiries] = useState<ContactSubmission[]>([]);
   const [inquiriesLoading, setInquiriesLoading] = useState(false);
+  const [inquiriesError, setInquiriesError] = useState<string | null>(null);
 
   const fetchInquiries = async () => {
     setInquiriesLoading(true);
-    const { data, error } = await supabase
-      .from('contact_submissions')
-      .select('*')
-      .order('created_at', { ascending: false });
-    
-    if (!error && data) {
+    setInquiriesError(null);
+    try {
+      const data = await fetchContactSubmissions();
       setInquiries(data);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Failed to load inquiries";
+      console.error("Inquiries fetch error:", e);
+      setInquiriesError(msg);
+      setInquiries([]);
     }
     setInquiriesLoading(false);
   };
@@ -649,6 +659,15 @@ function AdminPage() {
     }
     setLoading(false);
   }, []);
+
+  useEffect(() => {
+    if (
+      activeTab === "inquiries" &&
+      (session?.role === "super_admin" || session?.role === "admin")
+    ) {
+      fetchInquiries();
+    }
+  }, [activeTab, session?.role]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -714,13 +733,12 @@ function AdminPage() {
   };
 
   const fetchImages = async () => {
-    const { data, error } = await supabase
-      .from("gallery_images")
-      .select("*")
-      .order("created_at", { ascending: false });
-    
-    if (error) console.error("Error fetching images:", error);
-    else setImages(data || []);
+    try {
+      const data = await fetchGalleryImageRecords();
+      setImages(data);
+    } catch (error) {
+      console.error("Error fetching images:", error);
+    }
   };
 
   const fetchCoreValues = async () => {
@@ -805,40 +823,17 @@ function AdminPage() {
 
   const uploadFileToGallery = async (file: File) => {
     setUploading(true);
-    
-    // 1. Upload to storage
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
-    const filePath = `${fileName}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from('gallery')
-      .upload(filePath, file);
-
-    if (uploadError) {
-      console.error("Upload error:", uploadError);
-      alert("Error uploading file.");
-      setUploading(false);
-      return;
+    try {
+      const publicUrl = await uploadGalleryImage(file);
+      await insertGalleryImageRecord(publicUrl);
+      fetchImages();
+    } catch (err) {
+      console.error("Gallery upload error:", err);
+      const msg = err instanceof Error ? err.message : "Upload failed";
+      alert(
+        `Error uploading gallery image: ${msg}\n\nIf this is your first time, run gallery_setup.sql in Supabase SQL Editor.`
+      );
     }
-
-    // 2. Get public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from('gallery')
-      .getPublicUrl(filePath);
-
-    // 3. Save to database
-    const { error: dbError } = await supabase
-      .from('gallery_images')
-      .insert([{ image_url: publicUrl }]);
-
-    if (dbError) {
-      console.error("Database error:", dbError);
-      alert("Error saving image to database.");
-    } else {
-      fetchImages(); // Refresh list
-    }
-    
     setUploading(false);
   };
 
@@ -852,16 +847,15 @@ function AdminPage() {
     if (!imageUrlInput) return;
     
     setUploading(true);
-    const { error: dbError } = await supabase
-      .from('gallery_images')
-      .insert([{ image_url: imageUrlInput }]);
-
-    if (dbError) {
-      console.error("Database error:", dbError);
-      alert("Error saving image URL to database.");
-    } else {
-      fetchImages(); // Refresh list
-      setImageUrlInput(""); // Clear input
+    try {
+      await insertGalleryImageRecord(imageUrlInput);
+      fetchImages();
+      setImageUrlInput("");
+    } catch (err) {
+      console.error("Database error:", err);
+      alert(
+        `Error saving image URL: ${err instanceof Error ? err.message : "unknown"}\n\nRun gallery_setup.sql in Supabase if the table is missing.`
+      );
     }
     setUploading(false);
   };
@@ -886,20 +880,12 @@ function AdminPage() {
 
   const handleDelete = async (id: string, imageUrl: string) => {
     if (!confirm("Are you sure you want to delete this image?")) return;
-
-    // 1. Delete from database
-    await supabase.from('gallery_images').delete().eq('id', id);
-
-    // 2. Extract filename from URL and delete from storage
     try {
-      const urlParts = imageUrl.split('/');
-      const fileName = urlParts[urlParts.length - 1];
-      await supabase.storage.from('gallery').remove([fileName]);
+      await deleteGalleryImageRecord(id, imageUrl);
+      fetchImages();
     } catch (err) {
-      console.error("Could not delete from storage", err);
+      alert(`Could not delete image: ${err instanceof Error ? err.message : "unknown"}`);
     }
-
-    fetchImages(); // Refresh list
   };
 
   const handleCoreValueSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -910,27 +896,14 @@ function AdminPage() {
     if (fileInput.files && fileInput.files.length > 0) {
       const file = fileInput.files[0];
       setCvUploading(true);
-      
-      const fileExt = file.name.split('.').pop();
-      const fileName = `cv_${Math.random()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('gallery')
-        .upload(filePath, file);
-
-      if (uploadError) {
-        console.error("Upload error:", uploadError);
-        alert("Error uploading file.");
+      try {
+        publicUrl = await uploadGalleryImage(file, "core-values");
+      } catch (err) {
+        console.error("Upload error:", err);
+        alert(`Error uploading image: ${err instanceof Error ? err.message : "unknown"}`);
         setCvUploading(false);
         return;
       }
-
-      const { data } = supabase.storage
-        .from('gallery')
-        .getPublicUrl(filePath);
-
-      publicUrl = data.publicUrl;
     }
 
     if (!publicUrl) {
@@ -2186,26 +2159,16 @@ function AdminPage() {
                                     onChange={async (e) => {
                                       if (e.target.files && e.target.files[0]) {
                                         const file = e.target.files[0];
-                                        const fileExt = file.name.split('.').pop();
-                                        const fileName = `${Math.random()}.${fileExt}`;
-                                        const filePath = `clients/${fileName}`;
-                                        
-                                        const { error: uploadError } = await supabase.storage
-                                          .from('gallery_images')
-                                          .upload(filePath, file);
-                                          
-                                        if (uploadError) {
-                                          alert("Error uploading image");
-                                          return;
+                                        try {
+                                          const publicUrl = await uploadGalleryImage(file, "clients");
+                                          const newItems = [...clientsData.items];
+                                          newItems[idx].icon = publicUrl;
+                                          setClientsData({ ...clientsData, items: newItems });
+                                        } catch (err) {
+                                          alert(
+                                            `Error uploading image: ${err instanceof Error ? err.message : "unknown"}\n\nRun gallery_setup.sql in Supabase.`
+                                          );
                                         }
-                                        
-                                        const { data: urlData } = supabase.storage
-                                          .from('gallery_images')
-                                          .getPublicUrl(filePath);
-                                          
-                                        const newItems = [...clientsData.items];
-                                        newItems[idx].icon = urlData.publicUrl;
-                                        setClientsData({ ...clientsData, items: newItems });
                                       }
                                     }}
                                   />
@@ -2347,37 +2310,76 @@ function AdminPage() {
         )}
 
         {/* INQUIRIES TAB */}
-        {activeTab === 'inquiries' && (
+        {activeTab === 'inquiries' && (session?.role === 'super_admin' || session?.role === 'admin') && (
           <div className="flex-1 flex flex-col p-6 overflow-y-auto">
-            <h1 className="text-3xl mb-2">Inquiries</h1>
-            <p className="text-foreground/60 mb-8">View and manage contact submissions.</p>
+            <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
+              <div>
+                <h1 className="text-3xl mb-2">Inquiries</h1>
+                <p className="text-foreground/60">Submissions from the Contact page (and site popup).</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => fetchInquiries()}
+                className="text-sm px-4 py-2 rounded border border-foreground/15 hover:bg-foreground/5"
+              >
+                Refresh
+              </button>
+            </div>
+
+            {inquiriesError && (
+              <div className="mb-6 p-4 rounded-lg border border-red-500/30 bg-red-500/10 text-sm">
+                <p className="font-semibold text-red-700 dark:text-red-300">Could not load inquiries</p>
+                <p className="mt-1 text-red-600/90 dark:text-red-200/90">{inquiriesError}</p>
+                <p className="mt-2 text-xs text-foreground/70">
+                  In Supabase → SQL Editor, run <code className="bg-foreground/10 px-1 rounded">contact_submissions_rls_fix.sql</code> from this project, then click Refresh.
+                </p>
+              </div>
+            )}
 
             {inquiriesLoading ? (
               <div className="flex items-center justify-center p-12">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               </div>
-            ) : inquiries.length === 0 ? (
+            ) : inquiries.length === 0 && !inquiriesError ? (
               <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded p-12 text-center">
-                <p className="text-foreground/60">No inquiries found.</p>
+                <p className="text-foreground/60 mb-2">No inquiries yet.</p>
+                <p className="text-sm text-foreground/45">Submit a test message at <strong>/contact</strong>, then refresh here.</p>
               </div>
             ) : (
               <div className="space-y-4">
-                {inquiries.map((inq: any) => (
-                  <div key={inq.id} className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded p-6 shadow-sm flex flex-col md:flex-row gap-6">
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <h3 className="font-bold text-lg">{inq.name}</h3>
-                          {inq.company && <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full font-medium">{inq.company}</span>}
-                        </div>
-                        <span className="text-xs text-foreground/50">{new Date(inq.created_at).toLocaleString()}</span>
+                {inquiries.map((inq) => (
+                  <div key={inq.id} className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded p-6 shadow-sm">
+                    <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <h3 className="font-bold text-lg">{inq.name}</h3>
+                        {inq.company && <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full font-medium">{inq.company}</span>}
+                        {inq.status === 'unread' && (
+                          <span className="text-[10px] font-bold uppercase tracking-wide bg-red-500/15 text-red-600 px-2 py-0.5 rounded">New</span>
+                        )}
                       </div>
-                      <div className="mb-4">
-                        <a href={`mailto:${inq.email}`} className="text-sm text-primary hover:underline">{inq.email}</a>
-                      </div>
-                      <div className="bg-background rounded-lg p-4 border border-foreground/5">
-                        <p className="text-foreground/80 text-sm whitespace-pre-wrap">{inq.message}</p>
-                      </div>
+                      <span className="text-xs text-foreground/50">{new Date(inq.created_at).toLocaleString()}</span>
+                    </div>
+                    <div className="mb-4 flex flex-wrap items-center gap-4">
+                      <a href={`mailto:${inq.email}`} className="text-sm text-primary hover:underline">{inq.email}</a>
+                      {inq.status === 'unread' && (
+                        <button
+                          type="button"
+                          className="text-xs text-foreground/60 hover:text-primary underline"
+                          onClick={async () => {
+                            try {
+                              await markInquiryRead(inq.id);
+                              fetchInquiries();
+                            } catch {
+                              alert("Could not update status. Run contact_submissions_rls_fix.sql in Supabase.");
+                            }
+                          }}
+                        >
+                          Mark as read
+                        </button>
+                      )}
+                    </div>
+                    <div className="bg-background rounded-lg p-4 border border-foreground/5">
+                      <p className="text-foreground/80 text-sm whitespace-pre-wrap">{inq.message}</p>
                     </div>
                   </div>
                 ))}

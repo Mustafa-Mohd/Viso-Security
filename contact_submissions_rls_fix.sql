@@ -1,4 +1,6 @@
--- Create the contact_submissions table
+-- Run in Supabase SQL Editor if Admin → Inquiries is empty but /contact works.
+-- Admin uses anon key + portal_users (not Supabase Auth).
+
 CREATE TABLE IF NOT EXISTS public.contact_submissions (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     name TEXT NOT NULL,
@@ -6,12 +8,11 @@ CREATE TABLE IF NOT EXISTS public.contact_submissions (
     company TEXT,
     message TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    status TEXT DEFAULT 'unread' -- can be 'unread', 'read', 'resolved'
+    status TEXT DEFAULT 'unread'
 );
 
 ALTER TABLE public.contact_submissions ENABLE ROW LEVEL SECURITY;
 
--- Admin panel uses anon key (portal_users login). Public policy required for SELECT + INSERT.
 DROP POLICY IF EXISTS "Allow public insert on contact_submissions" ON public.contact_submissions;
 DROP POLICY IF EXISTS "Allow authenticated full access on contact_submissions" ON public.contact_submissions;
 DROP POLICY IF EXISTS "Allow public all access on contact_submissions" ON public.contact_submissions;

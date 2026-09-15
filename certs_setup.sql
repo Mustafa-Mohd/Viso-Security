@@ -16,27 +16,16 @@ CREATE TABLE IF NOT EXISTS public.translation_certificates (
 -- Enable RLS
 ALTER TABLE public.translation_certificates ENABLE ROW LEVEL SECURITY;
 
--- 1. Public Read Policy (Anyone can scan the QR code and read the status)
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'translation_certificates' AND policyname = 'Allow public read access on translation_certificates') THEN
-        CREATE POLICY "Allow public read access on translation_certificates" 
-        ON public.translation_certificates 
-        FOR SELECT 
-        TO public 
-        USING (true);
-    END IF;
-END $$;
+-- Public read (Certipedia verification) + admin writes via anon key (portal login, not Supabase Auth).
+DROP POLICY IF EXISTS "Allow public read access on translation_certificates" ON public.translation_certificates;
+DROP POLICY IF EXISTS "Allow authenticated full access on translation_certificates" ON public.translation_certificates;
+DROP POLICY IF EXISTS "Allow public full access on translation_certificates" ON public.translation_certificates;
 
--- 2. Authenticated Write Policy (Only authenticated users can insert/update/delete)
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'translation_certificates' AND policyname = 'Allow authenticated full access on translation_certificates') THEN
-        CREATE POLICY "Allow authenticated full access on translation_certificates" 
-        ON public.translation_certificates 
-        FOR ALL 
-        TO authenticated 
-        USING (true)
-        WITH CHECK (true);
-    END IF;
-END $$;
+CREATE POLICY "Allow public full access on translation_certificates"
+    ON public.translation_certificates
+    FOR ALL
+    TO public
+    USING (true)
+    WITH CHECK (true);
+
+-- Existing projects: run certs_rls_fix.sql if you already applied the old authenticated-only write policy.
