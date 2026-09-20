@@ -1294,88 +1294,177 @@ function teaserText(text: string, max = 110) {
   return `${value.slice(0, max).replace(/\s+\S*$/, "")}…`;
 }
 
+const FRAME_TILT = [-1.25, 0.65, -0.55, 1.15] as const;
+
+function WallFrameStageCard({
+  stage,
+  index,
+  moreInfoLabel,
+}: {
+  stage: { num: string; title: string; desc: string; imageUrl: string };
+  index: number;
+  moreInfoLabel: string;
+}) {
+  const tilt = FRAME_TILT[index % FRAME_TILT.length];
+
+  return (
+    <Link
+      to="/security"
+      className="group block h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4 rounded-sm"
+    >
+      <motion.div
+        className="relative h-full transition-transform duration-500 ease-out group-hover:-translate-y-2 group-hover:scale-[1.01]"
+        style={{ rotate: `${tilt}deg` }}
+        whileHover={{ rotate: 0 }}
+        transition={{ type: "spring", stiffness: 260, damping: 22 }}
+      >
+        {/* Wall shadow */}
+        <div
+          className="absolute inset-x-3 bottom-0 top-8 rounded-sm bg-foreground/15 blur-xl opacity-60 group-hover:opacity-80 transition-opacity duration-500"
+          aria-hidden
+        />
+
+        {/* Outer wooden frame */}
+        <div
+          className="relative rounded-[2px] p-[7px] md:p-[9px] shadow-[0_18px_45px_rgba(0,0,0,0.22),inset_0_1px_0_rgba(255,255,255,0.25)]"
+          style={{
+            background:
+              "linear-gradient(145deg, #a67c2e 0%, #6b4f1d 35%, #8b6914 55%, #4a3820 100%)",
+          }}
+        >
+          {/* Inner frame lip */}
+          <div
+            className="rounded-[1px] p-[4px] shadow-[inset_0_2px_6px_rgba(0,0,0,0.45)]"
+            style={{ background: "linear-gradient(180deg, #2c2418 0%, #1a1510 100%)" }}
+          >
+            {/* Mat board */}
+            <div className="bg-[#f6f2e8] px-2.5 pt-2 pb-3 md:px-3 md:pt-2.5 md:pb-3 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]">
+              <div className="relative aspect-[5/4] overflow-hidden border border-black/10 bg-[#eae6dc] shadow-[inset_0_0_12px_rgba(0,0,0,0.08)]">
+                <img
+                  src={stage.imageUrl}
+                  alt={stage.title}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                />
+                <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-black/5" />
+              </div>
+
+              <div className="mt-2.5 text-center px-0.5">
+                <p className="font-mono text-[9px] tracking-[0.3em] text-primary/80 uppercase mb-1">
+                  Stage {stage.num}
+                </p>
+                <h3 className="font-display text-base md:text-lg leading-snug text-foreground tracking-tight">
+                  {stage.title}
+                </h3>
+                <p className="mt-1.5 text-[12px] text-foreground/65 leading-snug line-clamp-2">
+                  {teaserText(stage.desc, 100)}
+                </p>
+              </div>
+
+              <div className="mt-2.5 flex justify-center">
+                <span
+                  className="inline-flex items-center gap-1.5 rounded-sm border border-primary/25 bg-primary/8 px-3 py-1.5 font-sans text-[9px] font-bold tracking-[0.16em] uppercase text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary"
+                >
+                  {moreInfoLabel}
+                  <span className="text-sm rtl:rotate-180 transition-transform duration-300 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5">
+                    →
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Picture hook accent */}
+        <div
+          className="absolute -top-1 left-1/2 h-2 w-10 -translate-x-1/2 rounded-full bg-gradient-to-b from-[#8b7355] to-[#4a3f32] shadow-sm opacity-80"
+          aria-hidden
+        />
+      </motion.div>
+    </Link>
+  );
+}
+
 function ServiceLifecycle({ data }: { data?: any }) {
   const { t } = useTranslation();
   const defaultStages = [
-    { num: "01", title: "Security Risk Assessment", desc: "Assessment of threats, vulnerabilities, perimeter, gates, access points, critical assets and the initial security concept around the facility.", points: "Threat and vulnerability assessment\nPerimeter, gate and access-point review\nCritical asset identification\nInitial protection requirements", deliverable: "Risk & Threat Matrix", imageUrl: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80", color: "from-blue-900/40 to-blue-900/5", accent: "text-blue-400", bgAccent: "bg-blue-400", border: "border-blue-900/30", bgHover: "group-hover:bg-blue-900/10" },
-    { num: "02", title: "Concept / Preliminary Design", desc: "Translate risk findings into a protection philosophy, security zoning, system concepts, preliminary layouts and technology requirements.", points: "Protection philosophy\nConcept CCTV coverage\nAccess control and zoning\nPreliminary control-room concept", deliverable: "Preliminary Design Report", imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80", color: "from-emerald-900/40 to-emerald-900/5", accent: "text-emerald-400", bgAccent: "bg-emerald-400", border: "border-emerald-900/30", bgHover: "group-hover:bg-emerald-900/10" },
-    { num: "03", title: "Detailed Design", desc: "Develop implementation-level drawings, specifications, schedules, interfaces and integration requirements suitable for procurement and construction.", points: "Detailed layouts and schematics\nEquipment and device schedules\nTechnical specifications\nSystems integration requirements", deliverable: "Tender-Ready Blueprints", imageUrl: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80", color: "from-purple-900/40 to-purple-900/5", accent: "text-purple-400", bgAccent: "bg-purple-400", border: "border-purple-900/30", bgHover: "group-hover:bg-purple-900/10" },
-    { num: "04", title: "Construction & Readiness", desc: "Supervision, technical submittal review, inspections, testing, commissioning, handover and confirmation of operational readiness.", points: "Construction supervision\nFAT / SAT and commissioning\nDefect and closeout tracking\nOperational readiness and handover", deliverable: "Operational Handover", imageUrl: "https://www.planswift.com/wp-content/uploads/2019/02/shutterstock_303643469.jpg", color: "from-orange-900/40 to-orange-900/5", accent: "text-orange-400", bgAccent: "bg-orange-400", border: "border-orange-900/30", bgHover: "group-hover:bg-orange-900/10" }
+    {
+      num: "01",
+      title: "Security Risk Assessment",
+      desc: "Threats, vulnerabilities, perimeter review, critical assets, and the initial protection concept for your facility.",
+      imageUrl: "/images/explore/risk-assessment-hero.jpg",
+    },
+    {
+      num: "02",
+      title: "Concept / Preliminary Design",
+      desc: "Protection philosophy, zoning, system concepts, and preliminary layouts aligned with authority expectations.",
+      imageUrl: "/images/explore/preliminary-design-hero.jpg",
+    },
+    {
+      num: "03",
+      title: "Detailed Design",
+      desc: "Drawings, specifications, schedules, and integration packages ready for procurement and build.",
+      imageUrl: "/images/explore/detailed-design-hero.jpg",
+    },
+    {
+      num: "04",
+      title: "Construction & Readiness",
+      desc: "Supervision, testing, commissioning, and handover—confirming systems perform as designed.",
+      imageUrl: "/images/explore/handover-support-hero.jpg",
+    },
   ];
 
-  const constructionImg =
-    "https://www.planswift.com/wp-content/uploads/2019/02/shutterstock_303643469.jpg";
-
   const stages = (data?.items?.length > 0 ? data.items : defaultStages).map(
-    (stage: any, i: number) => {
-      const merged = { ...defaultStages[i], ...stage };
-      const isConstruction =
-        String(merged.num) === "04" ||
-        String(merged.title || "").toLowerCase().includes("construction");
-      const missingOrOld =
-        !merged.imageUrl ||
-        String(merged.imageUrl).includes("photo-1541888086925");
-      return {
-        ...merged,
-        imageUrl:
-          isConstruction && missingOrOld
-            ? constructionImg
-            : merged.imageUrl || defaultStages[i]?.imageUrl || "",
-      };
-    }
+    (stage: any, i: number) => ({
+      num: stage.num ?? defaultStages[i]?.num ?? String(i + 1).padStart(2, "0"),
+      title: stage.title ?? defaultStages[i]?.title ?? "",
+      desc: stage.desc ?? defaultStages[i]?.desc ?? "",
+      imageUrl: stage.imageUrl || defaultStages[i]?.imageUrl || "",
+    }),
   );
-  const title = data?.title || "Security Services";
-  const subtitle = data?.subtitle || "Four Stages. One Security Lifecycle.";
+
+  const sectionLabel = data?.title || "Security Framework";
 
   return (
-    <section id="service-lifecycle" className="relative px-6 py-20 md:py-32 bg-background border-t border-border overflow-hidden">
-      <div className="mx-auto max-w-7xl">
-        <div className="text-center mb-12 md:mb-16 max-w-3xl mx-auto flex flex-col items-center">
+    <section
+      id="four-stages"
+      className="relative px-6 py-12 md:py-16 border-t border-border overflow-hidden bg-[#e8e4dc]"
+      style={{
+        backgroundImage:
+          "radial-gradient(circle at 1px 1px, rgba(0,0,0,0.045) 1px, transparent 0)",
+        backgroundSize: "22px 22px",
+      }}
+    >
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background/30" />
+
+      <div className="relative mx-auto max-w-[1400px]">
+        <div className="text-center mb-6 md:mb-8 max-w-3xl mx-auto flex flex-col items-center">
           <Reveal>
-            <SectionLabel n="02" label={title} />
+            <SectionLabel n="02" label={sectionLabel} />
           </Reveal>
           <Reveal delay={0.1}>
-            <h2 className="mt-6 font-display text-4xl leading-[1.1] md:text-5xl" dangerouslySetInnerHTML={{ __html: subtitle.replace('One Security Lifecycle.', '<em class="text-gradient-gold">One Security Lifecycle.</em>') }} />
+            <h2 className="mt-3 font-display text-3xl leading-[1.08] md:text-4xl lg:text-5xl tracking-tight text-foreground">
+              Four Stages.{" "}
+              <em className="text-gradient-gold not-italic font-light">One Security.</em>
+            </h2>
+          </Reveal>
+          <Reveal delay={0.16}>
+            <p className="mt-2.5 text-sm md:text-base text-foreground/55 font-light max-w-xl leading-relaxed">
+              A clear, authority-aligned path from assessment through operational readiness—presented
+              as four connected chapters of your security story.
+            </p>
           </Reveal>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
-          {stages.map((stage: any, i: number) => (
-            <Reveal key={stage.num} delay={0.1 + (i * 0.08)} className="h-full">
-              <Link
-                to="/security"
-                className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border ${stage.border} bg-foreground/[0.02] ${stage.bgHover} transition-all duration-500 hover:shadow-xl hover:-translate-y-1 cursor-pointer`}
-              >
-                <div className={`absolute inset-0 bg-gradient-to-b ${stage.color} opacity-30 group-hover:opacity-50 transition-opacity duration-500`} />
-
-                <div className="relative h-36 overflow-hidden">
-                  <img
-                    src={stage.imageUrl}
-                    alt={stage.title}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent" />
-                  <span className="absolute bottom-3 left-4 font-display text-4xl font-bold text-white/90 drop-shadow-lg leading-none">
-                    {stage.num}
-                  </span>
-                </div>
-
-                <div className="relative z-10 flex flex-1 flex-col p-5 md:p-6">
-                  <h3 className="font-display text-xl leading-snug mb-3">{stage.title}</h3>
-                  <p className="text-sm text-black leading-relaxed mb-5">
-                    {teaserText(stage.desc)}
-                  </p>
-
-                  <div className="mt-auto pt-4 border-t border-foreground/10">
-                    <span className="inline-flex items-center justify-center gap-2 w-full rounded-md border border-gold/30 bg-gold/10 px-4 py-2.5 text-xs font-bold tracking-widest uppercase text-primary group-hover:bg-gold group-hover:text-foreground group-hover:border-gold transition-colors duration-300">
-                      {t("home.more_info")}
-                      <span className="text-base rtl:rotate-180 inline-block transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1">→</span>
-                    </span>
-                  </div>
-                </div>
-              </Link>
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 md:gap-5 xl:gap-4 items-stretch">
+          {stages.map((stage: (typeof defaultStages)[0], i: number) => (
+            <Reveal key={stage.num} delay={0.12 + i * 0.08} className="h-full">
+              <WallFrameStageCard
+                stage={stage}
+                index={i}
+                moreInfoLabel={t("home.more_info")}
+              />
             </Reveal>
           ))}
         </div>
