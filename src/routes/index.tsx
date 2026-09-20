@@ -305,7 +305,7 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
 }
 
 /* ============================================================
-   HERO SECTION — Split layout (matches original VISO design)
+   HERO SECTION — Full-bleed imagery + caption panel
    ============================================================ */
 const heroImages = [
   "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
@@ -321,182 +321,99 @@ const heroEase = [0.16, 1, 0.3, 1] as const;
 export function HeroSection({ data }: { data?: any }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-  });
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "28%"]);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
-  const [currentImage, setCurrentImage] = useState(0);
-
-  const title1 = data?.title1 || t("home.designing");
-  const title2 = data?.title2 || t("home.the_future");
-  const subtitle = data?.subtitle || t("home.subtitle");
-  const desc = data?.desc || t("home.desc");
   const activeImages =
     data?.images?.filter(Boolean).length > 0
       ? data.images.filter(Boolean)
       : heroImages;
 
+  const defaultPanelTitles = t("home.hero_panel_titles", { returnObjects: true }) as string[];
+  const panelTitles =
+    data?.panelTitles?.filter(Boolean).length > 0
+      ? data.panelTitles.filter(Boolean)
+      : defaultPanelTitles.length > 0
+        ? defaultPanelTitles
+        : [data?.title1 || t("home.designing"), data?.title2 || t("home.the_future")].filter(Boolean);
+
+  const slideCount = Math.max(activeImages.length, panelTitles.length, 1);
+  const panelTitle = panelTitles[currentSlide % panelTitles.length] ?? t("home.strategic_architecture");
+  const imageIndex = currentSlide % activeImages.length;
+
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % activeImages.length);
-    }, 4000);
+      setCurrentSlide((prev) => (prev + 1) % slideCount);
+    }, 5000);
     return () => clearInterval(interval);
-  }, [activeImages.length]);
+  }, [slideCount]);
 
   return (
     <section
       ref={ref}
-      className="relative min-h-[100dvh] pt-24 md:pt-28 pb-16 md:pb-20 overflow-hidden flex items-center bg-background"
+      className="relative min-h-[calc(100dvh-4.25rem)] md:min-h-[calc(100dvh-4.5rem)] mt-[4.25rem] md:mt-[4.5rem] overflow-hidden bg-[#0d1117]"
     >
-      {/* Oversized faded background typography */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none w-full flex justify-center z-0">
-        <motion.h1
-          style={{ y }}
-          className="font-display font-bold text-[18vw] leading-none text-foreground/[0.035] tracking-tighter whitespace-nowrap"
+      <AnimatePresence mode="sync">
+        <motion.img
+          key={imageIndex}
+          src={activeImages[imageIndex]}
+          alt=""
+          role="presentation"
+          initial={{ opacity: 0, scale: 1.03 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.2, ease: "easeInOut" }}
+          loading={imageIndex === 0 ? "eager" : "lazy"}
+          decoding="async"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      </AnimatePresence>
+
+      <div className="absolute inset-0 bg-gradient-to-r from-[#0d1117]/85 via-[#0d1117]/35 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0d1117]/50 via-transparent to-[#0d1117]/20 pointer-events-none" />
+
+      <div className="relative z-10 flex min-h-[inherit] items-center px-6 md:px-12 lg:px-16 py-10 md:py-14">
+        <motion.div
+          initial={{ opacity: 0, x: -28 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.9, ease: heroEase }}
+          className="max-w-md md:max-w-lg lg:max-w-xl"
         >
-          INNOVATION
-        </motion.h1>
+          <div
+            className="relative border-s-4 border-primary bg-[#1C2541]/92 backdrop-blur-[2px] px-8 py-10 md:px-10 md:py-12 shadow-[0_24px_60px_rgba(0,0,0,0.35)]"
+          >
+            <p className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.28em] uppercase text-primary mb-4">
+              {t("home.hero_eyebrow")}
+            </p>
+            <AnimatePresence mode="wait">
+              <motion.h1
+                key={panelTitle}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.45, ease: heroEase }}
+                className="font-display font-bold text-2xl sm:text-3xl md:text-[2rem] lg:text-4xl leading-[1.15] tracking-wide text-white uppercase"
+              >
+                {panelTitle}
+              </motion.h1>
+            </AnimatePresence>
+            <div className="mt-8 h-px w-16 bg-primary/60" />
+          </div>
+        </motion.div>
       </div>
 
-      <div className="max-w-[1600px] w-full mx-auto px-8 md:px-16 grid lg:grid-cols-[58%_42%] gap-10 lg:gap-12 items-center relative z-10">
-        {/* Left — typography + CTAs */}
-        <motion.div
-          initial={{ opacity: 0, y: 36 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.2, ease: heroEase }}
-          className="flex flex-col"
-        >
-          <div className="font-sans text-[11px] font-bold tracking-[0.32em] text-primary mb-6 uppercase flex items-center gap-4">
-            <motion.span
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 0.9, delay: 0.35, ease: heroEase }}
-              className="origin-left inline-block w-12 h-px bg-primary"
-            />
-            {t("home.strategic_architecture")}
-          </div>
-
-          <h2 className="font-display font-bold text-5xl sm:text-6xl md:text-7xl lg:text-[92px] leading-[0.92] tracking-[-0.03em] text-foreground uppercase">
-            <motion.span
-              initial={{ opacity: 0, y: 28 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, delay: 0.3, ease: heroEase }}
-              className="block"
-            >
-              {title1}
-            </motion.span>
-            <motion.span
-              initial={{ opacity: 0, y: 28 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, delay: 0.42, ease: heroEase }}
-              className="block text-primary italic font-serif font-medium normal-case tracking-[-0.02em]"
-            >
-              {title2}
-            </motion.span>
-          </h2>
-
-          <motion.h3
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.85, delay: 0.55, ease: heroEase }}
-            className="font-sans text-lg md:text-xl text-black mt-7 md:mt-8 max-w-xl leading-snug tracking-tight"
-          >
-            {subtitle}
-          </motion.h3>
-
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.85, delay: 0.65, ease: heroEase }}
-            className="font-sans text-[15px] md:text-[16px] text-black/80 mt-5 max-w-lg leading-[1.75] whitespace-pre-wrap text-justify tracking-normal"
-          >
-            {desc}
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.78, ease: heroEase }}
-            className="flex flex-wrap items-center gap-4 md:gap-5 mt-10 md:mt-12"
-          >
-            <Link
-              to="/about"
-              className="rounded-sm bg-primary px-8 py-4 font-sans text-[11px] font-bold tracking-[0.2em] text-white transition-all duration-400 hover:bg-secondary hover:scale-[1.03] shadow-[0_10px_30px_rgba(212,175,55,0.25)]"
-            >
-              DISCOVER MORE
-            </Link>
-            <Link
-              to="/gallery"
-              className="rounded-sm border border-primary/25 bg-transparent px-8 py-4 font-sans text-[11px] font-bold tracking-[0.2em] text-primary transition-all duration-400 hover:border-primary hover:bg-primary/5 hover:scale-[1.03]"
-            >
-              VIEW PROJECTS
-            </Link>
-          </motion.div>
-        </motion.div>
-
-        {/* Right — floating render + logo badge */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.96, x: 24 }}
-          animate={{ opacity: 1, scale: 1, x: 0 }}
-          transition={{ duration: 1.15, delay: 0.4, ease: heroEase }}
-          className="relative h-[420px] sm:h-[520px] lg:h-[600px] mt-8 lg:mt-0"
-        >
-          <motion.div
-            animate={{ y: [-12, 12, -12] }}
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute right-0 top-4 lg:top-10 w-full lg:w-[95%] h-[380px] sm:h-[480px] lg:h-[550px] rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.1)] z-10 bg-surface"
-          >
-            <AnimatePresence mode="sync">
-              <motion.img
-                key={currentImage}
-                src={activeImages[currentImage]}
-                alt="Premium Architecture"
-                initial={{ opacity: 0, scale: 1.04 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 1.4, ease: "easeInOut" }}
-                loading={currentImage === 0 ? "eager" : "lazy"}
-                decoding="async"
-                className="w-full h-full object-cover absolute inset-0"
-              />
-            </AnimatePresence>
-
-            {/* Soft image vignette */}
-            <div className="absolute inset-0 bg-gradient-to-t from-foreground/15 via-transparent to-transparent pointer-events-none rounded-2xl sm:rounded-3xl" />
-
-            {/* Slide indicators */}
-            <div className="absolute bottom-4 right-4 z-20 flex gap-1.5">
-              {activeImages.map((_: string, i: number) => (
-                <button
-                  key={i}
-                  type="button"
-                  aria-label={`Image ${i + 1}`}
-                  onClick={() => setCurrentImage(i)}
-                  className={`h-1 rounded-full transition-all duration-400 ${
-                    i === currentImage ? "w-6 bg-primary" : "w-2 bg-white/50 hover:bg-white/80"
-                  }`}
-                />
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Circular overlapping logo — smaller */}
-          <motion.div
-            animate={{ y: [10, -10, 10] }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            className="absolute left-[-2%] sm:left-[-4%] lg:left-[-6%] bottom-10 sm:bottom-16 w-28 h-28 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full overflow-hidden shadow-[0_16px_40px_rgba(0,0,0,0.12)] border-[4px] sm:border-[5px] border-background z-20 bg-surface flex items-center justify-center"
-          >
-            <img
-              src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
-              alt="VISO Group Logo"
-              loading="eager"
-              decoding="async"
-              className="w-[70%] h-[70%] object-contain drop-shadow-[0_10px_20px_rgba(212,175,55,0.2)]"
-            />
-          </motion.div>
-        </motion.div>
+      <div className="absolute bottom-6 md:bottom-8 inset-inline-end-6 md:inset-inline-end-12 z-20 flex gap-2">
+        {Array.from({ length: slideCount }, (_, i) => i).map((i) => (
+          <button
+            key={i}
+            type="button"
+            aria-label={`Slide ${i + 1}`}
+            aria-current={i === currentSlide ? "true" : undefined}
+            onClick={() => setCurrentSlide(i)}
+            className={`h-1 rounded-full transition-all duration-300 ${
+              i === currentSlide ? "w-8 bg-primary" : "w-2 bg-white/45 hover:bg-white/75"
+            }`}
+          />
+        ))}
       </div>
     </section>
   );
@@ -656,14 +573,22 @@ function ShowcaseSection({ data }: { data?: any }) {
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const y1 = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
 
-  const bgImage = data?.imageUrl || "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80";
+  const bgImage =
+    data?.imageUrl ||
+    "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80";
 
   return (
     <section ref={ref} className="py-16 overflow-hidden bg-background">
       <div className="max-w-[1600px] mx-auto px-8 md:px-16">
         <div className="relative h-[70vh] rounded-xl overflow-hidden group">
           <motion.div style={{ y: y1 }} className="absolute inset-[-20%]">
-            <img src={bgImage} alt="Showcase" loading="lazy" decoding="async" className="w-full h-full object-cover" />
+            <img
+              src={bgImage}
+              alt="Showcase"
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover"
+            />
           </motion.div>
           <div className="absolute inset-0 bg-primary/20 group-hover:bg-primary/10 transition-colors duration-700" />
         </div>
@@ -1329,42 +1254,6 @@ function About({ data }: { data?: any }) {
     data?.whoWeAreDesc ||
     "VISO provides security consultancy services across the lifecycle of security risk assessment, concept and detailed design, construction supervision, testing, commissioning and operational readiness.";
 
-  const services =
-    data?.services?.length > 0
-      ? data.services.map((s: any) => ({ title: s.title, desc: s.desc }))
-      : [
-          { title: "Security Consulting", desc: "Physical security lifecycle" },
-          { title: "Translation", desc: "Certified translation services" },
-          { title: "Digital Portal", desc: "Employee + DMS access" },
-          { title: "SAIS", desc: "Regulatory alignment" },
-        ];
-
-  const profileContents =
-    data?.profileContents?.length > 0
-      ? data.profileContents
-      : [
-          {
-            num: "01",
-            title: "Identity & Positioning",
-            desc: "Clear corporate introduction, value proposition and service positioning.",
-          },
-          {
-            num: "02",
-            title: "Capabilities & Lifecycle",
-            desc: "Four connected security consultancy stages.",
-          },
-          {
-            num: "03",
-            title: "Sectors & Clients",
-            desc: "Approved client logos, sectors and project environments.",
-          },
-          {
-            num: "04",
-            title: "Credentials & Verification",
-            desc: "Licensing, qualification and official verification links.",
-          },
-        ];
-
   return (
     <section
       id="about"
@@ -1381,8 +1270,6 @@ function About({ data }: { data?: any }) {
           subtitle={subtitle}
           whoWeAreTitle={whoWeAreTitle}
           whoWeAreDesc={whoWeAreDesc}
-          services={services}
-          profileContents={profileContents}
         />
 
         <motion.p

@@ -13,7 +13,16 @@
     "contact": "Contact",
     "engage": "OTHERS",
     "lang_toggle": "العربية",
-    "lang_switch": "Switch to العربية"
+    "lang_switch": "Switch to العربية",
+    "group_who": "Who We Are",
+    "group_services": "What We Do",
+    "group_impact": "Our Impact",
+    "join_team": "Join Our Team",
+    "contact_us": "Contact Us",
+    "regulatory_overview": "Regulatory Authorities",
+    "regulatory_sais": "SAIS",
+    "regulatory_moi": "MOI",
+    "regulatory_hcis": "HCIS (→ SAIS)"
   },
   "home": {
     "strategic_architecture": "Strategic Architecture",
@@ -24,7 +33,16 @@
     "scroll_down": "SCROLL DOWN",
     "learn_more": "Learn More",
     "more_info": "For more info",
-    "skip_intro": "Skip Intro"
+    "skip_intro": "Skip Intro",
+    "hero_eyebrow": "VISO Group",
+    "hero_panel_titles": [
+      "Strategic Security Architecture",
+      "Physical Security Consulting",
+      "Certified Translation Services",
+      "Risk Assessment & Compliance",
+      "Critical Infrastructure Protection",
+      "Integrated Security Design"
+    ]
   },
   "loader": {
     "w1": "Security Consultations",

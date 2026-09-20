@@ -7,6 +7,7 @@ import {
   useLocation,
 } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
+import { AnimatedOutlet } from "@/components/AnimatedOutlet";
 import "../styles.css";
 
 const CustomCursor = lazy(() =>

@@ -21,6 +21,9 @@ import { Route as CareerRouteImport } from './routes/career'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RegulatoryIndexRouteImport } from './routes/regulatory.index'
+import { Route as RegulatorySlugRouteImport } from './routes/regulatory.$slug'
+import { Route as ExploreSlugRouteImport } from './routes/explore.$slug'
 import { Route as CertificateIdRouteImport } from './routes/certificate.$id'
 
 const TranslationRoute = TranslationRouteImport.update({
@@ -83,6 +86,21 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RegulatoryIndexRoute = RegulatoryIndexRouteImport.update({
+  id: '/regulatory/',
+  path: '/regulatory/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegulatorySlugRoute = RegulatorySlugRouteImport.update({
+  id: '/regulatory/$slug',
+  path: '/regulatory/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExploreSlugRoute = ExploreSlugRouteImport.update({
+  id: '/explore/$slug',
+  path: '/explore/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CertificateIdRoute = CertificateIdRouteImport.update({
   id: '/certificate/$id',
   path: '/certificate/$id',
@@ -103,6 +121,9 @@ export interface FileRoutesByFullPath {
   '/technical-proposal': typeof TechnicalProposalRoute
   '/translation': typeof TranslationRoute
   '/certificate/$id': typeof CertificateIdRoute
+  '/explore/$slug': typeof ExploreSlugRoute
+  '/regulatory/$slug': typeof RegulatorySlugRoute
+  '/regulatory/': typeof RegulatoryIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -118,6 +139,9 @@ export interface FileRoutesByTo {
   '/technical-proposal': typeof TechnicalProposalRoute
   '/translation': typeof TranslationRoute
   '/certificate/$id': typeof CertificateIdRoute
+  '/explore/$slug': typeof ExploreSlugRoute
+  '/regulatory/$slug': typeof RegulatorySlugRoute
+  '/regulatory': typeof RegulatoryIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -134,6 +158,9 @@ export interface FileRoutesById {
   '/technical-proposal': typeof TechnicalProposalRoute
   '/translation': typeof TranslationRoute
   '/certificate/$id': typeof CertificateIdRoute
+  '/explore/$slug': typeof ExploreSlugRoute
+  '/regulatory/$slug': typeof RegulatorySlugRoute
+  '/regulatory/': typeof RegulatoryIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -151,6 +178,9 @@ export interface FileRouteTypes {
     | '/technical-proposal'
     | '/translation'
     | '/certificate/$id'
+    | '/explore/$slug'
+    | '/regulatory/$slug'
+    | '/regulatory/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -166,6 +196,9 @@ export interface FileRouteTypes {
     | '/technical-proposal'
     | '/translation'
     | '/certificate/$id'
+    | '/explore/$slug'
+    | '/regulatory/$slug'
+    | '/regulatory'
   id:
     | '__root__'
     | '/'
@@ -181,6 +214,9 @@ export interface FileRouteTypes {
     | '/technical-proposal'
     | '/translation'
     | '/certificate/$id'
+    | '/explore/$slug'
+    | '/regulatory/$slug'
+    | '/regulatory/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -197,6 +233,9 @@ export interface RootRouteChildren {
   TechnicalProposalRoute: typeof TechnicalProposalRoute
   TranslationRoute: typeof TranslationRoute
   CertificateIdRoute: typeof CertificateIdRoute
+  ExploreSlugRoute: typeof ExploreSlugRoute
+  RegulatorySlugRoute: typeof RegulatorySlugRoute
+  RegulatoryIndexRoute: typeof RegulatoryIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -285,6 +324,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/regulatory/': {
+      id: '/regulatory/'
+      path: '/regulatory'
+      fullPath: '/regulatory/'
+      preLoaderRoute: typeof RegulatoryIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/regulatory/$slug': {
+      id: '/regulatory/$slug'
+      path: '/regulatory/$slug'
+      fullPath: '/regulatory/$slug'
+      preLoaderRoute: typeof RegulatorySlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/explore/$slug': {
+      id: '/explore/$slug'
+      path: '/explore/$slug'
+      fullPath: '/explore/$slug'
+      preLoaderRoute: typeof ExploreSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/certificate/$id': {
       id: '/certificate/$id'
       path: '/certificate/$id'
@@ -309,6 +369,9 @@ const rootRouteChildren: RootRouteChildren = {
   TechnicalProposalRoute: TechnicalProposalRoute,
   TranslationRoute: TranslationRoute,
   CertificateIdRoute: CertificateIdRoute,
+  ExploreSlugRoute: ExploreSlugRoute,
+  RegulatorySlugRoute: RegulatorySlugRoute,
+  RegulatoryIndexRoute: RegulatoryIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

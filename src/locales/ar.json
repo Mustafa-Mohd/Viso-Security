@@ -13,7 +13,16 @@
     "contact": "تواصل",
     "engage": "أخرى",
     "lang_toggle": "ENGLISH",
-    "lang_switch": "التبديل إلى الإنجليزية"
+    "lang_switch": "التبديل إلى الإنجليزية",
+    "group_who": "من نحن",
+    "group_services": "خدماتنا",
+    "group_impact": "أثرنا",
+    "join_team": "انضم لفريقنا",
+    "contact_us": "تواصل معنا",
+    "regulatory_overview": "الجهات التنظيمية",
+    "regulatory_sais": "الهيئة العليا للأمن الصناعي",
+    "regulatory_moi": "وزارة الداخلية",
+    "regulatory_hcis": "HCIS (→ SAIS)"
   },
   "home": {
     "strategic_architecture": "هندسة استراتيجية",
@@ -24,7 +33,16 @@
     "scroll_down": "مرر لأسفل",
     "learn_more": "اعرف المزيد",
     "more_info": "للمزيد من المعلومات",
-    "skip_intro": "تخطي العرض"
+    "skip_intro": "تخطي العرض",
+    "hero_eyebrow": "مجموعة فيسو",
+    "hero_panel_titles": [
+      "هندسة الأمن الاستراتيجية",
+      "استشارات الأمن المادي",
+      "خدمات الترجمة المعتمدة",
+      "تقييم المخاطر والامتثال",
+      "حماية البنية التحتية الحيوية",
+      "التصميم الأمني المتكامل"
+    ]
   },
   "loader": {
     "w1": "الاستشارات الأمنية",
