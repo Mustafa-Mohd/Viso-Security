@@ -130,15 +130,22 @@ function HomePage() {
                   {cmsData.areas?.items?.length > 0 ? (
                     cmsData.areas.items.map((area: any, i: number) => {
                       const isIntegrated = i === 0 || area.title?.toLowerCase().includes("integrated");
+                      const isMeteorology = i === 1 || area.title?.toLowerCase().includes("meteorol");
+                      const isAviation = i === 2 || area.title?.toLowerCase().includes("aviation");
+                      const isFullCover = isIntegrated || isMeteorology || isAviation;
                       return (
                         <AreaCard
                           key={i}
-                          title={isIntegrated ? "" : area.title}
-                          desc={isIntegrated ? "" : area.desc}
+                          title={isFullCover ? "" : area.title}
+                          desc={isFullCover ? "" : area.desc}
                           imageUrl={
                             area.image_url ||
                             (isIntegrated
                               ? "https://res.cloudinary.com/dppwnds6z/image/upload/v1789932578/ChatGPT_Image_Sep_21_2026_12_59_12_AM.png"
+                              : isMeteorology
+                              ? "https://res.cloudinary.com/dppwnds6z/image/upload/v1789932592/ChatGPT_Image_Sep_21_2026_12_59_37_AM.png"
+                              : isAviation
+                              ? "https://res.cloudinary.com/dppwnds6z/image/upload/v1789932597/ChatGPT_Image_Sep_21_2026_12_59_48_AM.png"
                               : undefined)
                           }
                           svg={[
@@ -161,8 +168,18 @@ function HomePage() {
                         imageUrl="https://res.cloudinary.com/dppwnds6z/image/upload/v1789932578/ChatGPT_Image_Sep_21_2026_12_59_12_AM.png"
                         delay={0.1}
                       />
-                      <AreaCard title={t("areas.items.a2.title")} desc={t("areas.items.a2.desc")} svg={<MeteorologySVG />} delay={0.2} />
-                      <AreaCard title={t("areas.items.a3.title")} desc={t("areas.items.a3.desc")} svg={<PlaneSVG />} delay={0.3} />
+                      <AreaCard
+                        title=""
+                        desc=""
+                        imageUrl="https://res.cloudinary.com/dppwnds6z/image/upload/v1789932592/ChatGPT_Image_Sep_21_2026_12_59_37_AM.png"
+                        delay={0.2}
+                      />
+                      <AreaCard
+                        title=""
+                        desc=""
+                        imageUrl="https://res.cloudinary.com/dppwnds6z/image/upload/v1789932597/ChatGPT_Image_Sep_21_2026_12_59_48_AM.png"
+                        delay={0.3}
+                      />
                       <AreaCard title={t("areas.items.a4.title")} desc={t("areas.items.a4.desc")} svg={<IctSVG />} delay={0.4} />
                       <AreaCard title={t("areas.items.a5.title")} desc={t("areas.items.a5.desc")} svg={<MarineSVG />} delay={0.5} />
                       <AreaCard title={t("areas.items.a6.title")} desc={t("areas.items.a6.desc")} svg={<EngineeringSVG />} delay={0.6} />
@@ -321,12 +338,12 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
    HERO SECTION — Full-bleed imagery + caption panel
    ============================================================ */
 const heroImages = [
+  "https://res.cloudinary.com/dppwnds6z/image/upload/v1789934598/ChatGPT_Image_Sep_21_2026_01_32_49_AM.png",
   "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
   "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
   "https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
   "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
   "https://images.unsplash.com/photo-1431576901776-e539bd916ba2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1473186578172-c141e6798cf4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
 ];
 
 const heroEase = [0.16, 1, 0.3, 1] as const;
@@ -336,21 +353,29 @@ export function HeroSection({ data }: { data?: any }) {
   const ref = useRef<HTMLDivElement>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const activeImages =
-    data?.images?.filter(Boolean).length > 0
-      ? data.images.filter(Boolean)
-      : heroImages;
+  const customSlides = data?.slides?.filter((s: any) => s.imageUrl || s.title) || [];
 
-  const defaultPanelTitles = t("home.hero_panel_titles", { returnObjects: true }) as string[];
+  const activeImages =
+    customSlides.length > 0
+      ? customSlides.map((s: any) => s.imageUrl).filter(Boolean)
+      : (data?.images?.filter(Boolean).length > 0
+          ? data.images.filter(Boolean)
+          : heroImages);
+
+  const defaultPanelTitles = [
+    "Certified Translation Services",
+    ...(t("home.hero_panel_titles", { returnObjects: true }) as string[] || []),
+  ];
+
   const panelTitles =
-    data?.panelTitles?.filter(Boolean).length > 0
-      ? data.panelTitles.filter(Boolean)
-      : defaultPanelTitles.length > 0
-        ? defaultPanelTitles
-        : [data?.title1 || t("home.designing"), data?.title2 || t("home.the_future")].filter(Boolean);
+    customSlides.length > 0
+      ? customSlides.map((s: any) => s.title).filter(Boolean)
+      : (data?.panelTitles?.filter(Boolean).length > 0
+          ? data.panelTitles.filter(Boolean)
+          : defaultPanelTitles);
 
   const slideCount = Math.max(activeImages.length, panelTitles.length, 1);
-  const panelTitle = panelTitles[currentSlide % panelTitles.length] ?? t("home.strategic_architecture");
+  const panelTitle = panelTitles[currentSlide % panelTitles.length] ?? "Certified Translation Services";
   const imageIndex = currentSlide % activeImages.length;
 
   useEffect(() => {
@@ -389,27 +414,26 @@ export function HeroSection({ data }: { data?: any }) {
           initial={{ opacity: 0, x: -28 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.9, ease: heroEase }}
-          className="max-w-md md:max-w-lg lg:max-w-xl"
+          className="max-w-xl md:max-w-2xl lg:max-w-3xl"
         >
-          <div
-            className="relative border-s-4 border-primary bg-[#1C2541]/92 backdrop-blur-[2px] px-8 py-10 md:px-10 md:py-12 shadow-[0_24px_60px_rgba(0,0,0,0.35)]"
-          >
-            <p className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.28em] uppercase text-primary mb-4">
-              {t("home.hero_eyebrow")}
+          <div className="relative">
+            <p className="font-mono text-xs md:text-sm font-bold tracking-[0.3em] uppercase text-gold mb-4 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] flex items-center gap-2">
+              <span className="h-1.5 w-6 bg-gold inline-block shadow-[0_0_8px_#D4AF37]" />
+              {t("home.hero_eyebrow") || "VISO GROUP"}
             </p>
             <AnimatePresence mode="wait">
               <motion.h1
                 key={panelTitle}
-                initial={{ opacity: 0, y: 12 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
+                exit={{ opacity: 0, y: -12 }}
                 transition={{ duration: 0.45, ease: heroEase }}
-                className="font-display font-bold text-2xl sm:text-3xl md:text-[2rem] lg:text-4xl leading-[1.15] tracking-wide text-white uppercase"
+                className="font-display font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-[1.1] tracking-tight text-white uppercase drop-shadow-[0_4px_25px_rgba(0,0,0,0.9)] max-w-2xl"
               >
                 {panelTitle}
               </motion.h1>
             </AnimatePresence>
-            <div className="mt-8 h-px w-16 bg-primary/60" />
+            <div className="mt-6 h-1 w-20 bg-gold shadow-[0_0_12px_#D4AF37]" />
           </div>
         </motion.div>
       </div>

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
-import { Eye, EyeOff, LayoutDashboard, Image as ImageIcon, Settings, LogOut, ChevronRight, Save, Plus, Trash2, Upload, AlertCircle, MessageSquare, Users, Briefcase, FileText, History } from "lucide-react";
+import { Eye, EyeOff, LayoutDashboard, Image as ImageIcon, Settings, LogOut, ChevronRight, Save, Plus, Trash2, Upload, AlertCircle, MessageSquare, Users, Briefcase, FileText, History, ArrowUp, ArrowDown, Loader2, Link } from "lucide-react";
 import { DmsDashboard } from "@/components/DmsDashboard";
 import { EmployeeDashboard } from "@/components/EmployeeDashboard";
 import { CertificatesDashboard } from "@/components/CertificatesDashboard";
@@ -484,13 +484,50 @@ function AdminPage() {
     if (data) setAuditLogs(data);
     setAuditLogsLoading(false);
   };
-  const [heroData, setHeroData] = useState({ 
+const DEFAULT_HERO_SLIDES = [
+  {
+    title: "Strategic Security Architecture",
+    imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
+  },
+  {
+    title: "Physical Security Consulting",
+    imageUrl: "https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
+  },
+  {
+    title: "Certified Translation Services",
+    imageUrl: "https://res.cloudinary.com/dppwnds6z/image/upload/v1789934598/ChatGPT_Image_Sep_21_2026_01_32_49_AM.png",
+  },
+  {
+    title: "Risk Assessment & Compliance",
+    imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
+  },
+  {
+    title: "Critical Infrastructure Protection",
+    imageUrl: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
+  },
+  {
+    title: "Integrated Security Design",
+    imageUrl: "https://images.unsplash.com/photo-1431576901776-e539bd916ba2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
+  },
+];
+
+  const [heroData, setHeroData] = useState<{
+    slides: { title: string; imageUrl: string }[];
+    title1?: string;
+    title2?: string;
+    subtitle?: string;
+    desc?: string;
+    images?: string[];
+  }>({ 
+    slides: [...DEFAULT_HERO_SLIDES],
     title1: "Designing", 
     title2: "The Future", 
     subtitle: "Elevating physical security through sophisticated architectural integration.", 
     desc: "We merge high-end architectural design with rigorous security protocols to create spaces that are both exceptionally safe and visually stunning. Inspired by global innovation leaders.", 
-    images: ["https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80", "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80", "https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"] 
+    images: [] 
   });
+  const [uploadingSlideIdx, setUploadingSlideIdx] = useState<number | null>(null);
+  const [draggingSlideIdx, setDraggingSlideIdx] = useState<number | null>(null);
   const [aboutData, setAboutData] = useState<{
     title: string;
     subtitle: string;
@@ -530,9 +567,9 @@ function AdminPage() {
     title: "Areas We Serve", 
     subtitle: "Protecting vital sectors with specialized physical security consulting and architectural integration.", 
     items: [
-      { title: "Integrated Security Systems", desc: "Delivering comprehensive physical and cyber security architectures, ensuring end-to-end compliance with SAIS and national security directives.", image_url: "" },
-      { title: "Meteorological Solutions", desc: "Advanced monitoring and predictive frameworks for atmospheric conditions, optimizing flight safety and complex airport operations.", image_url: "" },
-      { title: "Aviation Technology", desc: "Engineering and deploying state-of-the-art Air Traffic Control, NAVAIDS, and communication networks for civil and military airspace.", image_url: "" },
+      { title: "Integrated Security Systems", desc: "Delivering comprehensive physical and cyber security architectures, ensuring end-to-end compliance with SAIS and national security directives.", image_url: "https://res.cloudinary.com/dppwnds6z/image/upload/v1789932578/ChatGPT_Image_Sep_21_2026_12_59_12_AM.png" },
+      { title: "Meteorological Solutions", desc: "Advanced monitoring and predictive frameworks for atmospheric conditions, optimizing flight safety and complex airport operations.", image_url: "https://res.cloudinary.com/dppwnds6z/image/upload/v1789932592/ChatGPT_Image_Sep_21_2026_12_59_37_AM.png" },
+      { title: "Aviation Technology", desc: "Engineering and deploying state-of-the-art Air Traffic Control, NAVAIDS, and communication networks for civil and military airspace.", image_url: "https://res.cloudinary.com/dppwnds6z/image/upload/v1789932597/ChatGPT_Image_Sep_21_2026_12_59_48_AM.png" },
       { title: "ICT & Connectivity", desc: "Providing high-performance information and communication technology consulting to maximize operational workflow and secure data infrastructures.", image_url: "" },
       { title: "Marine Surveying", desc: "Executing precision hydrographic surveys, spatial mapping, and maritime analytics to support complex offshore deployments.", image_url: "" },
       { title: "Engineering Design", desc: "End-to-end turnkey engineering blueprints spanning structural security, ICT, and unified protection systems, from concept to final execution.", image_url: "" }
@@ -781,7 +818,13 @@ function AdminPage() {
     const { data, error } = await supabase.from('cms_content').select('*');
     if (!error && data) {
       data.forEach(row => {
-        if (row.section_key === 'hero') setHeroData(row.content);
+        if (row.section_key === 'hero') {
+          const content = row.content || {};
+          if (!content.slides || content.slides.length === 0) {
+            content.slides = [...DEFAULT_HERO_SLIDES];
+          }
+          setHeroData(content);
+        }
         if (row.section_key === 'about') setAboutData(row.content);
         if (row.section_key === 'core_values') setCoreValuesData(row.content);
         if (row.section_key === 'areas') setAreasData(row.content);
@@ -805,7 +848,13 @@ function AdminPage() {
         return;
       }
       data.forEach(row => {
-        if (row.section_key === 'hero') setHeroData(row.content);
+        if (row.section_key === 'hero') {
+          const content = row.content || {};
+          if (!content.slides || content.slides.length === 0) {
+            content.slides = [...DEFAULT_HERO_SLIDES];
+          }
+          setHeroData(content);
+        }
         if (row.section_key === 'about') setAboutData(row.content);
         if (row.section_key === 'core_values') setCoreValuesData(row.content);
         if (row.section_key === 'areas') setAreasData(row.content);
@@ -818,6 +867,22 @@ function AdminPage() {
         if (row.section_key === 'stats') setStatsData(row.content);
         if (row.section_key === 'cta') setCtaData(row.content);
       });
+    }
+  };
+
+  const handleSlideFileUpload = async (file: File, index: number) => {
+    setUploadingSlideIdx(index);
+    try {
+      const publicUrl = await uploadGalleryImage(file, "hero");
+      const updated = [...(heroData.slides || [])];
+      if (!updated[index]) updated[index] = { title: "", imageUrl: "" };
+      updated[index] = { ...updated[index], imageUrl: publicUrl };
+      setHeroData({ ...heroData, slides: updated });
+    } catch (err) {
+      console.error("Hero image upload failed:", err);
+      alert(`Upload failed: ${err instanceof Error ? err.message : "unknown error"}`);
+    } finally {
+      setUploadingSlideIdx(null);
     }
   };
 
@@ -1481,66 +1546,232 @@ function AdminPage() {
             {/* CMS Editor Area */}
             <div className="flex-1 bg-surface p-6 rounded border border-foreground/10">
               {cmsSection === 'hero' && (
-                <div className="flex flex-col gap-4">
-                  <h2 className="text-2xl mb-4">Edit Hero Section</h2>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Title Part 1</label>
-                    <input
-                      type="text"
-                      value={heroData.title1}
-                      onChange={(e) => setHeroData({ ...heroData, title1: e.target.value })}
-                      className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
-                    />
+                <div className="flex flex-col gap-4 max-w-5xl">
+                  {/* Compact Header */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-foreground/10">
+                    <div>
+                      <h2 className="text-lg font-bold text-foreground">Hero Section Slides ({heroData.slides?.length || 0})</h2>
+                      <p className="text-[11px] text-muted-foreground">
+                        Rotating titles and background images for the main homepage banner.
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const currentSlides = heroData.slides || [];
+                          setHeroData({
+                            ...heroData,
+                            slides: [
+                              ...currentSlides,
+                              {
+                                title: "New Security Capability",
+                                imageUrl: "",
+                              },
+                            ],
+                          });
+                        }}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md border border-foreground/15 hover:bg-foreground/5 text-foreground transition-all cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        Add Slide
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (confirm("Reset slides to default set of 6 items?")) {
+                            setHeroData({ ...heroData, slides: [...DEFAULT_HERO_SLIDES] });
+                          }
+                        }}
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-md border border-foreground/15 hover:bg-foreground/5 text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                        title="Reset to default 6 slides"
+                      >
+                        Reset Defaults
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSaveCmsSection('hero', heroData)}
+                        className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-all cursor-pointer shadow-xs"
+                      >
+                        <Save className="w-3.5 h-3.5" />
+                        Save Hero
+                      </button>
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Title Part 2 (Italicized)</label>
-                    <input
-                      type="text"
-                      value={heroData.title2}
-                      onChange={(e) => setHeroData({ ...heroData, title2: e.target.value })}
-                      className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Subtitle</label>
-                    <textarea
-                      value={heroData.subtitle}
-                      onChange={(e) => setHeroData({ ...heroData, subtitle: e.target.value })}
-                      className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none h-20"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Description</label>
-                    <textarea
-                      value={heroData.desc}
-                      onChange={(e) => setHeroData({ ...heroData, desc: e.target.value })}
-                      className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none h-24"
-                    />
-                  </div>
-                  <div className="pt-4 mt-4 border-t border-foreground/10">
-                    <label className="block text-sm font-medium mb-3">Hero Background Images (3 URLs)</label>
-                    {[0, 1, 2].map((idx) => (
-                      <div key={idx} className="mb-3">
-                        <input
-                          type="url"
-                          placeholder={`Image URL ${idx + 1}`}
-                          value={heroData.images[idx] || ""}
-                          onChange={(e) => {
-                            const newImages = [...heroData.images];
-                            newImages[idx] = e.target.value;
-                            setHeroData({ ...heroData, images: newImages });
-                          }}
-                          className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none text-sm"
-                        />
+
+                  {/* Compact 1-2 line slides list */}
+                  <div className="space-y-2">
+                    {(heroData.slides || []).map((slide, idx) => {
+                      const isDraggingThis = draggingSlideIdx === idx;
+                      const isUploadingThis = uploadingSlideIdx === idx;
+
+                      return (
+                        <div
+                          key={idx}
+                          className={`flex flex-col md:flex-row items-stretch md:items-center gap-2.5 p-2 rounded-lg border transition-all ${
+                            isDraggingThis
+                              ? "border-primary bg-primary/10 shadow-xs"
+                              : "border-foreground/10 bg-background/60 hover:border-foreground/20"
+                          }`}
+                        >
+                          {/* Left: Drag/Drop Thumbnail (compact) */}
+                          <div
+                            onDragOver={(e) => {
+                              e.preventDefault();
+                              setDraggingSlideIdx(idx);
+                            }}
+                            onDragLeave={(e) => {
+                              e.preventDefault();
+                              setDraggingSlideIdx(null);
+                            }}
+                            onDrop={async (e) => {
+                              e.preventDefault();
+                              setDraggingSlideIdx(null);
+                              if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                                await handleSlideFileUpload(e.dataTransfer.files[0], idx);
+                              }
+                            }}
+                            className="relative shrink-0 w-16 h-10 rounded-md overflow-hidden border border-foreground/15 bg-surface flex items-center justify-center group cursor-pointer"
+                            title="Drag & drop or click to upload"
+                          >
+                            {slide.imageUrl ? (
+                              <img
+                                src={slide.imageUrl}
+                                alt={slide.title || ""}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="flex flex-col items-center justify-center text-muted-foreground/50">
+                                <Upload className="w-3.5 h-3.5" />
+                                <span className="text-[8px] font-mono">Drop</span>
+                              </div>
+                            )}
+
+                            {/* Hover overlay with Upload icon & file input */}
+                            <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity">
+                              <Upload className="w-3.5 h-3.5 text-white" />
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="sr-only"
+                                onChange={async (e) => {
+                                  if (e.target.files && e.target.files.length > 0) {
+                                    await handleSlideFileUpload(e.target.files[0], idx);
+                                  }
+                                }}
+                              />
+                            </label>
+
+                            {isUploadingThis && (
+                              <div className="absolute inset-0 bg-background/90 flex items-center justify-center">
+                                <Loader2 className="w-4 h-4 text-primary animate-spin" />
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Slide Index Badge */}
+                          <span className="hidden md:inline-flex items-center justify-center w-5 h-5 rounded-full bg-foreground/5 text-foreground/70 text-[10px] font-bold font-mono shrink-0">
+                            {idx + 1}
+                          </span>
+
+                          {/* Title input (1 line) */}
+                          <div className="flex-1 min-w-[180px]">
+                            <input
+                              type="text"
+                              placeholder="Slide Title (e.g. Risk Assessment & Compliance)"
+                              value={slide.title || ""}
+                              onChange={(e) => {
+                                const updated = [...(heroData.slides || [])];
+                                updated[idx] = { ...updated[idx], title: e.target.value };
+                                setHeroData({ ...heroData, slides: updated });
+                              }}
+                              className="w-full px-2.5 py-1.5 rounded-md bg-surface border border-foreground/15 text-xs text-foreground font-medium placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none transition-colors"
+                            />
+                          </div>
+
+                          {/* URL Paste input (1 line) */}
+                          <div className="relative flex-1 min-w-[200px]">
+                            <input
+                              type="url"
+                              placeholder="Image URL (paste or upload)..."
+                              value={slide.imageUrl || ""}
+                              onChange={(e) => {
+                                const updated = [...(heroData.slides || [])];
+                                updated[idx] = { ...updated[idx], imageUrl: e.target.value };
+                                setHeroData({ ...heroData, slides: updated });
+                              }}
+                              className="w-full pl-7 pr-7 py-1.5 rounded-md bg-surface border border-foreground/15 text-xs text-foreground font-mono placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none transition-colors truncate"
+                            />
+                            <Link className="w-3 h-3 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/60" />
+                            {slide.imageUrl && (
+                              <a
+                                href={slide.imageUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground hover:text-primary transition-colors"
+                                title="Open full image"
+                              >
+                                <Eye className="w-3 h-3" />
+                              </a>
+                            )}
+                          </div>
+
+                          {/* Controls (Move Up, Down, Delete) */}
+                          <div className="flex items-center gap-1 shrink-0 self-end md:self-center">
+                            <button
+                              type="button"
+                              disabled={idx === 0}
+                              onClick={() => {
+                                if (idx === 0) return;
+                                const updated = [...(heroData.slides || [])];
+                                const temp = updated[idx];
+                                updated[idx] = updated[idx - 1];
+                                updated[idx - 1] = temp;
+                                setHeroData({ ...heroData, slides: updated });
+                              }}
+                              className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-20 disabled:hover:text-muted-foreground transition-colors cursor-pointer"
+                              title="Move Up"
+                            >
+                              <ArrowUp className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              disabled={idx === (heroData.slides || []).length - 1}
+                              onClick={() => {
+                                if (idx === (heroData.slides || []).length - 1) return;
+                                const updated = [...(heroData.slides || [])];
+                                const temp = updated[idx];
+                                updated[idx] = updated[idx + 1];
+                                updated[idx + 1] = temp;
+                                setHeroData({ ...heroData, slides: updated });
+                              }}
+                              className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-20 disabled:hover:text-muted-foreground transition-colors cursor-pointer"
+                              title="Move Down"
+                            >
+                              <ArrowDown className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const updated = (heroData.slides || []).filter((_, i) => i !== idx);
+                                setHeroData({ ...heroData, slides: updated });
+                              }}
+                              className="p-1 rounded text-red-500/70 hover:text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer"
+                              title="Remove Slide"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {(heroData.slides || []).length === 0 && (
+                      <div className="p-4 text-center rounded-lg border border-dashed border-foreground/20 text-muted-foreground text-xs">
+                        No slides configured. Click "+ Add Slide" to create one.
                       </div>
-                    ))}
+                    )}
                   </div>
-                  <button
-                    onClick={() => handleSaveCmsSection('hero', heroData)}
-                    className="mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors w-fit font-medium"
-                  >
-                    Save Hero Section
-                  </button>
                 </div>
               )}
 
