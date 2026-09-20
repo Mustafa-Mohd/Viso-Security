@@ -128,26 +128,39 @@ function HomePage() {
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <AnimatePresence>
                   {cmsData.areas?.items?.length > 0 ? (
-                    cmsData.areas.items.map((area: any, i: number) => (
-                      <AreaCard
-                        key={i}
-                        title={area.title}
-                        desc={area.desc}
-                        imageUrl={area.image_url}
-                        svg={[
-                          <IntegratedSecuritySVG />,
-                          <MeteorologySVG />,
-                          <PlaneSVG />,
-                          <IctSVG />,
-                          <MarineSVG />,
-                          <EngineeringSVG />,
-                        ][i % 6]}
-                        delay={0.1 + i * 0.1}
-                      />
-                    ))
+                    cmsData.areas.items.map((area: any, i: number) => {
+                      const isIntegrated = i === 0 || area.title?.toLowerCase().includes("integrated");
+                      return (
+                        <AreaCard
+                          key={i}
+                          title={isIntegrated ? "" : area.title}
+                          desc={isIntegrated ? "" : area.desc}
+                          imageUrl={
+                            area.image_url ||
+                            (isIntegrated
+                              ? "https://res.cloudinary.com/dppwnds6z/image/upload/v1789932578/ChatGPT_Image_Sep_21_2026_12_59_12_AM.png"
+                              : undefined)
+                          }
+                          svg={[
+                            <IntegratedSecuritySVG />,
+                            <MeteorologySVG />,
+                            <PlaneSVG />,
+                            <IctSVG />,
+                            <MarineSVG />,
+                            <EngineeringSVG />,
+                          ][i % 6]}
+                          delay={0.1 + i * 0.1}
+                        />
+                      );
+                    })
                   ) : (
                     <>
-                      <AreaCard title={t("areas.items.a1.title")} desc={t("areas.items.a1.desc")} svg={<IntegratedSecuritySVG />} delay={0.1} />
+                      <AreaCard
+                        title=""
+                        desc=""
+                        imageUrl="https://res.cloudinary.com/dppwnds6z/image/upload/v1789932578/ChatGPT_Image_Sep_21_2026_12_59_12_AM.png"
+                        delay={0.1}
+                      />
                       <AreaCard title={t("areas.items.a2.title")} desc={t("areas.items.a2.desc")} svg={<MeteorologySVG />} delay={0.2} />
                       <AreaCard title={t("areas.items.a3.title")} desc={t("areas.items.a3.desc")} svg={<PlaneSVG />} delay={0.3} />
                       <AreaCard title={t("areas.items.a4.title")} desc={t("areas.items.a4.desc")} svg={<IctSVG />} delay={0.4} />
@@ -400,6 +413,24 @@ export function HeroSection({ data }: { data?: any }) {
           </div>
         </motion.div>
       </div>
+
+      {/* Scroll Down Cue to About Section */}
+      <a
+        href="#about"
+        aria-label="Scroll down to About VISO"
+        className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-20 hidden sm:flex flex-col items-center gap-2 group cursor-pointer"
+      >
+        <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-white/50 group-hover:text-gold transition-colors">
+          Explore Architecture
+        </span>
+        <div className="w-5 h-8 rounded-full border border-white/30 group-hover:border-gold transition-colors flex items-start justify-center p-1 bg-black/20 backdrop-blur-xs">
+          <motion.div
+            animate={{ y: [0, 12, 0] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+            className="w-1 h-2 rounded-full bg-gold shadow-[0_0_8px_#D4AF37]"
+          />
+        </div>
+      </a>
 
       <div className="absolute bottom-6 md:bottom-8 inset-inline-end-6 md:inset-inline-end-12 z-20 flex gap-2">
         {Array.from({ length: slideCount }, (_, i) => i).map((i) => (
@@ -1111,18 +1142,44 @@ function InnovationSVG() {
   );
 }
 
-function AreaCard({ title, desc, svg, imageUrl, delay }: { title: string, desc: string, svg?: React.ReactNode, imageUrl?: string, delay: number }) {
+function AreaCard({ title, desc, svg, imageUrl, delay }: { title?: string, desc?: string, svg?: React.ReactNode, imageUrl?: string, delay: number }) {
+  if (imageUrl) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay }}
+        className="group relative overflow-hidden rounded-xl border border-foreground/10 hover:border-gold/50 shadow-md hover:shadow-2xl hover:shadow-gold/10 transition-all duration-500 min-h-[300px] h-full flex items-center justify-center bg-black/5"
+      >
+        <img
+          src={imageUrl}
+          alt={title || "Integrated Security Systems"}
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+        />
+        {title && (
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6 text-center z-10">
+            <h3 className="font-display font-semibold text-lg tracking-wide mb-1 text-white">{title}</h3>
+            {desc && <p className="font-sans text-xs text-white/80 leading-relaxed">{desc}</p>}
+          </div>
+        )}
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6, delay }}
-      className="group bg-surface/50 border border-foreground/5 p-10 hover:border-gold/30 hover:shadow-xl hover:shadow-gold/5 transition-all duration-500 rounded-lg flex flex-col items-center text-center"
+      className="group bg-surface/50 border border-foreground/5 p-10 hover:border-gold/30 hover:shadow-xl hover:shadow-gold/5 transition-all duration-500 rounded-lg flex flex-col items-center text-center h-full justify-center"
     >
-      <div className="h-16 w-16 mb-6 text-primary group-hover:text-gold transition-colors duration-500 relative">
+      <div className="h-16 w-16 mb-6 text-primary group-hover:text-gold transition-colors duration-500 relative flex items-center justify-center">
         <div className="absolute inset-0 bg-primary/5 group-hover:bg-gold/10 rounded-full scale-150 transition-colors duration-500 -z-10 blur-xl"></div>
-        {imageUrl ? <img src={imageUrl} alt={title} loading="lazy" decoding="async" className="w-full h-full object-contain" /> : svg}
+        {svg}
       </div>
       <h3 className="font-display font-semibold text-lg tracking-wide mb-3 text-foreground">{title}</h3>
       <p className="font-sans text-sm text-black leading-relaxed">
@@ -1245,6 +1302,9 @@ function SectionLabel({ n, label }: { n: string; label: string }) {
 /* ---------- About ---------- */
 function About({ data }: { data?: any }) {
   const { t } = useTranslation();
+  const sectionRef = useRef<HTMLElement>(null);
+  const watermarkRef = useRef<HTMLDivElement>(null);
+
   const title = data?.title || "A Professional Digital Company Profile";
   const subtitle =
     data?.subtitle ||
@@ -1254,15 +1314,57 @@ function About({ data }: { data?: any }) {
     data?.whoWeAreDesc ||
     "VISO provides security consultancy services across the lifecycle of security risk assessment, concept and detailed design, construction supervision, testing, commissioning and operational readiness.";
 
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el || typeof window === "undefined") return;
+
+    const ctx = gsap.context(() => {
+      // Parallax movement on the massive background watermark
+      if (watermarkRef.current) {
+        gsap.to(watermarkRef.current, {
+          y: 120,
+          opacity: 0.07,
+          ease: "none",
+          scrollTrigger: {
+            trigger: el,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1.2,
+          },
+        });
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section
       id="about"
-      className="relative px-8 md:px-16 py-20 md:py-32 bg-background overflow-hidden border-t border-foreground/5"
+      ref={sectionRef}
+      className="relative px-6 md:px-12 lg:px-16 py-24 md:py-36 bg-background overflow-hidden border-t border-foreground/5"
     >
-      <div className="pointer-events-none absolute -top-24 right-0 font-display font-extrabold text-[20vw] leading-none text-foreground/[0.03] tracking-tighter select-none">
+      {/* Continuous Fluid Glowing Laser Sweep Horizon Beam */}
+      <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-gold/30 to-transparent pointer-events-none" />
+      <motion.div
+        animate={{ x: ["-100%", "200%"] }}
+        transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-0 w-1/3 h-[2.5px] bg-gradient-to-r from-transparent via-gold to-transparent pointer-events-none shadow-[0_0_25px_#D4AF37]"
+      />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-20 bg-gold/10 rounded-full blur-3xl pointer-events-none" />
+
+      {/* Cyber Grid Subtle Ambient Accent */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:32px_32px] opacity-[0.03]" />
+
+      {/* Parallax Watermark Layer */}
+      <div
+        ref={watermarkRef}
+        className="pointer-events-none absolute -top-24 right-4 font-display font-extrabold text-[22vw] leading-none text-foreground/[0.03] tracking-tighter select-none will-change-transform"
+      >
         VISO
       </div>
-      <div className="absolute top-1/4 -left-32 w-[50vw] h-[50vw] bg-primary/[0.05] rounded-full blur-[140px] pointer-events-none" />
+
+      <div className="absolute top-1/4 -left-32 w-[55vw] h-[55vw] bg-gold/[0.04] rounded-full blur-[150px] pointer-events-none" />
 
       <div className="mx-auto max-w-[1600px] relative z-10">
         <AboutInteractive
@@ -1272,15 +1374,19 @@ function About({ data }: { data?: any }) {
           whoWeAreDesc={whoWeAreDesc}
         />
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mt-16 text-center text-xs text-black tracking-wide"
+          transition={{ duration: 0.7 }}
+          className="mt-16 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center text-xs text-muted-foreground tracking-wide font-mono uppercase"
         >
-          {t("about.stats.established")} 2020 · {t("about.stats.offices")}: 5 ·
-          Riyadh · Khobar · Jubail · Jeddah · Yanbu
-        </motion.p>
+          <span>{t("about.stats.established")} 2020</span>
+          <span className="text-gold">·</span>
+          <span>{t("about.stats.offices")}: 5 Hubs</span>
+          <span className="text-gold">·</span>
+          <span className="text-foreground/80 font-medium">Riyadh · Khobar · Jubail · Jeddah · Yanbu</span>
+        </motion.div>
       </div>
     </section>
   );

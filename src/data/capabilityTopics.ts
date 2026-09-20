@@ -135,6 +135,19 @@ const CAPABILITY_TOPICS_BASE: CapabilityTopic[] = [
     relatedLabel: "SAIS authority overview",
   },
   {
+    slug: "hcis-compliance",
+    label: "HCIS Directives & MOI",
+    category: "Compliance",
+    headline: "High Commission for Industrial Security (HCIS) & MOI Governance",
+    summary: "Comprehensive engineering alignment with Saudi HCIS Directives SEC-01 through SEC-07 and Ministry of Interior high-security statutory standards.",
+    body: [
+      "VISO leads end-to-end regulatory engineering across HCIS Directives SEC-01 (General Requirements), SEC-02 (Barriers), SEC-03 (Access Control), SEC-04 (CCTV), SEC-05 (IDS), SEC-06 (Control Centers), and SEC-07 (Cyber-Physical).",
+      "We assemble rigorous authority submission packs, coordinate technical workshops with regulatory officers, and defend security architecture submittals to secure statutory Class-1 approvals without delay.",
+    ],
+    relatedRoute: "/regulatory/hcis",
+    relatedLabel: "Explore HCIS Directives",
+  },
+  {
     slug: "physical-security",
     label: "Physical Security",
     category: "Design",
