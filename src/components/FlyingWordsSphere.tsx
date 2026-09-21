@@ -30,7 +30,7 @@ function rotateY(p: Vec3, a: number): Vec3 {
 function rotateX(p: Vec3, a: number): Vec3 {
   const c = Math.cos(a);
   const s = Math.sin(a);
-  return { x: p.x * c - p.z * s, z: p.y * s + p.z * c };
+  return { x: p.x, y: p.y * c - p.z * s, z: p.y * s + p.z * c };
 }
 
 export function FlyingWordsSphere({

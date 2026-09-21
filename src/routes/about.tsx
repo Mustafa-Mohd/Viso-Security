@@ -110,6 +110,7 @@ function AboutPage() {
       <TopNav />
       <AboutHero />
       <WhoWeAre title={whoTitle} desc={whoDesc} secondary={t("about.desc2")} />
+      <VisionMission />
       <StatsBand />
       <Capabilities services={services} title={pageTitle} subtitle={pageSubtitle} />
       <ProfileJourney items={profile} />
@@ -347,6 +348,77 @@ function WhoWeAre({
   );
 }
 
+/* ---------- Vision & Mission ---------- */
+function VisionMission() {
+  const { t } = useTranslation();
+  return (
+    <section className="relative px-8 md:px-16 py-24 md:py-32 bg-surface-2/30 overflow-hidden">
+      <div className="max-w-[1600px] mx-auto">
+        <Reveal>
+          <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-12 md:mb-16">
+            <span className="text-gold">02</span>
+            <span className="h-px w-8 bg-border" />
+            <span>Our Purpose</span>
+          </div>
+        </Reveal>
+        
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+          {/* Vision Card */}
+          <Reveal delay={0.1}>
+            <div className="group relative h-full p-10 md:p-14 border border-foreground/10 bg-background/40 backdrop-blur-md rounded-xl hover:border-primary/50 hover:bg-background/60 transition-all duration-500 overflow-hidden shadow-lg hover:shadow-primary/5">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              
+              {/* Corner accent */}
+              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-bl-3xl" />
+              
+              <div className="relative z-10">
+                <div className="w-14 h-14 mb-8 rounded-2xl border border-primary/30 flex items-center justify-center bg-primary/10 text-primary group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 shadow-[0_0_15px_rgba(212,175,55,0.15)]">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </div>
+                <h3 className="font-display text-3xl md:text-4xl text-foreground tracking-tight mb-6 group-hover:text-primary transition-colors duration-500 flex items-center gap-3">
+                  Our Vision
+                  <span className="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 text-primary text-2xl">→</span>
+                </h3>
+                <p className="text-foreground/60 leading-relaxed font-light text-lg md:text-xl">
+                  To be the Kingdom's definitive authority in physical security architecture, pioneering resilient environments that safeguard progress and elevate the standard of protection across the region.
+                </p>
+              </div>
+            </div>
+          </Reveal>
+          
+          {/* Mission Card */}
+          <Reveal delay={0.2}>
+            <div className="group relative h-full p-10 md:p-14 border border-foreground/10 bg-background/40 backdrop-blur-md rounded-xl hover:border-primary/50 hover:bg-background/60 transition-all duration-500 overflow-hidden shadow-lg hover:shadow-primary/5">
+              <div className="absolute inset-0 bg-gradient-to-tl from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              
+              {/* Corner accent */}
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-tr-3xl" />
+              
+              <div className="relative z-10">
+                <div className="w-14 h-14 mb-8 rounded-2xl border border-primary/30 flex items-center justify-center bg-primary/10 text-primary group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500 shadow-[0_0_15px_rgba(212,175,55,0.15)]">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <h3 className="font-display text-3xl md:text-4xl text-foreground tracking-tight mb-6 group-hover:text-primary transition-colors duration-500 flex items-center gap-3">
+                  Our Mission
+                  <span className="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 text-primary text-2xl">→</span>
+                </h3>
+                <p className="text-foreground/60 leading-relaxed font-light text-lg md:text-xl">
+                  To deliver uncompromising security consultancy through rigorous risk assessment, innovative design, and flawless execution, ensuring our clients achieve operational readiness and regulatory alignment.
+                </p>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ---------- Stats ---------- */
 function StatsBand() {
   const { t } = useTranslation();
@@ -449,7 +521,7 @@ function Capabilities({
         <div className="max-w-3xl mb-16 md:mb-24">
           <Reveal>
             <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-6">
-              <span className="text-gold">02</span>
+              <span className="text-gold">03</span>
               <span className="h-px w-8 bg-border" />
               <span>Capabilities</span>
             </div>
@@ -582,7 +654,7 @@ function ProfileJourney({
       <div className="max-w-[1600px] mx-auto">
         <Reveal>
           <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-6">
-            <span className="text-gold">03</span>
+            <span className="text-gold">04</span>
             <span className="h-px w-8 bg-border" />
             <span>Company Profile</span>
           </div>
