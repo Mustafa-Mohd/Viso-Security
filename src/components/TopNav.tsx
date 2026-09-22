@@ -81,6 +81,7 @@ export function TopNav() {
   const { t, i18n } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const isAr = i18n.language?.startsWith("ar");
 
@@ -189,13 +190,6 @@ export function TopNav() {
 
               <span className="mx-2 h-6 w-px bg-foreground/15 shrink-0" aria-hidden />
 
-              <button
-                type="button"
-                onClick={toggleLanguage}
-                className="px-3 py-2 font-sans text-[11px] font-bold tracking-[0.12em] uppercase text-primary hover:text-secondary cursor-pointer transition-colors rounded-md hover:bg-primary/8"
-              >
-                {t("nav.lang_toggle")}
-              </button>
               <ThemeToggle />
               <Link
                 to="/others"
@@ -209,13 +203,6 @@ export function TopNav() {
               >
                 {t("nav.engage")}
               </Link>
-              <button
-                type="button"
-                onClick={() => setIsLoginModalOpen(true)}
-                className="ms-1 shrink-0 rounded-md px-4 py-2 font-sans text-[10px] font-bold tracking-[0.14em] uppercase transition-all duration-300 bg-neutral-900 text-white hover:bg-neutral-700"
-              >
-                Employee Login
-              </button>
             </nav>
 
             <div className="flex items-center gap-2 lg:hidden ms-auto">
@@ -301,16 +288,6 @@ export function TopNav() {
             <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className={mobileNavClass("/contact")}>
               {t("nav.contact_us")}
             </Link>
-            <button
-              type="button"
-              onClick={() => {
-                toggleLanguage();
-                setMobileMenuOpen(false);
-              }}
-              className="font-sans text-sm font-bold tracking-wider text-primary text-start ps-3"
-            >
-              {t("nav.lang_switch")}
-            </button>
             <Link
               to="/others"
               onClick={() => setMobileMenuOpen(false)}
@@ -323,17 +300,6 @@ export function TopNav() {
             >
               {t("nav.engage")}
             </Link>
-            
-            <button
-              type="button"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                setIsLoginModalOpen(true);
-              }}
-              className="w-full max-w-xs rounded-md px-6 py-3.5 font-sans text-sm font-semibold tracking-widest text-center ms-3 bg-neutral-900 text-white hover:bg-neutral-800"
-            >
-              Employee Login
-            </button>
           </div>
         </div>
       )}

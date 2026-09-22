@@ -94,14 +94,7 @@ function AboutPage() {
   const whoTitle =
     cms?.whoWeAreTitle || t("about.title") + " " + t("about.title_italic");
   const whoDesc = cms?.whoWeAreDesc || t("about.desc1");
-  const pageTitle = cms?.title || "A Professional Digital Company Profile";
-  const pageSubtitle =
-    cms?.subtitle ||
-    "Security consultancy across risk assessment, design, supervision and operational readiness — connected to the services and portals that support every project.";
-  const services =
-    cms?.services?.length > 0
-      ? cms.services.map((s: any) => ({ title: s.title, desc: s.desc }))
-      : defaultServices;
+
   const profile =
     cms?.profileContents?.length > 0 ? cms.profileContents : defaultProfile;
 
@@ -113,7 +106,7 @@ function AboutPage() {
       <CEOMessage />
       <VisionMission />
       <StatsBand />
-      <Capabilities services={services} title={pageTitle} subtitle={pageSubtitle} />
+      <RegulatoryCards />
       <ProfileJourney items={profile} />
       <AboutCta />
       <AboutFooter />
@@ -818,6 +811,60 @@ function AboutFooter() {
         </div>
       </div>
     </footer>
+  );
+}
+
+/* ---------- Regulatory Cards ---------- */
+function RegulatoryCards() {
+  const cards = [
+    {
+      title: "MOI",
+      desc: "Ministry of Interior Regulatory Frameworks.",
+      url: "/regulatory/moi",
+      color: "from-blue-950 to-slate-900 border-blue-500/20 hover:border-blue-400/60 shadow-blue-900/20"
+    },
+    {
+      title: "SAIS",
+      desc: "Supreme Authority for Industrial Security Standards.",
+      url: "/regulatory/sais",
+      color: "from-emerald-950 to-slate-900 border-emerald-500/20 hover:border-emerald-400/60 shadow-emerald-900/20"
+    },
+    {
+      title: "Supervision",
+      desc: "Comprehensive Project Security Supervision.",
+      url: "/regulatory/hcis", // Usually HCIS or a dedicated supervision route
+      color: "from-purple-950 to-slate-900 border-purple-500/20 hover:border-purple-400/60 shadow-purple-900/20"
+    }
+  ];
+
+  return (
+    <section className="py-20 bg-background relative z-10">
+      <div className="mx-auto max-w-6xl px-8">
+        <div className="grid gap-6 md:grid-cols-3">
+          {cards.map((card, i) => (
+            <Link key={i} to={card.url} className="block group">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className={`relative h-full flex flex-col p-8 rounded-2xl border bg-gradient-to-br ${card.color} transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl overflow-hidden`}
+              >
+                {/* Decorative background element */}
+                <div className="absolute -top-12 -right-12 w-32 h-32 bg-white/5 rounded-full blur-2xl group-hover:bg-white/10 transition-colors duration-500" />
+                
+                <h3 className="text-3xl font-display font-semibold text-white mb-4 relative z-10 group-hover:text-primary transition-colors">{card.title}</h3>
+                <p className="text-white/70 font-sans text-sm leading-relaxed mb-8 flex-grow relative z-10">{card.desc}</p>
+                <div className="mt-auto flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-white/50 group-hover:text-primary transition-colors relative z-10">
+                  <span>Explore</span>
+                  <span className="transform transition-transform group-hover:translate-x-1">→</span>
+                </div>
+              </motion.div>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 

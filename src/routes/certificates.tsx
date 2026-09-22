@@ -17,6 +17,21 @@ if (typeof window !== "undefined") {
 
 const certificatesData = [
   {
+    org: "CR 2026-2027",
+    certs: ["Commercial Register"],
+    img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100377/8aef84d0-fbe6-426d-b485-b4241b30daae.png"
+  },
+  {
+    org: "Business License",
+    certs: ["Official Business License"],
+    img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100602/3d24f59b-1530-4316-bd0d-27ac9167ccff.png"
+  },
+  {
+    org: "SAIS Certificate",
+    certs: ["SAIS Official Certification"],
+    img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100668/865e7db3-7be4-4ed4-920e-e0a8b29af7bb.png"
+  },
+  {
     org: "Higher Commission for Industrial Security (HCIS)",
     certs: ["License to Practice Security Consultancy", "Security Consultancy Qualification Certificate"],
     img: "https://visogroup.com/wp-content/uploads/2024/05/HCIS-2.png"
@@ -96,21 +111,23 @@ function CertificatesGrid() {
               whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ delay: i * 0.1, duration: 0.8 }}
-              className="group relative flex flex-col overflow-hidden rounded-2xl border border-foreground/10 bg-surface shadow-sm p-6  hover:border-[#C89933]/50 transition-colors"
+              className="group relative flex flex-col overflow-hidden rounded-2xl border border-foreground/10 bg-surface shadow-sm hover:shadow-lg transition-all hover:border-[#C89933]/50"
             >
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#C89933] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="mb-6 flex h-32 items-center justify-center rounded-xl bg-surface p-4">
-                <img loading="lazy" decoding="async" src={item.img} alt={item.org} className="max-h-full object-contain mix-blend-multiply" />
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#C89933] to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10" />
+              <div className="w-full bg-white flex items-center justify-center border-b border-foreground/10 overflow-hidden relative">
+                <img loading="lazy" decoding="async" src={item.img} alt={item.org} className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700 mix-blend-multiply" />
               </div>
-              <h3 className="text-xl font-medium text-foreground mb-4">{item.org}</h3>
-              <ul className="space-y-2 mt-auto">
-                {item.certs.map((c, j) => (
-                  <li key={j} className="flex items-start gap-2 text-sm text-foreground/70">
-                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#C89933]" />
-                    <span>{c}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="p-6 flex flex-col flex-1">
+                <h3 className="text-xl font-medium text-foreground mb-4">{item.org}</h3>
+                <ul className="space-y-2 mt-auto">
+                  {item.certs.map((c, j) => (
+                    <li key={j} className="flex items-start gap-2 text-sm text-foreground/70">
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#C89933]" />
+                      <span>{c}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </motion.div>
           ))}
         </div>

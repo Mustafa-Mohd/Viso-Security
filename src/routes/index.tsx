@@ -8,6 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { TopNav } from "@/components/TopNav";
 import { supabase } from "@/lib/supabase";
 import { LazyMount } from "@/components/LazyMount";
+import { ServicesCarousel } from "@/components/ServicesCarousel";
 
 const AboutInteractive = lazy(() =>
   import("@/components/AboutInteractive").then((m) => ({ default: m.AboutInteractive }))
@@ -113,77 +114,48 @@ function HomePage() {
           )}
 
           <LazyMount minHeight={520} fallback={<SectionFallback h={520} />}>
-            <div className="mt-20 border-t border-foreground/5 pt-16">
+            <div className="mt-8 md:mt-12 border-t border-foreground/5 pt-8 md:pt-10">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 1 }}
-                className="text-center mb-16"
+                className="text-center mb-4 md:mb-8"
               >
                 <h2 className="text-4xl md:text-5xl font-light mb-4 text-foreground">Our Services</h2>
                 <p className="text-lg text-black max-w-2xl mx-auto">Explore our integrated portals and specialized consultancy offerings.</p>
               </motion.div>
 
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 px-6 lg:px-12">
-                {[
-                  {
-                    title: "Security Analysis",
-                    desc: "Comprehensive risk and threat assessment engineering.",
-                    url: "/security",
-                    img: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80",
-                    color: "group-hover:border-blue-500/50 group-hover:shadow-blue-500/20"
-                  },
-                  {
-                    title: "Translate Certificate",
-                    desc: "Verify and authenticate VISO translation certificates.",
-                    url: "/translation",
-                    img: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80",
-                    color: "group-hover:border-emerald-500/50 group-hover:shadow-emerald-500/20"
-                  },
-                  {
-                    title: "DMS Portal",
-                    desc: "Access the Document Management System dashboard.",
-                    url: "/admin",
-                    img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
-                    color: "group-hover:border-purple-500/50 group-hover:shadow-purple-500/20"
-                  },
-                  {
-                    title: "Job Application",
-                    desc: "Join our team of elite physical security experts.",
-                    url: "/career",
-                    img: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800&q=80",
-                    color: "group-hover:border-orange-500/50 group-hover:shadow-orange-500/20"
-                  }
-                ].map((item, i) => (
-                  <Link key={i} to={item.url} className="block group">
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: i * 0.1 }}
-                      className={`relative bg-surface border border-foreground/10 rounded-2xl overflow-hidden h-[360px] flex flex-col transition-all duration-500 hover:shadow-xl ${item.color} hover:-translate-y-1`}
-                    >
-                      <div className="h-48 overflow-hidden relative">
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500 z-10" />
-                        <img 
-                          src={item.img} 
-                          alt={item.title} 
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        />
-                      </div>
-                      <div className="p-6 flex flex-col flex-grow bg-white">
-                        <h3 className="font-display text-xl mb-2 text-foreground group-hover:text-primary transition-colors">{item.title}</h3>
-                        <p className="font-sans text-sm text-foreground/70 leading-relaxed mb-4">{item.desc}</p>
-                        <div className="mt-auto flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-foreground/50 group-hover:text-primary transition-colors">
-                          <span>Access</span>
-                          <span className="transform transition-transform group-hover:translate-x-1">→</span>
-                        </div>
-                      </div>
-                    </motion.div>
-                  </Link>
-                ))}
-              </div>
+              <ServicesCarousel items={[
+                {
+                  title: "Security Analysis",
+                  desc: "Comprehensive risk and threat assessment engineering.",
+                  url: "/security",
+                  img: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80",
+                  color: "group-hover:border-blue-500/50 group-hover:shadow-blue-500/20"
+                },
+                {
+                  title: "Translate Certificate",
+                  desc: "Verify and authenticate VISO translation certificates.",
+                  url: "/translation",
+                  img: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80",
+                  color: "group-hover:border-emerald-500/50 group-hover:shadow-emerald-500/20"
+                },
+                {
+                  title: "DMS Portal",
+                  desc: "Access the Document Management System dashboard.",
+                  url: "/admin",
+                  img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
+                  color: "group-hover:border-purple-500/50 group-hover:shadow-purple-500/20"
+                },
+                {
+                  title: "Job Application",
+                  desc: "Join our team of elite physical security experts.",
+                  url: "/career",
+                  img: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800&q=80",
+                  color: "group-hover:border-orange-500/50 group-hover:shadow-orange-500/20"
+                }
+              ]} />
             </div>
           </LazyMount>
 
@@ -224,11 +196,11 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
   useEffect(() => {
     // ~1.7s per stage word, then hold logo — even rhythm (not accelerating)
     const sequence = [
-      setTimeout(() => setPhase(1), 1700),
-      setTimeout(() => setPhase(2), 3400),
-      setTimeout(() => setPhase(3), 5100),
+      setTimeout(() => setPhase(1), 2200),
+      setTimeout(() => setPhase(2), 4400),
+      setTimeout(() => setPhase(3), 6600),
     ];
-    const timer = setTimeout(onDone, 7200);
+    const timer = setTimeout(onDone, 8600);
 
     return () => {
       sequence.forEach(clearTimeout);
@@ -267,13 +239,26 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
           {phase < 3 ? (
             <motion.div
               key={phase}
-              initial={{ opacity: 0, y: 36, skewY: 2, filter: "blur(8px)", scale: 0.94 }}
-              animate={{ opacity: 1, y: 0, skewY: 0, filter: "blur(0px)", scale: 1 }}
+              initial={{ opacity: 1 }}
               exit={{ opacity: 0, y: -36, skewY: -2, filter: "blur(8px)", scale: 1.05 }}
               transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
               className="font-display font-bold text-4xl md:text-6xl lg:text-[88px] text-foreground tracking-tighter uppercase absolute text-center px-6 max-w-[92vw]"
             >
-              {currentWord}
+              {currentWord.split("").map((char, index) => (
+                <motion.span
+                  key={index}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.01, delay: index * 0.04 }}
+                >
+                  {char === " " ? "\u00A0" : char}
+                </motion.span>
+              ))}
+              <motion.span
+                animate={{ opacity: [1, 0, 1] }}
+                transition={{ duration: 0.6, repeat: Infinity }}
+                className="inline-block w-[4px] md:w-[8px] h-[0.8em] bg-primary ml-1 align-baseline"
+              />
             </motion.div>
           ) : (
             <motion.div
@@ -1340,7 +1325,7 @@ function About({ data }: { data?: any }) {
     <section
       id="about"
       ref={sectionRef}
-      className="relative px-6 md:px-12 lg:px-16 py-24 md:py-36 bg-background overflow-hidden border-t border-foreground/5"
+      className="relative px-6 md:px-12 lg:px-16 py-8 md:py-12 bg-background overflow-hidden border-t border-foreground/5"
     >
       {/* Continuous Fluid Glowing Laser Sweep Horizon Beam */}
       <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-gold/30 to-transparent pointer-events-none" />
@@ -1377,7 +1362,7 @@ function About({ data }: { data?: any }) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
-          className="mt-16 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center text-xs text-muted-foreground tracking-wide font-mono uppercase"
+          className="mt-8 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center text-xs text-muted-foreground tracking-wide font-mono uppercase"
         >
           <span>{t("about.stats.established")} 2020</span>
           <span className="text-gold">·</span>
@@ -1515,7 +1500,7 @@ function ServiceLifecycle({ data }: { data?: any }) {
       num: "04",
       title: "Construction & Readiness",
       desc: "Supervision, testing, commissioning, and handover—confirming systems perform as designed.",
-      imageUrl: "https://nxio.net/wp-content/uploads/2024/11/Two-coworkers-collaborating-in-server-room.jpg",
+      imageUrl: "https://rfshrconsultancy.com/wp-content/uploads/2025/01/benefits-of-working-in-the-construction-industry.webp",
     },
   ];
 
@@ -1524,7 +1509,7 @@ function ServiceLifecycle({ data }: { data?: any }) {
       num: stage.num ?? defaultStages[i]?.num ?? String(i + 1).padStart(2, "0"),
       title: stage.title ?? defaultStages[i]?.title ?? "",
       desc: stage.desc ?? defaultStages[i]?.desc ?? "",
-      imageUrl: stage.imageUrl || defaultStages[i]?.imageUrl || "",
+      imageUrl: i === 3 ? "https://rfshrconsultancy.com/wp-content/uploads/2025/01/benefits-of-working-in-the-construction-industry.webp" : (stage.imageUrl || defaultStages[i]?.imageUrl || ""),
     }),
   );
 
@@ -1533,7 +1518,7 @@ function ServiceLifecycle({ data }: { data?: any }) {
   return (
     <section
       id="four-stages"
-      className="relative px-6 py-12 md:py-16 border-t border-border overflow-hidden bg-[#e8e4dc]"
+      className="relative px-6 py-8 md:py-10 border-t border-border overflow-hidden bg-[#e8e4dc]"
       style={{
         backgroundImage:
           "radial-gradient(circle at 1px 1px, rgba(0,0,0,0.045) 1px, transparent 0)",
