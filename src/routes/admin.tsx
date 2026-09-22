@@ -1193,7 +1193,7 @@ const DEFAULT_HERO_SLIDES = [
         </div>
         <div className="max-w-md w-full bg-white dark:bg-[#1C2541] p-8 rounded border border-foreground/10 text-center">
           <div className="flex justify-center mb-6">
-            <img src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png" alt="VISO Logo" className="h-16 w-auto object-contain" />
+            <img loading="lazy" decoding="async" src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png" alt="VISO Logo" className="h-16 w-auto object-contain" />
           </div>
           <h1 className="text-2xl font-bold mb-6">Admin Login</h1>
           <form onSubmit={handleLogin} className="flex flex-col gap-4 text-left">
@@ -1262,7 +1262,7 @@ const DEFAULT_HERO_SLIDES = [
       {/* Sidebar Navigation */}
       <aside className={`flex-none z-[40] bg-[#0B1329] text-white border-r border-[#1C2541] transition-all duration-300 ${mobileSidebarOpen ? 'w-64 absolute h-full shadow-2xl' : 'w-0 lg:w-64 hidden lg:flex'} flex-col overflow-y-auto`}>
          <div className="h-16 flex items-center px-6 border-b border-white/10 shrink-0">
-             <img src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png" alt="VISO Logo" className="h-8 w-auto object-contain mr-3" />
+             <img loading="lazy" decoding="async" src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png" alt="VISO Logo" className="h-8 w-auto object-contain mr-3" />
              <span className="font-bold text-sm tracking-wider">VISO ADMIN</span>
          </div>
          
@@ -1391,7 +1391,7 @@ const DEFAULT_HERO_SLIDES = [
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {images.map((img) => (
                 <div key={img.id} className="relative group rounded-lg overflow-hidden border border-foreground/10 aspect-square">
-                  <img src={img.image_url} alt="Gallery item" className="w-full h-full object-cover" />
+                  <img loading="lazy" decoding="async" src={img.image_url} alt="Gallery item" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <button
                       onClick={() => handleDelete(img.id, img.image_url)}
@@ -1635,7 +1635,7 @@ const DEFAULT_HERO_SLIDES = [
                             title="Drag & drop or click to upload"
                           >
                             {slide.imageUrl ? (
-                              <img
+                              <img loading="lazy" decoding="async"
                                 src={slide.imageUrl}
                                 alt={slide.title || ""}
                                 className="w-full h-full object-cover"
@@ -2294,7 +2294,7 @@ const DEFAULT_HERO_SLIDES = [
                       className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
                     />
                     {showcaseData.imageUrl && (
-                       <img src={showcaseData.imageUrl} alt="Showcase Preview" className="mt-4 w-full h-48 object-cover rounded" />
+                       <img loading="lazy" decoding="async" src={showcaseData.imageUrl} alt="Showcase Preview" className="mt-4 w-full h-48 object-cover rounded" />
                     )}
                   </div>
                   <button
@@ -2407,7 +2407,7 @@ const DEFAULT_HERO_SLIDES = [
                               </div>
                               {item.icon && (item.icon.startsWith('http') || item.icon.startsWith('/')) && (
                                 <div className="mt-2 flex justify-center bg-surface p-2 rounded border border-foreground/10">
-                                  <img src={item.icon} alt="Preview" className="h-8 object-contain" />
+                                  <img loading="lazy" decoding="async" src={item.icon} alt="Preview" className="h-8 object-contain" />
                                 </div>
                               )}
                             </div>

@@ -386,7 +386,7 @@ function ExploreTopicPage() {
                 </div>
 
                 <div className="space-y-4 text-base md:text-lg text-foreground/80 leading-[1.8] font-light">
-                  {topic.body.map((p, idx) => (
+                  {topic.body.map((p: string, idx: number) => (
                     <p key={idx}>{p}</p>
                   ))}
                   <p>

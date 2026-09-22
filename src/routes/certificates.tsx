@@ -100,7 +100,7 @@ function CertificatesGrid() {
             >
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#C89933] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="mb-6 flex h-32 items-center justify-center rounded-xl bg-surface p-4">
-                <img src={item.img} alt={item.org} className="max-h-full object-contain mix-blend-multiply" />
+                <img loading="lazy" decoding="async" src={item.img} alt={item.org} className="max-h-full object-contain mix-blend-multiply" />
               </div>
               <h3 className="text-xl font-medium text-foreground mb-4">{item.org}</h3>
               <ul className="space-y-2 mt-auto">

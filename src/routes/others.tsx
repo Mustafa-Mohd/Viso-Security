@@ -505,12 +505,12 @@ function Functions() {
         </div>
 
         <div className="mt-8 md:mt-16 w-full flex justify-center">
-          <img 
+          <img loading="lazy" decoding="async" 
             src="https://res.cloudinary.com/dcefror3c/image/upload/v1781685830/ChatGPT_Image_Jun_17_2026_02_12_15_PM_awfljd.png" 
             alt="Defence in depth (Desktop)" 
             className="hidden md:block w-full h-auto rounded-xl border border-border/50 bg-surface shadow-sm object-cover"
           />
-          <img 
+          <img loading="lazy" decoding="async" 
             src="https://res.cloudinary.com/dcefror3c/image/upload/v1781690193/ChatGPT_Image_Jun_17_2026_03_26_15_PM_p1zb7z.png" 
             alt="Defence in depth (Mobile)" 
             className="block md:hidden w-full h-auto rounded-xl border border-border/50 bg-surface shadow-sm object-cover"

@@ -51,7 +51,7 @@ function TechnicalProposalPage() {
           <div className="h-2 bg-[#D4AF37]" />
           <div className="p-10 md:p-14 min-h-[260mm] flex flex-col">
             <div className="flex justify-between items-start gap-6 border-b border-neutral-200 pb-8">
-              <img src={LOGO_URL} alt="VISO Group" className="h-16 w-auto object-contain" />
+              <img loading="lazy" decoding="async" src={LOGO_URL} alt="VISO Group" className="h-16 w-auto object-contain" />
               <div className="text-right text-xs text-neutral-500 leading-relaxed">
                 <p className="font-semibold text-neutral-800 uppercase tracking-wider">Technical Proposal</p>
                 <p>Document ref: VISO-TECH-{DOC_VERSION.replace(".", "")}</p>
@@ -348,7 +348,7 @@ function TechnicalProposalPage() {
 
           <div className="border-t border-neutral-200 pt-8 flex justify-between items-end gap-6">
             <div>
-              <img src={LOGO_URL} alt="VISO" className="h-10 w-auto mb-2 opacity-90" />
+              <img loading="lazy" decoding="async" src={LOGO_URL} alt="VISO" className="h-10 w-auto mb-2 opacity-90" />
               <p className="text-xs text-neutral-500">© {new Date().getFullYear()} VISO Group. All rights reserved.</p>
             </div>
             <p className="text-[10px] text-neutral-400 text-right max-w-xs">

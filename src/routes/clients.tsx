@@ -126,7 +126,7 @@ function ClientsPage() {
                   <div>
                     <div className="h-12 mb-4 flex items-center group-hover:scale-110 transition-transform origin-left duration-300">
                       {client.icon && (client.icon.startsWith('http') || client.icon.startsWith('/')) ? (
-                        <img src={client.icon} alt={client.name} className="max-h-full max-w-full object-contain" />
+                        <img loading="lazy" decoding="async" src={client.icon} alt={client.name} className="max-h-full max-w-full object-contain" />
                       ) : (
                         <span className="text-4xl">{client.icon}</span>
                       )}

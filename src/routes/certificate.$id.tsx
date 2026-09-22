@@ -92,7 +92,7 @@ function CertificatePdfView() {
         <div className="absolute top-0 left-0 w-full h-4 bg-primary" />
         
         <div className="text-center mt-12 mb-16 flex flex-col items-center">
-          <img 
+          <img loading="lazy" decoding="async" 
             src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png" 
             alt="VISO Group" 
             className="h-20 w-auto object-contain mb-6"
@@ -148,7 +148,7 @@ function CertificatePdfView() {
           <div>
             <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-3">Scan to Verify Live Status</p>
             <div className="p-2 bg-white border border-neutral-200 rounded-lg inline-block shadow-sm">
-              <img 
+              <img loading="lazy" decoding="async" 
                 src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(qrUrl)}`} 
                 className="w-24 h-24" 
                 alt="Scan QR Code" 

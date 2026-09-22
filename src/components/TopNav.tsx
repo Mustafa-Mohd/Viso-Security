@@ -92,33 +92,21 @@ export function TopNav() {
 
   const navGroups: NavGroup[] = [
     {
-      id: "who",
-      label: t("nav.group_who"),
-      items: [
-        { to: "/about", label: t("nav.about") },
-        { to: "/clients", label: t("nav.clients") },
-      ],
-    },
-    {
       id: "services",
       label: t("nav.group_services"),
       items: [
         { to: "/security", label: t("nav.security") },
         { to: "/translation", label: t("nav.translation") },
         { to: "/certificates", label: t("nav.certifications") },
-        { to: "/regulatory", label: t("nav.regulatory_overview") },
-        { to: "/regulatory/sais", label: t("nav.regulatory_sais") },
-        { to: "/regulatory/moi", label: t("nav.regulatory_moi") },
-        { to: "/regulatory/hcis", label: t("nav.regulatory_hcis") },
       ],
     },
     {
-      id: "impact",
-      label: t("nav.group_impact"),
+      id: "join_team",
+      label: t("nav.join_team"),
       items: [
-        { to: "/gallery", label: t("nav.gallery") },
-        { to: "/clients", label: t("nav.overview") },
+        { to: "/clients", label: t("nav.clients") },
         { to: "/career", label: t("nav.careers") },
+        { to: "/gallery", label: t("nav.gallery") },
       ],
     },
   ];
@@ -149,7 +137,7 @@ export function TopNav() {
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-10">
           <div className="flex items-center gap-4 md:gap-6 h-[4.25rem] md:h-[4.5rem]">
             <Link to="/" className="flex items-center gap-2.5 group shrink-0">
-              <img
+              <img loading="lazy" decoding="async"
                 src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
                 alt="Viso Group"
                 className="h-8 md:h-10 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
@@ -170,6 +158,13 @@ export function TopNav() {
               >
                 {t("nav.home")}
               </Link>
+              <Link
+                to="/about"
+                className={navItemClass(isActivePath("/about"))}
+                aria-current={isActivePath("/about") ? "page" : undefined}
+              >
+                {t("nav.about")}
+              </Link>
               {navGroups.map((group) => (
                 <NavDropdown key={group.id} group={group} isActive={isActivePath} />
               ))}
@@ -177,11 +172,11 @@ export function TopNav() {
               <span className="mx-2 h-6 w-px bg-foreground/15 shrink-0" aria-hidden />
 
               <Link
-                to="/career"
-                className={navItemClass(isActivePath("/career"))}
-                aria-current={isActivePath("/career") ? "page" : undefined}
+                to="/projects"
+                className={navItemClass(isActivePath("/projects"))}
+                aria-current={isActivePath("/projects") ? "page" : undefined}
               >
-                {t("nav.join_team")}
+                {t("nav.group_impact")}
               </Link>
               <Link
                 to="/contact"
@@ -249,6 +244,14 @@ export function TopNav() {
           >
             {t("nav.home")}
           </Link>
+          <Link
+            to="/about"
+            onClick={() => setMobileMenuOpen(false)}
+            className={`${mobileNavClass("/about")} mb-2`}
+            aria-current={isActivePath("/about") ? "page" : undefined}
+          >
+            {t("nav.about")}
+          </Link>
 
           {navGroups.map((group) => (
             <div key={group.id} className="border-b border-foreground/10 py-3">
@@ -284,8 +287,8 @@ export function TopNav() {
           ))}
 
           <div className="mt-4 flex flex-col gap-3 border-t border-foreground/10 pt-4">
-            <Link to="/career" onClick={() => setMobileMenuOpen(false)} className={mobileNavClass("/career")}>
-              {t("nav.join_team")}
+            <Link to="/projects" onClick={() => setMobileMenuOpen(false)} className={mobileNavClass("/projects")}>
+              {t("nav.group_impact")}
             </Link>
             <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className={mobileNavClass("/contact")}>
               {t("nav.contact_us")}

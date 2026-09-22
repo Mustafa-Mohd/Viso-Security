@@ -110,6 +110,7 @@ function AboutPage() {
       <TopNav />
       <AboutHero />
       <WhoWeAre title={whoTitle} desc={whoDesc} secondary={t("about.desc2")} />
+      <CEOMessage />
       <VisionMission />
       <StatsBand />
       <Capabilities services={services} title={pageTitle} subtitle={pageSubtitle} />
@@ -273,13 +274,7 @@ function WhoWeAre({
 
       <div className="relative z-10 max-w-[1600px] mx-auto grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
         <div className="lg:col-span-5">
-          <Reveal>
-            <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-6">
-              <span className="text-gold">01</span>
-              <span className="h-px w-8 bg-border" />
-              <span>{t("about.who_we_are")}</span>
-            </div>
-          </Reveal>
+
           <Reveal delay={0.1}>
             <h2 className="font-display text-4xl md:text-5xl lg:text-6xl leading-[1.05] tracking-tight text-foreground">
               {title.includes("Peace") || title.includes("meets") || title.includes("يلتقي") ? (
@@ -348,19 +343,67 @@ function WhoWeAre({
   );
 }
 
+/* ---------- CEO Message ---------- */
+function CEOMessage() {
+  const { t } = useTranslation();
+  
+  return (
+    <section className="relative px-8 md:px-16 py-24 md:py-32 bg-background overflow-hidden border-t border-foreground/5">
+      <div className="max-w-[1600px] mx-auto">
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-20 items-center">
+          <div className="lg:col-span-5 order-2 lg:order-1">
+            <Reveal delay={0.1}>
+              <div className="relative aspect-[3/4] md:aspect-square lg:aspect-[4/5] rounded-sm overflow-hidden group">
+                <ParallaxImage 
+                  src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=1200" 
+                  alt="CEO of VISO Group" 
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
+                <div className="absolute bottom-8 left-8 right-8">
+                  <div className="font-display text-2xl md:text-3xl text-foreground font-bold tracking-tight mb-1">
+                    Mohammed bin Sadiq
+                  </div>
+                  <div className="font-mono text-[10px] tracking-[0.25em] text-primary uppercase">
+                    Chief Executive Officer
+                  </div>
+                </div>
+              </div>
+            </Reveal>
+          </div>
+          
+          <div className="lg:col-span-7 order-1 lg:order-2 lg:pl-10">
+            <Reveal delay={0.2}>
+              <h2 className="font-display text-4xl md:text-5xl lg:text-6xl tracking-tight leading-[1.1] mb-10">
+                A Message from <br/>
+                <em className="text-primary not-italic font-light">Our CEO</em>
+              </h2>
+            </Reveal>
+            
+            <Reveal delay={0.3}>
+              <div className="relative">
+                <span className="absolute -top-10 -left-6 text-8xl text-foreground/5 font-serif select-none pointer-events-none">"</span>
+                <p className="text-lg md:text-xl lg:text-2xl text-foreground/80 leading-relaxed font-light mb-8 relative z-10">
+                  At VISO Group, our commitment to elevating the physical security landscape in the Kingdom of Saudi Arabia is unwavering. We recognize that true security is not merely about infrastructure—it is about empowering organizations to operate with complete confidence.
+                </p>
+                <p className="text-base md:text-lg text-foreground/60 leading-relaxed font-light mb-10">
+                  In alignment with Vision 2030, we have dedicated ourselves to building resilient, future-ready environments. By integrating world-class consulting methodologies with deep local expertise, we ensure that our clients are protected against both current and emerging threats. We take pride in being a trusted partner in safeguarding the Kingdom's most critical assets.
+                </p>
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ---------- Vision & Mission ---------- */
 function VisionMission() {
   const { t } = useTranslation();
   return (
     <section className="relative px-8 md:px-16 py-24 md:py-32 bg-surface-2/30 overflow-hidden">
       <div className="max-w-[1600px] mx-auto">
-        <Reveal>
-          <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-12 md:mb-16">
-            <span className="text-gold">02</span>
-            <span className="h-px w-8 bg-border" />
-            <span>Our Purpose</span>
-          </div>
-        </Reveal>
+
         
         <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
           {/* Vision Card */}
@@ -519,16 +562,14 @@ function Capabilities({
     <section className="relative px-8 md:px-16 py-24 md:py-36 overflow-hidden">
       <div className="max-w-[1600px] mx-auto">
         <div className="max-w-3xl mb-16 md:mb-24">
-          <Reveal>
-            <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-6">
-              <span className="text-gold">03</span>
-              <span className="h-px w-8 bg-border" />
-              <span>Capabilities</span>
-            </div>
-          </Reveal>
+
           <Reveal delay={0.1}>
-            <h2 className="font-display text-3xl md:text-5xl leading-[1.1] tracking-tight">
-              {title}
+            <div className="font-mono text-[10px] tracking-[0.3em] text-primary uppercase mb-6 flex items-center gap-4">
+              <span className="w-8 h-px bg-primary" />
+              About VISO
+            </div>
+            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight text-foreground drop-shadow-sm">
+              <TypewriterEffect text={title} />
             </h2>
           </Reveal>
           <Reveal delay={0.2}>
@@ -652,13 +693,7 @@ function ProfileJourney({
   return (
     <section className="relative px-8 md:px-16 py-24 md:py-32 bg-surface-2/50 overflow-hidden">
       <div className="max-w-[1600px] mx-auto">
-        <Reveal>
-          <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-6">
-            <span className="text-gold">04</span>
-            <span className="h-px w-8 bg-border" />
-            <span>Company Profile</span>
-          </div>
-        </Reveal>
+
         <Reveal delay={0.1}>
           <h2 className="font-display text-3xl md:text-5xl tracking-tight mb-16 md:mb-20 max-w-xl">
             How we present{" "}
@@ -823,8 +858,36 @@ function ParallaxImage({ src, alt }: { src: string; alt: string }) {
         style={{ y }}
         src={src}
         alt={alt}
-        className="absolute inset-0 h-[130%] w-full object-cover -top-[15%]"
+        className="h-[125%] w-full object-cover"
       />
     </div>
+  );
+}
+
+function TypewriterEffect({ text }: { text: string }) {
+  const [displayed, setDisplayed] = useState("");
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-50px" });
+
+  useEffect(() => {
+    if (!inView) return;
+    let i = 0;
+    const interval = setInterval(() => {
+      setDisplayed(text.slice(0, i + 1));
+      i++;
+      if (i >= text.length) clearInterval(interval);
+    }, 45);
+    return () => clearInterval(interval);
+  }, [text, inView]);
+
+  return (
+    <span ref={ref}>
+      {displayed}
+      <motion.span
+        animate={{ opacity: [1, 0, 1] }}
+        transition={{ duration: 0.8, repeat: Infinity }}
+        className="inline-block w-[0.1em] h-[0.9em] bg-primary ml-1 align-middle translate-y-[-0.05em]"
+      />
+    </span>
   );
 }

@@ -337,135 +337,112 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
 /* ============================================================
    HERO SECTION — Full-bleed imagery + caption panel
    ============================================================ */
-const heroImages = [
-  "https://res.cloudinary.com/dppwnds6z/image/upload/v1789934598/ChatGPT_Image_Sep_21_2026_01_32_49_AM.png",
-  "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1431576901776-e539bd916ba2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
+const servicesList = [
+  {
+    title: "Certified Translation",
+    subtitle: "Precision translation services for technical and regulatory requirements.",
+    link: "/translation",
+    buttonText: "Go to Translation",
+  },
+  {
+    title: "Security Analysis",
+    subtitle: "Comprehensive physical security threat and risk assessment.",
+    link: "/security",
+    buttonText: "Go to Security",
+  },
+  {
+    title: "Certificates",
+    subtitle: "Verify and manage compliance certificates securely.",
+    link: "/certificates",
+    buttonText: "Go to Certificates",
+  }
 ];
 
-const heroEase = [0.16, 1, 0.3, 1] as const;
-
 export function HeroSection({ data }: { data?: any }) {
-  const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const customSlides = data?.slides?.filter((s: any) => s.imageUrl || s.title) || [];
-
-  const activeImages =
-    customSlides.length > 0
-      ? customSlides.map((s: any) => s.imageUrl).filter(Boolean)
-      : (data?.images?.filter(Boolean).length > 0
-          ? data.images.filter(Boolean)
-          : heroImages);
-
-  const defaultPanelTitles = [
-    "Certified Translation Services",
-    ...(t("home.hero_panel_titles", { returnObjects: true }) as string[] || []),
-  ];
-
-  const panelTitles =
-    customSlides.length > 0
-      ? customSlides.map((s: any) => s.title).filter(Boolean)
-      : (data?.panelTitles?.filter(Boolean).length > 0
-          ? data.panelTitles.filter(Boolean)
-          : defaultPanelTitles);
-
-  const slideCount = Math.max(activeImages.length, panelTitles.length, 1);
-  const panelTitle = panelTitles[currentSlide % panelTitles.length] ?? "Certified Translation Services";
-  const imageIndex = currentSlide % activeImages.length;
-
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slideCount);
+      setCurrentSlide((prev) => (prev + 1) % servicesList.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, [slideCount]);
+  }, []);
+
+  const slide = servicesList[currentSlide];
 
   return (
     <section
       ref={ref}
       className="relative min-h-[calc(100dvh-4.25rem)] md:min-h-[calc(100dvh-4.5rem)] mt-[4.25rem] md:mt-[4.5rem] overflow-hidden bg-[#0d1117]"
     >
-      <AnimatePresence mode="sync">
-        <motion.img
-          key={imageIndex}
-          src={activeImages[imageIndex]}
-          alt=""
-          role="presentation"
-          initial={{ opacity: 0, scale: 1.03 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.2, ease: "easeInOut" }}
-          loading={imageIndex === 0 ? "eager" : "lazy"}
-          decoding="async"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-      </AnimatePresence>
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover"
+      >
+        <source src="https://res.cloudinary.com/dcefror3c/video/upload/v1790082587/Drone_sequence_animating_storybo__1080p_20260922183503_fffxuo.mp4" type="video/mp4" />
+      </video>
 
-      <div className="absolute inset-0 bg-gradient-to-r from-[#0d1117]/85 via-[#0d1117]/35 to-transparent pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0d1117]/50 via-transparent to-[#0d1117]/20 pointer-events-none" />
+      {/* Gradient Overlays for Readability */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#0d1117]/90 via-[#0d1117]/40 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0d1117]/60 via-transparent to-[#0d1117]/20 pointer-events-none" />
 
+      {/* Text Content overlay */}
       <div className="relative z-10 flex min-h-[inherit] items-center px-6 md:px-12 lg:px-16 py-10 md:py-14">
         <motion.div
-          initial={{ opacity: 0, x: -28 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.9, ease: heroEase }}
-          className="max-w-xl md:max-w-2xl lg:max-w-3xl"
+          className="max-w-xl md:max-w-2xl lg:max-w-3xl w-full"
         >
-          <div className="relative">
-            <p className="font-mono text-xs md:text-sm font-bold tracking-[0.3em] uppercase text-gold mb-4 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] flex items-center gap-2">
-              <span className="h-1.5 w-6 bg-gold inline-block shadow-[0_0_8px_#D4AF37]" />
-              {t("home.hero_eyebrow") || "VISO GROUP"}
-            </p>
+          <div className="relative h-64 md:h-56">
             <AnimatePresence mode="wait">
-              <motion.h1
-                key={panelTitle}
-                initial={{ opacity: 0, y: 16 }}
+              <motion.div
+                key={currentSlide}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -12 }}
-                transition={{ duration: 0.45, ease: heroEase }}
-                className="font-display font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-[1.1] tracking-tight text-white uppercase drop-shadow-[0_4px_25px_rgba(0,0,0,0.9)] max-w-2xl"
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="absolute inset-0"
               >
-                {panelTitle}
-              </motion.h1>
+                <h1 className="font-display font-black text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.1] tracking-tight text-white uppercase drop-shadow-[0_4px_25px_rgba(0,0,0,0.9)] mb-6">
+                  {slide.title}
+                </h1>
+                <p className="font-sans text-lg md:text-xl text-white/80 font-light mb-8 max-w-xl text-pretty drop-shadow-md">
+                  {slide.subtitle}
+                </p>
+                <Link
+                  to={slide.link}
+                  className="inline-flex items-center gap-2 rounded-sm bg-primary px-8 py-4 font-sans text-xs font-bold tracking-[0.2em] text-white transition-all duration-400 hover:bg-gold hover:scale-[1.03] shadow-[0_4px_20px_rgba(212,175,55,0.3)] uppercase"
+                >
+                  {slide.buttonText}
+                </Link>
+              </motion.div>
             </AnimatePresence>
-            <div className="mt-6 h-1 w-20 bg-gold shadow-[0_0_12px_#D4AF37]" />
           </div>
         </motion.div>
       </div>
 
-      {/* Scroll Down Cue to About Section */}
-      <a
-        href="#about"
-        aria-label="Scroll down to About VISO"
-        className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-20 hidden sm:flex flex-col items-center gap-2 group cursor-pointer"
-      >
-        <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-white/50 group-hover:text-gold transition-colors">
-          Explore Architecture
-        </span>
-        <div className="w-5 h-8 rounded-full border border-white/30 group-hover:border-gold transition-colors flex items-start justify-center p-1 bg-black/20 backdrop-blur-xs">
-          <motion.div
-            animate={{ y: [0, 12, 0] }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-            className="w-1 h-2 rounded-full bg-gold shadow-[0_0_8px_#D4AF37]"
-          />
-        </div>
-      </a>
+      {/* VISO Logo to cover Gemini watermark in bottom right */}
+      <div className="absolute bottom-2 right-24 md:bottom-4 md:right-32 z-20 pointer-events-none p-3 backdrop-blur-md bg-black/30 rounded-xl border border-white/10">
+        <img loading="lazy" decoding="async"
+          src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
+          alt="VISO Group"
+          className="h-10 md:h-12 w-auto object-contain brightness-0 invert opacity-90 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
+        />
+      </div>
 
-      <div className="absolute bottom-6 md:bottom-8 inset-inline-end-6 md:inset-inline-end-12 z-20 flex gap-2">
-        {Array.from({ length: slideCount }, (_, i) => i).map((i) => (
+      {/* Indicators */}
+      <div className="absolute bottom-6 md:bottom-8 left-6 md:left-12 z-20 flex gap-2">
+        {servicesList.map((_, i) => (
           <button
             key={i}
             type="button"
             aria-label={`Slide ${i + 1}`}
             aria-current={i === currentSlide ? "true" : undefined}
             onClick={() => setCurrentSlide(i)}
-            className={`h-1 rounded-full transition-all duration-300 ${
-              i === currentSlide ? "w-8 bg-primary" : "w-2 bg-white/45 hover:bg-white/75"
+            className={`h-1.5 rounded-full transition-all duration-300 ${
+              i === currentSlide ? "w-10 bg-gold shadow-[0_0_8px_#D4AF37]" : "w-3 bg-white/45 hover:bg-white/75"
             }`}
           />
         ))}
@@ -1329,7 +1306,7 @@ function About({ data }: { data?: any }) {
   const sectionRef = useRef<HTMLElement>(null);
   const watermarkRef = useRef<HTMLDivElement>(null);
 
-  const title = data?.title || "A Professional Digital Company Profile";
+  const title = data?.title || "About VISO";
   const subtitle =
     data?.subtitle ||
     "A structured presentation of VISO's identity, security consultancy lifecycle, capabilities, sectors, credentials and integrated digital services.";

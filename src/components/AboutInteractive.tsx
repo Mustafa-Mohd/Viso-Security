@@ -1,14 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
-import {
-  ShieldCheck,
-  Cpu,
-  ArrowRight,
-  Sparkles,
-  Award,
-  Lock,
-} from "lucide-react";
-import { KineticSecurityThread } from "@/components/KineticSecurityThread";
+import { ArrowRight } from "lucide-react";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -22,33 +14,6 @@ function renderVisionTitle(title: string) {
     </>
   );
 }
-
-const STRATEGIC_PILLARS = [
-  {
-    icon: <ShieldCheck className="w-4 h-4 text-gold" />,
-    title: "Threat Assessment & Master Planning",
-    desc: "Comprehensive vulnerability modelling and site risk mitigation.",
-    tag: "Stage 01",
-  },
-  {
-    icon: <Lock className="w-4 h-4 text-gold" />,
-    title: "HCIS & MOI Regulatory Engineering",
-    desc: "100% compliance traceability and authority defense submissions.",
-    tag: "Directives",
-  },
-  {
-    icon: <Cpu className="w-4 h-4 text-gold" />,
-    title: "Cyber-Physical Systems Integration",
-    desc: "CCTV, VMS, PSIM, biometric access, and perimeter radar networks.",
-    tag: "Architecture",
-  },
-  {
-    icon: <Award className="w-4 h-4 text-gold" />,
-    title: "Commissioning & 24/7 Operational Readiness",
-    desc: "Rigorous FAT/SAT testing and seamless operational handover.",
-    tag: "Handover",
-  },
-];
 
 const METRICS_COUNTERS = [
   { value: "5+", label: "Regional Hubs", sub: "KSA-Wide Presence" },
@@ -75,40 +40,16 @@ export function AboutInteractive({
       <div className="pointer-events-none absolute -top-12 -left-12 w-96 h-96 bg-gold/[0.04] rounded-full blur-[120px]" />
       <div className="pointer-events-none absolute -bottom-12 -right-12 w-96 h-96 bg-gold/[0.04] rounded-full blur-[120px]" />
 
-      <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-stretch mb-16 md:mb-24">
-        {/* Left Column: Editorial & Corporate Credentials */}
-        <div className="lg:col-span-6 relative z-10 flex flex-col justify-between">
+      <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center mb-12 md:mb-20 relative z-10">
+        {/* Left Column: Simple About Info */}
+        <div className="lg:col-span-6 flex flex-col justify-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.85, ease }}
-            className="relative flex-1 rounded-2xl border border-foreground/10 bg-gradient-to-br from-surface/90 via-background to-primary/[0.04] p-7 md:p-10 overflow-hidden shadow-[0_15px_40px_rgba(0,0,0,0.04)]"
           >
-            {/* Background luxury glow */}
-            <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-gold/10 blur-3xl" />
 
-            {/* Section Tag */}
-            <div className="flex items-center justify-between gap-3 mb-8">
-              <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gold/15 border border-gold/30 font-mono text-xs font-bold text-gold">
-                  01
-                </span>
-                <div>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                    Corporate Profile
-                  </p>
-                  <p className="font-display text-base font-semibold tracking-tight text-foreground">
-                    About VISO Security
-                  </p>
-                </div>
-              </div>
-
-              <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/10 border border-gold/25 font-mono text-[10px] text-gold font-bold uppercase tracking-wider">
-                <Sparkles className="w-3 h-3 text-gold" />
-                Est. 2020 · KSA
-              </span>
-            </div>
 
             {/* Main Headline */}
             <motion.h2
@@ -127,155 +68,92 @@ export function AboutInteractive({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.14, ease }}
-              className="mt-5 text-base md:text-lg text-foreground/70 leading-relaxed font-light text-pretty"
+              className="mt-6 text-base md:text-lg text-foreground/70 leading-relaxed font-light text-pretty"
             >
               {subtitle}
             </motion.p>
-
-            {/* Who We Are Box */}
-            <motion.div
+            
+            <motion.p
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2, ease }}
-              className="mt-7 rounded-xl border border-gold/25 bg-background/80 p-6 shadow-sm relative overflow-hidden group hover:border-gold/50 transition-colors"
+              className="mt-4 text-sm md:text-base text-foreground/60 leading-relaxed font-light text-pretty"
             >
-              <div className="pointer-events-none absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-gold via-amber-400 to-transparent" />
-              <div className="flex items-center justify-between mb-2">
-                <p className="font-mono text-[10px] tracking-[0.28em] text-gold uppercase font-bold">
-                  Who We Are
-                </p>
-                <div className="flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="font-mono text-[9px] text-muted-foreground uppercase">Certified</span>
-                </div>
-              </div>
-              <h3 className="font-display text-xl font-bold tracking-tight text-foreground mb-2">
-                {whoWeAreTitle}
-              </h3>
-              <p className="text-sm text-foreground/80 leading-relaxed font-normal">
-                {whoWeAreDesc}
-              </p>
+              {whoWeAreDesc}
+            </motion.p>
 
-              {/* Action Link Buttons */}
-              <div className="mt-6 flex flex-wrap items-center gap-3">
-                <Link
-                  to="/about"
-                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-gold hover:bg-gold/90 px-5 py-2.5 font-mono text-[11px] font-bold tracking-[0.16em] uppercase text-black transition-all shadow-[0_4px_15px_rgba(212,175,55,0.25)] hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  <span>Corporate Overview</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-                <Link
-                  to="/security"
-                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-surface hover:bg-surface-2 border border-foreground/10 px-5 py-2.5 font-mono text-[11px] font-bold tracking-[0.16em] uppercase text-foreground transition-all hover:border-gold/40"
-                >
-                  <span>Lifecycle Framework</span>
-                </Link>
-              </div>
-            </motion.div>
-
-            {/* Strategic Pillars Grid */}
-            <div className="mt-7 grid sm:grid-cols-2 gap-3">
-              {STRATEGIC_PILLARS.map((pillar, idx) => (
-                <div
-                  key={idx}
-                  className="p-3.5 rounded-xl border border-foreground/5 bg-surface/60 hover:bg-surface hover:border-gold/30 transition-all group"
-                >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <div className="p-1.5 rounded-lg bg-gold/10 border border-gold/20 group-hover:scale-110 transition-transform">
-                      {pillar.icon}
-                    </div>
-                    <span className="font-mono text-[9px] font-bold px-2 py-0.5 rounded bg-foreground/5 text-muted-foreground uppercase tracking-wider">
-                      {pillar.tag}
-                    </span>
-                  </div>
-                  <h4 className="font-display font-bold text-xs text-foreground mb-1 group-hover:text-gold transition-colors">
-                    {pillar.title}
-                  </h4>
-                  <p className="text-[11px] text-muted-foreground leading-snug">
-                    {pillar.desc}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            {/* Regional Badges */}
-            <div className="mt-6 pt-5 border-t border-foreground/10 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider mr-1">
-                  Offices:
-                </span>
-                {["Riyadh HQ", "Khobar", "Jubail", "Jeddah", "Yanbu"].map((hub) => (
-                  <span
-                    key={hub}
-                    className="rounded-md border border-foreground/10 bg-surface px-2.5 py-1 font-mono text-[10px] tracking-wider uppercase text-foreground/75 font-medium"
+            {/* Action Link Buttons */}
+            <motion.div 
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.26, ease }}
+              className="mt-8 flex flex-wrap items-center gap-4"
+            >
+              <Link
+                to="/about"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-gold hover:bg-gold/90 px-6 py-3 font-mono text-[11px] font-bold tracking-[0.16em] uppercase text-black transition-all shadow-[0_4px_15px_rgba(212,175,55,0.25)] hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <span>Read More</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <div className="flex items-center gap-2">
+                {["SAIS", "MOI", "SuperVision"].map((label) => (
+                  <span 
+                    key={label}
+                    className="inline-flex items-center justify-center rounded-lg border border-foreground/10 bg-surface/30 px-4 py-3 font-mono text-[10px] font-bold tracking-[0.1em] uppercase text-foreground/80 hover:bg-foreground/5 hover:text-foreground transition-colors"
                   >
-                    {hub}
+                    {label}
                   </span>
                 ))}
               </div>
+            </motion.div>
+          </motion.div>
+        </div>
 
-              <div className="flex items-center gap-2">
-                <Link
-                  to="/regulatory/moi"
-                  className="rounded-md border border-foreground/15 bg-background px-2.5 py-1 font-mono text-[10px] tracking-wider uppercase text-foreground/70 hover:border-gold hover:text-gold transition-colors"
-                >
-                  MOI
-                </Link>
-                <Link
-                  to="/regulatory/hcis"
-                  className="rounded-md border border-gold/30 bg-gold/10 px-2.5 py-1 font-mono text-[10px] tracking-wider uppercase text-gold font-bold hover:bg-gold/20 transition-colors"
-                >
-                  HCIS
-                </Link>
-                <Link
-                  to="/regulatory/sais"
-                  className="rounded-md border border-foreground/15 bg-background px-2.5 py-1 font-mono text-[10px] tracking-wider uppercase text-foreground/70 hover:border-gold hover:text-gold transition-colors"
-                >
-                  SAIS
-                </Link>
-              </div>
+        {/* Right Column: Image */}
+        <div className="lg:col-span-6 flex items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, x: 20 }}
+            whileInView={{ opacity: 1, scale: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.9, delay: 0.2, ease }}
+            className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border border-foreground/10 group"
+          >
+            <div className="absolute inset-0 bg-gradient-to-tr from-gold/20 via-transparent to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
+            <img loading="lazy" decoding="async"
+              src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80"
+              alt="About VISO Security"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+            />
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Horizontal Counters */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 w-full relative z-10">
+        {METRICS_COUNTERS.map((m, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: 0.1 + i * 0.1, ease }}
+            className="group rounded-2xl border border-foreground/10 bg-surface/40 p-6 md:p-8 text-center hover:bg-surface hover:border-gold/30 transition-all duration-500 shadow-sm relative overflow-hidden flex flex-col justify-center items-center"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-gold/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="font-display font-black text-4xl lg:text-5xl text-foreground tracking-tight mb-3 relative z-10 group-hover:scale-105 transition-transform duration-500">
+              <span className="text-gold">{m.value}</span>
+            </div>
+            <div className="font-mono text-xs font-bold text-foreground/90 uppercase tracking-wider mb-2 relative z-10">
+              {m.label}
+            </div>
+            <div className="text-[11px] text-muted-foreground relative z-10 max-w-[140px]">
+              {m.sub}
             </div>
           </motion.div>
-        </div>
-
-        {/* Right Column: Kinetic Security Thread */}
-        <div className="lg:col-span-6 flex flex-col gap-5 min-h-[500px] justify-between">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.9, ease }}
-            className="flex-1 w-full"
-          >
-            <KineticSecurityThread />
-          </motion.div>
-
-          {/* Metrics Counters Ticker */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {METRICS_COUNTERS.map((m, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.1 + i * 0.08 }}
-                className="rounded-xl border border-foreground/10 bg-surface/70 p-3.5 text-center hover:border-gold/40 transition-colors shadow-sm"
-              >
-                <div className="font-display font-black text-2xl text-foreground tracking-tight">
-                  <span className="text-gold">{m.value}</span>
-                </div>
-                <div className="font-mono text-[10px] font-bold text-foreground/90 uppercase tracking-wider mt-0.5">
-                  {m.label}
-                </div>
-                <div className="text-[10px] text-muted-foreground mt-0.5">
-                  {m.sub}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );

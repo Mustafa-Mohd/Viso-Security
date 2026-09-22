@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TranslationRouteImport } from './routes/translation'
 import { Route as TechnicalProposalRouteImport } from './routes/technical-proposal'
 import { Route as SecurityRouteImport } from './routes/security'
+import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as OthersRouteImport } from './routes/others'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -39,6 +40,11 @@ const TechnicalProposalRoute = TechnicalProposalRouteImport.update({
 const SecurityRoute = SecurityRouteImport.update({
   id: '/security',
   path: '/security',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsRoute = ProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OthersRoute = OthersRouteImport.update({
@@ -117,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/others': typeof OthersRoute
+  '/projects': typeof ProjectsRoute
   '/security': typeof SecurityRoute
   '/technical-proposal': typeof TechnicalProposalRoute
   '/translation': typeof TranslationRoute
@@ -135,6 +142,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/others': typeof OthersRoute
+  '/projects': typeof ProjectsRoute
   '/security': typeof SecurityRoute
   '/technical-proposal': typeof TechnicalProposalRoute
   '/translation': typeof TranslationRoute
@@ -154,6 +162,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/others': typeof OthersRoute
+  '/projects': typeof ProjectsRoute
   '/security': typeof SecurityRoute
   '/technical-proposal': typeof TechnicalProposalRoute
   '/translation': typeof TranslationRoute
@@ -174,6 +183,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/others'
+    | '/projects'
     | '/security'
     | '/technical-proposal'
     | '/translation'
@@ -192,6 +202,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/others'
+    | '/projects'
     | '/security'
     | '/technical-proposal'
     | '/translation'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/others'
+    | '/projects'
     | '/security'
     | '/technical-proposal'
     | '/translation'
@@ -229,6 +241,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
   OthersRoute: typeof OthersRoute
+  ProjectsRoute: typeof ProjectsRoute
   SecurityRoute: typeof SecurityRoute
   TechnicalProposalRoute: typeof TechnicalProposalRoute
   TranslationRoute: typeof TranslationRoute
@@ -259,6 +272,13 @@ declare module '@tanstack/react-router' {
       path: '/security'
       fullPath: '/security'
       preLoaderRoute: typeof SecurityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects': {
+      id: '/projects'
+      path: '/projects'
+      fullPath: '/projects'
+      preLoaderRoute: typeof ProjectsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/others': {
@@ -365,6 +385,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,
   OthersRoute: OthersRoute,
+  ProjectsRoute: ProjectsRoute,
   SecurityRoute: SecurityRoute,
   TechnicalProposalRoute: TechnicalProposalRoute,
   TranslationRoute: TranslationRoute,

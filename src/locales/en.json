@@ -1,7 +1,7 @@
 {
   "nav": {
     "home": "Home",
-    "about": "About",
+    "about": "About Us",
     "overview": "Overview",
     "security": "Security",
     "translation": "Translation",
@@ -16,7 +16,7 @@
     "lang_switch": "Switch to العربية",
     "group_who": "Who We Are",
     "group_services": "What We Do",
-    "group_impact": "Our Impact",
+    "group_impact": "Projects",
     "join_team": "Join Our Team",
     "contact_us": "Contact Us",
     "regulatory_overview": "Regulatory Authorities",
