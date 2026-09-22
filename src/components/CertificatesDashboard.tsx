@@ -50,7 +50,21 @@ export function CertificatesDashboard() {
   const openCreateForm = () => {
     setFormError("");
     setEditingId(null);
-    setFormId(`VISO-TR-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`); // Prefill clean random ID
+    const currentYear = new Date().getFullYear();
+    let maxSerial = 0;
+    
+    certs.forEach(cert => {
+      const match = cert.id.match(new RegExp(`VISO-TR-${currentYear}-(\\d+)`));
+      if (match && match[1]) {
+        const serial = parseInt(match[1], 10);
+        if (!isNaN(serial) && serial > maxSerial) {
+          maxSerial = serial;
+        }
+      }
+    });
+    
+    const nextSerialStr = (maxSerial + 1).toString().padStart(6, '0');
+    setFormId(`VISO-TR-${currentYear}-${nextSerialStr}`);
     setFormNationalId("");
     setFormName("");
     setFormSource("Arabic");

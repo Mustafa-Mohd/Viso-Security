@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { setAppLanguage, type AppLang } from "@/i18n";
 import { cn } from "@/lib/utils";
+import { EmployeeLoginModal } from "@/components/EmployeeLoginModal";
 
 type NavLink = { to: string; label: string };
 
@@ -208,6 +209,13 @@ export function TopNav() {
               >
                 {t("nav.engage")}
               </Link>
+              <button
+                type="button"
+                onClick={() => setIsLoginModalOpen(true)}
+                className="ms-1 shrink-0 rounded-md px-4 py-2 font-sans text-[10px] font-bold tracking-[0.14em] uppercase transition-all duration-300 bg-neutral-900 text-white hover:bg-neutral-700"
+              >
+                Employee Login
+              </button>
             </nav>
 
             <div className="flex items-center gap-2 lg:hidden ms-auto">
@@ -307,7 +315,7 @@ export function TopNav() {
               to="/others"
               onClick={() => setMobileMenuOpen(false)}
               className={cn(
-                "w-full max-w-xs rounded-md px-6 py-3.5 font-sans text-sm font-semibold tracking-widest text-center ms-3",
+                "w-full max-w-xs rounded-md px-6 py-3.5 font-sans text-sm font-semibold tracking-widest text-center ms-3 mb-2",
                 isActivePath("/others")
                   ? "bg-secondary text-white ring-2 ring-primary"
                   : "bg-primary text-primary-foreground",
@@ -315,9 +323,22 @@ export function TopNav() {
             >
               {t("nav.engage")}
             </Link>
+            
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setIsLoginModalOpen(true);
+              }}
+              className="w-full max-w-xs rounded-md px-6 py-3.5 font-sans text-sm font-semibold tracking-widest text-center ms-3 bg-neutral-900 text-white hover:bg-neutral-800"
+            >
+              Employee Login
+            </button>
           </div>
         </div>
       )}
+      
+      <EmployeeLoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
     </>
   );
 }

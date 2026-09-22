@@ -121,71 +121,68 @@ function HomePage() {
                 transition={{ duration: 1 }}
                 className="text-center mb-16"
               >
-                <h2 className="text-4xl md:text-5xl font-light mb-4 text-foreground">{cmsData.areas?.title || t("areas.title")}</h2>
-                <p className="text-lg text-black max-w-2xl mx-auto">{cmsData.areas?.subtitle || t("areas.subtitle")}</p>
+                <h2 className="text-4xl md:text-5xl font-light mb-4 text-foreground">Our Services</h2>
+                <p className="text-lg text-black max-w-2xl mx-auto">Explore our integrated portals and specialized consultancy offerings.</p>
               </motion.div>
 
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <AnimatePresence>
-                  {cmsData.areas?.items?.length > 0 ? (
-                    cmsData.areas.items.map((area: any, i: number) => {
-                      const isIntegrated = i === 0 || area.title?.toLowerCase().includes("integrated");
-                      const isMeteorology = i === 1 || area.title?.toLowerCase().includes("meteorol");
-                      const isAviation = i === 2 || area.title?.toLowerCase().includes("aviation");
-                      const isFullCover = isIntegrated || isMeteorology || isAviation;
-                      return (
-                        <AreaCard
-                          key={i}
-                          title={isFullCover ? "" : area.title}
-                          desc={isFullCover ? "" : area.desc}
-                          imageUrl={
-                            area.image_url ||
-                            (isIntegrated
-                              ? "https://res.cloudinary.com/dppwnds6z/image/upload/v1789932578/ChatGPT_Image_Sep_21_2026_12_59_12_AM.png"
-                              : isMeteorology
-                              ? "https://res.cloudinary.com/dppwnds6z/image/upload/v1789932592/ChatGPT_Image_Sep_21_2026_12_59_37_AM.png"
-                              : isAviation
-                              ? "https://res.cloudinary.com/dppwnds6z/image/upload/v1789932597/ChatGPT_Image_Sep_21_2026_12_59_48_AM.png"
-                              : undefined)
-                          }
-                          svg={[
-                            <IntegratedSecuritySVG />,
-                            <MeteorologySVG />,
-                            <PlaneSVG />,
-                            <IctSVG />,
-                            <MarineSVG />,
-                            <EngineeringSVG />,
-                          ][i % 6]}
-                          delay={0.1 + i * 0.1}
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 px-6 lg:px-12">
+                {[
+                  {
+                    title: "Security Analysis",
+                    desc: "Comprehensive risk and threat assessment engineering.",
+                    url: "/security",
+                    img: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80",
+                    color: "group-hover:border-blue-500/50 group-hover:shadow-blue-500/20"
+                  },
+                  {
+                    title: "Translate Certificate",
+                    desc: "Verify and authenticate VISO translation certificates.",
+                    url: "/translation",
+                    img: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80",
+                    color: "group-hover:border-emerald-500/50 group-hover:shadow-emerald-500/20"
+                  },
+                  {
+                    title: "DMS Portal",
+                    desc: "Access the Document Management System dashboard.",
+                    url: "/admin",
+                    img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
+                    color: "group-hover:border-purple-500/50 group-hover:shadow-purple-500/20"
+                  },
+                  {
+                    title: "Job Application",
+                    desc: "Join our team of elite physical security experts.",
+                    url: "/career",
+                    img: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800&q=80",
+                    color: "group-hover:border-orange-500/50 group-hover:shadow-orange-500/20"
+                  }
+                ].map((item, i) => (
+                  <Link key={i} to={item.url} className="block group">
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: i * 0.1 }}
+                      className={`relative bg-surface border border-foreground/10 rounded-2xl overflow-hidden h-[360px] flex flex-col transition-all duration-500 hover:shadow-xl ${item.color} hover:-translate-y-1`}
+                    >
+                      <div className="h-48 overflow-hidden relative">
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500 z-10" />
+                        <img 
+                          src={item.img} 
+                          alt={item.title} 
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         />
-                      );
-                    })
-                  ) : (
-                    <>
-                      <AreaCard
-                        title=""
-                        desc=""
-                        imageUrl="https://res.cloudinary.com/dppwnds6z/image/upload/v1789932578/ChatGPT_Image_Sep_21_2026_12_59_12_AM.png"
-                        delay={0.1}
-                      />
-                      <AreaCard
-                        title=""
-                        desc=""
-                        imageUrl="https://res.cloudinary.com/dppwnds6z/image/upload/v1789932592/ChatGPT_Image_Sep_21_2026_12_59_37_AM.png"
-                        delay={0.2}
-                      />
-                      <AreaCard
-                        title=""
-                        desc=""
-                        imageUrl="https://res.cloudinary.com/dppwnds6z/image/upload/v1789932597/ChatGPT_Image_Sep_21_2026_12_59_48_AM.png"
-                        delay={0.3}
-                      />
-                      <AreaCard title={t("areas.items.a4.title")} desc={t("areas.items.a4.desc")} svg={<IctSVG />} delay={0.4} />
-                      <AreaCard title={t("areas.items.a5.title")} desc={t("areas.items.a5.desc")} svg={<MarineSVG />} delay={0.5} />
-                      <AreaCard title={t("areas.items.a6.title")} desc={t("areas.items.a6.desc")} svg={<EngineeringSVG />} delay={0.6} />
-                    </>
-                  )}
-                </AnimatePresence>
+                      </div>
+                      <div className="p-6 flex flex-col flex-grow bg-white">
+                        <h3 className="font-display text-xl mb-2 text-foreground group-hover:text-primary transition-colors">{item.title}</h3>
+                        <p className="font-sans text-sm text-foreground/70 leading-relaxed mb-4">{item.desc}</p>
+                        <div className="mt-auto flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-foreground/50 group-hover:text-primary transition-colors">
+                          <span>Access</span>
+                          <span className="transform transition-transform group-hover:translate-x-1">→</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </Link>
+                ))}
               </div>
             </div>
           </LazyMount>
@@ -387,8 +384,8 @@ export function HeroSection({ data }: { data?: any }) {
       </video>
 
       {/* Gradient Overlays for Readability */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#0d1117]/90 via-[#0d1117]/40 to-transparent pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0d1117]/60 via-transparent to-[#0d1117]/20 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#0d1117]/60 via-[#0d1117]/20 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0d1117]/40 via-transparent to-[#0d1117]/10 pointer-events-none" />
 
       {/* Text Content overlay */}
       <div className="relative z-10 flex min-h-[inherit] items-center px-6 md:px-12 lg:px-16 py-10 md:py-14">
@@ -1518,7 +1515,7 @@ function ServiceLifecycle({ data }: { data?: any }) {
       num: "04",
       title: "Construction & Readiness",
       desc: "Supervision, testing, commissioning, and handover—confirming systems perform as designed.",
-      imageUrl: "/images/explore/handover-support-hero.jpg",
+      imageUrl: "https://nxio.net/wp-content/uploads/2024/11/Two-coworkers-collaborating-in-server-room.jpg",
     },
   ];
 

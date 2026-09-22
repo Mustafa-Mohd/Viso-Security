@@ -98,15 +98,27 @@ export function AboutInteractive({
                 <span>Read More</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
-              <div className="flex items-center gap-2">
-                {["SAIS", "MOI", "SuperVision"].map((label) => (
-                  <span 
-                    key={label}
-                    className="inline-flex items-center justify-center rounded-lg border border-foreground/10 bg-surface/30 px-4 py-3 font-mono text-[10px] font-bold tracking-[0.1em] uppercase text-foreground/80 hover:bg-foreground/5 hover:text-foreground transition-colors"
-                  >
-                    {label}
-                  </span>
-                ))}
+              <div className="flex items-stretch gap-2">
+                <Link
+                  to="/regulatory/sais"
+                  className="group inline-flex flex-col items-center justify-center gap-1 rounded-lg border border-foreground/10 bg-white px-4 py-1.5 hover:bg-gold/10 hover:border-gold/40 hover:shadow-md transition-all"
+                >
+                  <img src="https://res.cloudinary.com/dppwnds6z/image/upload/v1790099142/images.png" alt="SAIS" className="h-5 w-auto object-contain transition-transform group-hover:scale-105" />
+                  <span className="font-mono text-[9px] font-bold tracking-[0.1em] text-foreground/70 group-hover:text-gold transition-colors">SAIS</span>
+                </Link>
+                <Link
+                  to="/regulatory/moi"
+                  className="group inline-flex flex-col items-center justify-center gap-1 rounded-lg border border-foreground/10 bg-white px-4 py-1.5 hover:bg-gold/10 hover:border-gold/40 hover:shadow-md transition-all"
+                >
+                  <img src="https://res.cloudinary.com/dppwnds6z/image/upload/v1790099027/download_1.png" alt="MOI" className="h-5 w-auto object-contain transition-transform group-hover:scale-105" />
+                  <span className="font-mono text-[9px] font-bold tracking-[0.1em] text-foreground/70 group-hover:text-gold transition-colors">MOI</span>
+                </Link>
+                <Link
+                  to="/explore/site-supervision"
+                  className="group inline-flex flex-col items-center justify-center gap-1 rounded-lg border border-foreground/10 bg-surface/40 px-4 py-1.5 hover:bg-gold/10 hover:border-gold/40 hover:shadow-md transition-all"
+                >
+                  <span className="font-mono text-[10px] font-bold tracking-[0.1em] uppercase text-foreground/80 group-hover:text-gold transition-colors mt-auto mb-auto">SuperVision</span>
+                </Link>
               </div>
             </motion.div>
           </motion.div>
