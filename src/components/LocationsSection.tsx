@@ -98,14 +98,14 @@ export function LocationsSection({ data }: { data?: any }) {
                     }`}
                   >
                     <MapPin
-                      className={`w-3.5 h-3.5 shrink-0 ${
-                        isActive ? "text-primary" : "text-foreground/35"
+                      className={`w-3.5 h-3.5 shrink-0 transition-colors ${
+                        isActive ? "text-red-600" : "text-red-500/60"
                       }`}
                     />
                     <div className="min-w-0">
                       <div
-                        className={`font-display text-sm tracking-tight truncate ${
-                          isActive ? "text-foreground" : "text-foreground/70"
+                        className={`font-display text-[15px] tracking-tight truncate font-bold ${
+                          isActive ? "text-black" : "text-black/75"
                         }`}
                       >
                         {t(`locations.cities.${loc.id}.name`, loc.name)}
@@ -141,14 +141,14 @@ export function LocationsSection({ data }: { data?: any }) {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm bg-primary/10 hover:bg-primary/20 text-primary font-mono text-[9px] uppercase tracking-wider transition-colors"
                 >
-                  <MapPin className="w-3 h-3" /> Get Directions
+                  <MapPin className="w-3 h-3 text-red-600" /> Get Directions
                 </a>
               </motion.div>
             </AnimatePresence>
 
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[10px] font-mono text-foreground/45">
               <span className="inline-flex items-center gap-1">
-                <MapPin className="w-3 h-3 text-primary" />
+                <MapPin className="w-3 h-3 text-red-600" />
                 {t("locations.nationwide_short")}
               </span>
               <a href="tel:+966543966637" className="inline-flex items-center gap-1 hover:text-primary">

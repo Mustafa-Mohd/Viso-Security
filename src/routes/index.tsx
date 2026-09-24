@@ -1319,7 +1319,7 @@ function About({ data }: { data?: any }) {
     <section
       id="about"
       ref={sectionRef}
-      className="relative px-6 md:px-12 lg:px-16 py-8 md:py-12 bg-background overflow-hidden border-t border-foreground/5"
+      className="relative px-6 md:px-12 lg:px-16 min-h-[100dvh] flex flex-col justify-center bg-background overflow-hidden border-t border-foreground/5 py-24"
     >
       {/* Continuous Fluid Glowing Laser Sweep Horizon Beam */}
       <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-gold/30 to-transparent pointer-events-none" />

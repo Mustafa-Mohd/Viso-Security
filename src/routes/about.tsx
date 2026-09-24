@@ -141,8 +141,8 @@ function AboutHero() {
           fetchPriority="high"
           className="h-[120%] w-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background/40 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent" />
       </motion.div>
 
       {/* Ambient gold wash */}
@@ -171,7 +171,7 @@ function AboutHero() {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.1, delay: 0.15, ease }}
-          className="font-display text-[14vw] md:text-[9vw] leading-[0.85] tracking-[-0.04em] uppercase text-foreground max-w-5xl"
+          className="font-display text-[14vw] md:text-[9vw] leading-[0.85] tracking-[-0.04em] uppercase text-white max-w-5xl"
         >
           VISO
         </motion.h1>
@@ -180,7 +180,7 @@ function AboutHero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.35, ease }}
-          className="mt-6 md:mt-8 font-display text-2xl md:text-4xl lg:text-5xl text-foreground/90 max-w-2xl leading-[1.15] tracking-tight"
+          className="mt-6 md:mt-8 font-display text-2xl md:text-4xl lg:text-5xl text-white/90 max-w-2xl leading-[1.15] tracking-tight"
         >
           {t("about_page.hero_title")}{" "}
           <em className="text-primary not-italic font-light">{t("about_page.hero_title_italic")}</em>
@@ -190,7 +190,7 @@ function AboutHero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.5, ease }}
-          className="mt-5 max-w-lg text-sm md:text-base text-foreground/55 leading-relaxed font-light"
+          className="mt-5 max-w-lg text-sm md:text-base text-white/70 leading-relaxed font-light"
         >
           {t("about_page.hero_desc")}
         </motion.p>
@@ -257,7 +257,7 @@ function WhoWeAre({
     <section
       id="who"
       ref={ref}
-      className="relative px-8 md:px-16 py-24 md:py-36 overflow-hidden"
+      className="relative px-8 md:px-16 py-12 md:py-20 overflow-hidden"
     >
       <motion.div
         style={{ x: markX }}
@@ -290,9 +290,9 @@ function WhoWeAre({
                 src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80"
                 alt="VISO workspace"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-foreground/30 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
               <div className="absolute bottom-6 left-6 right-6">
-                <p className="font-mono text-[10px] tracking-[0.25em] text-white/80 uppercase">
+                <p className="font-mono text-[10px] tracking-[0.25em] text-white uppercase">
                   Headquartered in Riyadh
                 </p>
               </div>
@@ -300,14 +300,14 @@ function WhoWeAre({
           </Reveal>
         </div>
 
-        <div className="lg:col-span-7 lg:pt-24 space-y-8">
+        <div className="lg:col-span-7 lg:pt-8 space-y-6">
           <Reveal delay={0.15}>
-            <p className="text-lg md:text-xl text-foreground/70 leading-relaxed font-light max-w-2xl">
+            <p className="text-lg md:text-xl text-foreground/90 leading-relaxed font-light max-w-2xl">
               {desc}
             </p>
           </Reveal>
           <Reveal delay={0.25}>
-            <p className="text-base md:text-lg text-foreground/50 leading-relaxed font-light max-w-2xl">
+            <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-light max-w-2xl">
               {secondary}
             </p>
           </Reveal>
@@ -342,9 +342,9 @@ function CEOMessage() {
   const { t } = useTranslation();
   
   return (
-    <section className="relative px-8 md:px-16 py-24 md:py-32 bg-background overflow-hidden border-t border-foreground/5">
+    <section className="relative px-8 md:px-16 py-16 md:py-24 bg-background overflow-hidden border-t border-foreground/5">
       <div className="max-w-[1600px] mx-auto">
-        <div className="grid lg:grid-cols-12 gap-12 lg:gap-20 items-center">
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           <div className="lg:col-span-5 order-2 lg:order-1">
             <Reveal delay={0.1}>
               <div className="relative aspect-[3/4] md:aspect-square lg:aspect-[4/5] rounded-sm overflow-hidden group">
@@ -352,15 +352,15 @@ function CEOMessage() {
                   src="https://res.cloudinary.com/dppwnds6z/image/upload/v1790273889/WhatsApp_Image_2026-09-24_at_4.52.27_PM.jpg" 
                   alt="CEO of VISO Group" 
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 <div className="absolute bottom-8 left-8 right-8">
-                  <div className="font-display text-2xl md:text-3xl text-foreground font-bold tracking-tight mb-1">
+                  <div className="font-display text-2xl md:text-3xl text-white font-bold tracking-tight mb-1">
                     Mohammad Bin Sadiq
                   </div>
                   <div className="font-mono text-[10px] tracking-[0.25em] text-primary uppercase">
                     Chief Executive Officer
                   </div>
-                  <div className="font-mono text-[10px] tracking-[0.25em] text-foreground/50 uppercase mt-1">
+                  <div className="font-mono text-[10px] tracking-[0.25em] text-white/70 uppercase mt-1">
                     Vision of Solutions for Security Consultations
                   </div>
                 </div>
@@ -377,21 +377,20 @@ function CEOMessage() {
             </Reveal>
             
             <Reveal delay={0.3}>
-              <div className="relative">
-                <span className="absolute -top-10 -left-6 text-8xl text-foreground/5 font-serif select-none pointer-events-none">"</span>
-                <p className="text-lg md:text-xl lg:text-2xl text-foreground/80 leading-relaxed font-light mb-8 relative z-10">
+              <div className="relative border-l-4 border-primary/60 pl-6 md:pl-8 py-2">
+                <p className="text-lg md:text-xl lg:text-2xl text-foreground/90 leading-relaxed font-light mb-5 relative z-10">
                   At Vision of Solutions for Security Consultations, we believe that security consulting is more than identifying risks or meeting regulatory requirements. It is about protecting people, assets, operations, and the confidence our clients place in us.
                 </p>
-                <p className="text-base md:text-lg text-foreground/60 leading-relaxed font-light mb-6">
+                <p className="text-base md:text-lg text-foreground/70 leading-relaxed font-light mb-4">
                   Since our establishment, we have worked to build a consulting practice founded on integrity, technical excellence, independence, and a clear understanding of the security challenges facing critical infrastructure and organizations across the Kingdom.
                 </p>
-                <p className="text-base md:text-lg text-foreground/60 leading-relaxed font-light mb-6">
+                <p className="text-base md:text-lg text-foreground/70 leading-relaxed font-light mb-4">
                   Our commitment is to provide practical, reliable, and forward-looking security solutions that help our clients make informed decisions, strengthen resilience, and protect what matters most to their organizations.
                 </p>
-                <p className="text-base md:text-lg text-foreground/60 leading-relaxed font-light mb-6">
+                <p className="text-base md:text-lg text-foreground/70 leading-relaxed font-light mb-4">
                   We are proud of the expertise of our team, the trust of our clients, and the relationships we have built across the sectors we serve. As security needs continue to evolve, we remain committed to developing our capabilities, adopting effective technologies and methodologies, and delivering services that create lasting value.
                 </p>
-                <p className="text-base md:text-lg text-foreground/60 leading-relaxed font-light mb-10">
+                <p className="text-base md:text-lg text-foreground/70 leading-relaxed font-light">
                   We look forward to continuing our journey with our clients and partners toward safer, more resilient, and more secure organizations.
                 </p>
               </div>
@@ -783,27 +782,27 @@ function ProfileJourney({
 function AboutCta() {
   const { t } = useTranslation();
   return (
-    <section className="relative px-8 md:px-16 py-28 md:py-40 overflow-hidden">
+    <section className="relative px-8 md:px-16 py-28 md:py-40 overflow-hidden bg-black text-white">
       <div className="absolute inset-0">
         <img
           src="https://images.unsplash.com/photo-1431576901776-e539bd916ba2?auto=format&fit=crop&w=2400&q=80"
           alt=""
           loading="lazy"
           decoding="async"
-          className="h-full w-full object-cover opacity-30"
+          className="h-full w-full object-cover opacity-50"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/70" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent" />
       </div>
 
       <div className="relative z-10 max-w-[1600px] mx-auto">
         <Reveal>
-          <h2 className="font-display text-4xl md:text-6xl lg:text-7xl tracking-tight max-w-3xl leading-[1.05]">
+          <h2 className="font-display text-4xl md:text-6xl lg:text-7xl tracking-tight max-w-3xl leading-[1.05] text-white">
             {t("about_page.ready_title")}{" "}
             <em className="text-primary not-italic font-light">{t("about_page.ready_italic")}</em>
           </h2>
         </Reveal>
         <Reveal delay={0.15}>
-          <p className="mt-6 text-foreground/55 max-w-md font-light leading-relaxed">
+          <p className="mt-6 text-white/70 max-w-md font-light leading-relaxed">
             {t("about_page.ready_desc")}
           </p>
         </Reveal>
@@ -817,7 +816,7 @@ function AboutCta() {
             </Link>
             <Link
               to="/security"
-              className="rounded-sm border border-foreground/15 px-8 py-4 font-sans text-xs font-bold tracking-[0.2em] text-foreground/70 transition-all duration-400 hover:border-primary hover:text-primary"
+              className="rounded-sm border border-white/20 px-8 py-4 font-sans text-xs font-bold tracking-[0.2em] text-white/80 transition-all duration-400 hover:border-primary hover:text-primary"
             >
               {t("about_page.view_framework")}
             </Link>
