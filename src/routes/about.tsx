@@ -134,15 +134,15 @@ function AboutHero() {
     >
       <motion.div style={{ y: imgY }} className="absolute inset-0">
         <img
-          src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2400&q=80"
+          src="https://res.cloudinary.com/dppwnds6z/image/upload/v1790274846/ChatGPT_Image_Sep_25_2026_12_03_52_AM.png"
           alt="Architectural structure"
           loading="eager"
           decoding="async"
           fetchPriority="high"
           className="h-[120%] w-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/75 to-background/25" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/40 via-transparent to-transparent" />
       </motion.div>
 
       {/* Ambient gold wash */}
@@ -349,7 +349,7 @@ function CEOMessage() {
             <Reveal delay={0.1}>
               <div className="relative aspect-[3/4] md:aspect-square lg:aspect-[4/5] rounded-sm overflow-hidden group">
                 <ParallaxImage 
-                  src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=1200" 
+                  src="https://res.cloudinary.com/dppwnds6z/image/upload/v1790273889/WhatsApp_Image_2026-09-24_at_4.52.27_PM.jpg" 
                   alt="CEO of VISO Group" 
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
@@ -411,28 +411,29 @@ function VisionMission() {
       <div className="max-w-[1600px] mx-auto">
 
         
-        <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+        <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
           {/* Vision Card */}
           <Reveal delay={0.1}>
-            <div className="group relative h-full p-10 md:p-14 border border-foreground/10 bg-background/40 backdrop-blur-md rounded-xl hover:border-primary/50 hover:bg-background/60 transition-all duration-500 overflow-hidden shadow-lg hover:shadow-primary/5">
+            <div className="group relative h-full p-6 md:p-8 border border-foreground/10 bg-background/40 backdrop-blur-md rounded-xl hover:border-primary/50 hover:bg-background/60 transition-all duration-500 overflow-hidden shadow-lg hover:shadow-primary/5">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
               
-              {/* Corner accent */}
               <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-bl-3xl" />
               
               <div className="relative z-10">
-                <div className="w-14 h-14 mb-8 rounded-2xl border border-primary/30 flex items-center justify-center bg-primary/10 text-primary group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 shadow-[0_0_15px_rgba(212,175,55,0.15)]">
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="w-12 h-12 mb-6 rounded-2xl border border-primary/30 flex items-center justify-center bg-primary/10 text-primary group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 shadow-[0_0_15px_rgba(212,175,55,0.15)]">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
                 </div>
-                <h3 className="font-display text-3xl md:text-4xl text-foreground tracking-tight mb-6 group-hover:text-primary transition-colors duration-500 flex items-center gap-3">
+                <h3 className="font-display text-2xl md:text-3xl text-foreground tracking-tight mb-2 group-hover:text-primary transition-colors duration-500 flex items-center gap-3">
                   Our Vision
-                  <span className="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 text-primary text-2xl">→</span>
                 </h3>
-                <p className="text-foreground/60 leading-relaxed font-light text-lg md:text-xl">
-                  To be the Kingdom's definitive authority in physical security architecture, pioneering resilient environments that safeguard progress and elevate the standard of protection across the region.
+                <div className="font-mono text-[10px] tracking-[0.1em] text-primary uppercase mb-4">
+                  Trusted Leadership in Physical Security
+                </div>
+                <p className="text-foreground/60 leading-relaxed font-light text-base">
+                  To become the trusted leader in physical security consultancy — renowned for our expertise, innovation, and unwavering commitment to excellence. We aspire to continually push the boundaries of security solutions, shaping a safer world for generations to come.
                 </p>
               </div>
             </div>
@@ -440,24 +441,51 @@ function VisionMission() {
           
           {/* Mission Card */}
           <Reveal delay={0.2}>
-            <div className="group relative h-full p-10 md:p-14 border border-foreground/10 bg-background/40 backdrop-blur-md rounded-xl hover:border-primary/50 hover:bg-background/60 transition-all duration-500 overflow-hidden shadow-lg hover:shadow-primary/5">
+            <div className="group relative h-full p-6 md:p-8 border border-foreground/10 bg-background/40 backdrop-blur-md rounded-xl hover:border-primary/50 hover:bg-background/60 transition-all duration-500 overflow-hidden shadow-lg hover:shadow-primary/5">
               <div className="absolute inset-0 bg-gradient-to-tl from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
               
-              {/* Corner accent */}
               <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-tr-3xl" />
               
               <div className="relative z-10">
-                <div className="w-14 h-14 mb-8 rounded-2xl border border-primary/30 flex items-center justify-center bg-primary/10 text-primary group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500 shadow-[0_0_15px_rgba(212,175,55,0.15)]">
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="w-12 h-12 mb-6 rounded-2xl border border-primary/30 flex items-center justify-center bg-primary/10 text-primary group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500 shadow-[0_0_15px_rgba(212,175,55,0.15)]">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
-                <h3 className="font-display text-3xl md:text-4xl text-foreground tracking-tight mb-6 group-hover:text-primary transition-colors duration-500 flex items-center gap-3">
+                <h3 className="font-display text-2xl md:text-3xl text-foreground tracking-tight mb-2 group-hover:text-primary transition-colors duration-500 flex items-center gap-3">
                   Our Mission
-                  <span className="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 text-primary text-2xl">→</span>
                 </h3>
-                <p className="text-foreground/60 leading-relaxed font-light text-lg md:text-xl">
-                  To deliver uncompromising security consultancy through rigorous risk assessment, innovative design, and flawless execution, ensuring our clients achieve operational readiness and regulatory alignment.
+                <div className="font-mono text-[10px] tracking-[0.1em] text-primary uppercase mb-4">
+                  Protecting Assets, Ensuring Safety
+                </div>
+                <p className="text-foreground/60 leading-relaxed font-light text-base">
+                  To protect our clients' assets and ensure their safety through thorough analysis, creative solutions, and unwavering commitment to excellence in physical security consultancy. We deliver customized strategies that surpass expectations, empowering our clients to thrive in a secure environment.
+                </p>
+              </div>
+            </div>
+          </Reveal>
+
+          {/* Values Card */}
+          <Reveal delay={0.3}>
+            <div className="group relative h-full p-6 md:p-8 border border-foreground/10 bg-background/40 backdrop-blur-md rounded-xl hover:border-primary/50 hover:bg-background/60 transition-all duration-500 overflow-hidden shadow-lg hover:shadow-primary/5">
+              <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              
+              <div className="absolute bottom-0 right-0 w-24 h-24 bg-gradient-to-tl from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-tl-3xl" />
+              
+              <div className="relative z-10">
+                <div className="w-12 h-12 mb-6 rounded-2xl border border-primary/30 flex items-center justify-center bg-primary/10 text-primary group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 shadow-[0_0_15px_rgba(212,175,55,0.15)]">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </div>
+                <h3 className="font-display text-2xl md:text-3xl text-foreground tracking-tight mb-2 group-hover:text-primary transition-colors duration-500 flex items-center gap-3">
+                  Our Values
+                </h3>
+                <div className="font-mono text-[10px] tracking-[0.1em] text-primary uppercase mb-4">
+                  Integrity &amp; Excellence
+                </div>
+                <p className="text-foreground/60 leading-relaxed font-light text-base">
+                  Our practice is founded on integrity, technical excellence, and independence. With a clear understanding of the security challenges facing critical infrastructure, we are committed to practical, reliable, and forward-looking solutions.
                 </p>
               </div>
             </div>

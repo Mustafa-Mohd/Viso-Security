@@ -92,25 +92,24 @@ export function TopNav() {
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
-  const navGroups: NavGroup[] = [
-    {
-      id: "services",
-      label: t("nav.group_services"),
-      items: [
-        { to: "/security", label: t("nav.security") },
-        { to: "/translation", label: t("nav.translation") },
-      ],
-    },
-    {
-      id: "join_team",
-      label: t("nav.join_team"),
-      items: [
-        { to: "/clients", label: t("nav.clients") },
-        { to: "/career", label: t("nav.careers") },
-        { to: "/gallery", label: t("nav.gallery") },
-      ],
-    },
-  ];
+  const servicesGroup: NavGroup = {
+    id: "services",
+    label: t("nav.group_services"),
+    items: [
+      { to: "/security", label: t("nav.security") },
+      { to: "/translation", label: t("nav.translation") },
+    ],
+  };
+
+  const joinTeamGroup: NavGroup = {
+    id: "join_team",
+    label: t("nav.join_team"),
+    items: [
+      { to: "/clients", label: t("nav.clients") },
+      { to: "/career", label: t("nav.careers") },
+      { to: "/gallery", label: t("nav.gallery") },
+    ],
+  };
 
   const isActivePath = (to: string) => {
     if (to === "/") return pathname === "/";
@@ -166,11 +165,7 @@ export function TopNav() {
               >
                 {t("nav.about")}
               </Link>
-              {navGroups.map((group) => (
-                <NavDropdown key={group.id} group={group} isActive={isActivePath} />
-              ))}
-
-              <span className="mx-2 h-6 w-px bg-foreground/15 shrink-0" aria-hidden />
+              <NavDropdown key={servicesGroup.id} group={servicesGroup} isActive={isActivePath} />
 
               <Link
                 to="/projects"
@@ -179,6 +174,9 @@ export function TopNav() {
               >
                 {t("nav.group_impact")}
               </Link>
+              
+              <NavDropdown key={joinTeamGroup.id} group={joinTeamGroup} isActive={isActivePath} />
+
               <Link
                 to="/contact"
                 className={navItemClass(isActivePath("/contact"))}
@@ -186,8 +184,6 @@ export function TopNav() {
               >
                 {t("nav.contact_us")}
               </Link>
-
-              <span className="mx-2 h-6 w-px bg-foreground/15 shrink-0" aria-hidden />
 
               <ThemeToggle />
               <Link
@@ -247,51 +243,90 @@ export function TopNav() {
             {t("nav.about")}
           </Link>
 
-          {navGroups.map((group) => (
-            <div key={group.id} className="border-b border-foreground/10 py-3">
-              <button
-                type="button"
-                onClick={() => toggleMobileGroup(group.id)}
-                className="flex w-full items-center justify-between font-display text-xl text-foreground/85"
-              >
-                {group.label}
-                <ChevronDown
-                  className={cn(
-                    "h-5 w-5 transition-transform",
-                    mobileExpanded === group.id && "rotate-180",
-                  )}
-                />
-              </button>
-              {mobileExpanded === group.id && (
-                <div className="mt-3 flex flex-col gap-3">
-                  {group.items.map((item) => (
-                    <Link
-                      key={item.to}
-                      to={item.to}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={mobileNavClass(item.to)}
-                      aria-current={isActivePath(item.to) ? "page" : undefined}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+          <div className="border-b border-foreground/10 pb-3 mb-3">
+            <button
+              type="button"
+              onClick={() => toggleMobileGroup(servicesGroup.id)}
+              className="flex w-full items-center justify-between font-display text-xl text-foreground/85"
+            >
+              {servicesGroup.label}
+              <ChevronDown
+                className={cn(
+                  "h-5 w-5 transition-transform",
+                  mobileExpanded === servicesGroup.id && "rotate-180",
+                )}
+              />
+            </button>
+            {mobileExpanded === servicesGroup.id && (
+              <div className="mt-3 flex flex-col gap-3">
+                {servicesGroup.items.map((item) => (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={mobileNavClass(item.to)}
+                    aria-current={isActivePath(item.to) ? "page" : undefined}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
 
-          <div className="mt-4 flex flex-col gap-3 border-t border-foreground/10 pt-4">
-            <Link to="/projects" onClick={() => setMobileMenuOpen(false)} className={mobileNavClass("/projects")}>
-              {t("nav.group_impact")}
-            </Link>
-            <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className={mobileNavClass("/contact")}>
-              {t("nav.contact_us")}
-            </Link>
+          <Link
+            to="/projects"
+            onClick={() => setMobileMenuOpen(false)}
+            className={`${mobileNavClass("/projects")} mb-3`}
+            aria-current={isActivePath("/projects") ? "page" : undefined}
+          >
+            {t("nav.group_impact")}
+          </Link>
+
+          <div className="border-b border-foreground/10 pb-3 mb-4">
+            <button
+              type="button"
+              onClick={() => toggleMobileGroup(joinTeamGroup.id)}
+              className="flex w-full items-center justify-between font-display text-xl text-foreground/85"
+            >
+              {joinTeamGroup.label}
+              <ChevronDown
+                className={cn(
+                  "h-5 w-5 transition-transform",
+                  mobileExpanded === joinTeamGroup.id && "rotate-180",
+                )}
+              />
+            </button>
+            {mobileExpanded === joinTeamGroup.id && (
+              <div className="mt-3 flex flex-col gap-3">
+                {joinTeamGroup.items.map((item) => (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={mobileNavClass(item.to)}
+                    aria-current={isActivePath(item.to) ? "page" : undefined}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <Link
+            to="/contact"
+            onClick={() => setMobileMenuOpen(false)}
+            className={`${mobileNavClass("/contact")} mb-4`}
+            aria-current={isActivePath("/contact") ? "page" : undefined}
+          >
+            {t("nav.contact_us")}
+          </Link>
             <Link
               to="/others"
               onClick={() => setMobileMenuOpen(false)}
               className={cn(
-                "w-full max-w-xs rounded-md px-6 py-3.5 font-sans text-sm font-semibold tracking-widest text-center ms-3 mb-2",
+                "w-full max-w-xs rounded-md px-6 py-3.5 font-sans text-sm font-semibold tracking-widest text-center ms-3 mb-2 mt-4",
                 isActivePath("/others")
                   ? "bg-secondary text-white ring-2 ring-primary"
                   : "bg-primary text-primary-foreground",
@@ -299,7 +334,6 @@ export function TopNav() {
             >
               {t("nav.engage")}
             </Link>
-          </div>
         </div>
       )}
       

@@ -591,8 +591,8 @@ const DEFAULT_HERO_SLIDES = [
   const [showcaseData, setShowcaseData] = useState<{ imageUrl: string }>({ imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80" });
   const [clientsData, setClientsData] = useState<{ titleMono: string, title1: string, title2: string, items: any[] }>({ 
     titleMono: "Trusted By", 
-    title1: "Industry", 
-    title2: "Titans.", 
+    title1: "Leading", 
+    title2: "Companies.", 
     items: [
       { name: "Saudi Aramco", sector: "Oil & Gas", icon: "🛢️" },
       { name: "NEOM", sector: "Mega Project", icon: "🏙️" },
@@ -1502,7 +1502,7 @@ const DEFAULT_HERO_SLIDES = [
                 onClick={() => setCmsSection('clients')}
                 className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'clients' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
               >
-                Industry Titans (Clients)
+                Leading Companies (Clients)
               </button>
               <button
                 onClick={() => setCmsSection('lifecycle')}
@@ -2309,7 +2309,7 @@ const DEFAULT_HERO_SLIDES = [
               {/* CLIENTS CMS */}
               {cmsSection === 'clients' && (
                 <div className="flex flex-col gap-4">
-                  <h2 className="text-2xl mb-4">Edit Industry Titans (Clients) Section</h2>
+                  <h2 className="text-2xl mb-4">Edit Leading Companies (Clients) Section</h2>
                   
                   <div>
                     <label className="block text-sm font-medium mb-1">Small Top Title</label>

@@ -78,13 +78,16 @@ export function AboutInteractive({
 
             {/* Side Heading */}
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: -10 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.05, ease }}
-              className="mb-3 inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/5 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-gold"
+              className="mb-4 flex items-center gap-4"
             >
-              About viso
+              <div className="h-px w-8 bg-primary" />
+              <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary">
+                About Viso
+              </span>
             </motion.div>
 
             {/* Main Headline */}
@@ -104,7 +107,7 @@ export function AboutInteractive({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.14, ease }}
-              className="mt-6 text-base md:text-lg text-foreground/70 leading-relaxed font-light text-pretty"
+              className="mt-6 text-base md:text-lg text-foreground/90 leading-relaxed font-light text-pretty"
             >
               {subtitle}
             </motion.p>
@@ -114,7 +117,7 @@ export function AboutInteractive({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2, ease }}
-              className="mt-4 text-sm md:text-base text-foreground/60 leading-relaxed font-light text-pretty"
+              className="mt-4 text-sm md:text-base text-foreground/80 leading-relaxed font-light text-pretty"
             >
               {whoWeAreDesc}
             </motion.p>
@@ -149,7 +152,7 @@ export function AboutInteractive({
           >
             <div className="absolute inset-0 bg-gradient-to-tr from-gold/20 via-transparent to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
             <img loading="lazy" decoding="async"
-              src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80"
+              src="https://res.cloudinary.com/dppwnds6z/image/upload/v1790274846/ChatGPT_Image_Sep_25_2026_12_03_52_AM.png"
               alt="About VISO Security"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
             />

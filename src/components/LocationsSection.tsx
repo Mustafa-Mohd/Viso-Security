@@ -16,16 +16,11 @@ type Loc = {
 };
 
 const locations: Loc[] = [
-  { id: "riyadh", name: "Riyadh", region: "Central Region", coordinates: [24.7136, 46.6753], blurb: "Headquarters & national operations hub." },
-  { id: "jeddah", name: "Jeddah", region: "Western Region", coordinates: [21.4858, 39.1925], blurb: "Gateway to western coastal projects." },
-  { id: "makkah", name: "Makkah", region: "Western Region", coordinates: [21.4225, 39.8262], blurb: "High-security heritage & pilgrimage environments." },
-  { id: "madina", name: "Madina", region: "Western Region", coordinates: [24.4686, 39.6122], blurb: "Regional coverage for sacred-city assets." },
-  { id: "dammam", name: "Dammam", region: "Eastern Region", coordinates: [26.4207, 50.1033], blurb: "Eastern Province commercial corridor." },
-  { id: "jubail", name: "Jubail", region: "Industrial City", coordinates: [27.0112, 49.661], blurb: "Industrial & petrochemical security programs." },
-  { id: "yanbu", name: "Yanbu", region: "Industrial City", coordinates: [24.0232, 38.0638], blurb: "Red Sea industrial facility coverage." },
-  { id: "neom", name: "NEOM Region", region: "Northwest", coordinates: [28.0841, 35.2974], blurb: "Next-gen mega-project security consulting." },
-  { id: "taif", name: "Taif", region: "Western Highlands", coordinates: [21.2703, 40.4062], blurb: "Highland regional support." },
-  { id: "tabuk", name: "Tabuk", region: "Northern Region", coordinates: [28.3835, 36.5715], blurb: "Northern Kingdom project delivery." },
+  { id: "riyadh", name: "Riyadh", region: "Main Headquarters", coordinates: [24.7136, 46.6753], blurb: "Headquarters & national operations hub." },
+  { id: "khobar", name: "Khobar", region: "Regional Presence", coordinates: [26.2172, 50.1971], blurb: "Eastern Province operations." },
+  { id: "jubail", name: "Jubail", region: "Regional Presence", coordinates: [27.0112, 49.661], blurb: "Industrial & petrochemical security programs." },
+  { id: "yanbu", name: "Yanbu", region: "Regional Presence", coordinates: [24.0232, 38.0638], blurb: "Red Sea industrial facility coverage." },
+  { id: "jeddah", name: "Jeddah", region: "Regional Presence", coordinates: [21.4858, 39.1925], blurb: "Gateway to western coastal projects." },
 ];
 
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -73,8 +68,8 @@ export function LocationsSection({ data }: { data?: any }) {
 
           <div className="flex gap-6 md:gap-8">
             {[
-              { n: "10+", l: t("locations.cities_count") },
-              { n: "5", l: t("locations.regions_count") },
+              { n: "5", l: t("locations.cities_count", "OFFICES") },
+              { n: "1", l: t("locations.regions_count", "HQ") },
               { n: "100%", l: t("locations.coverage") },
             ].map((s) => (
               <div key={s.l}>
@@ -137,9 +132,17 @@ export function LocationsSection({ data }: { data?: any }) {
                 <p className="font-display text-base tracking-tight">
                   {t(`locations.cities.${active.id}.name`, active.name)}
                 </p>
-                <p className="text-xs text-black mt-0.5 leading-relaxed">
+                <p className="text-xs text-black mt-0.5 leading-relaxed mb-2">
                   {t(`locations.blurbs.${active.id}`, active.blurb)}
                 </p>
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${active.coordinates[0]},${active.coordinates[1]}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm bg-primary/10 hover:bg-primary/20 text-primary font-mono text-[9px] uppercase tracking-wider transition-colors"
+                >
+                  <MapPin className="w-3 h-3" /> Get Directions
+                </a>
               </motion.div>
             </AnimatePresence>
 

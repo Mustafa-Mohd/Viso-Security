@@ -359,7 +359,7 @@ export function HeroSection({ data }: { data?: any }) {
         playsInline
         className="absolute inset-0 w-full h-full object-cover"
       >
-        <source src="https://res.cloudinary.com/dcefror3c/video/upload/v1790082587/Drone_sequence_animating_storybo__1080p_20260922183503_fffxuo.mp4" type="video/mp4" />
+        <source src="https://res.cloudinary.com/dppwnds6z/video/upload/v1790273816/gemini_generated_video_8399bb9c.mp4" type="video/mp4" />
       </video>
 
       {/* Gradient Overlays for Readability */}
@@ -614,8 +614,8 @@ function ClientsSection({ data }: { data?: any }) {
   const inView = useInView(ref, { once: true, amount: 0.2 });
 
   const titleMono = data?.titleMono || "Trusted By";
-  const title1 = data?.title1 || "Industry";
-  const title2 = data?.title2 || "Titans.";
+  const title1 = data?.title1 || "Leading";
+  const title2 = data?.title2 || "Companies.";
   const clients = data?.items?.length > 0 ? data.items : [
     { name: "Saudi Aramco", sector: "Oil & Gas", icon: "🛢️" },
     { name: "NEOM", sector: "Mega Project", icon: "🏙️" },
