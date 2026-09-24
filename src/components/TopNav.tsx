@@ -99,7 +99,6 @@ export function TopNav() {
       items: [
         { to: "/security", label: t("nav.security") },
         { to: "/translation", label: t("nav.translation") },
-        { to: "/certificates", label: t("nav.certifications") },
       ],
     },
     {

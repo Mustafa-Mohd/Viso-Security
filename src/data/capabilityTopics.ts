@@ -8,7 +8,6 @@ export type CapabilityTopic = {
   relatedRoute:
     | "/security"
     | "/translation"
-    | "/certificates"
     | "/about"
     | "/clients"
     | "/contact"

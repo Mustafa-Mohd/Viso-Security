@@ -331,12 +331,6 @@ const servicesList = [
     subtitle: "Comprehensive physical security threat and risk assessment.",
     link: "/security",
     buttonText: "Go to Security",
-  },
-  {
-    title: "Certificates",
-    subtitle: "Verify and manage compliance certificates securely.",
-    link: "/certificates",
-    buttonText: "Go to Certificates",
   }
 ];
 

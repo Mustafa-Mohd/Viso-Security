@@ -151,7 +151,8 @@ function RegulatoryHubPage() {
               VISO security framework
             </Link>
             <Link
-              to="/certificates"
+              to="/about"
+              hash="licenses"
               className="rounded-md border border-foreground/15 px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.16em] uppercase text-foreground/75 hover:border-primary hover:text-primary transition-colors duration-300"
             >
               Licenses &amp; credentials

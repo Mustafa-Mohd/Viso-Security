@@ -17,7 +17,6 @@ import { Route as OthersRouteImport } from './routes/others'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ClientsRouteImport } from './routes/clients'
-import { Route as CertificatesRouteImport } from './routes/certificates'
 import { Route as CareerRouteImport } from './routes/career'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
@@ -67,11 +66,6 @@ const ClientsRoute = ClientsRouteImport.update({
   path: '/clients',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CertificatesRoute = CertificatesRouteImport.update({
-  id: '/certificates',
-  path: '/certificates',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const CareerRoute = CareerRouteImport.update({
   id: '/career',
   path: '/career',
@@ -118,7 +112,6 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/career': typeof CareerRoute
-  '/certificates': typeof CertificatesRoute
   '/clients': typeof ClientsRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
@@ -137,7 +130,6 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/career': typeof CareerRoute
-  '/certificates': typeof CertificatesRoute
   '/clients': typeof ClientsRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
@@ -157,7 +149,6 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/career': typeof CareerRoute
-  '/certificates': typeof CertificatesRoute
   '/clients': typeof ClientsRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
@@ -178,7 +169,6 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/career'
-    | '/certificates'
     | '/clients'
     | '/contact'
     | '/gallery'
@@ -197,7 +187,6 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/career'
-    | '/certificates'
     | '/clients'
     | '/contact'
     | '/gallery'
@@ -216,7 +205,6 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/career'
-    | '/certificates'
     | '/clients'
     | '/contact'
     | '/gallery'
@@ -236,7 +224,6 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
   CareerRoute: typeof CareerRoute
-  CertificatesRoute: typeof CertificatesRoute
   ClientsRoute: typeof ClientsRoute
   ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
@@ -309,13 +296,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ClientsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/certificates': {
-      id: '/certificates'
-      path: '/certificates'
-      fullPath: '/certificates'
-      preLoaderRoute: typeof CertificatesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/career': {
       id: '/career'
       path: '/career'
@@ -380,7 +360,6 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   CareerRoute: CareerRoute,
-  CertificatesRoute: CertificatesRoute,
   ClientsRoute: ClientsRoute,
   ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,

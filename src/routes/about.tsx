@@ -108,6 +108,7 @@ function AboutPage() {
       <StatsBand />
       <RegulatoryCards />
       <ProfileJourney items={profile} />
+      <LicensesAndCertifications />
       <AboutCta />
       <AboutFooter />
     </div>
@@ -354,10 +355,13 @@ function CEOMessage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
                 <div className="absolute bottom-8 left-8 right-8">
                   <div className="font-display text-2xl md:text-3xl text-foreground font-bold tracking-tight mb-1">
-                    Mohammed bin Sadiq
+                    Mohammad Bin Sadiq
                   </div>
                   <div className="font-mono text-[10px] tracking-[0.25em] text-primary uppercase">
                     Chief Executive Officer
+                  </div>
+                  <div className="font-mono text-[10px] tracking-[0.25em] text-foreground/50 uppercase mt-1">
+                    Vision of Solutions for Security Consultations
                   </div>
                 </div>
               </div>
@@ -376,10 +380,19 @@ function CEOMessage() {
               <div className="relative">
                 <span className="absolute -top-10 -left-6 text-8xl text-foreground/5 font-serif select-none pointer-events-none">"</span>
                 <p className="text-lg md:text-xl lg:text-2xl text-foreground/80 leading-relaxed font-light mb-8 relative z-10">
-                  At VISO Group, our commitment to elevating the physical security landscape in the Kingdom of Saudi Arabia is unwavering. We recognize that true security is not merely about infrastructure—it is about empowering organizations to operate with complete confidence.
+                  At Vision of Solutions for Security Consultations, we believe that security consulting is more than identifying risks or meeting regulatory requirements. It is about protecting people, assets, operations, and the confidence our clients place in us.
+                </p>
+                <p className="text-base md:text-lg text-foreground/60 leading-relaxed font-light mb-6">
+                  Since our establishment, we have worked to build a consulting practice founded on integrity, technical excellence, independence, and a clear understanding of the security challenges facing critical infrastructure and organizations across the Kingdom.
+                </p>
+                <p className="text-base md:text-lg text-foreground/60 leading-relaxed font-light mb-6">
+                  Our commitment is to provide practical, reliable, and forward-looking security solutions that help our clients make informed decisions, strengthen resilience, and protect what matters most to their organizations.
+                </p>
+                <p className="text-base md:text-lg text-foreground/60 leading-relaxed font-light mb-6">
+                  We are proud of the expertise of our team, the trust of our clients, and the relationships we have built across the sectors we serve. As security needs continue to evolve, we remain committed to developing our capabilities, adopting effective technologies and methodologies, and delivering services that create lasting value.
                 </p>
                 <p className="text-base md:text-lg text-foreground/60 leading-relaxed font-light mb-10">
-                  In alignment with Vision 2030, we have dedicated ourselves to building resilient, future-ready environments. By integrating world-class consulting methodologies with deep local expertise, we ensure that our clients are protected against both current and emerging threats. We take pride in being a trusted partner in safeguarding the Kingdom's most critical assets.
+                  We look forward to continuing our journey with our clients and partners toward safer, more resilient, and more secure organizations.
                 </p>
               </div>
             </Reveal>
@@ -936,5 +949,111 @@ function TypewriterEffect({ text }: { text: string }) {
         className="inline-block w-[0.1em] h-[0.9em] bg-primary ml-1 align-middle translate-y-[-0.05em]"
       />
     </span>
+  );
+}
+
+/* ---------- Licenses & Certifications ---------- */
+const certificatesData = [
+  {
+    org: "CR 2026-2027",
+    certs: ["Commercial Register"],
+    img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100377/8aef84d0-fbe6-426d-b485-b4241b30daae.png"
+  },
+  {
+    org: "Business License",
+    certs: ["Official Business License"],
+    img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100602/3d24f59b-1530-4316-bd0d-27ac9167ccff.png"
+  },
+  {
+    org: "SAIS Certificate",
+    certs: ["SAIS Official Certification"],
+    img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100668/865e7db3-7be4-4ed4-920e-e0a8b29af7bb.png"
+  },
+  {
+    org: "Higher Commission for Industrial Security (HCIS)",
+    certs: ["License to Practice Security Consultancy", "Security Consultancy Qualification Certificate"],
+    img: "https://visogroup.com/wp-content/uploads/2024/05/HCIS-2.png"
+  },
+  {
+    org: "Literature, Publishing & Translation commission",
+    certs: ["License to Practice Translation Profession"],
+    img: "https://visogroup.com/wp-content/uploads/2024/05/Literature-Publishing-Translation-commission.png"
+  },
+  {
+    org: "Ministry of Commerce",
+    certs: ["Commercial Register for Security Consultancy Activities", "Commercial Register for Translation Activities"],
+    img: "https://visogroup.com/wp-content/uploads/2024/05/Ministry-of-commerce.png"
+  },
+  {
+    org: "Balady",
+    certs: ["Municipal License"],
+    img: "https://visogroup.com/wp-content/uploads/2024/05/Balady.png"
+  },
+  {
+    org: "ISO 9001:2015",
+    certs: ["Quality Management System", "Security Risk Assessment, Preliminary Design of Security System, Detail Design of Security System, Operational Readiness"],
+    img: "https://visogroup.com/wp-content/uploads/2024/05/ISO9001.jpg"
+  },
+  {
+    org: "ISO 45001:2018",
+    certs: ["Occupational Health & Safety Management System", "Security Risk Assessment, Preliminary Design of Security System, Detail Design of Security System, Operational Readiness"],
+    img: "https://visogroup.com/wp-content/uploads/2024/05/ISO45001.png"
+  }
+];
+
+function LicensesAndCertifications() {
+  return (
+    <section id="licenses" className="relative z-20 bg-background py-24 border-t border-foreground/10">
+      <div className="mx-auto max-w-6xl px-8">
+        <div className="mb-16 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-primary"
+          >
+            Accreditations
+          </motion.div>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
+            className="font-display text-4xl md:text-5xl font-bold tracking-tight text-foreground"
+          >
+            Licenses &amp; Certifications
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
+            className="mt-4 max-w-2xl mx-auto text-foreground/60 text-lg"
+          >
+            Our official licenses, credentials, and international certifications underscoring our commitment to compliance and excellence.
+          </motion.p>
+        </div>
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {certificatesData.map((item, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ delay: (i % 3) * 0.1, duration: 0.6 }}
+              className="group relative flex flex-col overflow-hidden rounded-2xl border border-foreground/10 bg-surface shadow-sm hover:shadow-lg transition-all hover:border-primary/50"
+            >
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10" />
+              <div className="w-full bg-white flex items-center justify-center border-b border-foreground/10 overflow-hidden relative p-6 h-48">
+                <img loading="lazy" decoding="async" src={item.img} alt={item.org} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700 mix-blend-multiply" />
+              </div>
+              <div className="p-6 flex flex-col flex-1">
+                <h3 className="text-lg font-bold text-foreground mb-4 leading-snug">{item.org}</h3>
+                <ul className="space-y-2 mt-auto">
+                  {item.certs.map((c, j) => (
+                    <li key={j} className="flex items-start gap-2 text-sm text-foreground/70 leading-tight">
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                      <span>{c}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
