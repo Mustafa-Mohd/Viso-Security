@@ -321,13 +321,13 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
    ============================================================ */
 const servicesList = [
   {
-    title: "Certified Translation",
+    title: "Translation Services",
     subtitle: "Precision translation services for technical and regulatory requirements.",
     link: "/translation",
     buttonText: "Go to Translation",
   },
   {
-    title: "Security Analysis",
+    title: "Security Consultancy",
     subtitle: "Comprehensive physical security threat and risk assessment.",
     link: "/security",
     buttonText: "Go to Security",
