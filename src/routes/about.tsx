@@ -183,7 +183,7 @@ function AboutHero() {
           transition={{ duration: 1, delay: 0.25, ease }}
           className="font-mono text-[10px] md:text-sm tracking-[0.2em] text-primary uppercase mt-6 mb-2 flex items-center whitespace-nowrap"
         >
-          <span className="text-black">VISION OF SOLUTIONS FOR&nbsp;</span>
+          <span className="text-white">VISION OF SOLUTIONS FOR&nbsp;</span>
           <TypewriterText phrases={["SECURITY CONSULTATIONS", "TRANSLATION SERVICES"]} className="min-w-[200px] md:min-w-[250px]" />
         </motion.div>
 

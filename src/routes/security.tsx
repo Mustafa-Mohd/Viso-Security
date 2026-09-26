@@ -74,24 +74,24 @@ function SecurityAnalysisPage() {
       <main className="pb-40">
 
         {/* Compact Hero Banner Section */}
-        <div className="relative w-full overflow-hidden flex items-center justify-center bg-background">
+        <div className="relative w-full overflow-hidden flex items-center justify-center bg-black">
           <div className="absolute inset-0 pointer-events-none">
             <img 
               src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=80" 
               alt="Security Engineering" 
-              className="w-full h-full object-cover opacity-30"
+              className="w-full h-full object-cover filter brightness-[0.6] saturate-125"
             />
-            {/* Soft gradient overlay to blend into the rest of the light page */}
-            <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/60 to-background" />
+            {/* Simple dark overlay for text readability */}
+            <div className="absolute inset-0 bg-black/40" />
           </div>
           
-          <div className="relative z-10 max-w-[1400px] mx-auto px-4 md:px-8 pt-40 pb-4 text-center flex flex-col items-center">
+          <div className="relative z-10 max-w-[1400px] mx-auto px-4 md:px-8 pt-40 pb-16 text-center flex flex-col items-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <h1 className="font-display text-4xl md:text-6xl font-bold text-black tracking-tight leading-tight mb-6">
+              <h1 className="font-display text-4xl md:text-6xl font-bold text-white tracking-tight leading-tight mb-6 drop-shadow-lg">
                 Our Core <span className="text-primary">Services</span>
               </h1>
             </motion.div>
@@ -102,10 +102,10 @@ function SecurityAnalysisPage() {
               transition={{ duration: 0.8, delay: 0.15 }}
               className="max-w-3xl"
             >
-              <h2 className="font-display text-xl font-bold text-black mb-3">
+              <h2 className="font-display text-xl font-bold text-white/90 mb-3 drop-shadow-md">
                 Supporting Every Stage of the HCIS / SAIS Security Project Lifecycle
               </h2>
-              <p className="font-sans text-base text-black/80 leading-relaxed">
+              <p className="font-sans text-base text-white/80 leading-relaxed drop-shadow-md">
                 Whether developing a new facility or upgrading an existing asset, security requirements evolve throughout the project lifecycle. VISO provides specialist security engineering consultancy from project initiation through operational readiness, ensuring security objectives, engineering deliverables, and regulatory requirements remain aligned at every stage.
               </p>
             </motion.div>

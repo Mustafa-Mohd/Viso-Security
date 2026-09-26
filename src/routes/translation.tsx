@@ -372,46 +372,43 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
 
 const serviceKeys = ["official", "medical", "legal", "media", "security"] as const;
 
+const images: Record<typeof serviceKeys[number], string> = {
+  official: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&w=600&q=80",
+  medical: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=600&q=80",
+  legal: "https://images.unsplash.com/photo-1589391886645-d51941baf7fb?auto=format&fit=crop&w=600&q=80",
+  media: "https://images.unsplash.com/photo-1499529112087-3cb3b73cec95?auto=format&fit=crop&w=600&q=80",
+  security: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=600&q=80"
+};
+
 function TranslationPage() {
   const { t, i18n } = useTranslation();
   const isAr = i18n.language?.startsWith("ar");
   const detailRef = useRef<HTMLDivElement>(null);
 
-  const [activeIdx, setActiveIdx] = useState(0);
-  const [sliderOffset, setSliderOffset] = useState(0);
+  const [activeKey, setActiveKey] = useState<typeof serviceKeys[number]>("official");
+  const [orderedKeys, setOrderedKeys] = useState([...serviceKeys]);
 
-  // Re-adjust slider offset if screen size is resized
-  useEffect(() => {
-    setSliderOffset(0);
-  }, []);
-
-  const icons = [
-    <OfficialStampIcon key="official" />,
-    <MedicalPulseIcon key="medical" />,
-    <LegalScalesIcon key="legal" />,
-    <MediaMegaphoneIcon key="media" />,
-    <SecurityShieldIcon key="security" />
-  ];
-
-  const handleSelectService = (idx: number) => {
-    setActiveIdx(idx);
+  const handleSelectService = (key: typeof serviceKeys[number]) => {
+    setActiveKey(key);
     detailRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const nextSlide = () => {
-    if (sliderOffset < serviceKeys.length - 1) {
-      setSliderOffset(prev => prev + 1);
-    } else {
-      setSliderOffset(0); // Wrap around
-    }
+    setOrderedKeys(prev => {
+      const copy = [...prev];
+      const first = copy.shift();
+      copy.push(first!);
+      return copy;
+    });
   };
 
   const prevSlide = () => {
-    if (sliderOffset > 0) {
-      setSliderOffset(prev => prev - 1);
-    } else {
-      setSliderOffset(serviceKeys.length - 1); // Wrap around
-    }
+    setOrderedKeys(prev => {
+      const copy = [...prev];
+      const last = copy.pop();
+      copy.unshift(last!);
+      return copy;
+    });
   };
 
   // Safe fetch of localized list items
@@ -425,37 +422,58 @@ function TranslationPage() {
       <SmoothScroll />
       <TopNav />
 
-      <main className="pt-24 pb-40">
-        {/* Verification Section */}
-        <VerificationSection isAr={!!isAr} />
+      <main className="pb-40">
 
-        {/* Hero Section */}
-        <section className="relative py-20 overflow-hidden">
-          <div className="absolute inset-0 z-0">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,#D4AF37_0%,transparent_60%)] opacity-5" />
-            <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background" />
+        {/* Compact Hero Banner Section */}
+        <div className="relative w-full overflow-hidden flex items-center justify-center bg-black h-[65vh] mb-24">
+          <div className="absolute inset-0 pointer-events-none">
+            <img 
+              src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1920&q=80" 
+              alt="Translation Services" 
+              className="w-full h-full object-cover filter brightness-[0.6] saturate-125"
+            />
+            {/* Simple dark overlay for text readability */}
+            <div className="absolute inset-0 bg-black/40" />
           </div>
-
-          <div className="max-w-[1400px] mx-auto px-6 md:px-12 text-center relative z-10">
+          
+          <div className="relative z-10 max-w-[1400px] mx-auto px-4 md:px-8 text-center flex flex-col items-center">
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
+              transition={{ duration: 0.8 }}
             >
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary font-mono text-[10px] tracking-[0.2em] uppercase mb-6">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
-                {t("translation_page.eyebrow")}
-              </div>
-              <h1 className="font-display text-5xl md:text-7xl leading-tight text-foreground tracking-tight max-w-4xl mx-auto">
-                {t("translation_page.title")}{" "}
-                <span className="italic text-primary block sm:inline">{t("translation_page.title_italic")}</span>
+              <h1 className="font-display text-4xl md:text-6xl font-bold text-white tracking-tight leading-tight mb-4 drop-shadow-lg uppercase">
+                CERTIFIED TRANSLATION <span className="text-primary block sm:inline">SERVICES</span>
               </h1>
-              <p className="font-sans text-base md:text-lg text-foreground/60 max-w-2xl mx-auto mt-6 leading-relaxed">
-                {t("translation_page.desc")}
-              </p>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.15 }}
+              className="max-w-3xl flex flex-col items-center"
+            >
+              <h2 className="font-display text-xl sm:text-2xl font-bold text-white/90 mb-10 drop-shadow-md">
+                Officially Accredited Translation Services
+              </h2>
+              
+              <button 
+                onClick={() => {
+                  const el = document.getElementById('certipedia-section');
+                  if (el) {
+                    const y = el.getBoundingClientRect().top + window.scrollY - 100;
+                    window.scrollTo({ top: y, behavior: 'smooth' });
+                  }
+                }}
+                className="px-8 py-4 rounded-full bg-primary text-black font-bold uppercase tracking-widest text-sm hover:scale-105 transition-all shadow-[0_10px_20px_-10px_rgba(212,175,55,0.5)] border border-primary/50"
+              >
+                Certipedia Explorer
+              </button>
             </motion.div>
           </div>
-        </section>
+        </div>
+
+
 
 
 
@@ -480,18 +498,20 @@ function TranslationPage() {
 
             {/* Slider track viewport */}
             <div className="overflow-hidden py-6 px-2 md:px-4">
-              <motion.div
-                className="flex gap-6 md:gap-8"
-                animate={{ x: `-${sliderOffset * 300}px` }} // Sliding offset based on card width
-                transition={{ type: "spring", stiffness: 220, damping: 26 }}
-              >
-                {serviceKeys.map((key, idx) => {
-                  const isActive = activeIdx === idx;
+              <motion.div className="flex gap-6 md:gap-8">
+                <AnimatePresence mode="popLayout">
+                {orderedKeys.map((key) => {
+                  const isActive = activeKey === key;
                   return (
                     <motion.div
+                      layout
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
                       key={key}
-                      onClick={() => setActiveIdx(idx)}
-                      className={`min-w-[280px] sm:min-w-[340px] max-w-[340px] flex-1 rounded-3xl p-8 border cursor-pointer select-none transition-all duration-500 flex flex-col bg-surface shadow-md hover:shadow-xl relative overflow-hidden group ${
+                      onClick={() => setActiveKey(key)}
+                      className={`min-w-[280px] sm:min-w-[340px] max-w-[340px] flex-1 rounded-3xl p-6 border cursor-pointer select-none transition-all duration-500 flex flex-col bg-surface shadow-md hover:shadow-xl relative overflow-hidden group ${
                         isActive
                           ? "border-primary bg-surface-2 ring-1 ring-primary/45 scale-[1.02]"
                           : "border-foreground/5 hover:border-primary/30"
@@ -504,15 +524,14 @@ function TranslationPage() {
                         }`}
                       />
 
-                      {/* Circular icon container */}
-                      <div className="mb-6 flex justify-center">
-                        <div
-                          className={`w-28 h-28 rounded-full border flex items-center justify-center shadow-inner transition-transform duration-700 group-hover:scale-105 bg-background ${
-                            isActive ? "border-primary/40 bg-primary/5" : "border-foreground/10"
-                          }`}
-                        >
-                          {icons[idx]}
-                        </div>
+                      {/* Square Image container */}
+                      <div className="mb-6 w-full h-40 rounded-2xl overflow-hidden relative">
+                        <img 
+                           src={images[key]}
+                           alt={key}
+                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500" />
                       </div>
 
                       <h3
@@ -530,7 +549,7 @@ function TranslationPage() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleSelectService(idx);
+                          handleSelectService(key);
                         }}
                         className={`w-full py-3.5 rounded-full font-sans text-xs font-bold tracking-widest uppercase transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:shadow-md ${
                           isActive
@@ -544,6 +563,7 @@ function TranslationPage() {
                     </motion.div>
                   );
                 })}
+                </AnimatePresence>
               </motion.div>
             </div>
           </div>
@@ -553,7 +573,7 @@ function TranslationPage() {
         <div ref={detailRef} className="scroll-mt-36 max-w-[1400px] mx-auto px-4 md:px-8">
           <AnimatePresence mode="wait">
             <motion.div
-              key={activeIdx}
+              key={activeKey}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -572,17 +592,17 @@ function TranslationPage() {
                   <span>{t("translation_page.breadcrumb_mid")}</span>
                   <span className="text-primary">/</span>
                   <span className="text-primary font-bold">
-                    {t(`translation_page.services.${serviceKeys[activeIdx]}.title`)}
+                    {t(`translation_page.services.${activeKey}.title`)}
                   </span>
                 </div>
 
                 <div className="grid lg:grid-cols-[1.5fr_1fr] gap-12 lg:gap-16 items-start">
                   <div>
                     <h2 className="font-display text-3xl md:text-5xl text-foreground mb-6 leading-tight">
-                      {t(`translation_page.services.${serviceKeys[activeIdx]}.title`)}
+                      {t(`translation_page.services.${activeKey}.title`)}
                     </h2>
                     <p className="font-sans text-base md:text-lg leading-relaxed text-foreground/75 mb-8 text-justify">
-                      {t(`translation_page.services.${serviceKeys[activeIdx]}.desc`)}
+                      {t(`translation_page.services.${activeKey}.desc`)}
                     </p>
                   </div>
 
@@ -592,7 +612,7 @@ function TranslationPage() {
                     </div>
                     
                     <ul className="space-y-5 relative z-10">
-                      {getServiceItems(serviceKeys[activeIdx]).map((item, idx) => (
+                      {getServiceItems(activeKey).map((item, idx) => (
                         <motion.li
                           key={idx}
                           initial={{ opacity: 0, x: isAr ? 20 : -20 }}
@@ -614,6 +634,11 @@ function TranslationPage() {
               </div>
             </motion.div>
           </AnimatePresence>
+        </div>
+
+        {/* Verification Section */}
+        <div id="certipedia-section" className="mt-32">
+          <VerificationSection isAr={!!isAr} />
         </div>
       </main>
     </div>
