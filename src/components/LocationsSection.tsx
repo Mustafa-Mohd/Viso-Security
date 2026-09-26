@@ -151,13 +151,13 @@ export function LocationsSection({ data }: { data?: any }) {
                 <MapPin className="w-3 h-3 text-red-600" />
                 {t("locations.nationwide_short")}
               </span>
-              <a href="tel:+966543966637" className="inline-flex items-center gap-1 hover:text-primary">
+              <a href="tel:+966114503289" className="inline-flex items-center gap-1 hover:text-primary">
                 <Phone className="w-3 h-3 text-primary" />
-                +966 543 966 637
+                +966 11 450 3289
               </a>
-              <a href="mailto:contact@viso.com.sa" className="inline-flex items-center gap-1 hover:text-primary">
+              <a href="mailto:info@visogroup.com" className="inline-flex items-center gap-1 hover:text-primary">
                 <Mail className="w-3 h-3 text-primary" />
-                contact@viso.com.sa
+                info@visogroup.com
               </a>
             </div>
           </div>

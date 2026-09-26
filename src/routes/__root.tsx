@@ -15,6 +15,9 @@ const CustomCursor = lazy(() =>
 const Chatbot = lazy(() =>
   import("@/components/Chatbot").then((m) => ({ default: m.Chatbot }))
 );
+const WhatsAppButton = lazy(() =>
+  import("@/components/WhatsAppButton").then((m) => ({ default: m.WhatsAppButton }))
+);
 
 function NotFoundComponent() {
   return (
@@ -93,6 +96,7 @@ function RootComponent() {
       {!isAdmin && (
         <Suspense fallback={null}>
           {/* <Chatbot /> */}
+          <WhatsAppButton />
         </Suspense>
       )}
     </QueryClientProvider>

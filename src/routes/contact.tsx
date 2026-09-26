@@ -109,7 +109,7 @@ function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-lg mb-1">{t("contact.email_label")}</h3>
-                    <p className="text-foreground/60 text-sm">contact@visogroup.com</p>
+                    <p className="text-foreground/60 text-sm">info@visogroup.com</p>
                   </div>
                 </div>
 

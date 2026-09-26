@@ -1646,7 +1646,7 @@ function Footer() {
                 <span className="text-gold">✉️</span> info@visogroup.com
               </li>
               <li className="flex items-center gap-3">
-                <span className="text-gold">📞</span> +966 11 000 0000
+                <span className="text-gold">📞</span> +966 11 450 3289
               </li>
             </ul>
           </div>

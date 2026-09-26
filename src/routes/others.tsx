@@ -1205,17 +1205,17 @@ function Contact() {
         <Reveal delay={0.25}>
           <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
             <a
-              href="mailto:contact@viso.com.sa"
+              href="mailto:info@visogroup.com"
               className="group inline-flex items-center gap-3 rounded-full bg-gold px-7 py-3.5 text-sm font-medium text-gold-foreground transition-transform hover:scale-[1.02]"
             >
-              contact@viso.com.sa
+              info@visogroup.com
               <span className="transition-transform group-hover:translate-x-0.5">→</span>
             </a>
             <a
-              href="tel:+966"
+              href="tel:+966114503289"
               className="inline-flex items-center gap-3 rounded-full border border-border bg-surface shadow-sm px-7 py-3.5 text-sm  hover:bg-surface-2"
             >
-              +966 (HQ Riyadh)
+              +966 11 450 3289 (HQ Riyadh)
             </a>
           </div>
         </Reveal>
