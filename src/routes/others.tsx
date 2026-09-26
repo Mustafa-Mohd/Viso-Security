@@ -1033,7 +1033,7 @@ function Portfolio() {
 function Regional() {
   const cities = ["Riyadh", "Khobar", "Jubail", "Jeddah", "Yanbu"];
   const timeline = [
-    ["2020", "Founded — Riyadh HQ"],
+    ["2019", "Founded — Riyadh HQ"],
     ["2024", "Eastern Expansion — Khobar & Jubail"],
     ["2025", "Western Expansion — Jeddah & Yanbu"],
   ];

@@ -457,20 +457,7 @@ function TranslationPage() {
           </div>
         </section>
 
-        {/* Toggle navigation pill */}
-        <div className="flex justify-center mb-16 px-4">
-          <div className="inline-flex bg-neutral-900/90 dark:bg-neutral-950/95 rounded-full p-1.5 border border-foreground/10 shadow-2xl relative z-10">
-            <Link
-              to="/security"
-              className="px-6 py-3 rounded-full text-xs font-bold tracking-widest uppercase transition-all duration-300 text-neutral-400 hover:text-white"
-            >
-              {t("translation_page.toggle_security")}
-            </Link>
-            <div className="px-6 py-3 rounded-full text-xs font-bold tracking-widest uppercase bg-primary text-white shadow-lg shadow-primary/25 cursor-default font-sans">
-              {t("translation_page.toggle_translation")}
-            </div>
-          </div>
-        </div>
+
 
         {/* Premium Slider/Carousel Section */}
         <section className="max-w-[1400px] mx-auto px-4 md:px-8 relative mb-24 z-10">

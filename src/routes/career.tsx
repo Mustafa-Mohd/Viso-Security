@@ -132,7 +132,7 @@ function CareerHero({ jobCount }: { jobCount: number }) {
 
           <div className="mt-10 flex gap-8 border-t border-foreground/10 pt-6">
             {[
-              { n: "2020", l: t("career.founded") },
+              { n: "2019", l: t("career.founded") },
               { n: "5", l: t("career.offices") },
               { n: "KSA", l: t("career.nationwide") },
             ].map((s) => (

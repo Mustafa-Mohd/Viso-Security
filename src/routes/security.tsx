@@ -72,19 +72,7 @@ function SecurityAnalysisPage() {
       <TopNav />
       
       <main className="pt-32 pb-40">
-        <motion.div 
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="max-w-[1600px] mx-auto px-8 md:px-16 text-center mb-20"
-        >
-          <h1 className="font-display text-5xl md:text-7xl leading-tight text-foreground">
-            {t("security.title")} <span className="italic text-primary">{t("security.title_italic")}</span>
-          </h1>
-          <p className="font-sans text-lg text-foreground/60 max-w-2xl mx-auto mt-6">
-            {t("security.desc")}
-          </p>
-        </motion.div>
+
 
         <div className="max-w-[1400px] mx-auto px-4 md:px-8 mt-12">
           <ScrollStack 

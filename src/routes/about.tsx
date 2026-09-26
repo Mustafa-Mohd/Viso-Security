@@ -11,6 +11,7 @@ import {
 } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { TopNav } from "@/components/TopNav";
+import { TypewriterText } from "@/components/TypewriterText";
 import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/about")({
@@ -164,7 +165,7 @@ function AboutHero() {
             transition={{ duration: 0.9, delay: 0.2, ease }}
             className="origin-left inline-block w-14 h-px bg-primary"
           />
-          Established 2020 · Kingdom of Saudi Arabia
+          Established 2019 · Kingdom of Saudi Arabia
         </motion.div>
 
         <motion.h1
@@ -175,6 +176,16 @@ function AboutHero() {
         >
           VISO
         </motion.h1>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.25, ease }}
+          className="font-mono text-[10px] md:text-sm tracking-[0.2em] text-primary uppercase mt-6 mb-2 flex items-center whitespace-nowrap"
+        >
+          <span className="text-black">VISION OF SOLUTIONS FOR&nbsp;</span>
+          <TypewriterText phrases={["SECURITY CONSULTATIONS", "TRANSLATION SERVICES"]} className="min-w-[200px] md:min-w-[250px]" />
+        </motion.div>
 
         <motion.p
           initial={{ opacity: 0, y: 30 }}
@@ -315,7 +326,7 @@ function WhoWeAre({
           <Reveal delay={0.35}>
             <div className="pt-8 grid sm:grid-cols-2 gap-x-10 gap-y-8 border-t border-foreground/10">
               {[
-                { label: "Founded", value: "January 2020" },
+                { label: "Founded", value: "February 2019" },
                 { label: "HQ", value: "Riyadh, KSA" },
                 { label: "Coverage", value: "5 Regional Offices" },
                 { label: "Focus", value: "Physical Security" },
@@ -358,10 +369,11 @@ function CEOMessage() {
                     Mohammad Bin Sadiq
                   </div>
                   <div className="font-mono text-[10px] tracking-[0.25em] text-primary uppercase">
-                    Chief Executive Officer
+                    Founder & Chief Executive Officer
                   </div>
-                  <div className="font-mono text-[10px] tracking-[0.25em] text-white/70 uppercase mt-1">
-                    Vision of Solutions for Security Consultations
+                  <div className="font-mono text-[10px] tracking-[0.25em] text-white/70 uppercase mt-2 flex items-center whitespace-nowrap">
+                    <span className="text-black">VISION OF SOLUTIONS FOR&nbsp;</span>
+                    <TypewriterText phrases={["SECURITY CONSULTATIONS", "TRANSLATION SERVICES"]} />
                   </div>
                 </div>
               </div>
@@ -372,25 +384,25 @@ function CEOMessage() {
             <Reveal delay={0.2}>
               <h2 className="font-display text-4xl md:text-5xl lg:text-6xl tracking-tight leading-[1.1] mb-10">
                 A Message from <br/>
-                <em className="text-primary not-italic font-light">Our CEO</em>
+                <em className="text-primary not-italic font-light">Our Founder & CEO</em>
               </h2>
             </Reveal>
             
             <Reveal delay={0.3}>
               <div className="relative border-l-4 border-primary/60 pl-6 md:pl-8 py-2">
-                <p className="text-lg md:text-xl lg:text-2xl text-foreground/90 leading-relaxed font-light mb-5 relative z-10">
+                <p className="text-lg md:text-xl lg:text-2xl text-foreground/90 leading-relaxed font-light mb-5 relative z-10 text-justify">
                   At Vision of Solutions for Security Consultations, we believe that security consulting is more than identifying risks or meeting regulatory requirements. It is about protecting people, assets, operations, and the confidence our clients place in us.
                 </p>
-                <p className="text-base md:text-lg text-foreground/70 leading-relaxed font-light mb-4">
+                <p className="text-base md:text-lg text-foreground/70 leading-relaxed font-light mb-4 text-justify">
                   Since our establishment, we have worked to build a consulting practice founded on integrity, technical excellence, independence, and a clear understanding of the security challenges facing critical infrastructure and organizations across the Kingdom.
                 </p>
-                <p className="text-base md:text-lg text-foreground/70 leading-relaxed font-light mb-4">
+                <p className="text-base md:text-lg text-foreground/70 leading-relaxed font-light mb-4 text-justify">
                   Our commitment is to provide practical, reliable, and forward-looking security solutions that help our clients make informed decisions, strengthen resilience, and protect what matters most to their organizations.
                 </p>
-                <p className="text-base md:text-lg text-foreground/70 leading-relaxed font-light mb-4">
+                <p className="text-base md:text-lg text-foreground/70 leading-relaxed font-light mb-4 text-justify">
                   We are proud of the expertise of our team, the trust of our clients, and the relationships we have built across the sectors we serve. As security needs continue to evolve, we remain committed to developing our capabilities, adopting effective technologies and methodologies, and delivering services that create lasting value.
                 </p>
-                <p className="text-base md:text-lg text-foreground/70 leading-relaxed font-light">
+                <p className="text-base md:text-lg text-foreground/70 leading-relaxed font-light text-justify">
                   We look forward to continuing our journey with our clients and partners toward safer, more resilient, and more secure organizations.
                 </p>
               </div>
@@ -499,7 +511,7 @@ function VisionMission() {
 function StatsBand() {
   const { t } = useTranslation();
   const stats = [
-    { value: 2020, suffix: "", label: t("about.stats.established"), prefix: "" },
+    { value: 2019, suffix: "", label: t("about.stats.established"), prefix: "" },
     { value: 5, suffix: "", label: t("about.stats.offices"), prefix: "" },
     { value: 120, suffix: "+", label: t("about.stats.projects"), prefix: "" },
     { value: 100, suffix: "%", label: t("about.stats.local"), prefix: "" },

@@ -1,8 +1,9 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { TypewriterText } from "@/components/TypewriterText";
 import { setAppLanguage, type AppLang } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { EmployeeLoginModal } from "@/components/EmployeeLoginModal";
@@ -92,14 +93,6 @@ export function TopNav() {
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
-  const servicesGroup: NavGroup = {
-    id: "services",
-    label: t("nav.group_services"),
-    items: [
-      { to: "/security", label: t("nav.security") },
-      { to: "/translation", label: t("nav.translation") },
-    ],
-  };
 
   const joinTeamGroup: NavGroup = {
     id: "join_team",
@@ -135,15 +128,16 @@ export function TopNav() {
       >
         <div className="h-px w-full bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-10">
-          <div className="flex items-center gap-4 md:gap-6 h-[4.25rem] md:h-[4.5rem]">
-            <Link to="/" className="flex items-center gap-2.5 group shrink-0">
+          <div className="flex items-center gap-4 md:gap-6 h-16 md:h-20">
+            <Link to="/" className="flex items-center gap-3 group shrink-0">
               <img loading="lazy" decoding="async"
                 src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
                 alt="Viso Group"
-                className="h-8 md:h-10 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
+                className="h-12 md:h-16 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
               />
-              <span className="font-display font-semibold text-sm md:text-base tracking-wide text-primary hidden min-[420px]:inline-block">
-                VISO GROUP
+              <span className="font-display font-semibold text-sm md:text-base tracking-wide text-primary hidden xl:inline-flex items-center whitespace-nowrap w-[500px]">
+                <span className="text-black">VISION OF SOLUTIONS FOR&nbsp;</span>
+                <TypewriterText phrases={["SECURITY CONSULTATIONS", "TRANSLATION SERVICES"]} className="min-w-[240px]" />
               </span>
             </Link>
 
@@ -165,7 +159,20 @@ export function TopNav() {
               >
                 {t("nav.about")}
               </Link>
-              <NavDropdown key={servicesGroup.id} group={servicesGroup} isActive={isActivePath} />
+              <Link
+                to="/security"
+                className={navItemClass(isActivePath("/security"))}
+                aria-current={isActivePath("/security") ? "page" : undefined}
+              >
+                {t("nav.security")}
+              </Link>
+              <Link
+                to="/translation"
+                className={navItemClass(isActivePath("/translation"))}
+                aria-current={isActivePath("/translation") ? "page" : undefined}
+              >
+                {t("nav.translation")}
+              </Link>
 
               <Link
                 to="/projects"
@@ -186,18 +193,6 @@ export function TopNav() {
               </Link>
 
               <ThemeToggle />
-              <Link
-                to="/others"
-                className={cn(
-                  "ms-1 shrink-0 rounded-md px-4 py-2 font-sans text-[10px] font-bold tracking-[0.14em] uppercase transition-all duration-300",
-                  isActivePath("/others")
-                    ? "bg-secondary text-white ring-2 ring-primary ring-offset-2 ring-offset-background"
-                    : "bg-primary text-primary-foreground hover:bg-secondary hover:text-white",
-                )}
-                aria-current={isActivePath("/others") ? "page" : undefined}
-              >
-                {t("nav.engage")}
-              </Link>
             </nav>
 
             <div className="flex items-center gap-2 lg:hidden ms-auto">
@@ -243,36 +238,22 @@ export function TopNav() {
             {t("nav.about")}
           </Link>
 
-          <div className="border-b border-foreground/10 pb-3 mb-3">
-            <button
-              type="button"
-              onClick={() => toggleMobileGroup(servicesGroup.id)}
-              className="flex w-full items-center justify-between font-display text-xl text-foreground/85"
-            >
-              {servicesGroup.label}
-              <ChevronDown
-                className={cn(
-                  "h-5 w-5 transition-transform",
-                  mobileExpanded === servicesGroup.id && "rotate-180",
-                )}
-              />
-            </button>
-            {mobileExpanded === servicesGroup.id && (
-              <div className="mt-3 flex flex-col gap-3">
-                {servicesGroup.items.map((item) => (
-                  <Link
-                    key={item.to}
-                    to={item.to}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={mobileNavClass(item.to)}
-                    aria-current={isActivePath(item.to) ? "page" : undefined}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
+          <Link
+            to="/security"
+            onClick={() => setMobileMenuOpen(false)}
+            className={`${mobileNavClass("/security")} mb-2`}
+            aria-current={isActivePath("/security") ? "page" : undefined}
+          >
+            {t("nav.security")}
+          </Link>
+          <Link
+            to="/translation"
+            onClick={() => setMobileMenuOpen(false)}
+            className={`${mobileNavClass("/translation")} mb-2`}
+            aria-current={isActivePath("/translation") ? "page" : undefined}
+          >
+            {t("nav.translation")}
+          </Link>
 
           <Link
             to="/projects"
@@ -322,18 +303,6 @@ export function TopNav() {
           >
             {t("nav.contact_us")}
           </Link>
-            <Link
-              to="/others"
-              onClick={() => setMobileMenuOpen(false)}
-              className={cn(
-                "w-full max-w-xs rounded-md px-6 py-3.5 font-sans text-sm font-semibold tracking-widest text-center ms-3 mb-2 mt-4",
-                isActivePath("/others")
-                  ? "bg-secondary text-white ring-2 ring-primary"
-                  : "bg-primary text-primary-foreground",
-              )}
-            >
-              {t("nav.engage")}
-            </Link>
         </div>
       )}
       

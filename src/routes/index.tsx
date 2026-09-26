@@ -128,32 +128,39 @@ function HomePage() {
 
               <ServicesCarousel items={[
                 {
-                  title: "Security Analysis",
+                  title: "Security Consultancy",
                   desc: "Comprehensive risk and threat assessment engineering.",
                   url: "/security",
                   img: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80",
                   color: "group-hover:border-blue-500/50 group-hover:shadow-blue-500/20"
                 },
                 {
-                  title: "Translate Certificate",
+                  title: "Translation Services",
                   desc: "Verify and authenticate VISO translation certificates.",
                   url: "/translation",
                   img: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80",
                   color: "group-hover:border-emerald-500/50 group-hover:shadow-emerald-500/20"
                 },
                 {
-                  title: "DMS Portal",
-                  desc: "Access the Document Management System dashboard.",
-                  url: "/admin",
-                  img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
+                  title: "Training",
+                  desc: "Specialized training programs for physical security professionals.",
+                  url: "/services/training",
+                  img: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&q=80",
                   color: "group-hover:border-purple-500/50 group-hover:shadow-purple-500/20"
                 },
                 {
-                  title: "Job Application",
-                  desc: "Join our team of elite physical security experts.",
-                  url: "/career",
-                  img: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800&q=80",
+                  title: "Industrial Security",
+                  desc: "Robust physical security solutions for industrial assets.",
+                  url: "/services/industrial",
+                  img: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80",
                   color: "group-hover:border-orange-500/50 group-hover:shadow-orange-500/20"
+                },
+                {
+                  title: "Security Gap Analysis",
+                  desc: "Identify vulnerabilities and align with international standards.",
+                  url: "/services/gap-analysis",
+                  img: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&q=80",
+                  color: "group-hover:border-red-500/50 group-hover:shadow-red-500/20"
                 }
               ]} />
             </div>
@@ -180,6 +187,8 @@ function HomePage() {
           <LazyMount minHeight={280} fallback={<SectionFallback h={280} />}>
             <CTASection data={cmsData.cta} />
           </LazyMount>
+
+          <LinkedInPosts />
         </main>
         <Footer />
       </div>
@@ -1358,7 +1367,7 @@ function About({ data }: { data?: any }) {
           transition={{ duration: 0.7 }}
           className="mt-8 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center text-xs text-muted-foreground tracking-wide font-mono uppercase"
         >
-          <span>{t("about.stats.established")} 2020</span>
+          <span>{t("about.stats.established")} 2019</span>
           <span className="text-gold">·</span>
           <span>{t("about.stats.offices")}: 5 Hubs</span>
           <span className="text-gold">·</span>
@@ -1557,6 +1566,40 @@ function ServiceLifecycle({ data }: { data?: any }) {
 }
 
 /* ============================================================
+   LINKEDIN POSTS SECTION
+   ============================================================ */
+function LinkedInPosts() {
+  return (
+    <section className="py-24 bg-surface/50 border-t border-foreground/5">
+      <div className="max-w-[1600px] mx-auto px-6 md:px-10">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1 }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl md:text-5xl font-light mb-4 text-foreground">Latest Updates</h2>
+          <p className="text-lg text-foreground/60 max-w-2xl mx-auto">Follow our recent activities and announcements on LinkedIn.</p>
+        </motion.div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+          <div className="w-full max-w-[504px] rounded-xl overflow-hidden shadow-sm border border-foreground/10 bg-white">
+            <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7508147208584785920?collapsed=1" height="669" width="100%" frameBorder="0" allowFullScreen title="Embedded post" className="w-full" style={{ display: 'block' }}></iframe>
+          </div>
+          <div className="w-full max-w-[504px] rounded-xl overflow-hidden shadow-sm border border-foreground/10 bg-white">
+            <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7508234545876504576?collapsed=1" height="876" width="100%" frameBorder="0" allowFullScreen title="Embedded post" className="w-full" style={{ display: 'block' }}></iframe>
+          </div>
+          <div className="w-full max-w-[504px] rounded-xl overflow-hidden shadow-sm border border-foreground/10 bg-white">
+            <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7470826319954628608?collapsed=1" height="627" width="100%" frameBorder="0" allowFullScreen title="Embedded post" className="w-full" style={{ display: 'block' }}></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============================================================
    FOOTER SECTION
    ============================================================ */
 function Footer() {
@@ -1612,7 +1655,7 @@ function Footer() {
           <div>
             <h4 className="font-display font-bold text-lg mb-6 text-gold">Connect</h4>
             <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full border border-background/20 flex items-center justify-center text-background/70 hover:bg-gold hover:text-foreground hover:border-gold transition-all duration-300">
+              <a href="https://www.linkedin.com/company/viso-security-consultant/posts/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-background/20 flex items-center justify-center text-background/70 hover:bg-gold hover:text-foreground hover:border-gold transition-all duration-300">
                 <span className="sr-only">LinkedIn</span>
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
               </a>
