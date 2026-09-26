@@ -258,15 +258,15 @@ function ProjectCard({
     >
       {/* Outer Card Glass Container - Default Crisp White Theme */}
       <div
-        className="relative rounded-2xl h-full flex flex-col justify-between border backdrop-blur-xl transition-all duration-500 overflow-hidden"
+        className="relative rounded-2xl h-full flex flex-col justify-between border backdrop-blur-xl transition-all duration-500 overflow-hidden bg-white/95"
         style={{
           background: hovered
-            ? "rgba(24, 28, 42, 0.9)"
-            : "rgba(15, 18, 28, 0.8)",
-          borderColor: hovered ? "rgba(255, 255, 255, 0.3)" : "rgba(255, 255, 255, 0.12)",
+            ? "rgba(255, 255, 255, 0.98)"
+            : "rgba(250, 250, 250, 0.8)",
+          borderColor: hovered ? "rgba(0, 0, 0, 0.15)" : "rgba(0, 0, 0, 0.08)",
           boxShadow: hovered
-            ? "0 20px 40px -15px rgba(212, 175, 55, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.2)"
-            : "0 10px 30px rgba(0, 0, 0, 0.4)",
+            ? "0 20px 40px -15px rgba(212, 175, 55, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05)"
+            : "0 10px 30px rgba(0, 0, 0, 0.05)",
           transform: hovered ? "translateY(-6px)" : "translateY(0px)",
         }}
       >
@@ -347,18 +347,15 @@ function ProjectCard({
 }
 
 // ─── Modal Detail View ────────────────────────────────────────────────────────
-function ProjectDetailModal({ project, onClose }: { project: ProjectItem | null; onClose: () => void }) {
-  if (!project) return null;
-
+function ProjectDetailModal({ project, onClose }: { project: ProjectItem; onClose: () => void }) {
   const currentSector = SECTORS.find((s) => s.id === project.category) || SECTORS[0];
 
   return (
-    <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md"
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       >
         <motion.div
@@ -366,7 +363,7 @@ function ProjectDetailModal({ project, onClose }: { project: ProjectItem | null;
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
-          className="relative w-full max-w-2xl bg-zinc-950/90 border border-white/15 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-2xl"
+          className="relative w-full max-w-2xl bg-white border border-black/10 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-2xl"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Banner Image */}
@@ -374,9 +371,9 @@ function ProjectDetailModal({ project, onClose }: { project: ProjectItem | null;
             <img
               src={currentSector.bgImage}
               alt={currentSector.label}
-              className="w-full h-full object-cover filter brightness-75 scale-105"
+              className="w-full h-full object-cover filter brightness-[0.85] scale-105"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent" />
 
             {/* Close Button */}
             <button
@@ -394,7 +391,7 @@ function ProjectDetailModal({ project, onClose }: { project: ProjectItem | null;
                 </span>
                 <StatusBadge status={project.status} />
               </div>
-              <h2 className="text-2xl sm:text-3xl font-display font-bold text-white uppercase tracking-wide">
+              <h2 className="text-2xl sm:text-3xl font-display font-bold text-black uppercase tracking-wide">
                 {project.name}
               </h2>
             </div>
@@ -403,35 +400,35 @@ function ProjectDetailModal({ project, onClose }: { project: ProjectItem | null;
           {/* Body Info */}
           <div className="p-6 sm:p-8 space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
-                <div className="text-xs font-mono uppercase text-white/50 font-bold mb-1 flex items-center gap-1.5">
+              <div className="p-4 rounded-2xl bg-black/5 border border-black/10">
+                <div className="text-xs font-mono uppercase text-foreground/50 font-bold mb-1 flex items-center gap-1.5">
                   <Building2 className="w-3.5 h-3.5 text-primary" /> Client Contracting Party
                 </div>
-                <div className="text-lg font-bold text-white">{project.client}</div>
+                <div className="text-lg font-bold text-black">{project.client}</div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
-                <div className="text-xs font-mono uppercase text-white/50 font-bold mb-1 flex items-center gap-1.5">
-                  <UserCheck className="w-3.5 h-3.5 text-emerald-400" /> Beneficiary / End User
+              <div className="p-4 rounded-2xl bg-black/5 border border-black/10">
+                <div className="text-xs font-mono uppercase text-foreground/50 font-bold mb-1 flex items-center gap-1.5">
+                  <UserCheck className="w-3.5 h-3.5 text-emerald-600" /> Beneficiary / End User
                 </div>
-                <div className="text-lg font-bold text-white">{project.endUser}</div>
+                <div className="text-lg font-bold text-black">{project.endUser}</div>
               </div>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs font-mono">
-              <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                <span className="text-white/50 uppercase block mb-1">Sector</span>
-                <span className="font-bold text-white tracking-wide">{project.sector}</span>
+              <div className="p-3 rounded-xl bg-black/5 border border-black/10">
+                <span className="text-foreground/50 uppercase block mb-1">Sector</span>
+                <span className="font-bold text-black tracking-wide">{project.sector}</span>
               </div>
 
-              <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                <span className="text-white/50 uppercase block mb-1">Category</span>
-                <span className="font-bold text-white tracking-wide">{currentSector.label}</span>
+              <div className="p-3 rounded-xl bg-black/5 border border-black/10">
+                <span className="text-foreground/50 uppercase block mb-1">Category</span>
+                <span className="font-bold text-black tracking-wide">{currentSector.label}</span>
               </div>
 
-              <div className="p-3 rounded-xl bg-white/5 border border-white/10 col-span-2 sm:col-span-1">
-                <span className="text-white/50 uppercase block mb-1">Location</span>
-                <span className="font-bold text-white tracking-wide">{project.location || "Saudi Arabia"}</span>
+              <div className="p-3 rounded-xl bg-black/5 border border-black/10 col-span-2 sm:col-span-1">
+                <span className="text-foreground/50 uppercase block mb-1">Location</span>
+                <span className="font-bold text-black tracking-wide">{project.location || "Saudi Arabia"}</span>
               </div>
             </div>
 
@@ -439,14 +436,13 @@ function ProjectDetailModal({ project, onClose }: { project: ProjectItem | null;
               <h4 className="text-xs font-mono uppercase font-bold text-primary tracking-widest flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-primary" /> Scope of Work & Security Engineering
               </h4>
-              <p className="text-sm text-white/90 leading-relaxed bg-white/[0.03] p-4 rounded-2xl border border-white/10">
+              <p className="text-sm text-foreground/80 leading-relaxed bg-black/[0.03] p-4 rounded-2xl border border-black/10">
                 {project.scope}
               </p>
             </div>
           </div>
         </motion.div>
       </motion.div>
-    </AnimatePresence>
   );
 }
 
@@ -503,7 +499,7 @@ function ProjectsPage() {
       <SmoothScroll />
       <TopNav />
 
-      <main className="min-h-screen text-foreground relative overflow-hidden bg-zinc-950">
+      <main className="min-h-screen text-foreground relative overflow-hidden bg-background">
         {/* Dynamic Sector Background Image with Smooth Fade */}
         <AnimatePresence mode="wait">
           <motion.div
@@ -517,10 +513,10 @@ function ProjectsPage() {
             <img
               src={activeSector.bgImage}
               alt={activeSector.label}
-              className="w-full h-full object-cover filter brightness-[0.22] contrast-125 saturate-125"
+              className="w-full h-full object-cover filter opacity-[0.15] contrast-125 saturate-125"
             />
-            {/* Dark Vignette Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/90 via-zinc-950/70 to-zinc-950" />
+            {/* Light Vignette Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/70 to-background" />
             <div
               className="absolute inset-0"
               style={{
@@ -548,13 +544,13 @@ function ProjectsPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="font-display text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white mb-6 leading-[1.15]"
+              className="font-display text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-foreground mb-6 leading-[1.15]"
             >
               Security Engineering &{" "}
               <span
                 className="italic text-transparent bg-clip-text"
                 style={{
-                  backgroundImage: "linear-gradient(135deg, #D4AF37 0%, #FFFFFF 100%)",
+                  backgroundImage: "linear-gradient(135deg, #D4AF37 0%, #000000 100%)",
                   filter: "drop-shadow(0 4px 20px rgba(212,175,55,0.35))"
                 }}
               >
@@ -566,9 +562,9 @@ function ProjectsPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-lg text-white/80 max-w-2xl mx-auto leading-relaxed"
+              className="text-lg text-foreground/80 max-w-2xl mx-auto leading-relaxed"
             >
-              Explore our proven track record with clients such as <strong className="text-white">Saudi Aramco, NEOM, NWC, Siemens, KBR, MAWANI, SAMA, and Ma'aden</strong> across critical industrial sectors.
+              Explore our proven track record with clients such as <strong className="text-foreground">Saudi Aramco, NEOM, NWC, Siemens, KBR, MAWANI, SAMA, and Ma'aden</strong> across critical industrial sectors.
             </motion.p>
           </div>
 
@@ -577,29 +573,29 @@ function ProjectsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-14 p-4 rounded-3xl bg-zinc-900/70 border border-white/10 backdrop-blur-xl"
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-14 p-4 rounded-3xl bg-white/80 border border-black/10 backdrop-blur-xl shadow-sm"
           >
-            <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] text-center">
-              <div className="text-3xl sm:text-4xl font-display font-bold text-white mb-1">{PROJECTS.length}</div>
-              <div className="text-xs font-mono uppercase text-white/50 tracking-wider font-semibold">Total Delivered Projects</div>
+            <div className="p-4 rounded-2xl bg-black/[0.03] border border-black/[0.06] text-center">
+              <div className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-1">{PROJECTS.length}</div>
+              <div className="text-xs font-mono uppercase text-foreground/60 tracking-wider font-semibold">Total Delivered Projects</div>
             </div>
-            <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] text-center">
+            <div className="p-4 rounded-2xl bg-black/[0.03] border border-black/[0.06] text-center">
               <div className="text-3xl sm:text-4xl font-display font-bold text-primary mb-1">9</div>
-              <div className="text-xs font-mono uppercase text-white/50 tracking-wider font-semibold">Industrial Sectors</div>
+              <div className="text-xs font-mono uppercase text-foreground/60 tracking-wider font-semibold">Industrial Sectors</div>
             </div>
-            <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] text-center">
-              <div className="text-3xl sm:text-4xl font-display font-bold text-sky-400 mb-1">20+</div>
-              <div className="text-xs font-mono uppercase text-white/50 tracking-wider font-semibold">Global Tier-1 Clients</div>
+            <div className="p-4 rounded-2xl bg-black/[0.03] border border-black/[0.06] text-center">
+              <div className="text-3xl sm:text-4xl font-display font-bold text-sky-600 mb-1">20+</div>
+              <div className="text-xs font-mono uppercase text-foreground/60 tracking-wider font-semibold">Global Tier-1 Clients</div>
             </div>
-            <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] text-center">
-              <div className="text-3xl sm:text-4xl font-display font-bold text-emerald-400 mb-1">100%</div>
-              <div className="text-xs font-mono uppercase text-white/50 tracking-wider font-semibold">HCIS & Security Approval</div>
+            <div className="p-4 rounded-2xl bg-black/[0.03] border border-black/[0.06] text-center">
+              <div className="text-3xl sm:text-4xl font-display font-bold text-emerald-600 mb-1">100%</div>
+              <div className="text-xs font-mono uppercase text-foreground/60 tracking-wider font-semibold">HCIS & Security Approval</div>
             </div>
           </motion.div>
 
           {/* ── Sector Tabs Navigation ── */}
           <div className="mb-10">
-            <div className="text-xs font-mono uppercase font-bold text-white/50 mb-4 tracking-widest flex items-center gap-2">
+            <div className="text-xs font-mono uppercase font-bold text-foreground/50 mb-4 tracking-widest flex items-center gap-2">
               <Layers className="w-4 h-4 text-primary" /> Filter by Industry Sector
             </div>
 
@@ -745,10 +741,14 @@ function ProjectsPage() {
       </main>
 
       {/* Project Detail Modal */}
-      <ProjectDetailModal
-        project={activeModalProject}
-        onClose={() => setActiveModalProject(null)}
-      />
+      <AnimatePresence>
+        {activeModalProject && (
+          <ProjectDetailModal
+            project={activeModalProject}
+            onClose={() => setActiveModalProject(null)}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 }

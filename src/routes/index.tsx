@@ -180,9 +180,9 @@ function HomePage() {
             <ClientsSection data={cmsData.clients} />
           </LazyMount>
 
-          <LazyMount minHeight={360} fallback={<SectionFallback h={360} />}>
+          {/* <LazyMount minHeight={360} fallback={<SectionFallback h={360} />}>
             <ServicesSection data={cmsData.services} />
-          </LazyMount>
+          </LazyMount> */}
 
           <LazyMount minHeight={280} fallback={<SectionFallback h={280} />}>
             <CTASection data={cmsData.cta} />
@@ -463,7 +463,7 @@ function ServicesSection({ data }: { data?: any }) {
               initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             >
               <h2 className="font-display text-5xl md:text-7xl leading-tight text-foreground tracking-tight">
-                {title1} <br /><span className="text-primary italic">{title2}</span>
+                {title1} <br /><span className="text-primary">{title2}</span>
               </h2>
               <p className="font-sans mt-8 text-lg text-black max-w-md leading-relaxed">
                 {desc}
@@ -530,7 +530,7 @@ function FrameworkSection({ data }: { data?: any }) {
           className="font-display text-5xl md:text-7xl leading-tight text-foreground"
         >
           {title1} <br />
-          <span className="italic text-primary">{title2}</span>
+          <span className="text-primary">{title2}</span>
         </motion.h2>
 
         <motion.p 

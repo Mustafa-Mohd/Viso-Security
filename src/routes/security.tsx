@@ -71,10 +71,48 @@ function SecurityAnalysisPage() {
     <div className="bg-background min-h-screen text-foreground font-sans selection:bg-primary/20 selection:text-primary">
       <TopNav />
       
-      <main className="pt-32 pb-40">
+      <main className="pb-40">
 
+        {/* Compact Hero Banner Section */}
+        <div className="relative w-full overflow-hidden flex items-center justify-center bg-background">
+          <div className="absolute inset-0 pointer-events-none">
+            <img 
+              src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=80" 
+              alt="Security Engineering" 
+              className="w-full h-full object-cover opacity-30"
+            />
+            {/* Soft gradient overlay to blend into the rest of the light page */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/60 to-background" />
+          </div>
+          
+          <div className="relative z-10 max-w-[1400px] mx-auto px-4 md:px-8 pt-40 pb-4 text-center flex flex-col items-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <h1 className="font-display text-4xl md:text-6xl font-bold text-black tracking-tight leading-tight mb-6">
+                Our Core <span className="text-primary">Services</span>
+              </h1>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.15 }}
+              className="max-w-3xl"
+            >
+              <h2 className="font-display text-xl font-bold text-black mb-3">
+                Supporting Every Stage of the HCIS / SAIS Security Project Lifecycle
+              </h2>
+              <p className="font-sans text-base text-black/80 leading-relaxed">
+                Whether developing a new facility or upgrading an existing asset, security requirements evolve throughout the project lifecycle. VISO provides specialist security engineering consultancy from project initiation through operational readiness, ensuring security objectives, engineering deliverables, and regulatory requirements remain aligned at every stage.
+              </p>
+            </motion.div>
+          </div>
+        </div>
 
-        <div className="max-w-[1400px] mx-auto px-4 md:px-8 mt-12">
+        <div className="max-w-[1400px] mx-auto px-4 md:px-8 -mt-6">
           <ScrollStack 
             useWindowScroll={true} 
             itemDistance={400}
@@ -132,7 +170,13 @@ function SecurityAnalysisPage() {
         </div>
 
         {/* Project Management Section */}
-        <section className="mt-32 relative overflow-hidden bg-surface-2 border-y border-foreground/5">
+        <motion.section 
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="mt-8 relative overflow-hidden bg-surface-2 border-y border-foreground/5"
+        >
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl translate-x-1/3 -translate-y-1/3 pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gold/5 rounded-full blur-3xl -translate-x-1/3 translate-y-1/3 pointer-events-none" />
           
@@ -142,12 +186,12 @@ function SecurityAnalysisPage() {
                 <motion.div
                   initial={{ opacity: 0, x: -30 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ duration: 0.8 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
                 >
                   <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-foreground mb-6 leading-tight">
                     {t("security.pm.title")} <br/>
-                    <span className="italic text-primary">{t("security.pm.title_italic")}</span>
+                    <span className="text-primary">{t("security.pm.title_italic")}</span>
                   </h2>
                   <p className="font-sans text-lg text-foreground/70 leading-relaxed mb-8 max-w-xl">
                     {t("security.pm.desc")}
@@ -156,10 +200,10 @@ function SecurityAnalysisPage() {
               </div>
 
               <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, delay: 0.2 }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.8, delay: 0.4 }}
                 className="bg-background rounded-3xl p-8 md:p-12 shadow-2xl border border-foreground/5 relative group hover:border-primary/20 transition-colors duration-500"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl pointer-events-none" />
@@ -173,7 +217,7 @@ function SecurityAnalysisPage() {
                       initial={{ opacity: 0, y: 10 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: 0.3 + (idx * 0.05) }}
+                      transition={{ duration: 0.4, delay: 0.5 + (idx * 0.05) }}
                     >
                       <div className="w-8 h-8 rounded-full bg-surface-2 group-hover/item:bg-primary/10 flex items-center justify-center shrink-0 text-primary transition-colors duration-300 border border-foreground/5 group-hover/item:border-primary/20 mt-0.5">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -185,14 +229,14 @@ function SecurityAnalysisPage() {
               </motion.div>
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Why Choose VISO Section */}
         <section className="py-32 bg-background relative overflow-hidden">
           <div className="max-w-[1400px] mx-auto px-4 md:px-8 relative z-10">
             <div className="text-center mb-20">
               <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-foreground mb-4">
-                {t("security.why_choose.title")} <span className="italic text-primary">{t("security.why_choose.title_italic")}</span>
+                {t("security.why_choose.title")} <span className="text-primary">{t("security.why_choose.title_italic")}</span>
               </h2>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
