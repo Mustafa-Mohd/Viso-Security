@@ -8,6 +8,7 @@ import {
   useMotionValue,
   useSpring,
   animate,
+  AnimatePresence,
 } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { TopNav } from "@/components/TopNav";
@@ -103,8 +104,8 @@ function AboutPage() {
     <div className="bg-background min-h-screen text-foreground font-sans selection:bg-primary/20 selection:text-primary overflow-x-hidden">
       <TopNav />
       <AboutHero />
-      <WhoWeAre title={whoTitle} desc={whoDesc} secondary={t("about.desc2")} />
       <CEOMessage />
+      <WhoWeAre title={whoTitle} desc={whoDesc} secondary={t("about.desc2")} />
       <VisionMission />
       <StatsBand />
       <RegulatoryCards />
@@ -270,18 +271,33 @@ function WhoWeAre({
       ref={ref}
       className="relative px-8 md:px-16 py-12 md:py-20 overflow-hidden"
     >
-      <motion.div
-        style={{ x: markX }}
-        className="pointer-events-none absolute top-16 -left-4 font-display font-bold text-[22vw] leading-none text-foreground/[0.03] tracking-tighter select-none whitespace-nowrap"
-      >
-        WHO WE ARE
-      </motion.div>
 
-      <div className="relative z-10 max-w-[1600px] mx-auto grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-        <div className="lg:col-span-5">
 
+      <div className="relative z-10 max-w-[1600px] mx-auto bg-surface border border-foreground/10 rounded-[2rem] p-6 md:p-8 lg:p-10 shadow-sm">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+        {/* Left Side: Image */}
+        <div className="order-2 lg:order-1">
+          <Reveal delay={0.25}>
+            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-xl">
+              <img
+                src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80"
+                alt="VISO workspace"
+                className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent pointer-events-none" />
+              <div className="absolute bottom-6 left-6 right-6">
+                <p className="font-mono text-[10px] tracking-[0.25em] text-white uppercase">
+                  Headquartered in Riyadh
+                </p>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+
+        {/* Right Side: Information */}
+        <div className="order-1 lg:order-2 space-y-5">
           <Reveal delay={0.1}>
-            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl leading-[1.05] tracking-tight text-foreground">
+            <h2 className="font-display text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-[1.05] tracking-tight text-foreground whitespace-nowrap">
               {title.includes("Peace") || title.includes("meets") || title.includes("يلتقي") ? (
                 <>
                   {t("about_page.story_title")}{" "}
@@ -295,36 +311,19 @@ function WhoWeAre({
             </h2>
           </Reveal>
 
-          <Reveal delay={0.25}>
-            <div className="mt-10 relative aspect-[4/5] overflow-hidden rounded-sm">
-              <ParallaxImage
-                src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80"
-                alt="VISO workspace"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-              <div className="absolute bottom-6 left-6 right-6">
-                <p className="font-mono text-[10px] tracking-[0.25em] text-white uppercase">
-                  Headquartered in Riyadh
-                </p>
-              </div>
-            </div>
-          </Reveal>
-        </div>
-
-        <div className="lg:col-span-7 lg:pt-8 space-y-6">
           <Reveal delay={0.15}>
-            <p className="text-lg md:text-xl text-foreground/90 leading-relaxed font-light max-w-2xl">
+            <p className="text-base md:text-lg text-foreground/90 leading-relaxed font-light text-justify">
               {desc}
             </p>
           </Reveal>
           <Reveal delay={0.25}>
-            <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-light max-w-2xl">
+            <p className="text-sm md:text-base text-foreground/80 leading-relaxed font-light text-justify">
               {secondary}
             </p>
           </Reveal>
 
           <Reveal delay={0.35}>
-            <div className="pt-8 grid sm:grid-cols-2 gap-x-10 gap-y-8 border-t border-foreground/10">
+            <div className="pt-5 grid grid-cols-2 gap-x-8 gap-y-6 border-t border-foreground/10">
               {[
                 { label: "Founded", value: "February 2019" },
                 { label: "HQ", value: "Riyadh, KSA" },
@@ -332,16 +331,17 @@ function WhoWeAre({
                 { label: "Focus", value: "Physical Security" },
               ].map((item) => (
                 <div key={item.label} className="group">
-                  <div className="font-mono text-[10px] tracking-[0.25em] text-primary uppercase mb-2">
+                  <div className="font-mono text-[10px] tracking-[0.25em] text-primary uppercase mb-1">
                     {item.label}
                   </div>
-                  <div className="font-display text-xl md:text-2xl text-foreground tracking-tight group-hover:text-primary transition-colors duration-500">
+                  <div className="font-display text-lg md:text-xl text-foreground tracking-tight group-hover:text-primary transition-colors duration-500">
                     {item.value}
                   </div>
                 </div>
               ))}
             </div>
           </Reveal>
+        </div>
         </div>
       </div>
     </section>
@@ -369,7 +369,7 @@ function CEOMessage() {
                     Mohammad Bin Sadiq
                   </div>
                   <div className="font-mono text-[10px] tracking-[0.25em] text-primary uppercase">
-                    Founder & Chief Executive Officer
+                    Founder & CEO
                   </div>
                   <div className="font-mono text-[10px] tracking-[0.25em] text-white/70 uppercase mt-2 flex items-center whitespace-nowrap">
                     <span className="text-black">VISION OF SOLUTIONS FOR&nbsp;</span>
@@ -418,32 +418,31 @@ function CEOMessage() {
 function VisionMission() {
   const { t } = useTranslation();
   return (
-    <section className="relative px-8 md:px-16 py-24 md:py-32 bg-surface-2/30 overflow-hidden">
+    <section className="relative px-8 md:px-16 py-20 md:py-32 bg-background overflow-hidden border-t border-foreground/5">
       <div className="max-w-[1600px] mx-auto">
+        <Reveal delay={0.1}>
+          <div className="text-center mb-16 md:mb-20">
+            <h2 className="font-sans text-4xl md:text-5xl lg:text-6xl tracking-tight leading-[1.1] mb-6">
+              Our Vision, Mission & Values
+            </h2>
+            <div className="w-16 h-1 bg-gradient-to-r from-primary via-gold to-secondary mx-auto rounded-full" />
+          </div>
+        </Reveal>
 
-        
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid lg:grid-cols-3 gap-6 lg:gap-10">
           {/* Vision Card */}
-          <Reveal delay={0.1}>
-            <div className="group relative h-full p-6 md:p-8 border border-foreground/10 bg-background/40 backdrop-blur-md rounded-xl hover:border-primary/50 hover:bg-background/60 transition-all duration-500 overflow-hidden shadow-lg hover:shadow-primary/5">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-              
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-bl-3xl" />
+          <Reveal delay={0.15}>
+            <div className="group relative h-full p-8 lg:p-12 border border-foreground/10 bg-surface rounded-[2rem] shadow-sm hover:shadow-xl hover:border-primary/40 transition-all duration-500 overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary via-gold to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               
               <div className="relative z-10">
-                <div className="w-12 h-12 mb-6 rounded-2xl border border-primary/30 flex items-center justify-center bg-primary/10 text-primary group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 shadow-[0_0_15px_rgba(212,175,55,0.15)]">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                </div>
-                <h3 className="font-display text-2xl md:text-3xl text-foreground tracking-tight mb-2 group-hover:text-primary transition-colors duration-500 flex items-center gap-3">
+                <h3 className="font-sans font-bold text-3xl md:text-4xl text-foreground tracking-tight mb-3 group-hover:text-primary transition-colors duration-500">
                   Our Vision
                 </h3>
-                <div className="font-mono text-[10px] tracking-[0.1em] text-primary uppercase mb-4">
+                <div className="font-mono text-[10px] tracking-[0.2em] text-primary uppercase mb-6">
                   Trusted Leadership in Physical Security
                 </div>
-                <p className="text-foreground/60 leading-relaxed font-light text-base">
+                <p className="text-foreground/80 leading-relaxed font-normal text-base md:text-lg">
                   To become the trusted leader in physical security consultancy — renowned for our expertise, innovation, and unwavering commitment to excellence. We aspire to continually push the boundaries of security solutions, shaping a safer world for generations to come.
                 </p>
               </div>
@@ -451,25 +450,18 @@ function VisionMission() {
           </Reveal>
           
           {/* Mission Card */}
-          <Reveal delay={0.2}>
-            <div className="group relative h-full p-6 md:p-8 border border-foreground/10 bg-background/40 backdrop-blur-md rounded-xl hover:border-primary/50 hover:bg-background/60 transition-all duration-500 overflow-hidden shadow-lg hover:shadow-primary/5">
-              <div className="absolute inset-0 bg-gradient-to-tl from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-              
-              <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-tr-3xl" />
+          <Reveal delay={0.25}>
+            <div className="group relative h-full p-8 lg:p-12 border border-foreground/10 bg-surface rounded-[2rem] shadow-sm hover:shadow-xl hover:border-primary/40 transition-all duration-500 overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary via-gold to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               
               <div className="relative z-10">
-                <div className="w-12 h-12 mb-6 rounded-2xl border border-primary/30 flex items-center justify-center bg-primary/10 text-primary group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500 shadow-[0_0_15px_rgba(212,175,55,0.15)]">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
-                <h3 className="font-display text-2xl md:text-3xl text-foreground tracking-tight mb-2 group-hover:text-primary transition-colors duration-500 flex items-center gap-3">
+                <h3 className="font-sans font-bold text-3xl md:text-4xl text-foreground tracking-tight mb-3 group-hover:text-primary transition-colors duration-500">
                   Our Mission
                 </h3>
-                <div className="font-mono text-[10px] tracking-[0.1em] text-primary uppercase mb-4">
+                <div className="font-mono text-[10px] tracking-[0.2em] text-primary uppercase mb-6">
                   Protecting Assets, Ensuring Safety
                 </div>
-                <p className="text-foreground/60 leading-relaxed font-light text-base">
+                <p className="text-foreground/80 leading-relaxed font-normal text-base md:text-lg">
                   To protect our clients' assets and ensure their safety through thorough analysis, creative solutions, and unwavering commitment to excellence in physical security consultancy. We deliver customized strategies that surpass expectations, empowering our clients to thrive in a secure environment.
                 </p>
               </div>
@@ -477,25 +469,18 @@ function VisionMission() {
           </Reveal>
 
           {/* Values Card */}
-          <Reveal delay={0.3}>
-            <div className="group relative h-full p-6 md:p-8 border border-foreground/10 bg-background/40 backdrop-blur-md rounded-xl hover:border-primary/50 hover:bg-background/60 transition-all duration-500 overflow-hidden shadow-lg hover:shadow-primary/5">
-              <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-              
-              <div className="absolute bottom-0 right-0 w-24 h-24 bg-gradient-to-tl from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-tl-3xl" />
+          <Reveal delay={0.35}>
+            <div className="group relative h-full p-8 lg:p-12 border border-foreground/10 bg-surface rounded-[2rem] shadow-sm hover:shadow-xl hover:border-primary/40 transition-all duration-500 overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary via-gold to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               
               <div className="relative z-10">
-                <div className="w-12 h-12 mb-6 rounded-2xl border border-primary/30 flex items-center justify-center bg-primary/10 text-primary group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 shadow-[0_0_15px_rgba(212,175,55,0.15)]">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
-                </div>
-                <h3 className="font-display text-2xl md:text-3xl text-foreground tracking-tight mb-2 group-hover:text-primary transition-colors duration-500 flex items-center gap-3">
+                <h3 className="font-sans font-bold text-3xl md:text-4xl text-foreground tracking-tight mb-3 group-hover:text-primary transition-colors duration-500">
                   Our Values
                 </h3>
-                <div className="font-mono text-[10px] tracking-[0.1em] text-primary uppercase mb-4">
+                <div className="font-mono text-[10px] tracking-[0.2em] text-primary uppercase mb-6">
                   Integrity &amp; Excellence
                 </div>
-                <p className="text-foreground/60 leading-relaxed font-light text-base">
+                <p className="text-foreground/80 leading-relaxed font-normal text-base md:text-lg">
                   Our practice is founded on integrity, technical excellence, and independence. With a clear understanding of the security challenges facing critical infrastructure, we are committed to practical, reliable, and forward-looking solutions.
                 </p>
               </div>
@@ -873,26 +858,36 @@ function RegulatoryCards() {
       title: "MOI",
       desc: "Ministry of Interior Regulatory Frameworks.",
       url: "/regulatory/moi",
+      logo: "https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Ministry_of_Interior_%28Saudi_Arabia%29_Logo.svg/1200px-Ministry_of_Interior_%28Saudi_Arabia%29_Logo.svg.png",
       color: "from-blue-950 to-slate-900 border-blue-500/20 hover:border-blue-400/60 shadow-blue-900/20"
     },
     {
       title: "SAIS",
       desc: "Supreme Authority for Industrial Security Standards.",
       url: "/regulatory/sais",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Emblem_of_Saudi_Arabia.svg/1200px-Emblem_of_Saudi_Arabia.svg.png",
       color: "from-emerald-950 to-slate-900 border-emerald-500/20 hover:border-emerald-400/60 shadow-emerald-900/20"
     },
     {
-      title: "Supervision",
-      desc: "Comprehensive Project Security Supervision.",
-      url: "/regulatory/hcis", // Usually HCIS or a dedicated supervision route
+      title: "NEOM",
+      desc: "NEOM Public Safety & Security Consultancy Services.",
+      url: "/regulatory/neom",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Neom_logo.svg",
       color: "from-purple-950 to-slate-900 border-purple-500/20 hover:border-purple-400/60 shadow-purple-900/20"
+    },
+    {
+      title: "API 780",
+      desc: "Security Risk Assessment for Petroleum & Petrochemical Industries.",
+      url: "/regulatory/api780",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/API_logo.svg/1200px-API_logo.svg.png",
+      color: "from-blue-900 to-slate-900 border-blue-500/20 hover:border-blue-400/60 shadow-blue-900/20"
     }
   ];
 
   return (
-    <section className="py-20 bg-background relative z-10">
-      <div className="mx-auto max-w-6xl px-8">
-        <div className="grid gap-6 md:grid-cols-3">
+    <section className="py-24 bg-background relative z-10">
+      <div className="mx-auto max-w-[1600px] px-8 md:px-16">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           {cards.map((card, i) => (
             <Link key={i} to={card.url} className="block group">
               <motion.div
@@ -900,16 +895,20 @@ function RegulatoryCards() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className={`relative h-full flex flex-col p-8 rounded-2xl border bg-gradient-to-br ${card.color} transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl overflow-hidden`}
+                className={`relative h-full flex flex-col p-8 md:p-12 rounded-[2rem] border bg-gradient-to-br ${card.color} transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl overflow-hidden`}
               >
                 {/* Decorative background element */}
-                <div className="absolute -top-12 -right-12 w-32 h-32 bg-white/5 rounded-full blur-2xl group-hover:bg-white/10 transition-colors duration-500" />
+                <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/5 rounded-full blur-2xl group-hover:bg-white/10 transition-colors duration-500 pointer-events-none" />
                 
-                <h3 className="text-3xl font-display font-semibold text-white mb-4 relative z-10 group-hover:text-primary transition-colors">{card.title}</h3>
-                <p className="text-white/70 font-sans text-sm leading-relaxed mb-8 flex-grow relative z-10">{card.desc}</p>
-                <div className="mt-auto flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-white/50 group-hover:text-primary transition-colors relative z-10">
-                  <span>Explore</span>
-                  <span className="transform transition-transform group-hover:translate-x-1">→</span>
+                <div className="mb-10 w-20 h-20 bg-white/10 rounded-2xl p-4 flex items-center justify-center backdrop-blur-md border border-white/10 shadow-lg group-hover:scale-110 transition-transform duration-500 relative z-10">
+                  <img src={card.logo} alt={card.title} className="max-h-full max-w-full object-contain filter brightness-0 invert opacity-90" />
+                </div>
+
+                <h3 className="text-3xl md:text-4xl font-display font-bold text-white mb-4 relative z-10 group-hover:text-primary transition-colors">{card.title}</h3>
+                <p className="text-white/70 font-sans text-base leading-relaxed mb-10 flex-grow relative z-10 max-w-sm">{card.desc}</p>
+                <div className="mt-auto flex items-center gap-3 text-xs font-bold tracking-widest uppercase text-white/50 group-hover:text-primary transition-colors relative z-10">
+                  <span>Explore Framework</span>
+                  <span className="transform transition-transform group-hover:translate-x-2">→</span>
                 </div>
               </motion.div>
             </Link>
@@ -1041,9 +1040,12 @@ const certificatesData = [
 ];
 
 function LicensesAndCertifications() {
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
   return (
+    <>
     <section id="licenses" className="relative z-20 bg-background py-24 border-t border-foreground/10">
-      <div className="mx-auto max-w-6xl px-8">
+      <div className="mx-auto max-w-[1600px] px-8 md:px-16">
         <div className="mb-16 text-center">
           <motion.div
             initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
@@ -1064,7 +1066,7 @@ function LicensesAndCertifications() {
             Our official licenses, credentials, and international certifications underscoring our commitment to compliance and excellence.
           </motion.p>
         </div>
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
           {certificatesData.map((item, i) => (
             <motion.div
               key={i}
@@ -1072,18 +1074,42 @@ function LicensesAndCertifications() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ delay: (i % 3) * 0.1, duration: 0.6 }}
-              className="group relative flex flex-col overflow-hidden rounded-2xl border border-foreground/10 bg-surface shadow-sm hover:shadow-lg transition-all hover:border-primary/50"
+              className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-foreground/10 bg-surface shadow-sm hover:shadow-xl transition-all duration-500 hover:border-primary/40"
             >
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10" />
-              <div className="w-full bg-white flex items-center justify-center border-b border-foreground/10 overflow-hidden relative p-6 h-48">
-                <img loading="lazy" decoding="async" src={item.img} alt={item.org} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700 mix-blend-multiply" />
+              <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10" />
+              
+              {/* Clickable Image Container */}
+              <div 
+                className="w-full bg-white flex items-center justify-center border-b border-foreground/10 overflow-hidden relative h-64 md:h-72 cursor-pointer"
+                onClick={() => setSelectedImage(item.img)}
+              >
+                <img 
+                  loading="lazy" 
+                  decoding="async" 
+                  src={item.img} 
+                  alt={item.org} 
+                  className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-700 mix-blend-multiply" 
+                />
+                
+                {/* Zoom indicator overlay */}
+                <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
+                  <div className="bg-black/60 backdrop-blur-sm text-white rounded-full p-4 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-lg">
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                    </svg>
+                  </div>
+                </div>
               </div>
-              <div className="p-6 flex flex-col flex-1">
-                <h3 className="text-lg font-bold text-foreground mb-4 leading-snug">{item.org}</h3>
-                <ul className="space-y-2 mt-auto">
+              
+              {/* Card Information */}
+              <div className="p-8 flex flex-col flex-1 bg-surface relative z-10">
+                <h3 className="text-xl font-display font-bold text-foreground mb-4 leading-snug group-hover:text-primary transition-colors duration-300">
+                  {item.org}
+                </h3>
+                <ul className="space-y-3 mt-auto">
                   {item.certs.map((c, j) => (
-                    <li key={j} className="flex items-start gap-2 text-sm text-foreground/70 leading-tight">
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                    <li key={j} className="flex items-start gap-3 text-sm md:text-base text-foreground/75 leading-relaxed font-light">
+                      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/70" />
                       <span>{c}</span>
                     </li>
                   ))}
@@ -1094,5 +1120,39 @@ function LicensesAndCertifications() {
         </div>
       </div>
     </section>
+
+    {/* Image Modal */}
+    <AnimatePresence>
+      {selectedImage && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          onClick={() => setSelectedImage(null)}
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 md:p-12 cursor-zoom-out"
+        >
+          <motion.img
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            src={selectedImage}
+            alt="Certificate Preview"
+            className="max-w-full max-h-full object-contain rounded-xl shadow-2xl bg-white p-2 md:p-6 cursor-default"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button 
+            onClick={() => setSelectedImage(null)}
+            className="absolute top-6 right-6 md:top-8 md:right-8 text-white/70 hover:text-white bg-black/40 hover:bg-black/60 transition-colors p-3 rounded-full cursor-pointer"
+          >
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </motion.div>
+      )}
+    </AnimatePresence>
+    </>
   );
 }
