@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Building2, Shield, Landmark } from "lucide-react";
+import { Building2, Shield, Landmark, Hexagon, FileText } from "lucide-react";
 import { ContentImagePlaceholder, PageSection } from "@/components/ContentImagePlaceholder";
 import { TopNav } from "@/components/TopNav";
 import { REGULATORY_BODIES, REGULATORY_HUB_BANNER } from "@/data/regulatoryBodies";
@@ -25,6 +25,8 @@ const icons = {
   moi: Landmark,
   sais: Shield,
   hcis: Building2,
+  neom: Hexagon,
+  api780: FileText,
 } as const;
 
 function RegulatoryHubPage() {

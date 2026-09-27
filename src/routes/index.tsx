@@ -1538,7 +1538,7 @@ function ServiceLifecycle({ data }: { data?: any }) {
           <Reveal delay={0.1}>
             <h2 className="mt-3 font-display text-3xl leading-[1.08] md:text-4xl lg:text-5xl tracking-tight text-foreground">
               Four Stages.{" "}
-              <em className="text-gradient-gold not-italic font-light">One Security.</em>
+              <span className="text-primary font-normal">One Security.</span>
             </h2>
           </Reveal>
           <Reveal delay={0.16}>
