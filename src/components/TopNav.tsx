@@ -98,7 +98,6 @@ export function TopNav() {
     id: "join_team",
     label: t("nav.join_team"),
     items: [
-      { to: "/clients", label: t("nav.clients") },
       { to: "/career", label: t("nav.careers") },
       { to: "/gallery", label: t("nav.gallery") },
     ],

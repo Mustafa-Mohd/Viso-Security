@@ -21,11 +21,15 @@ export const Route = createFileRoute("/regulatory/")({
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
+const NeomIcon = (props: any) => (
+  <img src="/images/regulatory/neom-logo.png" alt="NEOM" {...props} />
+);
+
 const icons = {
   moi: Landmark,
   sais: Shield,
   hcis: Building2,
-  neom: Hexagon,
+  neom: NeomIcon,
   api780: FileText,
 } as const;
 

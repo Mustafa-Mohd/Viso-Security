@@ -131,36 +131,41 @@ function HomePage() {
                   title: "Security Consultancy",
                   desc: "Comprehensive risk and threat assessment engineering.",
                   url: "/security",
-                  img: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80",
-                  color: "group-hover:border-blue-500/50 group-hover:shadow-blue-500/20"
+                  img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790589737/ChatGPT_Image_Sep_28_2026_03_32_06_PM.png",
+                  color: "group-hover:border-blue-500/50 group-hover:shadow-blue-500/20",
+                  moreInfo: "Our Security Consultancy services provide strategic guidance and technical engineering to safeguard your critical assets. We specialize in Security Risk Assessments (SRA), vulnerability analysis, and the development of robust physical security frameworks.\n\nFrom concept design to detailed engineering and operational readiness, our experts ensure your facility complies with local regulations (such as HCIS/SAIS directives) and international best practices."
                 },
                 {
                   title: "Translation Services",
                   desc: "Verify and authenticate VISO translation certificates.",
                   url: "/translation",
                   img: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80",
-                  color: "group-hover:border-emerald-500/50 group-hover:shadow-emerald-500/20"
+                  color: "group-hover:border-emerald-500/50 group-hover:shadow-emerald-500/20",
+                  moreInfo: "We offer professional, certified translation services tailored specifically for technical, legal, and security-related documentation. Ensuring accuracy in highly specialized fields is critical for compliance and successful project delivery.\n\nOur system also provides an integrated verification portal where you can instantly authenticate VISO-issued translation certificates using unique reference codes."
                 },
                 {
                   title: "Training",
                   desc: "Specialized training programs for physical security professionals.",
                   url: "/services/training",
                   img: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&q=80",
-                  color: "group-hover:border-purple-500/50 group-hover:shadow-purple-500/20"
+                  color: "group-hover:border-purple-500/50 group-hover:shadow-purple-500/20",
+                  moreInfo: "Empower your workforce with industry-leading security training. We design and deliver specialized programs that cover a wide range of topics, from basic security awareness to advanced physical security system operations and emergency response protocols.\n\nOur training modules are continuously updated to reflect the latest threats, technological advancements, and regulatory changes in the Kingdom."
                 },
                 {
                   title: "Industrial Security",
                   desc: "Robust physical security solutions for industrial assets.",
                   url: "/services/industrial",
                   img: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80",
-                  color: "group-hover:border-orange-500/50 group-hover:shadow-orange-500/20"
+                  color: "group-hover:border-orange-500/50 group-hover:shadow-orange-500/20",
+                  moreInfo: "Industrial facilities face unique and complex security challenges. We provide specialized consulting to protect oil, gas, petrochemical, and manufacturing infrastructure against intrusion, sabotage, and disruption.\n\nOur approach integrates cutting-edge electronic security systems (CCTV, ACS, IDS) with structural and procedural countermeasures, ensuring full alignment with strict regulatory standards."
                 },
                 {
                   title: "Security Gap Analysis",
                   desc: "Identify vulnerabilities and align with international standards.",
                   url: "/services/gap-analysis",
                   img: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&q=80",
-                  color: "group-hover:border-red-500/50 group-hover:shadow-red-500/20"
+                  color: "group-hover:border-red-500/50 group-hover:shadow-red-500/20",
+                  moreInfo: "A Security Gap Analysis is the crucial first step in fortifying your defenses. We conduct thorough site surveys and audits to compare your existing security posture against required baselines and industry best practices.\n\nWe provide detailed, actionable roadmaps that highlight critical vulnerabilities and outline the specific steps necessary to achieve full compliance and operational resilience."
                 }
               ]} />
             </div>
@@ -627,7 +632,7 @@ function ClientsSection({ data }: { data?: any }) {
   const title2 = data?.title2 || "Companies.";
   const clients = data?.items?.length > 0 ? data.items : [
     { name: "Saudi Aramco", sector: "Oil & Gas", icon: "🛢️" },
-    { name: "NEOM", sector: "Mega Project", icon: "🏙️" },
+    { name: "NEOM", sector: "Mega Project", icon: "https://neom.scene7.com/is/image/neom/logo-neom-en-spaced?fmt=png-alpha&scl=1" },
     { name: "National Water Company", sector: "Water Utility", icon: "💧" },
     { name: "Saudi Electricity Company", sector: "Power Utility", icon: "⚡" },
     { name: "SAMA — Saudi Central Bank", sector: "Government / Financial", icon: "🏛️" },
@@ -903,17 +908,28 @@ function CTASection({ data }: { data?: any }) {
           {imageUrl ? (
             <img src={imageUrl} alt="Call to Action" loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
           ) : (
-          <iframe 
-            src="https://maps.google.com/maps?q=VISO+Group,+Riyadh&t=&z=14&ie=UTF8&iwloc=&output=embed" 
-            width="100%" 
-            height="100%" 
-            style={{ border: 0, filter: "contrast(1.1) grayscale(0.2)" }} 
-            allowFullScreen={false} 
-            loading="lazy" 
-            referrerPolicy="no-referrer-when-downgrade"
-            title="VISO Group Location"
-            className="absolute inset-0 z-0"
-          ></iframe>
+            <>
+              <a 
+                href="https://maps.app.goo.gl/fJBkhFTExcBrhJnG9?g_st=ipc" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="absolute inset-0 z-20 cursor-pointer group-hover:bg-primary/5 transition-colors duration-300"
+                title="Open exact Riyadh HQ location in Google Maps"
+              >
+                <span className="sr-only">Open exact Riyadh location on Google Maps</span>
+              </a>
+              <iframe 
+                src="https://maps.google.com/maps?q=Building+No.+7423,+Abi+Bakr+As+Siddiq,+Al-Taawun,+Riyadh&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+                width="100%" 
+                height="100%" 
+                style={{ border: 0, filter: "contrast(1.1) grayscale(0.2)" }} 
+                allowFullScreen={false} 
+                loading="lazy" 
+                referrerPolicy="no-referrer-when-downgrade"
+                title="VISO Group Location"
+                className="absolute inset-0 z-0 pointer-events-none"
+              ></iframe>
+            </>
           )}
         </div>
       </div>

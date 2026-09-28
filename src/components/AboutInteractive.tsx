@@ -152,7 +152,7 @@ export function AboutInteractive({
           >
             <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
             <img loading="lazy" decoding="async"
-              src="https://res.cloudinary.com/dppwnds6z/image/upload/v1790274846/ChatGPT_Image_Sep_25_2026_12_03_52_AM.png"
+              src="https://res.cloudinary.com/dppwnds6z/image/upload/v1790589401/ChatGPT_Image_Sep_28_2026_03_26_00_PM.png"
               alt="About VISO Security"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
             />

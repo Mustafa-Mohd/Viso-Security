@@ -199,7 +199,7 @@ function TechnicalProposalPage() {
               "Animated brand intro loader and premium hero with image carousel",
               "CMS-driven sections: about, security lifecycle, core values, service areas, framework, showcase, statistics",
               "Lazy-loaded sections (LazyMount + Suspense) for performance",
-              "Routes: /, /about, /security, /others, /clients, /gallery, /contact",
+              "Routes: /, /about, /security, /others, /gallery, /contact",
             ]}
           />
           <FeatureBlock
