@@ -251,7 +251,7 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
               initial={{ opacity: 1 }}
               exit={{ opacity: 0, y: -36, skewY: -2, filter: "blur(8px)", scale: 1.05 }}
               transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-              className="font-display font-bold text-4xl md:text-6xl lg:text-[88px] text-foreground tracking-tighter uppercase absolute text-center px-6 max-w-[92vw]"
+              className="font-display font-bold text-2xl sm:text-3xl md:text-5xl lg:text-[72px] leading-tight text-foreground tracking-tighter uppercase absolute text-center px-4 max-w-[95vw]"
             >
               {currentWord.split("").map((char, index) => (
                 <motion.span
@@ -285,7 +285,7 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
                   duration: 0.8, 
                   ease: [0.16, 1, 0.3, 1],
                 }}
-                className="w-48 h-auto md:w-64 mb-10 drop-shadow-[0_10px_30px_rgba(212,175,55,0.5)] object-contain"
+                className="w-32 h-auto sm:w-40 md:w-64 mb-8 md:mb-10 drop-shadow-[0_10px_30px_rgba(212,175,55,0.5)] object-contain"
               />
 
               {/* Staggered Typed Text */}
@@ -300,7 +300,7 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
                       delay: i * 0.08 + 0.35,
                       ease: "easeOut"
                     }}
-                    className={`font-display font-black text-5xl md:text-8xl lg:text-[110px] tracking-tight uppercase text-primary drop-shadow-md ${l === " " ? "w-4 md:w-8" : ""}`}
+                    className={`font-display font-black text-3xl sm:text-5xl md:text-8xl lg:text-[110px] tracking-tight uppercase text-primary drop-shadow-md ${l === " " ? "w-3 sm:w-4 md:w-8" : ""}`}
                   >
                     {l}
                   </motion.span>

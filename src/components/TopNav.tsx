@@ -131,9 +131,9 @@ export function TopNav() {
           <img 
             src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png" 
             alt="VISO Logo" 
-            className="h-24 w-auto object-contain animate-pulse drop-shadow-[0_10px_30px_rgba(212,175,55,0.3)] mb-6"
+            className="h-16 md:h-24 w-auto object-contain animate-pulse drop-shadow-[0_10px_30px_rgba(212,175,55,0.3)] mb-4 md:mb-6 px-4"
           />
-          <div className="font-mono text-xs md:text-sm font-bold tracking-[0.2em] uppercase text-primary animate-pulse">
+          <div className="font-mono text-[10px] md:text-sm font-bold tracking-[0.2em] uppercase text-primary animate-pulse text-center px-4">
             {isAr ? "Switching to English..." : "جاري التبديل إلى العربية..."}
           </div>
         </div>

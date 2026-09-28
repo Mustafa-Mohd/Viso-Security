@@ -849,32 +849,32 @@ function AboutFooter() {
 function RegulatoryCards() {
   const cards = [
     {
-      title: "MOI",
-      desc: "Ministry of Interior Regulatory Frameworks.",
-      url: "/regulatory/moi",
-      logo: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png",
-      color: "from-blue-950 to-slate-900 border-blue-500/20 hover:border-blue-400/60 shadow-blue-900/20"
-    },
-    {
       title: "SAIS",
       desc: "Supreme Authority for Industrial Security Standards.",
       url: "/regulatory/sais",
       logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgBwqTj0FNNJJm59mHR1GKznOvHK23QpPB5jwKZQuFaQ&s=10",
-      color: "from-emerald-950 to-slate-900 border-emerald-500/20 hover:border-emerald-400/60 shadow-emerald-900/20"
+      color: "from-emerald-100 to-emerald-50 border-emerald-200 hover:border-emerald-300 shadow-sm"
+    },
+    {
+      title: "MOI",
+      desc: "Ministry of Interior Regulatory Frameworks.",
+      url: "/regulatory/moi",
+      logo: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png",
+      color: "from-blue-100 to-blue-50 border-blue-200 hover:border-blue-300 shadow-sm"
     },
     {
       title: "NEOM",
       desc: "NEOM Public Safety & Security Consultancy Services.",
       url: "/regulatory/neom",
       logo: "https://neom.scene7.com/is/image/neom/logo-neom-en-spaced?fmt=png-alpha&scl=1",
-      color: "from-purple-950 to-slate-900 border-purple-500/20 hover:border-purple-400/60 shadow-purple-900/20"
+      color: "from-purple-100 to-purple-50 border-purple-200 hover:border-purple-300 shadow-sm"
     },
     {
       title: "API 780",
       desc: "Security Risk Assessment for Petroleum & Petrochemical Industries.",
       url: "/regulatory/api780",
       logo: "https://theshopmag.com/wp-content/uploads/2023/05/api-logo-stacked.png",
-      color: "from-blue-900 to-slate-900 border-blue-500/20 hover:border-blue-400/60 shadow-blue-900/20"
+      color: "from-sky-100 to-sky-50 border-sky-200 hover:border-sky-300 shadow-sm"
     }
   ];
 
@@ -901,7 +901,7 @@ function RegulatoryCards() {
             transition={{ duration: 0.8, delay: 0.1 }}
             className="font-display text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground"
           >
-            Authority & Compliance Frameworks
+            Standards and compliance
           </motion.h2>
         </div>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
@@ -915,15 +915,15 @@ function RegulatoryCards() {
                 className={`relative h-full flex flex-col p-6 md:p-8 rounded-[2rem] border bg-gradient-to-br ${card.color} transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl overflow-hidden`}
               >
                 {/* Decorative background element */}
-                <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/5 rounded-full blur-2xl group-hover:bg-white/10 transition-colors duration-500 pointer-events-none" />
+                <div className="absolute -top-12 -right-12 w-48 h-48 bg-foreground/5 rounded-full blur-2xl group-hover:bg-foreground/10 transition-colors duration-500 pointer-events-none" />
 
-                <div className="mb-8 w-28 h-28 md:w-32 md:h-32 bg-white rounded-2xl p-4 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500 relative z-10">
+                <div className="mb-8 w-28 h-28 md:w-32 md:h-32 bg-white rounded-2xl p-4 flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-foreground/5 group-hover:scale-110 transition-transform duration-500 relative z-10">
                   <img src={card.logo} alt={card.title} className="max-h-full max-w-full object-contain" />
                 </div>
 
-                <h3 className="text-2xl md:text-3xl font-display font-bold text-white mb-3 relative z-10 group-hover:text-primary transition-colors">{card.title}</h3>
-                <p className="text-white/80 font-sans text-sm md:text-base leading-relaxed mb-8 flex-grow relative z-10 max-w-sm">{card.desc}</p>
-                <div className="mt-auto flex items-center gap-3 text-xs font-bold tracking-widest uppercase text-white/50 group-hover:text-primary transition-colors relative z-10">
+                <h3 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-3 relative z-10 group-hover:text-primary transition-colors">{card.title}</h3>
+                <p className="text-foreground/75 font-sans text-sm md:text-base leading-relaxed mb-8 flex-grow relative z-10 max-w-sm">{card.desc}</p>
+                <div className="mt-auto flex items-center gap-3 text-xs font-bold tracking-widest uppercase text-foreground/50 group-hover:text-primary transition-colors relative z-10">
                   <span>Explore Framework</span>
                   <span className="transform transition-transform group-hover:translate-x-2">→</span>
                 </div>
