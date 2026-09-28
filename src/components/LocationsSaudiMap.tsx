@@ -11,7 +11,7 @@ const KSA_CENTER = { lat: 24.2, lng: 44.5 };
 const KSA_ZOOM = 5.35;
 const CITY_ZOOM = 7.4;
 
-const GOOGLE_MAPS_API_KEY = "AIzaSyAnKzrqHgGAdjZjNSkyr9z1zrnqc89Qnxo";
+const GOOGLE_MAPS_API_KEY = "";
 
 type Props = {
   cities: MapCity[];
