@@ -45,9 +45,43 @@
     ]
   },
   "loader": {
+    "bg_text": "SECURITY ARCHITECTURE",
     "w1": "Security Consultations",
     "w2": "Project Management",
     "w3": "Certified Translation"
+  },
+  "home_interactive": {
+    "our_services": "Our Services",
+    "our_services_desc": "Explore our integrated portals and specialized consultancy offerings.",
+    "services_carousel": {
+      "sc_title": "Security Consultancy",
+      "sc_desc": "Comprehensive risk and threat assessment engineering.",
+      "sc_more": "Our Security Consultancy services provide strategic guidance and technical engineering to safeguard your critical assets. We specialize in Security Risk Assessments (SRA), vulnerability analysis, and the development of robust physical security frameworks.\n\nFrom concept design to detailed engineering and operational readiness, our experts ensure your facility complies with local regulations (such as HCIS/SAIS directives) and international best practices.",
+      "trans_title": "Translation Services",
+      "trans_desc": "Verify and authenticate VISO translation certificates.",
+      "trans_more": "We offer professional, certified translation services tailored specifically for technical, legal, and security-related documentation. Ensuring accuracy in highly specialized fields is critical for compliance and successful project delivery.\n\nOur system also provides an integrated verification portal where you can instantly authenticate VISO-issued translation certificates using unique reference codes.",
+      "train_title": "Training",
+      "train_desc": "Specialized training programs for physical security professionals.",
+      "train_more": "Empower your workforce with industry-leading security training. We design and deliver specialized programs that cover a wide range of topics, from basic security awareness to advanced physical security system operations and emergency response protocols.\n\nOur training modules are continuously updated to reflect the latest threats, technological advancements, and regulatory changes in the Kingdom.",
+      "ind_title": "Industrial Security",
+      "ind_desc": "Robust physical security solutions for industrial assets.",
+      "ind_more": "Industrial facilities face unique and complex security challenges. We provide specialized consulting to protect oil, gas, petrochemical, and manufacturing infrastructure against intrusion, sabotage, and disruption.\n\nOur approach integrates cutting-edge electronic security systems (CCTV, ACS, IDS) with structural and procedural countermeasures, ensuring full alignment with strict regulatory standards.",
+      "gap_title": "Security Gap Analysis",
+      "gap_desc": "Identify vulnerabilities and align with international standards.",
+      "gap_more": "A Security Gap Analysis is the crucial first step in fortifying your defenses. We conduct thorough site surveys and audits to compare your existing security posture against required baselines and industry best practices.\n\nWe provide detailed, actionable roadmaps that highlight critical vulnerabilities and outline the specific steps necessary to achieve full compliance and operational resilience."
+    },
+    "about_viso": "About Viso",
+    "read_more": "Read More",
+    "metrics": {
+      "hubs": "Regional Hubs",
+      "hubs_sub": "KSA-Wide Presence",
+      "mega": "Megaprojects",
+      "mega_sub": "Secured & Certified",
+      "hcis": "HCIS / MOI",
+      "hcis_sub": "Compliance Audit Rate",
+      "mission": "Mission Readiness",
+      "mission_sub": "Continuous Protection"
+    }
   },
   "framework": {
     "title_mono": "Security Consulting Framework",
@@ -639,5 +673,46 @@
         ]
       }
     }
+  },
+  "about_page": {
+    "hero_title": "Elevating Physical",
+    "hero_title_italic": "Security Architecture.",
+    "hero_desc": "Integrating high-end design with rigorous security protocols to create visually stunning and exceptionally safe spaces.",
+    "explore": "Explore Our Services",
+    "est": "Established 2019 · Kingdom of Saudi Arabia",
+    "vision_for": "VISION OF SOLUTIONS FOR ",
+    "sec_consult": "SECURITY CONSULTATIONS",
+    "trans_services": "TRANSLATION SERVICES",
+    "scroll": "Scroll",
+    "hq_riyadh": "Headquartered in Riyadh",
+    "founded_label": "Founded",
+    "founded_val": "February 2019",
+    "hq_label": "HQ",
+    "hq_val": "Riyadh, KSA",
+    "coverage_label": "Coverage",
+    "coverage_val": "5 Regional Offices",
+    "focus_label": "Focus",
+    "focus_val": "Physical Security",
+    "msg_title1": "A Message from ",
+    "msg_title2": "Our Founder & CEO",
+    "msg_p1": "At Vision of Solutions for Security Consultations, we believe that security consulting is more than identifying risks or meeting regulatory requirements. It is about protecting people, assets, operations, and the confidence our clients place in us.",
+    "msg_p2": "Since our establishment, we have worked to build a consulting practice founded on integrity, technical excellence, independence, and a clear understanding of the security challenges facing critical infrastructure and organizations across the Kingdom.",
+    "msg_p3": "Our commitment is to provide practical, reliable, and forward-looking security solutions that help our clients make informed decisions, strengthen resilience, and protect what matters most to their organizations.",
+    "msg_p4": "We are proud of the expertise of our team, the trust of our clients, and the relationships we have built across the sectors we serve. As security needs continue to evolve, we remain committed to developing our capabilities, adopting effective technologies and methodologies, and delivering services that create lasting value.",
+    "msg_p5": "We look forward to continuing our journey with our clients and partners toward safer, more resilient, and more secure organizations.",
+    "ceo_name": "Mohammad Bin Sadiq",
+    "founder_ceo": "Founder & CEO",
+    "vm_title": "Our Vision, Mission & Values",
+    "vision_h3": "Our Vision",
+    "vision_sub": "Trusted Leadership in Physical Security",
+    "vision_p": "To become the trusted leader in physical security consultancy — renowned for our expertise, innovation, and unwavering commitment to excellence. We aspire to continually push the boundaries of security solutions, shaping a safer world for generations to come.",
+    "mission_h3": "Our Mission",
+    "mission_sub": "Securing Critical Assets",
+    "mission_p": "To deliver premium, integrated physical security consulting services that safeguard national infrastructure, corporate assets, and human life. We empower our clients with proactive risk management, innovative engineering, and strict regulatory compliance.",
+    "values_h3": "Our Values",
+    "values_sub": "Integrity, Excellence & Innovation",
+    "values_p": "We are guided by uncompromising ethics, ensuring transparency and fairness in all stakeholder engagements. Our dedication to customer excellence drives us to exceed expectations, while our prudent leadership fosters a robust security culture that sets industry standards.",
+    "story_title": "Our",
+    "story_italic": "Story"
   }
 }

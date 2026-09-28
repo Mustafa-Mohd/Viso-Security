@@ -60,6 +60,7 @@ const REGULATORY_BODIES_BASE: RegulatoryBody[] = [
       "Support owners operating across multiple MOI-regulated and sector-specific requirements.",
     ],
     relatedSlugs: ["sais", "hcis"],
+    heroImageUrl: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png",
   },
   {
     slug: "sais",
@@ -124,6 +125,7 @@ const REGULATORY_BODIES_BASE: RegulatoryBody[] = [
       "Owner’s engineer and construction monitoring for SEC-compliant delivery.",
     ],
     relatedSlugs: ["moi", "hcis"],
+    heroImageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgBwqTj0FNNJJm59mHR1GKznOvHK23QpPB5jwKZQuFaQ&s=10",
   },
   {
     slug: "hcis",
@@ -213,6 +215,7 @@ const REGULATORY_BODIES_BASE: RegulatoryBody[] = [
       "Compliance verification and operational readiness assessments for NEOM projects.",
     ],
     relatedSlugs: ["moi", "sais"],
+    heroImageUrl: "https://neom.scene7.com/is/image/neom/logo-neom-en-spaced?fmt=png-alpha&scl=1",
   },
   {
     slug: "api780",
@@ -265,15 +268,16 @@ const REGULATORY_BODIES_BASE: RegulatoryBody[] = [
       "Power generation, critical utility infrastructure, greenfield and brownfield developments.",
     ],
     relatedSlugs: ["sais", "moi"],
+    heroImageUrl: "https://theshopmag.com/wp-content/uploads/2023/05/api-logo-stacked.png",
   },
 ];
 
 function withRegulatoryMedia(body: RegulatoryBody): RegulatoryBody {
   return {
     ...body,
-    cardImageUrl: `/images/regulatory/${body.slug}-card.jpg`,
-    heroImageUrl: `/images/regulatory/${body.slug}-hero.jpg`,
-    secondaryImageUrl: `/images/regulatory/${body.slug}-secondary.jpg`,
+    cardImageUrl: body.cardImageUrl || `/images/regulatory/${body.slug}-card.jpg`,
+    heroImageUrl: body.heroImageUrl || `/images/regulatory/${body.slug}-hero.jpg`,
+    secondaryImageUrl: body.secondaryImageUrl || `/images/regulatory/${body.slug}-secondary.jpg`,
   };
 }
 

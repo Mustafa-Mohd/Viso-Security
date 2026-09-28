@@ -2,6 +2,7 @@ import { motion, useInView, animate } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -17,10 +18,10 @@ function renderVisionTitle(title: string) {
 }
 
 const METRICS_COUNTERS = [
-  { num: 5, suffix: "+", label: "Regional Hubs", sub: "KSA-Wide Presence" },
-  { num: 100, suffix: "+", label: "Megaprojects", sub: "Secured & Certified" },
-  { num: 100, suffix: "%", label: "HCIS / MOI", sub: "Compliance Audit Rate" },
-  { num: 24, suffix: "/7", label: "Mission Readiness", sub: "Continuous Protection" },
+  { num: 5, suffix: "+", labelKey: "hubs", subKey: "hubs_sub" },
+  { num: 100, suffix: "+", labelKey: "mega", subKey: "mega_sub" },
+  { num: 100, suffix: "%", labelKey: "hcis", subKey: "hcis_sub" },
+  { num: 24, suffix: "/7", labelKey: "mission", subKey: "mission_sub" },
 ];
 
 function AnimatedCounter({ target, suffix }: { target: number; suffix: string }) {
@@ -59,11 +60,12 @@ export function AboutInteractive({
   whoWeAreTitle: string;
   whoWeAreDesc: string;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="relative w-full h-full flex flex-col justify-center">
       {/* Background ambient gold aura */}
-      <div className="pointer-events-none absolute top-0 -left-12 w-96 h-96 bg-primary/[0.03] rounded-full blur-[100px]" />
-      <div className="pointer-events-none absolute bottom-0 -right-12 w-96 h-96 bg-primary/[0.03] rounded-full blur-[100px]" />
+      <div className="pointer-events-none absolute top-0 -start-12 w-96 h-96 bg-primary/[0.03] rounded-full blur-[100px]" />
+      <div className="pointer-events-none absolute bottom-0 -end-12 w-96 h-96 bg-primary/[0.03] rounded-full blur-[100px]" />
 
       <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center mb-12 relative z-10 flex-1">
         {/* Left Column: Simple About Info */}
@@ -86,7 +88,7 @@ export function AboutInteractive({
             >
               <div className="h-px w-8 bg-primary" />
               <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary">
-                About Viso
+                {t("home_interactive.about_viso")}
               </span>
             </motion.div>
 
@@ -111,7 +113,7 @@ export function AboutInteractive({
             >
               {subtitle}
             </motion.p>
-            
+
             <motion.p
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -123,7 +125,7 @@ export function AboutInteractive({
             </motion.p>
 
             {/* Action Link Buttons */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -134,8 +136,8 @@ export function AboutInteractive({
                 to="/about"
                 className="inline-flex items-center justify-center gap-2 rounded-lg bg-gold hover:bg-gold/90 px-6 py-3 font-mono text-[11px] font-bold tracking-[0.16em] uppercase text-black transition-all shadow-[0_4px_15px_rgba(212,175,55,0.25)] hover:scale-[1.02] active:scale-[0.98]"
               >
-                <span>Read More</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>{t("home_interactive.read_more")}</span>
+                <ArrowRight className="w-4 h-4 rtl:rotate-180" />
               </Link>
             </motion.div>
           </motion.div>
@@ -152,7 +154,7 @@ export function AboutInteractive({
           >
             <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
             <img loading="lazy" decoding="async"
-              src="https://res.cloudinary.com/dppwnds6z/image/upload/v1790589401/ChatGPT_Image_Sep_28_2026_03_26_00_PM.png"
+              src="https://res.cloudinary.com/dppwnds6z/image/upload/v1790599106/ChatGPT_Image_Sep_28_2026_06_08_11_PM.png"
               alt="About VISO Security"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
             />
@@ -175,10 +177,10 @@ export function AboutInteractive({
               <AnimatedCounter target={m.num} suffix={m.suffix} />
             </div>
             <div className="font-mono text-[11px] font-bold text-foreground/80 uppercase tracking-widest mb-1.5">
-              {m.label}
+              {t(`home_interactive.metrics.${m.labelKey}`)}
             </div>
             <div className="text-[10px] text-muted-foreground leading-relaxed max-w-[160px]">
-              {m.sub}
+              {t(`home_interactive.metrics.${m.subKey}`)}
             </div>
           </motion.div>
         ))}

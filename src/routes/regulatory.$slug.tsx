@@ -6,7 +6,7 @@ import {
   PageSection,
 } from "@/components/ContentImagePlaceholder";
 import { TopNav } from "@/components/TopNav";
-import { getRegulatoryBody, REGULATORY_BODIES } from "@/data/regulatoryBodies";
+import { getRegulatoryBody, REGULATORY_BODIES, type RegulatoryBody } from "@/data/regulatoryBodies";
 
 export const Route = createFileRoute("/regulatory/$slug")({
   component: RegulatoryDetailPage,
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/regulatory/$slug")({
 const ease = [0.16, 1, 0.3, 1] as const;
 
 function RegulatoryDetailPage() {
-  const { body } = Route.useLoaderData();
+  const { body } = Route.useLoaderData() as { body: RegulatoryBody };
   const related = REGULATORY_BODIES.filter((b) => body.relatedSlugs.includes(b.slug));
 
   return (
@@ -54,40 +54,39 @@ function RegulatoryDetailPage() {
               All authorities
             </Link>
 
-            <PageSection className="relative overflow-hidden rounded-2xl border border-foreground/10 mb-10">
-              <ContentImagePlaceholder
-                src={body.heroImageUrl}
-                alt={body.fullName}
-                label={`${body.shortName} hero`}
-                hint={`heroImageUrl on regulatoryBodies "${body.slug}"`}
-                aspect="wide"
-                accent={body.accent}
-                priority
-                className="rounded-2xl border-0 min-h-[220px] md:min-h-[300px]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-transparent pointer-events-none rounded-2xl" />
-              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
+            <PageSection className="relative overflow-hidden rounded-[2rem] border border-foreground/10 mb-12 bg-surface shadow-sm p-8 md:p-12 lg:p-16 flex flex-col md:flex-row gap-10 items-center md:items-center">
+              <div className="w-40 h-40 md:w-56 md:h-56 shrink-0 bg-white rounded-3xl p-6 shadow-2xl flex items-center justify-center relative z-10 border border-white/10">
+                 <img src={body.heroImageUrl} alt={body.fullName} className="max-w-full max-h-full object-contain" />
+              </div>
+              
+              <div className="flex-1 text-center md:text-start relative z-10">
                 <motion.span
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.15, duration: 0.5, ease }}
-                  className="inline-block rounded-full px-3 py-1 text-[10px] font-bold tracking-[0.2em] uppercase text-white mb-4"
+                  className="inline-block rounded-full px-4 py-1.5 text-[11px] font-bold tracking-[0.2em] uppercase text-white mb-6 shadow-lg"
                   style={{ backgroundColor: body.accent }}
                 >
                   {body.shortName}
                 </motion.span>
-                <h1 className="font-display text-3xl md:text-[2.75rem] leading-tight tracking-tight max-w-3xl text-foreground">
+                <h1 className="font-display text-4xl md:text-5xl lg:text-[3.5rem] leading-[1.05] tracking-tight max-w-3xl text-foreground mb-4">
                   {body.fullName}
                 </h1>
                 {body.arabicName && (
-                  <p className="mt-2 text-lg text-foreground/55 font-light" dir="rtl">
+                  <p className="text-xl text-foreground/50 font-light mb-6" dir="rtl">
                     {body.arabicName}
                   </p>
                 )}
-                <p className="mt-4 text-base md:text-lg text-foreground/65 max-w-2xl leading-relaxed font-light">
+                <p className="text-lg md:text-xl text-foreground/70 max-w-2xl leading-relaxed font-light text-balance">
                   {body.tagline}
                 </p>
               </div>
+
+              {/* Decorative background glow using the accent color */}
+              <div 
+                className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full blur-[120px] opacity-15 pointer-events-none translate-x-1/3 -translate-y-1/3"
+                style={{ backgroundColor: body.accent }}
+              />
             </PageSection>
 
             <PageSection delay={0.06}>

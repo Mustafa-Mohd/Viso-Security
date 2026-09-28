@@ -25,6 +25,7 @@ type ContentImagePlaceholderProps = {
   className?: string;
   accent?: string;
   priority?: boolean;
+  objectFit?: "cover" | "contain";
 };
 
 export function ContentImagePlaceholder({
@@ -36,6 +37,7 @@ export function ContentImagePlaceholder({
   className,
   accent,
   priority = false,
+  objectFit = "cover",
 }: ContentImagePlaceholderProps) {
   const trimmed = src?.trim();
   const hasImage = Boolean(trimmed);
@@ -62,7 +64,10 @@ export function ContentImagePlaceholder({
           transition={{ duration: 0.75, ease }}
           loading={priority ? "eager" : "lazy"}
           decoding="async"
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+          className={cn(
+            "absolute inset-0 h-full w-full transition-transform duration-700 group-hover:scale-[1.02]",
+            objectFit === "contain" ? "object-contain p-4 md:p-8" : "object-cover"
+          )}
         />
       ) : (
         <motion.div

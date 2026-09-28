@@ -2,7 +2,6 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { TypewriterText } from "@/components/TypewriterText";
 import { setAppLanguage, type AppLang } from "@/i18n";
 import { cn } from "@/lib/utils";
@@ -83,12 +82,17 @@ export function TopNav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isLanguageSwitching, setIsLanguageSwitching] = useState(false);
 
   const isAr = i18n.language?.startsWith("ar");
 
   const toggleLanguage = () => {
-    const next: AppLang = isAr ? "en" : "ar";
-    setAppLanguage(next, true);
+    setIsLanguageSwitching(true);
+    setTimeout(() => {
+      const next: AppLang = isAr ? "en" : "ar";
+      setAppLanguage(next, true);
+      setIsLanguageSwitching(false);
+    }, 2000);
   };
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -122,6 +126,18 @@ export function TopNav() {
 
   return (
     <>
+      {isLanguageSwitching && (
+        <div className="fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-background/95 backdrop-blur-md transition-opacity duration-300">
+          <img 
+            src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png" 
+            alt="VISO Logo" 
+            className="h-24 w-auto object-contain animate-pulse drop-shadow-[0_10px_30px_rgba(212,175,55,0.3)] mb-6"
+          />
+          <div className="font-mono text-xs md:text-sm font-bold tracking-[0.2em] uppercase text-primary animate-pulse">
+            {isAr ? "Switching to English..." : "جاري التبديل إلى العربية..."}
+          </div>
+        </div>
+      )}
       <header
         className="fixed top-0 left-0 right-0 z-[150] bg-background/90 backdrop-blur-md border-b border-primary/15"
       >
@@ -135,8 +151,8 @@ export function TopNav() {
                 className="h-12 md:h-16 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
               />
               <span className="font-display font-semibold text-sm md:text-base tracking-wide text-primary hidden xl:inline-flex items-center whitespace-nowrap w-[500px]">
-                <span className="text-black">VISION OF SOLUTIONS FOR&nbsp;</span>
-                <TypewriterText phrases={["SECURITY CONSULTATIONS", "TRANSLATION SERVICES"]} className="min-w-[240px]" />
+                <span className="text-black">{t("about_page.vision_for")}&nbsp;</span>
+                <TypewriterText phrases={[t("about_page.sec_consult"), t("about_page.trans_services")]} className="min-w-[240px]" />
               </span>
             </Link>
 
@@ -191,11 +207,25 @@ export function TopNav() {
                 {t("nav.contact_us")}
               </Link>
 
-              <ThemeToggle />
+              <button
+                type="button"
+                onClick={toggleLanguage}
+                className="flex items-center justify-center px-3 h-9 rounded-md text-foreground/75 hover:bg-foreground/5 hover:text-primary transition-colors font-mono text-[11px] font-bold"
+                title={t("nav.lang_switch")}
+              >
+                {t("nav.lang_toggle")}
+              </button>
             </nav>
 
             <div className="flex items-center gap-2 lg:hidden ms-auto">
-              <ThemeToggle />
+              <button
+                type="button"
+                onClick={toggleLanguage}
+                className="flex items-center justify-center px-3 h-9 rounded-md text-foreground/75 hover:bg-foreground/5 hover:text-primary transition-colors font-mono text-[11px] font-bold"
+                title={t("nav.lang_switch")}
+              >
+                {t("nav.lang_toggle")}
+              </button>
               <button
                 type="button"
                 className="flex flex-col justify-center items-center w-9 h-9 rounded-md hover:bg-foreground/5 focus:outline-none"

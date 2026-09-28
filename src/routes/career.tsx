@@ -85,8 +85,8 @@ function CareerHero({ jobCount }: { jobCount: number }) {
   const { t } = useTranslation();
   return (
     <section className="relative pt-28 md:pt-32 pb-16 md:pb-24 overflow-hidden border-b border-foreground/5">
-      <div className="absolute top-0 right-0 w-[50vw] h-[50vw] bg-primary/[0.06] rounded-full blur-[140px] pointer-events-none" />
-      <div className="pointer-events-none absolute top-24 left-0 font-display font-extrabold text-[16vw] leading-none text-foreground/[0.03] tracking-tighter select-none">
+      <div className="absolute top-0 end-0 w-[50vw] h-[50vw] bg-primary/[0.06] rounded-full blur-[140px] pointer-events-none" />
+      <div className="pointer-events-none absolute top-24 start-0 font-display font-extrabold text-[16vw] leading-none text-foreground/[0.03] tracking-tighter select-none">
         {t("nav.careers").toUpperCase()}
       </div>
 
@@ -396,7 +396,7 @@ function OpenRoles({
                   />
                 ) : job.id === "security" ? (
                    <img 
-                    src="https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=800&q=80" 
+                    src="https://res.cloudinary.com/dppwnds6z/image/upload/v1790595554/ChatGPT_Image_Sep_28_2026_05_08_48_PM.png" 
                     alt={job.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />

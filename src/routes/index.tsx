@@ -123,50 +123,50 @@ function HomePage() {
                 transition={{ duration: 1 }}
                 className="text-center mb-4 md:mb-8"
               >
-                <h2 className="text-4xl md:text-5xl font-light mb-4 text-foreground">Our Services</h2>
-                <p className="text-lg text-black max-w-2xl mx-auto">Explore our integrated portals and specialized consultancy offerings.</p>
+                <h2 className="text-4xl md:text-5xl font-light mb-4 text-foreground">{t("home_interactive.our_services")}</h2>
+                <p className="text-lg text-black max-w-2xl mx-auto">{t("home_interactive.our_services_desc")}</p>
               </motion.div>
 
               <ServicesCarousel items={[
                 {
-                  title: "Security Consultancy",
-                  desc: "Comprehensive risk and threat assessment engineering.",
+                  title: t("home_interactive.services_carousel.sc_title"),
+                  desc: t("home_interactive.services_carousel.sc_desc"),
                   url: "/security",
                   img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790589737/ChatGPT_Image_Sep_28_2026_03_32_06_PM.png",
                   color: "group-hover:border-blue-500/50 group-hover:shadow-blue-500/20",
-                  moreInfo: "Our Security Consultancy services provide strategic guidance and technical engineering to safeguard your critical assets. We specialize in Security Risk Assessments (SRA), vulnerability analysis, and the development of robust physical security frameworks.\n\nFrom concept design to detailed engineering and operational readiness, our experts ensure your facility complies with local regulations (such as HCIS/SAIS directives) and international best practices."
+                  moreInfo: t("home_interactive.services_carousel.sc_more")
                 },
                 {
-                  title: "Translation Services",
-                  desc: "Verify and authenticate VISO translation certificates.",
+                  title: t("home_interactive.services_carousel.trans_title"),
+                  desc: t("home_interactive.services_carousel.trans_desc"),
                   url: "/translation",
                   img: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80",
                   color: "group-hover:border-emerald-500/50 group-hover:shadow-emerald-500/20",
-                  moreInfo: "We offer professional, certified translation services tailored specifically for technical, legal, and security-related documentation. Ensuring accuracy in highly specialized fields is critical for compliance and successful project delivery.\n\nOur system also provides an integrated verification portal where you can instantly authenticate VISO-issued translation certificates using unique reference codes."
+                  moreInfo: t("home_interactive.services_carousel.trans_more")
                 },
                 {
-                  title: "Training",
-                  desc: "Specialized training programs for physical security professionals.",
+                  title: t("home_interactive.services_carousel.train_title"),
+                  desc: t("home_interactive.services_carousel.train_desc"),
                   url: "/services/training",
                   img: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&q=80",
                   color: "group-hover:border-purple-500/50 group-hover:shadow-purple-500/20",
-                  moreInfo: "Empower your workforce with industry-leading security training. We design and deliver specialized programs that cover a wide range of topics, from basic security awareness to advanced physical security system operations and emergency response protocols.\n\nOur training modules are continuously updated to reflect the latest threats, technological advancements, and regulatory changes in the Kingdom."
+                  moreInfo: t("home_interactive.services_carousel.train_more")
                 },
                 {
-                  title: "Industrial Security",
-                  desc: "Robust physical security solutions for industrial assets.",
+                  title: t("home_interactive.services_carousel.ind_title"),
+                  desc: t("home_interactive.services_carousel.ind_desc"),
                   url: "/services/industrial",
                   img: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80",
                   color: "group-hover:border-orange-500/50 group-hover:shadow-orange-500/20",
-                  moreInfo: "Industrial facilities face unique and complex security challenges. We provide specialized consulting to protect oil, gas, petrochemical, and manufacturing infrastructure against intrusion, sabotage, and disruption.\n\nOur approach integrates cutting-edge electronic security systems (CCTV, ACS, IDS) with structural and procedural countermeasures, ensuring full alignment with strict regulatory standards."
+                  moreInfo: t("home_interactive.services_carousel.ind_more")
                 },
                 {
-                  title: "Security Gap Analysis",
-                  desc: "Identify vulnerabilities and align with international standards.",
+                  title: t("home_interactive.services_carousel.gap_title"),
+                  desc: t("home_interactive.services_carousel.gap_desc"),
                   url: "/services/gap-analysis",
                   img: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&q=80",
                   color: "group-hover:border-red-500/50 group-hover:shadow-red-500/20",
-                  moreInfo: "A Security Gap Analysis is the crucial first step in fortifying your defenses. We conduct thorough site surveys and audits to compare your existing security posture against required baselines and industry best practices.\n\nWe provide detailed, actionable roadmaps that highlight critical vulnerabilities and outline the specific steps necessary to achieve full compliance and operational resilience."
+                  moreInfo: t("home_interactive.services_carousel.gap_more")
                 }
               ]} />
             </div>
@@ -176,10 +176,6 @@ function HomePage() {
             <Suspense fallback={<SectionFallback h={480} />}>
               <LocationsSection data={cmsData.locations} />
             </Suspense>
-          </LazyMount>
-
-          <LazyMount minHeight={400} fallback={<SectionFallback h={400} />}>
-            <ShowcaseSection data={cmsData.showcase} />
           </LazyMount>
 
           <LazyMount minHeight={320} fallback={<SectionFallback h={320} />}>
@@ -245,7 +241,7 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
           transition={{ duration: 12, ease: "linear", repeat: Infinity }}
           className="absolute font-display text-[25vw] font-bold text-foreground/[0.02] whitespace-nowrap pointer-events-none"
         >
-          SECURITY ARCHITECTURE SECURITY ARCHITECTURE
+          {t("loader.bg_text")} {t("loader.bg_text")}
         </motion.div>
 
         <AnimatePresence mode="wait">
@@ -334,16 +330,16 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
    ============================================================ */
 const servicesList = [
   {
-    title: "Translation Services",
-    subtitle: "Precision translation services for technical and regulatory requirements.",
-    link: "/translation",
-    buttonText: "Go to Translation",
-  },
-  {
     title: "Security Consultancy",
     subtitle: "Comprehensive physical security threat and risk assessment.",
     link: "/security",
     buttonText: "Go to Security",
+  },
+  {
+    title: "Translation Services",
+    subtitle: "Precision translation services for technical and regulatory requirements.",
+    link: "/translation",
+    buttonText: "Go to Translation",
   }
 ];
 
@@ -422,7 +418,7 @@ export function HeroSection({ data }: { data?: any }) {
       </div>
 
       {/* Indicators */}
-      <div className="absolute bottom-6 md:bottom-8 left-6 md:left-12 z-20 flex gap-2">
+      <div className="absolute bottom-6 md:bottom-8 start-6 md:start-12 z-20 flex gap-2">
         {servicesList.map((_, i) => (
           <button
             key={i}

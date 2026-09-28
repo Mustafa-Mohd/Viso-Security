@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface ServiceItem {
   title: string;
@@ -13,6 +14,7 @@ interface ServiceItem {
 }
 
 export function ServicesCarousel({ items }: { items: ServiceItem[] }) {
+  const { t } = useTranslation();
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedService, setSelectedService] = useState<ServiceItem | null>(null);
 
@@ -47,18 +49,18 @@ export function ServicesCarousel({ items }: { items: ServiceItem[] }) {
         {/* Navigation Arrows */}
         <button 
           onClick={handlePrev}
-          className="absolute left-4 md:left-12 z-40 p-3 md:p-4 rounded-full bg-surface/90 border border-foreground/10 hover:bg-surface hover:text-primary transition-colors backdrop-blur-md shadow-xl"
+          className="absolute start-4 md:start-12 z-40 p-3 md:p-4 rounded-full bg-surface/90 border border-foreground/10 hover:bg-surface hover:text-primary transition-colors backdrop-blur-md shadow-xl"
           aria-label="Previous Service"
         >
-          <ChevronLeft size={24} />
+          <ChevronLeft size={24} className="rtl:rotate-180" />
         </button>
 
         <button 
           onClick={handleNext}
-          className="absolute right-4 md:right-12 z-40 p-3 md:p-4 rounded-full bg-surface/90 border border-foreground/10 hover:bg-surface hover:text-primary transition-colors backdrop-blur-md shadow-xl"
+          className="absolute end-4 md:end-12 z-40 p-3 md:p-4 rounded-full bg-surface/90 border border-foreground/10 hover:bg-surface hover:text-primary transition-colors backdrop-blur-md shadow-xl"
           aria-label="Next Service"
         >
-          <ChevronRight size={24} />
+          <ChevronRight size={24} className="rtl:rotate-180" />
         </button>
 
         {/* Cards Container */}
@@ -103,12 +105,12 @@ export function ServicesCarousel({ items }: { items: ServiceItem[] }) {
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         />
                       </div>
-                      <div className="p-6 md:p-8 flex flex-col flex-grow bg-white text-left">
+                      <div className="p-6 md:p-8 flex flex-col flex-grow bg-white text-start">
                         <h3 className="font-display text-xl md:text-2xl mb-2 text-foreground transition-colors group-hover:text-primary">{item.title}</h3>
                         <p className="font-sans text-sm md:text-base text-foreground/70 leading-relaxed mb-4 line-clamp-3">{item.desc}</p>
                         <div className="mt-auto flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-foreground/50 transition-colors group-hover:text-primary">
-                          <span>Read more</span>
-                          <span className="transform transition-transform group-hover:translate-x-1">→</span>
+                          <span>{t("home_interactive.read_more")}</span>
+                          <span className="transform transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180 inline-block">→</span>
                         </div>
                       </div>
                     </div>
@@ -133,12 +135,12 @@ export function ServicesCarousel({ items }: { items: ServiceItem[] }) {
                           className={`w-full h-full object-cover transition-transform duration-700 ${isCenter ? 'group-hover:scale-110' : ''}`}
                         />
                       </div>
-                      <div className="p-6 md:p-8 flex flex-col flex-grow bg-white text-left">
+                      <div className="p-6 md:p-8 flex flex-col flex-grow bg-white text-start">
                         <h3 className={`font-display text-xl md:text-2xl mb-2 text-foreground transition-colors ${isCenter ? 'group-hover:text-primary' : ''}`}>{item.title}</h3>
                         <p className="font-sans text-sm md:text-base text-foreground/70 leading-relaxed mb-4 line-clamp-3">{item.desc}</p>
                         <div className={`mt-auto flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-foreground/50 transition-colors ${isCenter ? 'group-hover:text-primary' : ''}`}>
-                          <span>Read more</span>
-                          <span className={`transform transition-transform ${isCenter ? 'group-hover:translate-x-1' : ''}`}>→</span>
+                          <span>{t("home_interactive.read_more")}</span>
+                          <span className={`transform transition-transform inline-block rtl:rotate-180 ${isCenter ? 'group-hover:translate-x-1 rtl:group-hover:-translate-x-1' : ''}`}>→</span>
                         </div>
                       </div>
                     </div>
@@ -198,7 +200,7 @@ export function ServicesCarousel({ items }: { items: ServiceItem[] }) {
                       to={selectedService.url}
                       className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-full font-bold text-sm tracking-wide hover:bg-primary/90 transition-colors"
                     >
-                      {selectedService.url === "/translation" ? "Translation portal" : "Security portal"} <ChevronRight size={16} />
+                      {selectedService.url === "/translation" ? t("nav.translation") : t("nav.security")} <ChevronRight size={16} className="rtl:rotate-180" />
                     </Link>
                   </div>
                 )}
