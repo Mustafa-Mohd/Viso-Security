@@ -375,53 +375,70 @@ function OpenRoles({
           </p>
         </motion.div>
 
-        <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {roleList.map((job, index) => (
             <motion.article
               key={job.id}
+              onClick={() => onApply(job.title)}
               initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.08, duration: 0.55, ease }}
-              className="group border border-foreground/10 bg-surface hover:border-primary/35 transition-colors duration-400"
+              className="group flex flex-col border border-foreground/10 bg-surface hover:border-primary/35 hover:shadow-xl transition-all duration-400 cursor-pointer overflow-hidden rounded-xl"
             >
-              <div className="grid lg:grid-cols-12 gap-4 p-5 md:p-7 items-center">
-                <div className="lg:col-span-1 font-mono text-xs text-primary/70 tracking-widest">
-                  {String(index + 1).padStart(2, "0")}
+              {/* Image Section */}
+              <div className="w-full h-48 overflow-hidden bg-foreground/5 relative">
+                {job.id === "doc" ? (
+                  <img 
+                    src="https://res.cloudinary.com/dppwnds6z/image/upload/v1790590884/ChatGPT_Image_Sep_28_2026_03_51_15_PM.png" 
+                    alt={job.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                ) : job.id === "security" ? (
+                   <img 
+                    src="https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=800&q=80" 
+                    alt={job.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                ) : (
+                   <img 
+                    src="https://images.unsplash.com/photo-1573164713988-8665fc963095?w=800&q=80" 
+                    alt={job.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                )}
+                <div className="absolute top-4 left-4 bg-background/90 backdrop-blur-sm px-3 py-1 rounded-full font-mono text-[10px] tracking-[0.2em] uppercase text-primary">
+                  {job.department}
                 </div>
-                <div className="lg:col-span-4">
-                  <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-foreground/40 mb-1">
-                    {job.department}
-                  </p>
-                  <h3 className="font-display text-xl md:text-2xl tracking-tight group-hover:text-primary transition-colors">
-                    {job.title}
-                  </h3>
-                </div>
-                <div className="lg:col-span-4 flex flex-wrap gap-x-5 gap-y-2 text-xs font-mono text-foreground/50">
-                  <span className="inline-flex items-center gap-1.5">
+              </div>
+
+              {/* Content Section */}
+              <div className="p-6 flex flex-col flex-1">
+                <h3 className="font-display text-xl md:text-2xl tracking-tight group-hover:text-primary transition-colors mb-4">
+                  {job.title}
+                </h3>
+                
+                <div className="flex flex-col gap-2 text-xs font-mono text-foreground/50 mb-6">
+                  <span className="inline-flex items-center gap-2">
                     <MapPin className="w-3.5 h-3.5 text-primary" />
                     {job.location}
                   </span>
-                  <span className="inline-flex items-center gap-1.5">
+                  <span className="inline-flex items-center gap-2">
                     <Clock className="w-3.5 h-3.5 text-primary" />
                     {job.type}
                   </span>
                 </div>
-                <div className="lg:col-span-3 flex lg:justify-end">
-                  <button
-                    type="button"
-                    onClick={() => onApply(job.title)}
-                    className="inline-flex items-center gap-2 rounded-sm bg-foreground text-background px-5 py-3 text-[11px] font-bold tracking-[0.18em] hover:bg-primary hover:text-primary-foreground transition-colors"
-                  >
-                    {t("career.apply")}
-                    <ArrowUpRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-              <div className="px-5 md:px-7 pb-6 md:pb-7 md:pl-[calc(theme(spacing.7)+2.5rem)] lg:pl-[calc(8.33%+theme(spacing.7))]">
-                <p className="text-sm text-foreground/55 font-light leading-relaxed max-w-3xl">
+                
+                <p className="text-sm text-foreground/55 font-light leading-relaxed mb-6 line-clamp-3 flex-1">
                   {job.description}
                 </p>
+
+                <div className="mt-auto pt-4 border-t border-foreground/5 flex items-center justify-between">
+                  <span className="text-[11px] font-bold tracking-[0.18em] text-foreground group-hover:text-primary transition-colors uppercase">
+                    {t("career.apply")}
+                  </span>
+                  <ArrowUpRight className="w-4 h-4 text-primary group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                </div>
               </div>
             </motion.article>
           ))}

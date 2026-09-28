@@ -1247,24 +1247,30 @@ function Contact() {
 /* ---------- Footer ---------- */
 function Footer() {
   return (
-    <footer className="border-t border-border/60 bg-surface px-6 py-12">
+    <footer className="border-t border-black/10 bg-white px-6 py-12">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-6">
         <div className="flex items-center gap-3">
           <span className="grid h-7 w-7 place-items-center rounded-md bg-gold text-gold-foreground font-mono text-[11px] font-bold">
             V
           </span>
-          <span className="font-display text-lg">VISO</span>
-          <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+          <span className="font-display text-lg text-black">VISO</span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-black/60">
             Security Consultations
           </span>
         </div>
-        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-black/60">
           Riyadh • Khobar • Jubail • Jeddah • Yanbu
         </p>
-        <p className="text-[11px] text-muted-foreground">
-          © {new Date().getFullYear()} Vision of Solutions for Security
-          Consultations Co. Ltd
-        </p>
+        <div className="flex flex-col items-end gap-2">
+          <p className="text-[11px] text-black/60">
+            © {new Date().getFullYear()} Vision of Solutions for Security Consultations Co. Ltd
+          </p>
+          <div className="flex flex-wrap items-center gap-4 text-[11px] uppercase tracking-widest text-black/60">
+            <Link to="/privacy" className="hover:text-gold transition-colors">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-gold transition-colors">Terms of Service</Link>
+            <Link to="/contact" className="hover:text-gold transition-colors">Contact Us</Link>
+          </div>
+        </div>
       </div>
     </footer>
   );

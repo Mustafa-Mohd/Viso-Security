@@ -826,25 +826,22 @@ function AboutCta() {
 
 function AboutFooter() {
   return (
-    <footer className="bg-foreground text-background py-12 border-t border-gold/20">
+    <footer className="bg-white text-black py-12 border-t border-black/10">
       <div className="max-w-[1600px] mx-auto px-8 md:px-16 flex flex-col md:flex-row items-center justify-between gap-6">
         <img
           src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
           alt="VISO"
           loading="lazy"
           decoding="async"
-          className="h-10 w-auto object-contain brightness-0 invert"
+          className="h-10 w-auto object-contain"
         />
-        <p className="font-sans text-xs text-background/50 tracking-wide">
+        <p className="font-sans text-xs text-black/50 tracking-wide">
           © {new Date().getFullYear()} VISO Group. All rights reserved.
         </p>
-        <div className="flex gap-6 font-sans text-xs text-background/60">
-          <Link to="/" className="hover:text-gold transition-colors">
-            Home
-          </Link>
-          <Link to="/contact" className="hover:text-gold transition-colors">
-            Contact
-          </Link>
+        <div className="flex flex-wrap justify-center md:justify-end gap-x-6 gap-y-2 font-sans text-xs text-black/60">
+          <Link to="/privacy" className="hover:text-gold transition-colors">Privacy Policy</Link>
+          <Link to="/terms" className="hover:text-gold transition-colors">Terms of Service</Link>
+          <Link to="/contact" className="hover:text-gold transition-colors">Contact Us</Link>
         </div>
       </div>
     </footer>

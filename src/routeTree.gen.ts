@@ -10,9 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TranslationRouteImport } from './routes/translation'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TechnicalProposalRouteImport } from './routes/technical-proposal'
 import { Route as SecurityRouteImport } from './routes/security'
 import { Route as ProjectsRouteImport } from './routes/projects'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as OthersRouteImport } from './routes/others'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -30,6 +32,11 @@ const TranslationRoute = TranslationRouteImport.update({
   path: '/translation',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TechnicalProposalRoute = TechnicalProposalRouteImport.update({
   id: '/technical-proposal',
   path: '/technical-proposal',
@@ -43,6 +50,11 @@ const SecurityRoute = SecurityRouteImport.update({
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OthersRoute = OthersRouteImport.update({
@@ -109,9 +121,11 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/others': typeof OthersRoute
+  '/privacy': typeof PrivacyRoute
   '/projects': typeof ProjectsRoute
   '/security': typeof SecurityRoute
   '/technical-proposal': typeof TechnicalProposalRoute
+  '/terms': typeof TermsRoute
   '/translation': typeof TranslationRoute
   '/certificate/$id': typeof CertificateIdRoute
   '/explore/$slug': typeof ExploreSlugRoute
@@ -126,9 +140,11 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/others': typeof OthersRoute
+  '/privacy': typeof PrivacyRoute
   '/projects': typeof ProjectsRoute
   '/security': typeof SecurityRoute
   '/technical-proposal': typeof TechnicalProposalRoute
+  '/terms': typeof TermsRoute
   '/translation': typeof TranslationRoute
   '/certificate/$id': typeof CertificateIdRoute
   '/explore/$slug': typeof ExploreSlugRoute
@@ -144,9 +160,11 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/others': typeof OthersRoute
+  '/privacy': typeof PrivacyRoute
   '/projects': typeof ProjectsRoute
   '/security': typeof SecurityRoute
   '/technical-proposal': typeof TechnicalProposalRoute
+  '/terms': typeof TermsRoute
   '/translation': typeof TranslationRoute
   '/certificate/$id': typeof CertificateIdRoute
   '/explore/$slug': typeof ExploreSlugRoute
@@ -163,9 +181,11 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/others'
+    | '/privacy'
     | '/projects'
     | '/security'
     | '/technical-proposal'
+    | '/terms'
     | '/translation'
     | '/certificate/$id'
     | '/explore/$slug'
@@ -180,9 +200,11 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/others'
+    | '/privacy'
     | '/projects'
     | '/security'
     | '/technical-proposal'
+    | '/terms'
     | '/translation'
     | '/certificate/$id'
     | '/explore/$slug'
@@ -197,9 +219,11 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/others'
+    | '/privacy'
     | '/projects'
     | '/security'
     | '/technical-proposal'
+    | '/terms'
     | '/translation'
     | '/certificate/$id'
     | '/explore/$slug'
@@ -215,9 +239,11 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
   OthersRoute: typeof OthersRoute
+  PrivacyRoute: typeof PrivacyRoute
   ProjectsRoute: typeof ProjectsRoute
   SecurityRoute: typeof SecurityRoute
   TechnicalProposalRoute: typeof TechnicalProposalRoute
+  TermsRoute: typeof TermsRoute
   TranslationRoute: typeof TranslationRoute
   CertificateIdRoute: typeof CertificateIdRoute
   ExploreSlugRoute: typeof ExploreSlugRoute
@@ -232,6 +258,13 @@ declare module '@tanstack/react-router' {
       path: '/translation'
       fullPath: '/translation'
       preLoaderRoute: typeof TranslationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/technical-proposal': {
@@ -253,6 +286,13 @@ declare module '@tanstack/react-router' {
       path: '/projects'
       fullPath: '/projects'
       preLoaderRoute: typeof ProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/others': {
@@ -343,9 +383,11 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,
   OthersRoute: OthersRoute,
+  PrivacyRoute: PrivacyRoute,
   ProjectsRoute: ProjectsRoute,
   SecurityRoute: SecurityRoute,
   TechnicalProposalRoute: TechnicalProposalRoute,
+  TermsRoute: TermsRoute,
   TranslationRoute: TranslationRoute,
   CertificateIdRoute: CertificateIdRoute,
   ExploreSlugRoute: ExploreSlugRoute,
