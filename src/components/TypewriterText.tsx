@@ -37,7 +37,6 @@ export function TypewriterText({ phrases, className, cursorClassName }: Typewrit
   return (
     <span className={cn("inline-flex items-center", className)}>
       {text}
-      <span className={cn("animate-pulse ml-[2px] font-normal opacity-70", cursorClassName)}>|</span>
     </span>
   );
 }

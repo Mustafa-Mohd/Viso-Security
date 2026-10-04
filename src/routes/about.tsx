@@ -76,6 +76,12 @@ const defaultProfile = [
 function AboutPage() {
   const { t } = useTranslation();
   const [cms, setCms] = useState<any>(null);
+  const [showIntro, setShowIntro] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowIntro(false), 2500);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     async function load() {
@@ -101,8 +107,38 @@ function AboutPage() {
     cms?.profileContents?.length > 0 ? cms.profileContents : defaultProfile;
 
   return (
-    <div className="bg-background min-h-screen text-foreground font-sans selection:bg-primary/20 selection:text-primary overflow-x-hidden">
-      <TopNav />
+    <>
+      <AnimatePresence>
+        {showIntro && (
+          <motion.div
+            key="intro"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8, ease }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-background"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
+              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
+              transition={{ duration: 0.8, ease }}
+              className="text-center"
+            >
+              <h1 className="text-4xl md:text-5xl lg:text-7xl font-display font-bold text-foreground tracking-tight mb-6">
+                Welcome to the <span className="text-primary">VISO Group</span>
+              </h1>
+              <motion.div 
+                initial={{ width: 0 }}
+                animate={{ width: 96 }}
+                transition={{ duration: 0.8, delay: 0.5, ease }}
+                className="h-1 bg-primary mx-auto rounded-full" 
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <div className={`bg-background min-h-screen text-foreground font-sans selection:bg-primary/20 selection:text-primary overflow-x-hidden ${showIntro ? 'h-screen overflow-hidden' : ''}`}>
+        <TopNav />
       <AboutHero />
       <CEOMessage />
       <WhoWeAre title={whoTitle} desc={whoDesc} secondary={t("about.desc2")} />
@@ -113,7 +149,8 @@ function AboutPage() {
       <LicensesAndCertifications />
       <AboutCta />
       <AboutFooter />
-    </div>
+      </div>
+    </>
   );
 }
 
@@ -247,6 +284,143 @@ function AboutHero() {
   );
 }
 
+/* ---------- Enhanced Animated Text Component ---------- */
+function AnimatedText({ text, delay = 0, className = "" }: { text: string, delay?: number, className?: string }) {
+  const words = text.split(" ");
+  
+  const container = {
+    hidden: { opacity: 0 },
+    visible: () => ({
+      opacity: 1,
+      transition: { staggerChildren: 0.03, delayChildren: delay * 0.2 },
+    }),
+  };
+
+  const child = {
+    visible: {
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      transition: {
+        type: "spring" as const,
+        damping: 12,
+        stiffness: 100,
+      },
+    },
+    hidden: {
+      opacity: 0,
+      y: 10,
+      filter: "blur(4px)",
+    },
+  };
+
+  return (
+    <motion.p
+      variants={container}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+      className={className}
+    >
+      {words.map((word, index) => (
+        <motion.span variants={child} key={index} className="inline-block mr-1.5">
+          {word}
+        </motion.span>
+      ))}
+    </motion.p>
+  );
+}
+
+/* ---------- Interactive 3D Logo Component ---------- */
+function ThreeDLogoInteractive() {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  
+  const rotateX = useTransform(y, [-300, 300], [25, -25]);
+  const rotateY = useTransform(x, [-300, 300], [-25, 25]);
+  
+  const springConfig = { damping: 20, stiffness: 100, mass: 0.5 };
+  const smoothRotateX = useSpring(rotateX, springConfig);
+  const smoothRotateY = useSpring(rotateY, springConfig);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    x.set(e.clientX - centerX);
+    y.set(e.clientY - centerY);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <div 
+      className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-2xl bg-white flex items-center justify-center border border-black/5 group"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ perspective: 1500 }}
+    >
+      {/* Dynamic Background Gradient */}
+      <motion.div 
+        className="absolute inset-0 bg-gradient-to-tr from-gold/10 via-transparent to-primary/10 opacity-50 transition-opacity duration-700 group-hover:opacity-80"
+        style={{
+           x: useTransform(x, [-300, 300], [-20, 20]),
+           y: useTransform(y, [-300, 300], [-20, 20]),
+        }}
+      />
+      
+      <motion.div
+        style={{ rotateX: smoothRotateX, rotateY: smoothRotateY, transformStyle: "preserve-3d" }}
+        className="relative w-full h-full flex items-center justify-center"
+      >
+        {/* Glow */}
+        <motion.div 
+           animate={{ 
+             scale: [1, 1.2, 1],
+             opacity: [0.2, 0.4, 0.2] 
+           }}
+           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+           className="absolute w-[70%] h-[70%] bg-gold/20 blur-[100px] rounded-full"
+           style={{ translateZ: -60 }}
+        />
+        
+        {/* Logo Image */}
+        <motion.img
+          src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
+          alt="VISO Logo 3D"
+          className="w-1/2 md:w-[60%] object-contain drop-shadow-[0_20px_40px_rgba(212,175,55,0.4)] pointer-events-none"
+          style={{ translateZ: 120 }}
+          animate={{ y: [-12, 12, -12] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        />
+        
+        {/* Floating Rings */}
+        <motion.div
+           className="absolute w-[80%] h-[80%] rounded-full border border-gold/10 pointer-events-none"
+           style={{ translateZ: 60 }}
+           animate={{ rotate: 360, scale: [1, 1.05, 1] }}
+           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        />
+        <motion.div
+           className="absolute w-[90%] h-[90%] rounded-full border border-primary/10 pointer-events-none"
+           style={{ translateZ: 20 }}
+           animate={{ rotate: -360, scale: [1, 1.02, 1] }}
+           transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+        />
+      </motion.div>
+
+      <div className="absolute bottom-6 left-6 right-6">
+        <p className="font-mono text-[10px] tracking-[0.25em] text-gold uppercase drop-shadow-md">
+          VISO GROUP HEADQUARTERS
+        </p>
+      </div>
+    </div>
+  );
+}
+
 /* ---------- Who We Are ---------- */
 function WhoWeAre({
   title,
@@ -259,11 +433,6 @@ function WhoWeAre({
 }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  const markX = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
 
   return (
     <section
@@ -271,38 +440,31 @@ function WhoWeAre({
       ref={ref}
       className="relative px-8 md:px-16 py-12 md:py-20 overflow-hidden"
     >
-
-
-      <div className="relative z-10 max-w-[1600px] mx-auto bg-surface border border-foreground/10 rounded-[2rem] p-6 md:p-8 lg:p-10 shadow-sm">
+      <div className="relative z-10 max-w-[1600px] mx-auto bg-surface border border-foreground/10 rounded-[2rem] p-6 md:p-8 lg:p-10 shadow-sm transition-all duration-700 hover:shadow-xl hover:border-gold/30">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-          {/* Left Side: Image */}
+          {/* Left Side: 3D Interactive Logo */}
           <div className="order-2 lg:order-1">
             <Reveal delay={0.25}>
-              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-xl">
-                <img
-                  src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80"
-                  alt="VISO workspace"
-                  className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent pointer-events-none" />
-                <div className="absolute bottom-6 left-6 right-6">
-                  <p className="font-mono text-[10px] tracking-[0.25em] text-white uppercase">
-                    {t("about_page.hq_riyadh")}
-                  </p>
-                </div>
-              </div>
+              <ThreeDLogoInteractive />
             </Reveal>
           </div>
 
           {/* Right Side: Information */}
-          <div className="order-1 lg:order-2 space-y-5">
+          <div className="order-1 lg:order-2 space-y-6">
             <Reveal delay={0.1}>
-              <h2 className="font-display text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-[1.05] tracking-tight text-foreground whitespace-nowrap">
+              <h2 className="font-display text-3xl md:text-4xl lg:text-5xl xl:text-[3.25rem] leading-[1.1] tracking-tight text-foreground whitespace-nowrap">
                 {title.includes("Peace") || title.includes("meets") || title.includes("يلتقي") ? (
                   <>
                     {t("about_page.story_title")}{" "}
-                    <em className="text-primary not-italic font-light">
+                    <em className="text-primary not-italic font-light relative">
                       {t("about_page.story_italic")}
+                      <motion.span 
+                         initial={{ scaleX: 0 }}
+                         whileInView={{ scaleX: 1 }}
+                         viewport={{ once: true }}
+                         transition={{ duration: 1, delay: 0.5 }}
+                         className="absolute -bottom-2 left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-transparent origin-left"
+                      />
                     </em>
                   </>
                 ) : (
@@ -311,33 +473,42 @@ function WhoWeAre({
               </h2>
             </Reveal>
 
-            <Reveal delay={0.15}>
-              <p className="text-base md:text-lg text-foreground/90 leading-relaxed font-light text-justify">
-                {desc}
-              </p>
-            </Reveal>
-            <Reveal delay={0.25}>
-              <p className="text-sm md:text-base text-foreground/80 leading-relaxed font-light text-justify">
-                {secondary}
-              </p>
-            </Reveal>
+            <AnimatedText 
+              text={desc} 
+              delay={2}
+              className="text-base md:text-lg text-foreground/90 leading-relaxed font-light text-justify"
+            />
+            
+            <AnimatedText 
+              text={secondary} 
+              delay={4}
+              className="text-sm md:text-base text-foreground/80 leading-relaxed font-light text-justify mt-4"
+            />
 
-            <Reveal delay={0.35}>
-              <div className="pt-5 grid grid-cols-2 gap-x-8 gap-y-6 border-t border-foreground/10">
+            <Reveal delay={0.5}>
+              <div className="pt-6 grid grid-cols-2 gap-x-8 gap-y-8 border-t border-foreground/10">
                 {[
                   { label: t("about_page.founded_label"), value: t("about_page.founded_val") },
                   { label: t("about_page.hq_label"), value: t("about_page.hq_val") },
                   { label: t("about_page.coverage_label"), value: t("about_page.coverage_val") },
                   { label: t("about_page.focus_label"), value: t("about_page.focus_val") },
-                ].map((item) => (
-                  <div key={item.label} className="group">
-                    <div className="font-mono text-[10px] tracking-[0.25em] text-primary uppercase mb-1">
+                ].map((item, idx) => (
+                  <motion.div 
+                    key={item.label} 
+                    className="group cursor-pointer"
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.6 + idx * 0.1 }}
+                  >
+                    <div className="font-mono text-[10px] tracking-[0.25em] text-primary uppercase mb-1.5 flex items-center gap-2">
+                      <span className="w-2 h-px bg-primary/50 group-hover:bg-primary transition-colors duration-300 group-hover:w-4" />
                       {item.label}
                     </div>
-                    <div className="font-display text-lg md:text-xl text-foreground tracking-tight group-hover:text-primary transition-colors duration-500">
+                    <div className="font-display text-lg md:text-xl text-foreground tracking-tight group-hover:text-primary transition-colors duration-500 group-hover:translate-x-1 transform">
                       {item.value}
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </Reveal>
@@ -371,9 +542,9 @@ function CEOMessage() {
                   <div className="font-mono text-[10px] tracking-[0.25em] text-primary uppercase">
                     {t("about_page.founder_ceo")}
                   </div>
-                  <div className="font-mono text-[10px] tracking-[0.25em] text-white/70 uppercase mt-2 flex items-center whitespace-nowrap">
-                    <span className="text-black">{t("about_page.vision_for")}&nbsp;</span>
-                    <TypewriterText phrases={[t("about_page.sec_consult"), t("about_page.trans_services")]} />
+                  <div className="font-mono text-[10px] tracking-[0.25em] uppercase mt-2 flex items-center whitespace-nowrap">
+                    <span className="text-white">{t("about_page.vision_for")}&nbsp;</span>
+                    <TypewriterText phrases={[t("about_page.sec_consult"), t("about_page.trans_services")]} className="text-primary ml-1" />
                   </div>
                 </div>
               </div>
@@ -497,7 +668,7 @@ function StatsBand() {
   const { t } = useTranslation();
   const stats = [
     { value: 2019, suffix: "", label: t("about.stats.established"), prefix: "" },
-    { value: 5, suffix: "", label: t("about.stats.offices"), prefix: "" },
+    { value: 4, suffix: "+", label: t("about.stats.offices"), prefix: "" },
     { value: 120, suffix: "+", label: t("about.stats.projects"), prefix: "" },
     { value: 100, suffix: "%", label: t("about.stats.local"), prefix: "" },
   ];
@@ -847,7 +1018,7 @@ function AboutFooter() {
 
 /* ---------- Regulatory Cards ---------- */
 function RegulatoryCards() {
-  const cards = [
+  const cards: Array<{ title: string; desc: string; url: string; logo: string; color: string; logoBg?: string }> = [
     {
       title: "SAIS",
       desc: "Supreme Authority for Industrial Security Standards.",
@@ -856,11 +1027,11 @@ function RegulatoryCards() {
       color: "from-emerald-100 to-emerald-50 border-emerald-200 hover:border-emerald-300 shadow-sm"
     },
     {
-      title: "MOI",
-      desc: "Ministry of Interior Regulatory Frameworks.",
-      url: "/regulatory/moi",
-      logo: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png",
-      color: "from-blue-100 to-blue-50 border-blue-200 hover:border-blue-300 shadow-sm"
+      title: "ARAMCO",
+      desc: "Saudi Aramco Safety and Security Standards.",
+      url: "/regulatory/aramco",
+      logo: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790621083/aramco.jpg",
+      color: "from-cyan-100 to-cyan-50 border-cyan-200 hover:border-cyan-300 shadow-sm"
     },
     {
       title: "NEOM",
@@ -870,11 +1041,18 @@ function RegulatoryCards() {
       color: "from-purple-100 to-purple-50 border-purple-200 hover:border-purple-300 shadow-sm"
     },
     {
-      title: "API 780",
+      title: "API",
       desc: "Security Risk Assessment for Petroleum & Petrochemical Industries.",
       url: "/regulatory/api780",
       logo: "https://theshopmag.com/wp-content/uploads/2023/05/api-logo-stacked.png",
       color: "from-sky-100 to-sky-50 border-sky-200 hover:border-sky-300 shadow-sm"
+    },
+    {
+      title: "MOI",
+      desc: "Ministry of Interior Regulatory Frameworks.",
+      url: "/regulatory/moi",
+      logo: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png",
+      color: "from-blue-100 to-blue-50 border-blue-200 hover:border-blue-300 shadow-sm"
     }
   ];
 
@@ -901,10 +1079,10 @@ function RegulatoryCards() {
             transition={{ duration: 0.8, delay: 0.1 }}
             className="font-display text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground"
           >
-            Standards and compliance
+            Standards and Compliance
           </motion.h2>
         </div>
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {cards.map((card, i) => (
             <Link key={i} to={card.url} className="block group">
               <motion.div
@@ -917,7 +1095,7 @@ function RegulatoryCards() {
                 {/* Decorative background element */}
                 <div className="absolute -top-12 -right-12 w-48 h-48 bg-foreground/5 rounded-full blur-2xl group-hover:bg-foreground/10 transition-colors duration-500 pointer-events-none" />
 
-                <div className="mb-8 w-28 h-28 md:w-32 md:h-32 bg-white rounded-2xl p-4 flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-foreground/5 group-hover:scale-110 transition-transform duration-500 relative z-10">
+                <div className={`mb-8 w-28 h-28 md:w-32 md:h-32 ${card.logoBg || "bg-white"} rounded-2xl p-4 flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-foreground/5 group-hover:scale-110 transition-transform duration-500 relative z-10`}>
                   <img src={card.logo} alt={card.title} className="max-h-full max-w-full object-contain" />
                 </div>
 
@@ -1027,32 +1205,32 @@ const certificatesData = [
   {
     org: "Higher Commission for Industrial Security (HCIS)",
     certs: ["License to Practice Security Consultancy", "Security Consultancy Qualification Certificate"],
-    img: "https://visogroup.com/wp-content/uploads/2024/05/HCIS-2.png"
+    img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790755927/ChatGPT_Image_Sep_30__2026__01_39_49_PM-removebg-preview.png"
   },
   {
     org: "Literature, Publishing & Translation commission",
     certs: ["License to Practice Translation Profession"],
-    img: "https://visogroup.com/wp-content/uploads/2024/05/Literature-Publishing-Translation-commission.png"
+    img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790757968/ChatGPT_Image_Sep_30_2026_02_15_55_PM.png"
   },
   {
     org: "Ministry of Commerce",
     certs: ["Commercial Register for Security Consultancy Activities", "Commercial Register for Translation Activities"],
-    img: "https://visogroup.com/wp-content/uploads/2024/05/Ministry-of-commerce.png"
+    img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790600382/imgi_14_Ministry-of-commerce.png"
   },
   {
     org: "Balady",
     certs: ["Municipal License"],
-    img: "https://visogroup.com/wp-content/uploads/2024/05/Balady.png"
+    img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790600394/imgi_15_Balady.png"
   },
   {
     org: "ISO 9001:2015",
     certs: ["Quality Management System", "Security Risk Assessment, Preliminary Design of Security System, Detail Design of Security System, Operational Readiness"],
-    img: "https://visogroup.com/wp-content/uploads/2024/05/ISO9001.jpg"
+    img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790600390/imgi_16_ISO9001.jpg"
   },
   {
     org: "ISO 45001:2018",
     certs: ["Occupational Health & Safety Management System", "Security Risk Assessment, Preliminary Design of Security System, Detail Design of Security System, Operational Readiness"],
-    img: "https://visogroup.com/wp-content/uploads/2024/05/ISO45001.png"
+    img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790600410/imgi_17_ISO45001.png"
   }
 ];
 

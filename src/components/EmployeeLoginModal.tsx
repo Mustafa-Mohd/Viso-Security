@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "@tanstack/react-router";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Lock, User, Briefcase, ChevronRight } from "lucide-react";
+import { User, Briefcase, ChevronRight } from "lucide-react";
 
 interface EmployeeLoginModalProps {
   isOpen: boolean;
@@ -13,28 +13,19 @@ interface EmployeeLoginModalProps {
 }
 
 const DEMO_ROLES = [
-  { id: "hr", label: "HR Manager", username: "hr_manager@viso.com", password: "viso_hr_password_2026" },
-  { id: "translator", label: "Lead Translator", username: "translator@viso.com", password: "viso_tr_password_2026" },
-  { id: "engineer", label: "Security Engineer", username: "engineer@viso.com", password: "viso_sec_password_2026" },
+  { id: "employee1", label: "Employee 1" },
+  { id: "employee2", label: "Employee 2" },
+  { id: "employee3", label: "Employee 3" },
 ];
 
 export function EmployeeLoginModal({ isOpen, onClose }: EmployeeLoginModalProps) {
-  const [userId, setUserId] = useState("");
-  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
   const [selectedRole, setSelectedRole] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleRoleChange = (roleId: string) => {
     setSelectedRole(roleId);
-    const role = DEMO_ROLES.find(r => r.id === roleId);
-    if (role) {
-      setUserId(role.username);
-      setPassword(role.password);
-    } else {
-      setUserId("");
-      setPassword("");
-    }
   };
 
   const handleLogin = (e: React.FormEvent) => {
@@ -43,8 +34,12 @@ export function EmployeeLoginModal({ isOpen, onClose }: EmployeeLoginModalProps)
     // Simulate login delay
     setTimeout(() => {
       setLoading(false);
+      localStorage.setItem("viso_emp_logged_in", "true");
+      if (fullName) {
+        localStorage.setItem("viso_emp_name", fullName);
+      }
       onClose();
-      navigate({ to: "/admin" });
+      navigate({ to: "/employee-dashboard" });
     }, 800);
   };
 
@@ -54,17 +49,17 @@ export function EmployeeLoginModal({ isOpen, onClose }: EmployeeLoginModalProps)
         <DialogHeader className="mb-6">
           <DialogTitle className="text-2xl font-display font-bold text-neutral-900">Employee Portal</DialogTitle>
           <DialogDescription className="text-neutral-500 font-sans mt-2">
-            Sign in to access your VISO workspace.
+            Select your employee profile and enter your full name to access the dashboard.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase tracking-wider text-neutral-500">Quick Access (Demo)</Label>
-              <Select value={selectedRole} onValueChange={handleRoleChange}>
+              <Label className="text-xs font-bold uppercase tracking-wider text-neutral-500">Select Role</Label>
+              <Select value={selectedRole} onValueChange={handleRoleChange} required>
                 <SelectTrigger className="w-full bg-neutral-50 border-neutral-200 focus:ring-primary h-12">
-                  <SelectValue placeholder="Select a role to auto-fill credentials" />
+                  <SelectValue placeholder="Select an employee profile" />
                 </SelectTrigger>
                 <SelectContent>
                   {DEMO_ROLES.map(role => (
@@ -79,48 +74,35 @@ export function EmployeeLoginModal({ isOpen, onClose }: EmployeeLoginModalProps)
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="userId" className="text-xs font-bold uppercase tracking-wider text-neutral-500">User ID</Label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                <Input 
-                  id="userId"
-                  type="text" 
-                  placeholder="name@viso.com"
-                  value={userId}
-                  onChange={(e) => setUserId(e.target.value)}
-                  className="pl-10 h-12 bg-neutral-50 border-neutral-200 focus:border-primary focus:ring-1 focus:ring-primary font-mono text-sm"
-                  required
-                />
+            {selectedRole && (
+              <div className="space-y-2">
+                <Label htmlFor="fullName" className="text-xs font-bold uppercase tracking-wider text-neutral-500">Full Name</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+                  <Input 
+                    id="fullName"
+                    type="text" 
+                    placeholder="Enter your full name"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className="pl-10 h-12 bg-neutral-50 border-neutral-200 focus:border-primary focus:ring-1 focus:ring-primary font-mono text-sm"
+                    required
+                  />
+                </div>
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-xs font-bold uppercase tracking-wider text-neutral-500">Password</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                <Input 
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 h-12 bg-neutral-50 border-neutral-200 focus:border-primary focus:ring-1 focus:ring-primary font-mono text-sm"
-                  required
-                />
-              </div>
-            </div>
+            )}
           </div>
 
           <Button 
             type="submit"
-            disabled={loading || !userId || !password}
+            disabled={loading || !selectedRole || !fullName}
             className="w-full h-12 bg-neutral-900 hover:bg-primary text-white font-bold uppercase tracking-wider transition-colors disabled:opacity-70 group"
           >
             {loading ? (
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
               <div className="flex items-center justify-center gap-2">
-                <span>Access Workspace</span>
+                <span>Access Dashboard</span>
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </div>
             )}

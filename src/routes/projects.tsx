@@ -206,11 +206,11 @@ const PROJECTS: ProjectItem[] = [
   { sNo: 64, client: "IDOM", name: "FERRF AND SANITARY LANDFILL AT NEOM-Stage-01", endUser: "NEOM", sector: "GIGA PROJECTS", category: "giga-projects", status: "Completed", location: "NEOM Sector", scope: "Sanitary landfill and facility environmental physical security design Stage-01 risk assessment." },
 
   // ── Mining (5 projects) ──
-  { sNo: 37, client: "WORLEY", name: "MAADEN PHOSPHATE STAGE-03 & 04", endUser: "MAADEN", sector: "MINING", category: "mining", status: "Ongoing", highlight: "Ma'aden Mega", location: "Wa'ad Al Shamal", scope: "Stage-03 & Stage-04 detailed security design, heavy transport gate access control, and perimeter radar." },
-  { sNo: 51, client: "WORLEY", name: "MAADEN PHOSPHATE STAGE-03 & 04", endUser: "MAADEN", sector: "MINING", category: "mining", status: "Ongoing", location: "Ras Al Khair", scope: "Phosphate processing plant Stage 3/4 security compliance certification and central command deployment." },
-  { sNo: 52, client: "WORLEY", name: "MAADEN PHOSPHATE STAGE-03 & 04", endUser: "MAADEN", sector: "MINING", category: "mining", status: "Ongoing", location: "Wa'ad Al Shamal", scope: "Mining complex extension physical security validation, automated weighbridge integration, and surveillance." },
-  { sNo: 53, client: "WORLEY", name: "MAADEN PHOSPHATE STAGE-03 & 04", endUser: "MAADEN", sector: "MINING", category: "mining", status: "Ongoing", location: "Al Jalamid", scope: "Phosphate mine security directives implementation, remote perimeter monitoring, and crisis control center design." },
-  { sNo: 59, client: "WORLEY", name: "MAADEN PHOSPHATE 3 PHASE 2 STAGE-01 & 02", endUser: "MAADEN", sector: "MINING", category: "mining", status: "Ongoing", highlight: "Phase 2 Expansion", location: "Wa'ad Al Shamal / Ras Al Khair", scope: "Phosphate 3 Phase 2 expansion Stage-01 conceptual and Stage-02 preliminary security engineering." }
+  { sNo: 37, client: "WORLEY", name: "MAADEN PHOSPHATE STAGE-03 & 04 (Ras al Khair)", endUser: "MAADEN", sector: "MINING", category: "mining", status: "Ongoing", highlight: "Phase 1", location: "Ras Al Khair", scope: "Stage-03 & Stage-04 detailed security design, heavy transport gate access control, and perimeter radar." },
+  { sNo: 51, client: "WORLEY", name: "MAADEN PHOSPHATE STAGE-03 & 04 (Wa’ad Al-Shamal)", endUser: "MAADEN", sector: "MINING", category: "mining", status: "Ongoing", location: "Wa'ad Al Shamal", scope: "Phosphate processing plant Stage 3/4 security compliance certification and central command deployment." },
+  { sNo: 52, client: "WORLEY", name: "MAADEN PHOSPHATE STAGE-01 (Wa’ad Al-Shamal MGA loading area)", endUser: "MAADEN", sector: "MINING", category: "mining", status: "Ongoing", highlight: "Phase 2", location: "Wa'ad Al Shamal", scope: "Mining complex extension physical security validation, automated weighbridge integration, and surveillance." },
+  { sNo: 53, client: "WORLEY", name: "MAADEN PHOSPHATE STAGE-01 & 02 (Ras al Khair)", endUser: "MAADEN", sector: "MINING", category: "mining", status: "Ongoing", location: "Ras Al Khair", scope: "Phosphate mine security directives implementation, remote perimeter monitoring, and crisis control center design." },
+  { sNo: 59, client: "WORLEY", name: "MAADEN PHOSPHATE 3 PHASE 2 STAGE-01 & 02 (Wa’ad Al-Shamal)", endUser: "MAADEN", sector: "MINING", category: "mining", status: "Ongoing", highlight: "Phase 2 Expansion", location: "Wa'ad Al Shamal", scope: "Phosphate 3 Phase 2 expansion Stage-01 conceptual and Stage-02 preliminary security engineering." }
 ];
 
 // ─── Status Badge Component ───────────────────────────────────────────────────
@@ -261,7 +261,7 @@ function ProjectSimpleCard({
         <StatusBadge status={project.status} />
       </div>
       
-      <h3 className="font-sans font-bold text-lg text-black leading-tight mb-1.5 line-clamp-2 group-hover:text-primary transition-colors">
+      <h3 className="font-sans font-bold text-[15px] text-black leading-snug mb-1.5 group-hover:text-primary transition-colors">
         {project.name}
       </h3>
       <span className="text-sm font-medium text-primary mb-6 block">

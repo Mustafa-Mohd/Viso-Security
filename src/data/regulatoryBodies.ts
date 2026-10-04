@@ -1,4 +1,4 @@
-export type RegulatorySlug = "moi" | "sais" | "hcis" | "neom" | "api780";
+export type RegulatorySlug = "moi" | "sais" | "hcis" | "neom" | "api780" | "aramco";
 
 export type RegulatoryBody = {
   slug: RegulatorySlug;
@@ -270,6 +270,45 @@ const REGULATORY_BODIES_BASE: RegulatoryBody[] = [
     relatedSlugs: ["sais", "moi"],
     heroImageUrl: "https://theshopmag.com/wp-content/uploads/2023/05/api-logo-stacked.png",
   },
+  {
+    slug: "aramco",
+    shortName: "ARAMCO",
+    fullName: "Saudi Aramco",
+    arabicName: "أرامكو السعودية",
+    tagline: "Saudi Aramco Safety and Security Standards",
+    accent: "#00a3e0",
+    overview:
+      "Saudi Aramco implements stringent safety and security requirements across its vast network of oil, gas, petrochemical, and critical infrastructure assets. VISO provides specialized security engineering and compliance services to ensure projects meet the extensive Saudi Aramco Engineering Standards (SAES) and Security Directives, guaranteeing robust protection for critical national assets.",
+    keyPoints: [
+      {
+        title: "Aramco Security Standards",
+        description:
+          "Ensuring complete compliance with Saudi Aramco's rigorous security directives for physical protection, access control, perimeter security, and integrated security systems across all facility classes."
+      },
+      {
+        title: "Risk Assessment & Mitigation",
+        description:
+          "Conducting comprehensive Security Risk Assessments (SRA) tailored to Aramco’s operational environment and strategic requirements to identify vulnerabilities and deploy proportionate security mitigations."
+      },
+      {
+        title: "Engineering Design Compliance",
+        description:
+          "Reviewing and validating security engineering packages against Saudi Aramco Engineering Standards (SAES) from concept design through to detailed engineering and construction."
+      },
+      {
+        title: "Operational Readiness Verification",
+        description:
+          "Independent validation of security systems installation, testing, and commissioning to meet Aramco’s handover requirements and ensure seamless operational readiness."
+      }
+    ],
+    visoSupport: [
+      "End-to-end security consultancy aligned with Saudi Aramco Engineering Standards.",
+      "Preparation of compliance documentation and regulatory submission packages.",
+      "Independent technical reviews and operational readiness assessments for Aramco facilities."
+    ],
+    relatedSlugs: ["sais", "moi"],
+    heroImageUrl: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790621083/aramco.jpg",
+  },
 ];
 
 function withRegulatoryMedia(body: RegulatoryBody): RegulatoryBody {
@@ -287,7 +326,7 @@ export const REGULATORY_BODIES: RegulatoryBody[] =
 export function normalizeRegulatorySlug(raw: string): RegulatorySlug | undefined {
   const s = raw.toLowerCase();
   if (s === "hais") return "hcis";
-  if (s === "moi" || s === "sais" || s === "hcis" || s === "neom" || s === "api780") return s;
+  if (s === "moi" || s === "sais" || s === "hcis" || s === "neom" || s === "api780" || s === "aramco") return s;
   return undefined;
 }
 

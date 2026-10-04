@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { Eye, EyeOff, LayoutDashboard, Image as ImageIcon, Settings, LogOut, ChevronRight, Save, Plus, Trash2, Upload, AlertCircle, MessageSquare, Users, Briefcase, FileText, History, ArrowUp, ArrowDown, Loader2, Link } from "lucide-react";
 import { DmsDashboard } from "@/components/DmsDashboard";
-import { EmployeeDashboard } from "@/components/EmployeeDashboard";
+import { HrDashboard } from "@/components/HrDashboard";
 import { CertificatesDashboard } from "@/components/CertificatesDashboard";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { fetchContactSubmissions, markInquiryRead, type ContactSubmission } from "@/lib/inquiriesApi";
@@ -13,6 +13,7 @@ import {
   fetchGalleryImageRecords,
   deleteGalleryImageRecord,
 } from "@/lib/galleryApi";
+import { fetchLeaveRequests } from "@/lib/leaveApi";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -418,6 +419,94 @@ function CmsChangeDiff({
   );
 }
 
+const MediaUploader = ({ value, onChange, folder, label, type = "image", className = "mb-4" }: { value: string, onChange: (url: string) => void, folder: string, label: string, type?: "image" | "video", className?: string }) => {
+  const [uploading, setUploading] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = async (file: File) => {
+    setUploading(true);
+    try {
+      const publicUrl = await uploadGalleryImage(file, folder);
+      onChange(publicUrl);
+    } catch (err) {
+      alert(`Error uploading ${type}: ${err instanceof Error ? err.message : "unknown"}`);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const onDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(true);
+  };
+
+  const onDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+  };
+
+  const onDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const file = e.dataTransfer.files[0];
+      if (type === "video" && !file.type.startsWith("video/")) {
+        alert("Please upload a valid video file.");
+        return;
+      }
+      if (type === "image" && !file.type.startsWith("image/")) {
+        alert("Please upload a valid image file.");
+        return;
+      }
+      handleFile(file);
+    }
+  };
+
+  return (
+    <div className={className}>
+      <label className="block text-xs font-bold mb-1 capitalize opacity-70">{label}</label>
+      <div 
+        className={`flex items-center gap-2 border border-dashed p-2 rounded transition-colors ${dragOver ? 'border-primary bg-primary/5' : 'border-foreground/20 bg-surface hover:border-primary/50'}`}
+        onDragOver={onDragOver}
+        onDragLeave={onDragLeave}
+        onDrop={onDrop}
+      >
+        <div className="flex-1 flex flex-col justify-center">
+          <input 
+            type="text" 
+            value={value} 
+            onChange={(e) => onChange(e.target.value)} 
+            className="w-full px-2 py-1.5 text-xs rounded bg-background border border-foreground/10 focus:border-primary focus:outline-none" 
+            placeholder={`Enter ${type} URL or upload...`}
+            disabled={uploading}
+          />
+        </div>
+        <label className="flex items-center justify-center bg-primary text-primary-foreground px-3 py-1.5 rounded cursor-pointer hover:bg-primary/90 transition-colors shrink-0 text-xs font-bold whitespace-nowrap" title={`Upload ${type}`}>
+          {uploading ? (
+             <Loader2 size={14} className="mr-1.5 animate-spin" />
+          ) : (
+             <Upload size={14} className="mr-1.5" />
+          )}
+          <span>{uploading ? 'Uploading...' : 'Upload'}</span>
+          <input 
+            ref={fileInputRef}
+            type="file" 
+            className="hidden" 
+            accept={type === "video" ? "video/*" : "image/*"}
+            disabled={uploading}
+            onChange={(e) => {
+              if (e.target.files && e.target.files[0]) {
+                handleFile(e.target.files[0]);
+              }
+            }}
+          />
+        </label>
+      </div>
+    </div>
+  );
+};
+
 function AdminPage() {
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -474,7 +563,7 @@ function AdminPage() {
   };
 
   // CMS State
-  const [cmsSection, setCmsSection] = useState<"hero" | "about" | "core_values" | "areas" | "services" | "framework" | "showcase" | "clients" | "lifecycle" | "locations" | "stats" | "cta">("hero");
+  const [cmsSection, setCmsSection] = useState<"hero" | "about" | "core_values" | "areas" | "services" | "framework" | "showcase" | "clients" | "lifecycle" | "locations" | "stats" | "cta" | "footer">("hero");
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [auditLogsLoading, setAuditLogsLoading] = useState(false);
 
@@ -628,9 +717,16 @@ const DEFAULT_HERO_SLIDES = [
     ]
   });
 
-  const [locationsData, setLocationsData] = useState<{ title: string, subtitle: string }>({
+  const [locationsData, setLocationsData] = useState<{ title: string, subtitle: string, cities: any[] }>({
     title: "OUR LOCATION",
-    subtitle: "Serving Saudi Arabia and Surroundings"
+    subtitle: "Serving Saudi Arabia and Surroundings",
+    cities: [
+      { id: "riyadh", bgImage: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790668720/ChatGPT_Image_Sep_29_2026_01_27_25_PM.png" },
+      { id: "khobar", bgImage: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790761271/ChatGPT_Image_Sep_30_2026_03_10_59_PM.png" },
+      { id: "jubail", bgImage: "https://i.vimeocdn.com/video/2099272543-c3cc6657da44aea5870525710e085cc6c97b501e7baed679991b0c2c1da4fc6d-d?f=webp" },
+      { id: "yanbu", bgImage: "https://www.eritrea-focus.org/wp-content/uploads/2026/07/download.webp" },
+      { id: "jeddah", bgImage: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790761414/ChatGPT_Image_Sep_30_2026_03_13_20_PM.png" },
+    ]
   });
 
   const [statsData, setStatsData] = useState<{ title: string, items: any[] }>({
@@ -650,10 +746,25 @@ const DEFAULT_HERO_SLIDES = [
     imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80"
   });
 
+  const [footerData, setFooterData] = useState<{ imageUrl: string }>({
+    imageUrl: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790680329/ChatGPT_Image_Sep_29_2026_04_41_56_PM.png"
+  });
+
   // Inquiries State
   const [inquiries, setInquiries] = useState<ContactSubmission[]>([]);
   const [inquiriesLoading, setInquiriesLoading] = useState(false);
   const [inquiriesError, setInquiriesError] = useState<string | null>(null);
+
+  const [pendingLeavesCount, setPendingLeavesCount] = useState(0);
+
+  const fetchPendingLeaves = async () => {
+    try {
+      const data = await fetchLeaveRequests();
+      setPendingLeavesCount(data.filter(req => req.status === 'pending').length);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const fetchInquiries = async () => {
     setInquiriesLoading(true);
@@ -683,8 +794,11 @@ const DEFAULT_HERO_SLIDES = [
           fetchInquiries();
           fetchAuditLogs();
         }
+        if (storedSession.role === 'super_admin' || storedSession.role === 'hr') {
+          fetchJobApps();
+          fetchPendingLeaves();
+        }
         if (storedSession.role === 'super_admin') fetchUsers();
-        if (storedSession.role === 'super_admin' || storedSession.role === 'hr') fetchJobApps();
 
         // Default tab based on role if they re-open the page
         const dmsRoles = ['document_controller', 'manager', 'reviewer', 'viewer'];
@@ -729,8 +843,11 @@ const DEFAULT_HERO_SLIDES = [
          fetchInquiries();
          fetchAuditLogs();
        }
+       if (data.role === 'super_admin' || data.role === 'hr') {
+         fetchJobApps();
+         fetchPendingLeaves();
+       }
        if (data.role === 'super_admin') fetchUsers();
-       if (data.role === 'super_admin' || data.role === 'hr') fetchJobApps();
        
        if (['document_controller', 'manager', 'reviewer', 'viewer'].includes(data.role)) setActiveTab("dms");
        else if (data.role === 'employee' || data.role === 'hr') setActiveTab("hr");
@@ -809,7 +926,8 @@ const DEFAULT_HERO_SLIDES = [
       { section_key: 'lifecycle', content: lifecycleData },
       { section_key: 'locations', content: locationsData },
       { section_key: 'stats', content: statsData },
-      { section_key: 'cta', content: ctaData }
+      { section_key: 'cta', content: ctaData },
+      { section_key: 'footer', content: footerData }
     ];
     for (const item of defaultData) {
       await supabase.from('cms_content').upsert(item, { onConflict: 'section_key' }).select();
@@ -833,9 +951,22 @@ const DEFAULT_HERO_SLIDES = [
         if (row.section_key === 'showcase') setShowcaseData(row.content);
         if (row.section_key === 'clients') setClientsData(row.content);
         if (row.section_key === 'lifecycle') setLifecycleData(row.content);
-        if (row.section_key === 'locations') setLocationsData(row.content);
+        if (row.section_key === 'locations') {
+          const content = row.content || {};
+          if (!content.cities || content.cities.length === 0) {
+            content.cities = [
+              { id: "riyadh", bgImage: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790668720/ChatGPT_Image_Sep_29_2026_01_27_25_PM.png" },
+              { id: "khobar", bgImage: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790761271/ChatGPT_Image_Sep_30_2026_03_10_59_PM.png" },
+              { id: "jubail", bgImage: "https://i.vimeocdn.com/video/2099272543-c3cc6657da44aea5870525710e085cc6c97b501e7baed679991b0c2c1da4fc6d-d?f=webp" },
+              { id: "yanbu", bgImage: "https://www.eritrea-focus.org/wp-content/uploads/2026/07/download.webp" },
+              { id: "jeddah", bgImage: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790761414/ChatGPT_Image_Sep_30_2026_03_13_20_PM.png" },
+            ];
+          }
+          setLocationsData(content);
+        }
         if (row.section_key === 'stats') setStatsData(row.content);
         if (row.section_key === 'cta') setCtaData(row.content);
+        if (row.section_key === 'footer') setFooterData(row.content);
       });
     }
   };
@@ -863,9 +994,22 @@ const DEFAULT_HERO_SLIDES = [
         if (row.section_key === 'showcase') setShowcaseData(row.content);
         if (row.section_key === 'clients') setClientsData(row.content);
         if (row.section_key === 'lifecycle') setLifecycleData(row.content);
-        if (row.section_key === 'locations') setLocationsData(row.content);
+        if (row.section_key === 'locations') {
+          const content = row.content || {};
+          if (!content.cities || content.cities.length === 0) {
+            content.cities = [
+              { id: "riyadh", bgImage: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790668720/ChatGPT_Image_Sep_29_2026_01_27_25_PM.png" },
+              { id: "khobar", bgImage: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790761271/ChatGPT_Image_Sep_30_2026_03_10_59_PM.png" },
+              { id: "jubail", bgImage: "https://i.vimeocdn.com/video/2099272543-c3cc6657da44aea5870525710e085cc6c97b501e7baed679991b0c2c1da4fc6d-d?f=webp" },
+              { id: "yanbu", bgImage: "https://www.eritrea-focus.org/wp-content/uploads/2026/07/download.webp" },
+              { id: "jeddah", bgImage: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790761414/ChatGPT_Image_Sep_30_2026_03_13_20_PM.png" },
+            ];
+          }
+          setLocationsData(content);
+        }
         if (row.section_key === 'stats') setStatsData(row.content);
         if (row.section_key === 'cta') setCtaData(row.content);
+        if (row.section_key === 'footer') setFooterData(row.content);
       });
     }
   };
@@ -1250,7 +1394,7 @@ const DEFAULT_HERO_SLIDES = [
     { id: 'inquiries', label: 'Inquiries', icon: MessageSquare, roles: ['super_admin', 'admin'], badge: inquiries.filter((inq) => inq.status === 'unread').length, badgeColor: 'bg-red-500 text-white' },
     { id: 'job_apps', label: 'Job Applications', icon: Briefcase, roles: ['super_admin', 'hr', 'admin'], badge: jobApps.filter((app) => app.status === 'New').length, badgeColor: 'bg-primary text-primary-foreground' },
     { id: 'dms', label: 'DMS Platform', icon: FileText, roles: ['super_admin', 'admin', 'manager', 'reviewer', 'employee', 'viewer', 'document_controller'] },
-    { id: 'hr', label: 'HR / ESS Portal', icon: Users, roles: ['super_admin', 'hr', 'employee'] },
+    { id: 'hr', label: 'HR / ESS Portal', icon: Users, roles: ['super_admin', 'hr', 'employee'], badge: pendingLeavesCount > 0 ? pendingLeavesCount : undefined, badgeColor: 'bg-orange-500 text-white' },
     { id: 'users', label: 'Users & Roles', icon: Settings, roles: ['super_admin'] },
   ];
 
@@ -1527,6 +1671,12 @@ const DEFAULT_HERO_SLIDES = [
                 className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'cta' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
               >
                 Call to Action
+              </button>
+              <button
+                onClick={() => setCmsSection('footer')}
+                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'footer' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
+              >
+                Footer
               </button>
               <div className="mt-8 border-t border-foreground/10 pt-4">
                 <button
@@ -1900,17 +2050,16 @@ const DEFAULT_HERO_SLIDES = [
                               className="w-full px-3 py-2 rounded bg-surface border border-foreground/20 focus:border-primary focus:outline-none"
                             />
                           </div>
-                          <div>
-                            <label className="block text-xs font-bold mb-1 opacity-70">Image URL</label>
-                            <input
-                              type="text"
-                              value={cv.imageUrl}
-                              onChange={(e) => {
+                          <div className="md:col-span-2">
+                            <MediaUploader 
+                              label="Image URL" 
+                              value={cv.imageUrl} 
+                              folder="core_values" 
+                              onChange={(url) => {
                                 const newItems = [...coreValuesData.items];
-                                newItems[idx].imageUrl = e.target.value;
+                                newItems[idx].imageUrl = url;
                                 setCoreValuesData({ ...coreValuesData, items: newItems });
                               }}
-                              className="w-full px-3 py-2 rounded bg-surface border border-foreground/20 focus:border-primary focus:outline-none"
                             />
                           </div>
                         </div>
@@ -2284,19 +2433,12 @@ const DEFAULT_HERO_SLIDES = [
               {cmsSection === 'showcase' && (
                 <div className="flex flex-col gap-4">
                   <h2 className="text-2xl mb-4">Edit Showcase Section</h2>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Background Image URL</label>
-                    <input
-                      type="url"
-                      value={showcaseData.imageUrl}
-                      placeholder="https://images.unsplash.com/..."
-                      onChange={(e) => setShowcaseData({ imageUrl: e.target.value })}
-                      className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
-                    />
-                    {showcaseData.imageUrl && (
-                       <img loading="lazy" decoding="async" src={showcaseData.imageUrl} alt="Showcase Preview" className="mt-4 w-full h-48 object-cover rounded" />
-                    )}
-                  </div>
+                  <MediaUploader 
+                    label="Background Image URL"
+                    value={showcaseData.imageUrl}
+                    folder="showcase"
+                    onChange={(url) => setShowcaseData({ imageUrl: url })}
+                  />
                   <button
                     onClick={() => handleSaveCmsSection('showcase', showcaseData)}
                     className="mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors w-fit font-medium"
@@ -2477,7 +2619,23 @@ const DEFAULT_HERO_SLIDES = [
                             <div className="md:col-span-2"><label className="block text-xs font-bold mb-1 opacity-70">Description</label><textarea value={item.desc} onChange={(e) => { const newItems = [...lifecycleData.items]; newItems[idx].desc = e.target.value; setLifecycleData({ ...lifecycleData, items: newItems }); }} className="w-full px-3 py-2 rounded bg-surface border border-foreground/20 h-20" /></div>
                             <div className="md:col-span-2"><label className="block text-xs font-bold mb-1 opacity-70">Bullet Points (One per line)</label><textarea value={item.points} onChange={(e) => { const newItems = [...lifecycleData.items]; newItems[idx].points = e.target.value; setLifecycleData({ ...lifecycleData, items: newItems }); }} className="w-full px-3 py-2 rounded bg-surface border border-foreground/20 h-24" /></div>
                             <div><label className="block text-xs font-bold mb-1 opacity-70">Deliverable</label><input type="text" value={item.deliverable} onChange={(e) => { const newItems = [...lifecycleData.items]; newItems[idx].deliverable = e.target.value; setLifecycleData({ ...lifecycleData, items: newItems }); }} className="w-full px-3 py-2 rounded bg-surface border border-foreground/20" /></div>
-                            <div><label className="block text-xs font-bold mb-1 opacity-70">Image URL</label><input type="text" value={item.imageUrl} onChange={(e) => { const newItems = [...lifecycleData.items]; newItems[idx].imageUrl = e.target.value; setLifecycleData({ ...lifecycleData, items: newItems }); }} className="w-full px-3 py-2 rounded bg-surface border border-foreground/20" /></div>
+                            <div className="md:col-span-2">
+                              <MediaUploader 
+                                label="Image URL" 
+                                value={item.imageUrl || ''} 
+                                folder="lifecycle" 
+                                onChange={(url) => { const newItems = [...lifecycleData.items]; newItems[idx].imageUrl = url; setLifecycleData({ ...lifecycleData, items: newItems }); }} 
+                              />
+                            </div>
+                            <div className="md:col-span-2">
+                              <MediaUploader 
+                                label="Video URL (Optional - Replaces Image)" 
+                                value={item.videoUrl || ''} 
+                                folder="lifecycle" 
+                                type="video"
+                                onChange={(url) => { const newItems = [...lifecycleData.items]; newItems[idx].videoUrl = url; setLifecycleData({ ...lifecycleData, items: newItems }); }} 
+                              />
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -2493,7 +2651,27 @@ const DEFAULT_HERO_SLIDES = [
                   <h2 className="text-2xl mb-4">Edit Locations Section</h2>
                   <div><label className="block text-sm font-medium mb-1">Title</label><input type="text" value={locationsData.title} onChange={(e) => setLocationsData({ ...locationsData, title: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" /></div>
                   <div><label className="block text-sm font-medium mb-1">Subtitle</label><input type="text" value={locationsData.subtitle} onChange={(e) => setLocationsData({ ...locationsData, subtitle: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" /></div>
-                  <p className="text-sm text-foreground/50 mt-4 italic">Note: The interactive map markers and specific cities are currently hardcoded in the component for geographic precision, but the titles above can be edited here.</p>
+                  <p className="text-sm text-foreground/50 mt-4 italic">Note: The interactive map markers and specific cities are currently hardcoded in the component for geographic precision, but the titles and background images can be edited here.</p>
+                  
+                  <div className="mt-4 border-t border-foreground/10 pt-6">
+                    <h3 className="font-bold mb-4">City Background Images</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {locationsData.cities?.map((city, idx) => (
+                        <div key={idx} className="bg-background p-4 rounded border border-foreground/10">
+                          <MediaUploader 
+                            label={`${city.id} Background Image URL`}
+                            value={city.bgImage}
+                            folder="locations"
+                            onChange={(url) => {
+                              const newCities = [...(locationsData.cities || [])];
+                              newCities[idx].bgImage = url;
+                              setLocationsData({ ...locationsData, cities: newCities });
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                   <button onClick={() => handleSaveCmsSection('locations', locationsData)} className="mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors w-fit font-medium">Save Locations</button>
                 </div>
               )}
@@ -2532,8 +2710,27 @@ const DEFAULT_HERO_SLIDES = [
                   <div><label className="block text-sm font-medium mb-1">Title Part 2</label><input type="text" value={ctaData.title2} onChange={(e) => setCtaData({ ...ctaData, title2: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" /></div>
                   <div><label className="block text-sm font-medium mb-1">Description</label><textarea value={ctaData.desc} onChange={(e) => setCtaData({ ...ctaData, desc: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none h-20" /></div>
                   <div><label className="block text-sm font-medium mb-1">Button Text</label><input type="text" value={ctaData.buttonText} onChange={(e) => setCtaData({ ...ctaData, buttonText: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" /></div>
-                  <div><label className="block text-sm font-medium mb-1">Background Image URL</label><input type="text" value={ctaData.imageUrl} onChange={(e) => setCtaData({ ...ctaData, imageUrl: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" /></div>
+                  <MediaUploader 
+                    label="Background Image URL"
+                    value={ctaData.imageUrl}
+                    folder="cta"
+                    onChange={(url) => setCtaData({ ...ctaData, imageUrl: url })}
+                  />
                   <button onClick={() => handleSaveCmsSection('cta', ctaData)} className="mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors w-fit font-medium">Save CTA</button>
+                </div>
+              )}
+
+              {/* FOOTER CMS */}
+              {cmsSection === 'footer' && (
+                <div className="flex flex-col gap-4">
+                  <h2 className="text-2xl mb-4">Edit Footer Section</h2>
+                  <MediaUploader 
+                    label="Background Image URL (Cities)"
+                    value={footerData.imageUrl}
+                    folder="footer"
+                    onChange={(url) => setFooterData({ ...footerData, imageUrl: url })}
+                  />
+                  <button onClick={() => handleSaveCmsSection('footer', footerData)} className="mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors w-fit font-medium">Save Footer</button>
                 </div>
               )}
             </div>
@@ -2774,7 +2971,7 @@ const DEFAULT_HERO_SLIDES = [
         {/* HR DASHBOARD */}
         {activeTab === 'hr' && (session?.role === 'super_admin' || session?.role === 'hr' || session?.role === 'employee') && (
           <div className="flex-1 flex flex-col p-6 overflow-y-auto">
-            <EmployeeDashboard user={session} />
+            <HrDashboard />
           </div>
         )}
 

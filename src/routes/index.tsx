@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { TiltCard } from "@/components/TiltCard";
-import { motion, useScroll, useTransform, useInView, AnimatePresence, animate, useMotionValue, useSpring } from "framer-motion";
+import { motion, useScroll, useTransform, useInView, AnimatePresence, animate, useMotionValue, useSpring, useMotionTemplate } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -44,7 +44,12 @@ if (typeof window !== "undefined") {
 
 function HomePage() {
   const { t } = useTranslation();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== "undefined") {
+      return !sessionStorage.getItem("viso_intro_seen");
+    }
+    return true;
+  });
   const [cmsData, setCmsData] = useState<Record<string, any>>({});
 
   useEffect(() => {
@@ -64,55 +69,24 @@ function HomePage() {
 
   }, [t]);
 
+  const handleLoaderDone = () => {
+    sessionStorage.setItem("viso_intro_seen", "true");
+    setLoading(false);
+  };
+
   return (
     <>
-      {loading && <LoadingScreen onDone={() => setLoading(false)} />}
+      {loading && <LoadingScreen onDone={handleLoaderDone} />}
       <div className="bg-background min-h-screen text-foreground font-sans selection:bg-primary/20 selection:text-primary">
         <TopNav />
         <main>
-          <HeroSection data={cmsData.hero} />
+          <HeroSection data={cmsData.hero} isReady={!loading} />
 
           <LazyMount minHeight={720} fallback={<SectionFallback h={720} />}>
             <Suspense fallback={<SectionFallback h={720} />}>
               <About data={cmsData.about} />
             </Suspense>
           </LazyMount>
-
-          <LazyMount minHeight={520} fallback={<SectionFallback h={520} />}>
-            <ServiceLifecycle data={cmsData.lifecycle} />
-          </LazyMount>
-
-          {cmsData.core_values && (
-            <LazyMount minHeight={480} fallback={<SectionFallback h={480} />}>
-              <div className="mt-20">
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 1 }}
-                  className="text-center mb-16"
-                >
-                  <h2 className="text-4xl md:text-5xl font-light mb-4 text-foreground">{cmsData.core_values.title}</h2>
-                  <p className="text-lg text-black">{cmsData.core_values.subtitle}</p>
-                </motion.div>
-
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <AnimatePresence>
-                    {cmsData.core_values.items.map((cv: any, i: number) => (
-                      <ValueCard
-                        key={cv.id || i}
-                        title={cv.title}
-                        desc={cv.desc}
-                        points={cv.points || []}
-                        imageUrl={cv.imageUrl}
-                        delay={0.1 + i * 0.1}
-                      />
-                    ))}
-                  </AnimatePresence>
-                </div>
-              </div>
-            </LazyMount>
-          )}
 
           <LazyMount minHeight={520} fallback={<SectionFallback h={520} />}>
             <div className="mt-8 md:mt-12 border-t border-foreground/5 pt-8 md:pt-10">
@@ -148,7 +122,7 @@ function HomePage() {
                   title: t("home_interactive.services_carousel.train_title"),
                   desc: t("home_interactive.services_carousel.train_desc"),
                   url: "/services/training",
-                  img: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&q=80",
+                  img: "https://media.licdn.com/dms/image/v2/D4D22AQEKtu9ZTi0QTg/feedshare-shrink_1280/B4DZ6208h6IYAM-/0/1781183794364?e=1792022400&v=beta&t=w7-eimTq1kODCoVp9clIrPgj8CGEqIpo0ClQ6yrivVc",
                   color: "group-hover:border-purple-500/50 group-hover:shadow-purple-500/20",
                   moreInfo: t("home_interactive.services_carousel.train_more")
                 },
@@ -167,10 +141,45 @@ function HomePage() {
                   img: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&q=80",
                   color: "group-hover:border-red-500/50 group-hover:shadow-red-500/20",
                   moreInfo: t("home_interactive.services_carousel.gap_more")
+                },
+                {
+                  title: t("home_interactive.services_carousel.pm_title", "Project Management"),
+                  desc: t("home_interactive.services_carousel.pm_desc", "Expert oversight and execution of high-end security architecture projects from conception to completion."),
+                  url: "/services/project-management",
+                  img: "/project_management.jpg",
+                  color: "group-hover:border-yellow-500/50 group-hover:shadow-yellow-500/20",
+                  moreInfo: t("home_interactive.services_carousel.pm_more", "Our dedicated project management teams ensure that your security infrastructure is deployed on time, within budget, and to the highest quality standards.")
                 }
               ]} />
             </div>
           </LazyMount>
+
+          <LazyMount minHeight={520} fallback={<SectionFallback h={520} />}>
+            <ServiceLifecycle data={cmsData.lifecycle} />
+          </LazyMount>
+
+          {cmsData.core_values && (
+            <LazyMount minHeight={480} fallback={<SectionFallback h={480} />}>
+              <div className="mt-20">
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1 }}
+                  className="text-center mb-16"
+                >
+                  <h2 className="text-4xl md:text-5xl font-light mb-4 text-foreground">{cmsData.core_values.title}</h2>
+                  <p className="text-lg text-black">{cmsData.core_values.subtitle}</p>
+                </motion.div>
+
+                <div className="mt-8 mb-12">
+                  <ExpandingValueCards items={cmsData.core_values.items} />
+                </div>
+              </div>
+            </LazyMount>
+          )}
+
+
 
           <LazyMount minHeight={480} fallback={<SectionFallback h={480} />}>
             <Suspense fallback={<SectionFallback h={480} />}>
@@ -190,7 +199,7 @@ function HomePage() {
 
           <LinkedInPosts />
         </main>
-        <Footer />
+        <Footer data={cmsData.footer} />
       </div>
     </>
   );
@@ -263,11 +272,6 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
                   {char === " " ? "\u00A0" : char}
                 </motion.span>
               ))}
-              <motion.span
-                animate={{ opacity: [1, 0, 1] }}
-                transition={{ duration: 0.6, repeat: Infinity }}
-                className="inline-block w-[4px] md:w-[8px] h-[0.8em] bg-primary ml-1 align-baseline"
-              />
             </motion.div>
           ) : (
             <motion.div
@@ -331,28 +335,29 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
 const servicesList = [
   {
     title: "Security Consultancy",
-    subtitle: "Comprehensive physical security threat and risk assessment.",
+    subtitle: "Comprehensive Physical Security Threat and Risk Assessment.",
     link: "/security",
     buttonText: "Go to Security",
   },
   {
     title: "Translation Services",
-    subtitle: "Precision translation services for technical and regulatory requirements.",
+    subtitle: "Certified Translation Services for Technical, Legal, Medical, Official, and Security Documents.",
     link: "/translation",
     buttonText: "Go to Translation",
   }
 ];
 
-export function HeroSection({ data }: { data?: any }) {
+export function HeroSection({ data, isReady = true }: { data?: any; isReady?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
+    if (!isReady) return;
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % servicesList.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isReady]);
 
   const slide = servicesList[currentSlide];
 
@@ -511,7 +516,7 @@ function FrameworkSection({ data }: { data?: any }) {
     { id: 1, num: "01", title: t("security.stages.s1.title"), subtitle: t("security.stages.s1.subtitle") },
     { id: 2, num: "02", title: t("security.stages.s2.title"), subtitle: t("security.stages.s2.subtitle") },
     { id: 3, num: "03", title: t("security.stages.s3.title"), subtitle: t("security.stages.s3.subtitle") },
-    { id: 4, num: "04", title: t("security.stages.s4.title"), subtitle: t("security.stages.s4.subtitle") }
+    { id: 4, num: "04", title: t("security.stages.s4.title"), subtitle: t("security.stages.s4.subtitle"), img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790759493/4.png" }
   ];
 
   return (
@@ -564,6 +569,12 @@ function FrameworkSection({ data }: { data?: any }) {
                   </div>
                   <h3 className="font-display text-2xl leading-snug mb-3 text-foreground group-hover:text-primary transition-colors duration-300">{stage.title}</h3>
                   <p className="font-sans text-sm text-black mb-8 max-w-[90%]">{stage.subtitle}</p>
+                  
+                  {stage.img && (
+                    <div className="mt-2 mb-6 overflow-visible rounded-lg border border-foreground/10 opacity-80 group-hover:opacity-100 transition-opacity bg-background/50 flex items-center justify-center p-2">
+                      <img src={stage.img} alt="" className="max-w-full h-auto object-contain group-hover:scale-105 transition-transform duration-500" style={{ maxHeight: '180px' }} />
+                    </div>
+                  )}
                   
                   <div className="mt-auto pt-8 border-t border-foreground/5 group-hover:border-gold/20 transition-colors duration-500">
                     <Link to="/security" className="inline-flex items-center gap-2 text-xs font-bold tracking-widest text-primary group-hover:text-gold uppercase transition-colors">
@@ -1042,6 +1053,175 @@ function ChartSVG() {
   );
 }
 
+function ExpandingValueCards({ items }: { items: any[] }) {
+  const [activeIdx, setActiveIdx] = useState(0);
+
+  return (
+    <div className="flex flex-col lg:flex-row h-[900px] lg:h-[600px] w-full gap-[2px] px-4 md:px-0 rounded-3xl overflow-hidden bg-white/20">
+      {items.map((cv, i) => {
+        const isActive = activeIdx === i;
+        return (
+          <motion.div
+            key={cv.id || i}
+            className="relative overflow-hidden cursor-pointer bg-black group"
+            layout
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ 
+              duration: 0.8, 
+              delay: 0.1 + i * 0.1, 
+              layout: { type: "spring", stiffness: 200, damping: 25 } 
+            }}
+            onMouseEnter={() => setActiveIdx(i)}
+            onClick={() => setActiveIdx(i)}
+            style={{
+              flex: isActive ? 6 : 1,
+            }}
+          >
+            {/* Background Image with Zoom */}
+            {(() => {
+              let bgColor = null;
+              if (i === 1 || cv.title?.toLowerCase().includes("customer")) bgColor = "#AEAC78";
+              else if (i === 2) bgColor = "#5C6B73"; // Elegant muted blue-grey
+              else if (i === 3) bgColor = "#827059"; // Rich warm taupe
+
+              if (bgColor) {
+                return (
+                  <motion.div 
+                    className="absolute inset-0 w-full h-full z-0"
+                    style={{ backgroundColor: bgColor }}
+                    animate={{ 
+                      scale: isActive ? 1.05 : 1,
+                      filter: isActive ? "brightness(0.8)" : "brightness(0.7)" 
+                    }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                  />
+                );
+              }
+
+              return (
+                <motion.img 
+                  src={cv.imageUrl} 
+                  alt={cv.title} 
+                  className="absolute inset-0 w-full h-full object-cover origin-center z-0"
+                  animate={{ 
+                    scale: isActive ? 1.05 : 1,
+                    filter: isActive ? "brightness(0.8) contrast(1.1)" : "brightness(0.7) contrast(1.1)" 
+                  }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
+                />
+              );
+            })()}
+            
+            {/* Gradient Overlays */}
+            <div className="absolute inset-0 bg-black/20 z-10" />
+            <div className={`absolute inset-0 transition-opacity duration-700 z-10 ${isActive ? 'bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-100' : 'opacity-0'}`} />
+
+            {/* Content Container */}
+            <div className="absolute inset-0 z-20 overflow-hidden">
+              <AnimatePresence mode="wait">
+                {!isActive ? (
+                  /* Vertical Title State (Inactive) */
+                  <motion.div
+                    key="inactive"
+                    initial={{ opacity: 0, rotateY: 90 }}
+                    animate={{ opacity: 1, rotateY: 0 }}
+                    exit={{ opacity: 0, rotateY: -90 }}
+                    transition={{ duration: 0.3 }}
+                    className="absolute inset-0 flex items-center justify-center p-6"
+                  >
+                    <h3 
+                      className="font-display font-bold text-3xl md:text-4xl text-white tracking-widest drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] opacity-90 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap"
+                      style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
+                    >
+                      {cv.title}
+                    </h3>
+                  </motion.div>
+                ) : (
+                  /* Expanded Content State (Active) */
+                  <motion.div
+                    key="active"
+                    initial={{ opacity: 0, y: 40, rotateX: -45 }}
+                    animate={{ opacity: 1, y: 0, rotateX: 0 }}
+                    exit={{ opacity: 0, y: 20, rotateX: 45 }}
+                    transition={{ duration: 0.5, staggerChildren: 0.1 }}
+                    className="absolute inset-0 flex flex-col justify-end p-6 md:p-10 transform-gpu"
+                  >
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: 0.1 }}
+                      className="font-mono text-xs tracking-[0.2em] text-primary uppercase mb-3 flex items-center gap-3"
+                    >
+                      <span className="w-8 h-px bg-primary" />
+                      Core Value {String(i + 1).padStart(2, '0')}
+                    </motion.div>
+
+                    <motion.h3 
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: 0.15 }}
+                      className="font-display text-3xl md:text-5xl text-white tracking-tight mb-4 md:mb-6 drop-shadow-md whitespace-nowrap"
+                    >
+                      {cv.title}
+                    </motion.h3>
+                    
+                    <div className="flex flex-col lg:flex-row gap-4 lg:gap-12 items-start">
+                      <motion.p 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.25 }}
+                        className="font-sans text-sm md:text-base text-white/90 max-w-md leading-relaxed hidden sm:block"
+                      >
+                        {cv.desc}
+                      </motion.p>
+                      
+                      <motion.ul 
+                        initial="hidden"
+                        animate="visible"
+                        variants={{
+                          visible: { transition: { staggerChildren: 0.08, delayChildren: 0.35 } }
+                        }}
+                        className="space-y-2 lg:space-y-3 min-w-[200px]"
+                      >
+                        {cv.points?.map((pt: string, idx: number) => (
+                          <motion.li 
+                            key={idx}
+                            variants={{
+                              hidden: { opacity: 0, x: -10 },
+                              visible: { opacity: 1, x: 0 }
+                            }}
+                            className="flex items-start gap-3 text-white/80 font-sans text-xs md:text-sm"
+                          >
+                            <span className="w-1.5 h-1.5 bg-gold rounded-full mt-1.5 shrink-0 shadow-[0_0_8px_#D4AF37]" />
+                            <span>{pt}</span>
+                          </motion.li>
+                        ))}
+                      </motion.ul>
+                    </div>
+                    
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.5 }}
+                      className="mt-6 md:mt-8"
+                    >
+                      <Link to="/about" className="inline-block text-[10px] md:text-xs font-bold font-mono tracking-[0.2em] text-black bg-gold hover:bg-white px-6 py-3 rounded-sm uppercase transition-colors shadow-[0_4px_15px_rgba(212,175,55,0.3)]">
+                        Learn More
+                      </Link>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+}
+
 function ValueCard({ title, desc, points, imageUrl, delay }: { title: string, desc: string, points: string[], imageUrl: string, delay: number }) {
   return (
     <motion.div 
@@ -1280,6 +1460,21 @@ function About({ data }: { data?: any }) {
   const sectionRef = useRef<HTMLElement>(null);
   const watermarkRef = useRef<HTMLDivElement>(null);
 
+  const mouseX = useMotionValue(-1000);
+  const mouseY = useMotionValue(-1000);
+
+  const springConfig = { damping: 30, stiffness: 150, mass: 0.5 };
+  const smoothX = useSpring(mouseX, springConfig);
+  const smoothY = useSpring(mouseY, springConfig);
+  const maskImage = useMotionTemplate`radial-gradient(600px circle at ${smoothX}px ${smoothY}px, black 0%, transparent 100%)`;
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    if (!sectionRef.current) return;
+    const rect = sectionRef.current.getBoundingClientRect();
+    mouseX.set(e.clientX - rect.left);
+    mouseY.set(e.clientY - rect.top);
+  };
+
   const title = data?.title || "About VISO";
   const subtitle =
     data?.subtitle ||
@@ -1317,8 +1512,42 @@ function About({ data }: { data?: any }) {
     <section
       id="about"
       ref={sectionRef}
-      className="relative px-6 md:px-12 lg:px-16 min-h-[100dvh] flex flex-col justify-center bg-background overflow-hidden border-t border-foreground/5 py-24"
+      onMouseMove={handleMouseMove}
+      className="relative px-6 md:px-12 lg:px-16 min-h-[100dvh] flex flex-col justify-center bg-background overflow-hidden border-t border-foreground/5 py-24 group"
     >
+      {/* Cursor Spotlight Reveal Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        {/* Base blurred layer */}
+        <div className="absolute inset-0 opacity-10 hidden md:block">
+          <img 
+            src="https://media.licdn.com/dms/image/v2/D4D22AQEKtu9ZTi0QTg/feedshare-shrink_1280/B4DZ6208h6IYAM-/0/1781183794364?e=1792022400&v=beta&t=w7-eimTq1kODCoVp9clIrPgj8CGEqIpo0ClQ6yrivVc"
+            alt=""
+            className="w-full h-full object-cover blur-3xl grayscale"
+          />
+        </div>
+        
+        {/* Spotlight reveal layer */}
+        <motion.div
+          className="absolute inset-0 hidden md:block opacity-0 group-hover:opacity-100 transition-opacity duration-1000"
+          style={{ WebkitMaskImage: maskImage, maskImage: maskImage }}
+        >
+          <img 
+            src="https://media.licdn.com/dms/image/v2/D4D22AQEKtu9ZTi0QTg/feedshare-shrink_1280/B4DZ6208h6IYAM-/0/1781183794364?e=1792022400&v=beta&t=w7-eimTq1kODCoVp9clIrPgj8CGEqIpo0ClQ6yrivVc"
+            alt=""
+            className="w-full h-full object-cover opacity-15 group-hover:opacity-70 transition-opacity duration-[4000ms] ease-in-out"
+          />
+        </motion.div>
+        
+        {/* Mobile static fallback */}
+        <div className="absolute inset-0 md:hidden opacity-5">
+          <img 
+            src="https://media.licdn.com/dms/image/v2/D4D22AQEKtu9ZTi0QTg/feedshare-shrink_1280/B4DZ6208h6IYAM-/0/1781183794364?e=1792022400&v=beta&t=w7-eimTq1kODCoVp9clIrPgj8CGEqIpo0ClQ6yrivVc"
+            alt=""
+            className="w-full h-full object-cover"
+          />
+        </div>
+      </div>
+
       {/* Continuous Fluid Glowing Laser Sweep Horizon Beam */}
       <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-gold/30 to-transparent pointer-events-none" />
       <motion.div
@@ -1358,7 +1587,7 @@ function About({ data }: { data?: any }) {
         >
           <span>{t("about.stats.established")} 2019</span>
           <span className="text-gold">·</span>
-          <span>{t("about.stats.offices")}: 5 Hubs</span>
+          <span>{t("about.stats.offices")}: 4+ Hubs</span>
           <span className="text-gold">·</span>
           <span className="text-foreground/80 font-medium">Riyadh · Khobar · Jubail · Jeddah · Yanbu</span>
         </motion.div>
@@ -1382,7 +1611,7 @@ function WallFrameStageCard({
   index,
   moreInfoLabel,
 }: {
-  stage: { num: string; title: string; desc: string; imageUrl: string };
+  stage: { num: string; title: string; desc: string; imageUrl: string; videoUrl?: string };
   index: number;
   moreInfoLabel: string;
 }) {
@@ -1420,25 +1649,40 @@ function WallFrameStageCard({
           >
             {/* Mat board */}
             <div className="bg-[#f6f2e8] px-2.5 pt-2 pb-3 md:px-3 md:pt-2.5 md:pb-3 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]">
-              <div className="relative aspect-[5/4] overflow-hidden border border-black/10 bg-[#eae6dc] shadow-[inset_0_0_12px_rgba(0,0,0,0.08)]">
-                <img
-                  src={stage.imageUrl}
-                  alt={stage.title}
-                  loading="lazy"
-                  decoding="async"
-                  className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                />
+              <div className="relative w-full h-auto overflow-hidden border border-black/10 bg-[#eae6dc] shadow-[inset_0_0_12px_rgba(0,0,0,0.08)]">
+                {stage.videoUrl ? (
+                  <video
+                    src={stage.videoUrl}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="block w-full h-auto object-contain transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+                  />
+                ) : (
+                  <img
+                    src={stage.imageUrl}
+                    alt={stage.title}
+                    loading="lazy"
+                    decoding="async"
+                    className="block w-full h-auto object-contain transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+                  />
+                )}
                 <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-black/5" />
               </div>
 
-              <div className="mt-2.5 text-center px-0.5">
-                <p className="font-mono text-[9px] tracking-[0.3em] text-primary/80 uppercase mb-1">
-                  Stage {stage.num}
-                </p>
-                <h3 className="font-display text-base md:text-lg leading-snug text-foreground tracking-tight">
+              <div className="mt-3.5 text-center px-1">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <div className="h-[1px] w-4 bg-primary/40" />
+                  <p className="font-mono text-[10px] font-bold tracking-[0.25em] text-primary uppercase">
+                    Stage {stage.num}
+                  </p>
+                  <div className="h-[1px] w-4 bg-primary/40" />
+                </div>
+                <h3 className="font-display text-base md:text-lg leading-snug text-foreground tracking-tight font-bold">
                   {stage.title}
                 </h3>
-                <p className="mt-1.5 text-[12px] text-foreground/65 leading-snug line-clamp-2">
+                <p className="mt-2 text-[12px] text-foreground/75 leading-relaxed line-clamp-2">
                   {teaserText(stage.desc, 100)}
                 </p>
               </div>
@@ -1492,7 +1736,7 @@ function ServiceLifecycle({ data }: { data?: any }) {
       num: "04",
       title: "Construction & Readiness",
       desc: "Supervision, testing, commissioning, and handover—confirming systems perform as designed.",
-      imageUrl: "https://rfshrconsultancy.com/wp-content/uploads/2025/01/benefits-of-working-in-the-construction-industry.webp",
+      imageUrl: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790759493/4.png",
     },
   ];
 
@@ -1501,7 +1745,8 @@ function ServiceLifecycle({ data }: { data?: any }) {
       num: stage.num ?? defaultStages[i]?.num ?? String(i + 1).padStart(2, "0"),
       title: stage.title ?? defaultStages[i]?.title ?? "",
       desc: stage.desc ?? defaultStages[i]?.desc ?? "",
-      imageUrl: i === 3 ? "https://rfshrconsultancy.com/wp-content/uploads/2025/01/benefits-of-working-in-the-construction-industry.webp" : (stage.imageUrl || defaultStages[i]?.imageUrl || ""),
+      imageUrl: stage.imageUrl || defaultStages[i]?.imageUrl || "",
+      videoUrl: stage.videoUrl || (defaultStages[i] as any)?.videoUrl || "",
     }),
   );
 
@@ -1526,14 +1771,13 @@ function ServiceLifecycle({ data }: { data?: any }) {
           </Reveal>
           <Reveal delay={0.1}>
             <h2 className="mt-3 font-display text-3xl leading-[1.08] md:text-4xl lg:text-5xl tracking-tight text-foreground">
-              Four Stages.{" "}
-              <span className="text-primary font-normal">One Security.</span>
+              From Risk to{" "}
+              <span className="text-primary font-normal">Readiness</span>
             </h2>
           </Reveal>
           <Reveal delay={0.16}>
-            <p className="mt-2.5 text-sm md:text-base text-foreground/55 font-light max-w-xl leading-relaxed">
-              A clear, authority-aligned path from assessment through operational readiness—presented
-              as four connected chapters of your security story.
+            <p className="mt-2.5 text-sm md:text-base text-foreground/80 font-light max-w-xl leading-relaxed">
+              End-to-End SAIS Security Consultancy Across Every Stage
             </p>
           </Reveal>
         </div>
@@ -1591,14 +1835,25 @@ function LinkedInPosts() {
 /* ============================================================
    FOOTER SECTION
    ============================================================ */
-function Footer() {
+function Footer({ data }: { data?: any }) {
   return (
-    <footer className="bg-white text-black py-16 border-t border-black/10 relative overflow-hidden">
+    <footer className="bg-white text-black relative overflow-hidden flex flex-col min-h-[450px]">
       {/* Subtle gold glow at the top edge */}
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-50"></div>
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-50 z-20"></div>
+
+      {/* Grounded Cityscape Background Illustration */}
+      <div className="absolute bottom-0 left-0 w-full h-full pointer-events-none z-0 flex items-end">
+        <img 
+          src={data?.imageUrl || "https://res.cloudinary.com/dppwnds6z/image/upload/v1790680329/ChatGPT_Image_Sep_29_2026_04_41_56_PM.png"} 
+          alt="Saudi Landmarks"
+          loading="lazy"
+          decoding="async"
+          className="w-full h-auto min-w-full object-cover object-bottom opacity-80" 
+        />
+      </div>
       
-      <div className="max-w-[1600px] mx-auto px-8 md:px-16 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
+      <div className="max-w-[1600px] w-full mx-auto px-8 md:px-16 pt-16 pb-12 relative z-10 flex-grow">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-0">
           
           {/* Brand Col */}
           <div className="space-y-6">
@@ -1657,13 +1912,15 @@ function Footer() {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Bottom Bar */}
-        <div className="border-t border-black/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-black/50 text-xs font-mono uppercase tracking-widest">
+      {/* Bottom Bar */}
+      <div className="relative z-10 w-full border-t border-black/10 bg-white/60 backdrop-blur-md">
+        <div className="max-w-[1600px] mx-auto px-8 md:px-16 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-black/70 font-semibold text-xs font-mono uppercase tracking-widest">
             &copy; {new Date().getFullYear()} VISO Group. All rights reserved.
           </p>
-          <div className="flex flex-wrap justify-center md:justify-end gap-x-6 gap-y-2 text-black/50 text-xs font-mono uppercase tracking-widest">
+          <div className="flex flex-wrap justify-center md:justify-end gap-x-6 gap-y-2 text-black/70 font-semibold text-xs font-mono uppercase tracking-widest">
             <Link to="/privacy" className="hover:text-gold transition-colors">Privacy Policy</Link>
             <Link to="/terms" className="hover:text-gold transition-colors">Terms of Service</Link>
             <Link to="/contact" className="hover:text-gold transition-colors">Contact Us</Link>

@@ -85,16 +85,16 @@
   },
   "framework": {
     "title_mono": "Security Consulting Framework",
-    "title_display": "A Structured Four-Stage",
-    "title_display_italic": "Security Approval Process",
-    "desc": "We guide organizations through a comprehensive security consultancy process designed to support regulatory compliance and operational readiness. Discover how our structured methodology ensures every phase is meticulously designed and validated.",
+    "title_display": "From Risk to",
+    "title_display_italic": "Readiness",
+    "desc": "End-to-End HCIS Security Consultancy Across Every Stage",
     "explore": "EXPLORE SECURITY ANALYSIS"
   },
   "about": {
     "who_we_are": "WHO WE ARE",
     "title": "Where Security Meets",
     "title_italic": "Peace of Mind",
-    "desc1": "VISO is a premier physical security consultancy specializing in safeguarding our clients' most valuable assets. Founded in February 2019 and headquartered in Riyadh, we now operate from five offices across the Kingdom—Riyadh, Khobar, Jubail, Jeddah and Yanbu—delivering tailored security solutions that align with national authorities and the highest international benchmarks.",
+    "desc1": "VISO is a premier physical security consultancy specializing in safeguarding our clients' most valuable assets. Founded in February 2019 and headquartered in Riyadh, we now operate from four regional offices across the Kingdom—Khobar, Jubail, Jeddah and Yanbu—delivering tailored security solutions that align with national authorities and the highest international benchmarks.",
     "desc2": "Our team of seasoned experts brings decades of combined experience in security analysis, risk assessment, and the implementation of integrated protective measures across critical national infrastructure, energy, industrial, financial and government sectors.",
     "stats": {
       "established": "ESTABLISHED",
@@ -553,24 +553,6 @@
     "modal_sending": "Submitting...",
     "modal_close": "Close"
   },
-  "about_page": {
-    "eyebrow": "About VISO",
-    "hero_title": "Where security meets",
-    "hero_title_italic": "peace of mind",
-    "hero_desc": "Premier physical security consultancy protecting critical assets across the Kingdom of Saudi Arabia.",
-    "cta": "Start a conversation",
-    "explore": "Explore services",
-    "story_title": "Where Security Meets",
-    "story_italic": "Peace of Mind",
-    "focus": "Focus",
-    "focus_value": "Physical Security",
-    "journey_title": "Our journey",
-    "ready_title": "Ready to secure your",
-    "ready_italic": "facility?",
-    "ready_desc": "Talk with our consultants about risk assessment, design, and operational readiness for your facility.",
-    "contact_team": "Contact our team",
-    "view_framework": "View framework"
-  },
   "home_extra": {
     "architectural": "Architectural",
     "integrity": "Integrity",
@@ -675,6 +657,16 @@
     }
   },
   "about_page": {
+    "eyebrow": "About VISO",
+    "cta": "Start a conversation",
+    "focus": "Focus",
+    "focus_value": "Physical Security",
+    "journey_title": "Our journey",
+    "ready_title": "Ready to secure your",
+    "ready_italic": "facility?",
+    "ready_desc": "Talk with our consultants about risk assessment, design, and operational readiness for your facility.",
+    "contact_team": "Contact our team",
+    "view_framework": "View framework",
     "hero_title": "Elevating Physical",
     "hero_title_italic": "Security Architecture.",
     "hero_desc": "Integrating high-end design with rigorous security protocols to create visually stunning and exceptionally safe spaces.",
@@ -690,7 +682,7 @@
     "hq_label": "HQ",
     "hq_val": "Riyadh, KSA",
     "coverage_label": "Coverage",
-    "coverage_val": "5 Regional Offices",
+    "coverage_val": "4+ Regional Offices",
     "focus_label": "Focus",
     "focus_val": "Physical Security",
     "msg_title1": "A Message from ",

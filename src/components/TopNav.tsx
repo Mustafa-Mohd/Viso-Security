@@ -19,7 +19,7 @@ function navItemClass(active: boolean) {
   return cn(
     "relative inline-flex items-center gap-1 px-3 py-2.5 font-sans text-[11px] font-semibold tracking-[0.12em] uppercase whitespace-nowrap transition-all duration-300 rounded-md",
     active
-      ? "text-primary bg-primary/12 shadow-[inset_0_-2px_0_0_var(--primary)]"
+      ? "text-primary"
       : "text-foreground/65 hover:text-primary hover:bg-foreground/[0.05]",
   );
 }
@@ -61,7 +61,7 @@ function NavDropdown({
                   className={cn(
                     "flex items-center gap-2 px-4 py-2.5 font-sans text-sm tracking-wide transition-colors border-s-2 border-transparent",
                     isActive(item.to)
-                      ? "border-primary bg-primary/10 text-primary font-semibold"
+                      ? "text-primary font-semibold"
                       : "text-foreground/80 hover:bg-foreground/[0.04] hover:text-primary hover:border-primary/40",
                   )}
                   aria-current={isActive(item.to) ? "page" : undefined}
@@ -83,6 +83,11 @@ export function TopNav() {
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isLanguageSwitching, setIsLanguageSwitching] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setIsLoggedIn(localStorage.getItem("viso_emp_logged_in") === "true");
+  }, []);
 
   const isAr = i18n.language?.startsWith("ar");
 
@@ -104,6 +109,15 @@ export function TopNav() {
     items: [
       { to: "/career", label: t("nav.careers") },
       { to: "/gallery", label: t("nav.gallery") },
+    ],
+  };
+
+  const securityGroup: NavGroup = {
+    id: "security_consultancy",
+    label: t("nav.security"),
+    items: [
+      { to: "/security", label: t("nav.overview", "Overview") },
+      { to: "/clients", label: t("nav.clients", "Clients") },
     ],
   };
 
@@ -143,12 +157,12 @@ export function TopNav() {
       >
         <div className="h-px w-full bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-10">
-          <div className="flex items-center gap-4 md:gap-6 h-16 md:h-20">
+          <div className="flex items-center gap-4 md:gap-6 h-20 md:h-24">
             <Link to="/" className="flex items-center gap-3 group shrink-0">
               <img loading="lazy" decoding="async"
                 src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
                 alt="Viso Group"
-                className="h-12 md:h-16 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
+                className="h-16 md:h-20 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
               />
               <span className="font-display font-semibold text-sm md:text-base tracking-wide text-primary hidden xl:inline-flex items-center whitespace-nowrap w-[500px]">
                 <span className="text-black">{t("about_page.vision_for")}&nbsp;</span>
@@ -174,13 +188,7 @@ export function TopNav() {
               >
                 {t("nav.about")}
               </Link>
-              <Link
-                to="/security"
-                className={navItemClass(isActivePath("/security"))}
-                aria-current={isActivePath("/security") ? "page" : undefined}
-              >
-                {t("nav.security")}
-              </Link>
+              <NavDropdown key={securityGroup.id} group={securityGroup} isActive={isActivePath} />
               <Link
                 to="/translation"
                 className={navItemClass(isActivePath("/translation"))}
@@ -246,6 +254,28 @@ export function TopNav() {
             </div>
           </div>
         </div>
+
+        {/* Employee Login Hanging Button */}
+        <div className="absolute right-4 sm:right-6 md:right-10 top-full">
+          {isLoggedIn ? (
+            <Link
+              to="/employee-dashboard"
+              className="flex items-center justify-center px-4 py-1.5 bg-background border border-t-0 border-primary/15 rounded-b-lg shadow-sm hover:bg-foreground/5 transition-colors font-mono text-[10px] font-bold uppercase tracking-wider text-primary gap-2"
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              My Dashboard
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setIsLoginModalOpen(true)}
+              className="flex items-center justify-center px-4 py-1.5 bg-background border border-t-0 border-primary/15 rounded-b-lg shadow-sm hover:bg-foreground/5 transition-colors font-mono text-[10px] font-bold uppercase tracking-wider text-primary gap-2"
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              Employee Login
+            </button>
+          )}
+        </div>
       </header>
 
       {mobileMenuOpen && (
@@ -267,14 +297,36 @@ export function TopNav() {
             {t("nav.about")}
           </Link>
 
-          <Link
-            to="/security"
-            onClick={() => setMobileMenuOpen(false)}
-            className={`${mobileNavClass("/security")} mb-2`}
-            aria-current={isActivePath("/security") ? "page" : undefined}
-          >
-            {t("nav.security")}
-          </Link>
+          <div className="border-b border-foreground/10 pb-3 mb-2 mt-2">
+            <button
+              type="button"
+              onClick={() => toggleMobileGroup(securityGroup.id)}
+              className="flex w-full items-center justify-between font-display text-xl text-foreground/85"
+            >
+              {securityGroup.label}
+              <ChevronDown
+                className={cn(
+                  "h-5 w-5 transition-transform",
+                  mobileExpanded === securityGroup.id && "rotate-180",
+                )}
+              />
+            </button>
+            {mobileExpanded === securityGroup.id && (
+              <div className="mt-3 flex flex-col gap-3">
+                {securityGroup.items.map((item) => (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={mobileNavClass(item.to)}
+                    aria-current={isActivePath(item.to) ? "page" : undefined}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
           <Link
             to="/translation"
             onClick={() => setMobileMenuOpen(false)}

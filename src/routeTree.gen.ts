@@ -17,7 +17,9 @@ import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as OthersRouteImport } from './routes/others'
 import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as EmployeeDashboardRouteImport } from './routes/employee-dashboard'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ClientsRouteImport } from './routes/clients'
 import { Route as CareerRouteImport } from './routes/career'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
@@ -67,9 +69,19 @@ const GalleryRoute = GalleryRouteImport.update({
   path: '/gallery',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EmployeeDashboardRoute = EmployeeDashboardRouteImport.update({
+  id: '/employee-dashboard',
+  path: '/employee-dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClientsRoute = ClientsRouteImport.update({
+  id: '/clients',
+  path: '/clients',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CareerRoute = CareerRouteImport.update({
@@ -118,7 +130,9 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/career': typeof CareerRoute
+  '/clients': typeof ClientsRoute
   '/contact': typeof ContactRoute
+  '/employee-dashboard': typeof EmployeeDashboardRoute
   '/gallery': typeof GalleryRoute
   '/others': typeof OthersRoute
   '/privacy': typeof PrivacyRoute
@@ -137,7 +151,9 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/career': typeof CareerRoute
+  '/clients': typeof ClientsRoute
   '/contact': typeof ContactRoute
+  '/employee-dashboard': typeof EmployeeDashboardRoute
   '/gallery': typeof GalleryRoute
   '/others': typeof OthersRoute
   '/privacy': typeof PrivacyRoute
@@ -157,7 +173,9 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/career': typeof CareerRoute
+  '/clients': typeof ClientsRoute
   '/contact': typeof ContactRoute
+  '/employee-dashboard': typeof EmployeeDashboardRoute
   '/gallery': typeof GalleryRoute
   '/others': typeof OthersRoute
   '/privacy': typeof PrivacyRoute
@@ -178,7 +196,9 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/career'
+    | '/clients'
     | '/contact'
+    | '/employee-dashboard'
     | '/gallery'
     | '/others'
     | '/privacy'
@@ -197,7 +217,9 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/career'
+    | '/clients'
     | '/contact'
+    | '/employee-dashboard'
     | '/gallery'
     | '/others'
     | '/privacy'
@@ -216,7 +238,9 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/career'
+    | '/clients'
     | '/contact'
+    | '/employee-dashboard'
     | '/gallery'
     | '/others'
     | '/privacy'
@@ -236,7 +260,9 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
   CareerRoute: typeof CareerRoute
+  ClientsRoute: typeof ClientsRoute
   ContactRoute: typeof ContactRoute
+  EmployeeDashboardRoute: typeof EmployeeDashboardRoute
   GalleryRoute: typeof GalleryRoute
   OthersRoute: typeof OthersRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -309,11 +335,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/employee-dashboard': {
+      id: '/employee-dashboard'
+      path: '/employee-dashboard'
+      fullPath: '/employee-dashboard'
+      preLoaderRoute: typeof EmployeeDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/clients': {
+      id: '/clients'
+      path: '/clients'
+      fullPath: '/clients'
+      preLoaderRoute: typeof ClientsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/career': {
@@ -380,7 +420,9 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   CareerRoute: CareerRoute,
+  ClientsRoute: ClientsRoute,
   ContactRoute: ContactRoute,
+  EmployeeDashboardRoute: EmployeeDashboardRoute,
   GalleryRoute: GalleryRoute,
   OthersRoute: OthersRoute,
   PrivacyRoute: PrivacyRoute,

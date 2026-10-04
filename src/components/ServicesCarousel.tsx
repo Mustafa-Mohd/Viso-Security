@@ -64,15 +64,23 @@ export function ServicesCarousel({ items }: { items: ServiceItem[] }) {
         </button>
 
         {/* Cards Container */}
-        <div className="relative w-full max-w-[280px] sm:max-w-[320px] md:max-w-[380px] h-[400px] md:h-[480px] flex justify-center items-center">
+        <div 
+          className="relative w-full max-w-[280px] sm:max-w-[320px] md:max-w-[380px] h-[400px] md:h-[480px] flex justify-center items-center"
+          style={{ perspective: "1500px" }}
+        >
           {items.map((item, i) => {
             const offset = getOffset(i);
+            const absOffset = Math.abs(offset);
             const isCenter = offset === 0;
+            const direction = Math.sign(offset);
             
-            const xPercent = offset * 115; 
-            const scale = isCenter ? 1 : 0.85 - Math.abs(offset) * 0.05;
-            const opacity = isCenter ? 1 : 1 - Math.abs(offset) * 0.35;
-            const zIndex = 30 - Math.abs(offset);
+            // 3D Coverflow Calculations
+            const xPercent = isCenter ? 0 : direction * (85 + absOffset * 22); 
+            const rotateY = offset * -18; // Inward facing
+            const scale = 1 - absOffset * 0.12;
+            const opacity = 1 - absOffset * 0.3;
+            const zIndex = 30 - absOffset;
+            const blur = absOffset > 1 ? "blur(2px)" : "blur(0px)";
 
             return (
               <motion.div
@@ -80,14 +88,17 @@ export function ServicesCarousel({ items }: { items: ServiceItem[] }) {
                 initial={false}
                 animate={{
                   x: `${xPercent}%`,
+                  rotateY,
                   scale,
                   opacity,
-                  zIndex
+                  zIndex,
+                  filter: blur
                 }}
                 transition={{
                   type: "spring",
-                  stiffness: 300,
-                  damping: 30,
+                  stiffness: 250,
+                  damping: 25,
+                  mass: 0.8
                 }}
                 className="absolute top-0 left-0 w-full h-full"
               >

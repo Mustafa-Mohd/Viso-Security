@@ -18,7 +18,7 @@ function renderVisionTitle(title: string) {
 }
 
 const METRICS_COUNTERS = [
-  { num: 5, suffix: "+", labelKey: "hubs", subKey: "hubs_sub" },
+  { num: 4, suffix: "+", labelKey: "hubs", subKey: "hubs_sub" },
   { num: 100, suffix: "+", labelKey: "mega", subKey: "mega_sub" },
   { num: 100, suffix: "%", labelKey: "hcis", subKey: "hcis_sub" },
   { num: 24, suffix: "/7", labelKey: "mission", subKey: "mission_sub" },
@@ -67,6 +67,19 @@ export function AboutInteractive({
       <div className="pointer-events-none absolute top-0 -start-12 w-96 h-96 bg-primary/[0.03] rounded-full blur-[100px]" />
       <div className="pointer-events-none absolute bottom-0 -end-12 w-96 h-96 bg-primary/[0.03] rounded-full blur-[100px]" />
 
+      {/* Centered Welcome Title */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, ease }}
+        className="w-full flex justify-center text-center mb-12 md:mb-16 relative z-10"
+      >
+        <h2 className="font-display text-4xl md:text-5xl lg:text-[3.5rem] font-bold tracking-tight text-foreground uppercase">
+          Welcome to <span className="text-primary">VISO GROUP</span>
+        </h2>
+      </motion.div>
+
       <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center mb-12 relative z-10 flex-1">
         {/* Left Column: Simple About Info */}
         <div className="lg:col-span-6 flex flex-col justify-center">
@@ -94,10 +107,10 @@ export function AboutInteractive({
 
             {/* Main Headline */}
             <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               viewport={{ once: true }}
-              transition={{ duration: 0.85, delay: 0.08, ease }}
+              transition={{ duration: 1, delay: 0.1, ease }}
               className="font-display text-3xl md:text-4xl lg:text-[2.65rem] leading-[1.12] tracking-tight text-foreground font-bold"
             >
               {renderVisionTitle(title)}
@@ -105,11 +118,11 @@ export function AboutInteractive({
 
             {/* Subtitle */}
             <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.14, ease }}
-              className="mt-6 text-base md:text-lg text-foreground/90 leading-relaxed font-light text-pretty"
+              transition={{ duration: 0.8, delay: 0.2, ease }}
+              className="mt-6 text-base md:text-lg text-foreground/90 leading-relaxed font-light text-left text-pretty border-l-[3px] border-gold pl-5"
             >
               {subtitle}
             </motion.p>
@@ -119,7 +132,7 @@ export function AboutInteractive({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2, ease }}
-              className="mt-4 text-sm md:text-base text-foreground/80 leading-relaxed font-light text-pretty"
+              className="mt-4 text-sm md:text-base text-foreground/80 leading-relaxed font-light text-left text-pretty ml-[3px] pl-5"
             >
               {whoWeAreDesc}
             </motion.p>
@@ -150,14 +163,22 @@ export function AboutInteractive({
             whileInView={{ opacity: 1, scale: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.9, delay: 0.2, ease }}
-            className="relative w-full aspect-[5/4] md:aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border border-foreground/10 group"
+            className="w-full"
           >
-            <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
-            <img loading="lazy" decoding="async"
-              src="https://res.cloudinary.com/dppwnds6z/image/upload/v1790599106/ChatGPT_Image_Sep_28_2026_06_08_11_PM.png"
-              alt="About VISO Security"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-            />
+            <motion.div
+              animate={{ y: [0, -12, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              className="relative w-full aspect-[5/4] md:aspect-[4/3] rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(212,175,55,0.15)] border border-gold/30 group cursor-pointer"
+            >
+              <div className="absolute inset-0 bg-gradient-to-tr from-gold/20 via-transparent to-transparent z-10 opacity-60 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none" />
+              <motion.img loading="lazy" decoding="async"
+                src="https://res.cloudinary.com/dppwnds6z/image/upload/v1790599106/ChatGPT_Image_Sep_28_2026_06_08_11_PM.png"
+                alt="About VISO Security"
+                whileHover={{ scale: 1.08 }}
+                transition={{ duration: 1.2, ease: "easeOut" }}
+                className="w-full h-full object-cover"
+              />
+            </motion.div>
           </motion.div>
         </div>
       </div>

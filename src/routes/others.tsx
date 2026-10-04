@@ -1045,7 +1045,7 @@ function Regional() {
         </Reveal>
         <Reveal delay={0.1}>
           <h2 className="mt-6 max-w-3xl font-display text-5xl leading-[1.05] text-balance md:text-6xl">
-            Five offices. <em className="text-gradient-gold">One Kingdom.</em>
+            4+ regional offices. <em className="text-gradient-gold">One Kingdom.</em>
           </h2>
         </Reveal>
 

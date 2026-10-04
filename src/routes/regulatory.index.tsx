@@ -31,6 +31,7 @@ const icons = {
   hcis: Building2,
   neom: NeomIcon,
   api780: FileText,
+  aramco: Hexagon,
 } as const;
 
 function RegulatoryHubPage() {
