@@ -87,17 +87,7 @@ function ClientsPage() {
                           <h3 className="font-sans font-semibold text-xs md:text-sm text-neutral-800 mb-1 group-hover:text-primary transition-colors line-clamp-2">{client.name}</h3>
                         </div>
                         
-                        <div className="mt-3 pt-3 w-full border-t border-neutral-100 flex justify-center">
-                          <a 
-                            href={client.url} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 font-mono text-[9px] font-bold tracking-widest text-primary group-hover:text-gold transition-colors uppercase"
-                          >
-                            {t("clients.visit", "VISIT")}
-                            <span className="text-xs group-hover:translate-x-1 transition-transform">→</span>
-                          </a>
-                        </div>
+
                       </motion.div>
                     </TiltCard>
                   ))}

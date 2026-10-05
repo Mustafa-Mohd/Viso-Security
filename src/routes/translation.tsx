@@ -108,17 +108,15 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const verifyId = params.get("verify");
-      const verifyNationalId = params.get("nationalId");
 
-      if (verifyId && verifyNationalId) {
+      if (verifyId) {
         setCertId(verifyId);
-        setNationalId(verifyNationalId);
-        handleVerification(verifyId, verifyNationalId);
+        handleVerification(verifyId);
       }
     }
   }, []);
 
-  const handleVerification = async (idToVerify: string, natIdToVerify: string) => {
+  const handleVerification = async (idToVerify: string) => {
     setLoading(true);
     setError("");
     setResult(null);
@@ -128,10 +126,6 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
       
       if (!cert) {
         setError("Certificate not found. Please check the ID.");
-        return;
-      }
-      if (cert.national_id !== natIdToVerify.trim()) {
-        setError("Invalid National ID.");
         return;
       }
       setResult(cert);
@@ -149,7 +143,7 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
 
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
-    handleVerification(certId, nationalId);
+    handleVerification(certId);
   };
 
   const getStatusColor = (displayStatus: CertificateDisplayStatus) => {
@@ -190,7 +184,7 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary font-mono text-[10px] tracking-[0.2em] uppercase mb-6">
             <ShieldCheck className="w-4 h-4" />
-            Certipedia Explorer
+            Certificate Search
           </div>
           <h2 className="font-display text-4xl md:text-5xl text-neutral-900 mb-4">
             VISO Certificate Database
@@ -207,7 +201,7 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
           </h3>
           <form id="verify-form" onSubmit={handleVerify} className="flex flex-col md:flex-row gap-6 items-end">
             <div className="flex-1 w-full">
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-500 mb-2">Certificate ID Number</label>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-500 mb-2">Certificate Number</label>
               <input 
                 type="text" 
                 value={certId}
@@ -216,21 +210,6 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
                 className="w-full bg-neutral-50 border border-neutral-200 rounded-lg py-3.5 px-4 text-sm font-mono focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all text-neutral-800 placeholder:text-neutral-400"
                 required
               />
-            </div>
-            
-            <div className="flex-1 w-full relative">
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-500 mb-2">National ID</label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                <input 
-                  type="text" 
-                  value={nationalId}
-                  onChange={(e) => setNationalId(e.target.value)}
-                  placeholder="10-digit ID"
-                  className="w-full bg-neutral-50 border border-neutral-200 rounded-lg py-3.5 pl-11 pr-4 text-sm font-mono focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all text-neutral-800 placeholder:text-neutral-400"
-                  required
-                />
-              </div>
             </div>
 
             <button 

@@ -47,11 +47,11 @@ export function LocationsSaudiMap({ cities, activeId, onSelect }: Props) {
                   key={geo.rsmKey}
                   geography={geo}
                   fill="transparent"
-                  stroke="rgba(255, 255, 255, 0.95)"
+                  stroke="rgba(212, 175, 55, 0.95)"
                   strokeWidth={2.5}
                   style={{
                     default: { outline: "none", filter: "url(#outline-glow)" },
-                    hover: { fill: "rgba(255,255,255,0.05)", outline: "none", filter: "url(#outline-glow)" },
+                    hover: { fill: "rgba(212,175,55,0.05)", outline: "none", filter: "url(#outline-glow)" },
                     pressed: { outline: "none", filter: "url(#outline-glow)" },
                   } as any}
                 />

@@ -10,6 +10,7 @@ import { supabase } from "@/lib/supabase";
 import { LazyMount } from "@/components/LazyMount";
 import { ServicesCarousel } from "@/components/ServicesCarousel";
 import { clientCategoriesData, ClientLogo } from "@/data/clientsData";
+import { X, FileText, Briefcase, ShieldCheck, Star, HeartHandshake, Target, Sparkles } from "lucide-react";
 
 const AboutInteractive = lazy(() =>
   import("@/components/AboutInteractive").then((m) => ({ default: m.AboutInteractive }))
@@ -422,6 +423,34 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
         />
       </div>
 
+      {/* Regulatory Bodies / Standards Icons on Top */}
+      <div className="absolute top-6 left-6 md:top-8 md:left-12 z-30 flex gap-3 md:gap-4 items-center">
+        {(data?.regulatoryLogos || [
+          { slug: "moi", label: "MOI", img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png" },
+          { slug: "sais", label: "SAIS", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgBwqTj0FNNJJm59mHR1GKznOvHK23QpPB5jwKZQuFaQ&s=10" },
+          { slug: "neom", label: "NEOM", img: "https://neom.scene7.com/is/image/neom/logo-neom-en-spaced?fmt=png-alpha&scl=1" },
+          { slug: "api780", label: "API 780", img: "https://theshopmag.com/wp-content/uploads/2023/05/api-logo-stacked.png" },
+          { slug: "aramco", label: "ARAMCO", img: "https://upload.wikimedia.org/wikipedia/en/thumb/8/85/Saudi_Aramco_logo.svg/1200px-Saudi_Aramco_logo.svg.png" },
+        ]).map((body: any, idx: number) => (
+          <Link
+            key={idx}
+            to="/regulatory/$slug"
+            params={{ slug: body.slug }}
+            className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg group relative cursor-pointer p-2 md:p-2.5"
+            aria-label={body.label}
+          >
+            <img 
+              src={body.img}
+              alt={body.label}
+              className="w-full h-full object-contain filter grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500"
+            />
+            <span className="absolute top-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">
+              {body.label}
+            </span>
+          </Link>
+        ))}
+      </div>
+
       {/* Indicators */}
       <div className="absolute bottom-6 md:bottom-8 start-6 md:start-12 z-20 flex gap-2">
         {servicesList.map((_, i) => (
@@ -435,6 +464,29 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
               i === currentSlide ? "w-10 bg-gold shadow-[0_0_8px_#D4AF37]" : "w-3 bg-white/45 hover:bg-white/75"
             }`}
           />
+        ))}
+      </div>
+
+      {/* Certificate Icons on Top Right */}
+      <div className="absolute top-1/2 -translate-y-1/2 right-6 md:right-12 z-30 flex flex-col gap-4">
+        {[
+          { icon: <FileText size={20} />, img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100377/8aef84d0-fbe6-426d-b485-b4241b30daae.png", label: "CR 2026-2027" },
+          { icon: <Briefcase size={20} />, img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100602/3d24f59b-1530-4316-bd0d-27ac9167ccff.png", label: "Business License" },
+          { icon: <ShieldCheck size={20} />, img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100668/865e7db3-7be4-4ed4-920e-e0a8b29af7bb.png", label: "SAIS Certificate" }
+        ].map((cert, idx) => (
+          <a 
+            key={idx}
+            href={cert.img}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-12 h-12 rounded-full bg-white/10 hover:bg-gold backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-[0_4px_15px_rgba(0,0,0,0.3)] group relative cursor-pointer"
+            aria-label={cert.label}
+          >
+            {cert.icon}
+            <span className="absolute right-full mr-4 bg-black/80 backdrop-blur-sm border border-white/10 text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+              {cert.label}
+            </span>
+          </a>
         ))}
       </div>
     </section>
@@ -563,7 +615,7 @@ function FrameworkSection({ data }: { data?: any }) {
                 </div>
 
                 <div className="relative z-10 flex flex-col h-full">
-                  <div className="font-mono text-xs tracking-widest text-primary mb-6 flex items-center gap-3">
+                  <div className="font-sans text-sm font-bold uppercase tracking-wider text-primary mb-6 flex items-center gap-3">
                     <span className="w-4 h-px bg-primary/50 group-hover:bg-primary transition-colors"></span>
                     {t("security.stage")} {stage.num}
                   </div>
@@ -1148,6 +1200,25 @@ function ExpandingValueCards({ items }: { items: any[] }) {
                     transition={{ duration: 0.5, staggerChildren: 0.1 }}
                     className="absolute inset-0 flex flex-col justify-end p-6 md:p-10 transform-gpu"
                   >
+                    {/* Large Animated Floating Symbol */}
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.3, rotate: -30 }}
+                      animate={{ opacity: 0.25, scale: 1, rotate: 0 }}
+                      transition={{ duration: 1.2, ease: "easeOut", delay: 0.3 }}
+                      className="absolute top-10 right-10 md:top-16 md:right-16 w-32 h-32 md:w-56 md:h-56 pointer-events-none z-0"
+                    >
+                      <motion.div
+                        animate={{ y: [0, -15, 0] }}
+                        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                        className="w-full h-full text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.6)]"
+                      >
+                        {i % 4 === 0 && <Star className="w-full h-full" strokeWidth={0.8} />}
+                        {i % 4 === 1 && <HeartHandshake className="w-full h-full" strokeWidth={0.8} />}
+                        {i % 4 === 2 && <ShieldCheck className="w-full h-full" strokeWidth={0.8} />}
+                        {i % 4 === 3 && <Target className="w-full h-full" strokeWidth={0.8} />}
+                      </motion.div>
+                    </motion.div>
+
                     <motion.div
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -1587,7 +1658,7 @@ function About({ data }: { data?: any }) {
         >
           <span>{t("about.stats.established")} 2019</span>
           <span className="text-gold">·</span>
-          <span>{t("about.stats.offices")}: 4+ Hubs</span>
+          <span>{t("about.stats.offices")}: 4 Hubs</span>
           <span className="text-gold">·</span>
           <span className="text-foreground/80 font-medium">Riyadh · Khobar · Jubail · Jeddah · Yanbu</span>
         </motion.div>
@@ -1674,7 +1745,7 @@ function WallFrameStageCard({
               <div className="mt-3.5 text-center px-1">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <div className="h-[1px] w-4 bg-primary/40" />
-                  <p className="font-mono text-[10px] font-bold tracking-[0.25em] text-primary uppercase">
+                  <p className="font-sans text-sm font-bold tracking-[0.2em] text-primary uppercase">
                     Stage {stage.num}
                   </p>
                   <div className="h-[1px] w-4 bg-primary/40" />

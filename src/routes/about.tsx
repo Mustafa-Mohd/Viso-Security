@@ -668,9 +668,9 @@ function StatsBand() {
   const { t } = useTranslation();
   const stats = [
     { value: 2019, suffix: "", label: t("about.stats.established"), prefix: "" },
-    { value: 4, suffix: "+", label: t("about.stats.offices"), prefix: "" },
+    { value: 4, suffix: "", label: t("about.stats.offices"), prefix: "" },
     { value: 120, suffix: "+", label: t("about.stats.projects"), prefix: "" },
-    { value: 100, suffix: "%", label: t("about.stats.local"), prefix: "" },
+    { value: 100, suffix: "%", label: "CLIENT SATISFACTION", prefix: "" },
   ];
 
   return (

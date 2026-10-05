@@ -14,6 +14,7 @@ import {
   deleteGalleryImageRecord,
 } from "@/lib/galleryApi";
 import { fetchLeaveRequests } from "@/lib/leaveApi";
+import { PROJECTS, type ProjectItem } from "@/routes/projects";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -563,7 +564,7 @@ function AdminPage() {
   };
 
   // CMS State
-  const [cmsSection, setCmsSection] = useState<"hero" | "about" | "core_values" | "areas" | "services" | "framework" | "showcase" | "clients" | "lifecycle" | "locations" | "stats" | "cta" | "footer">("hero");
+  const [cmsSection, setCmsSection] = useState<"hero" | "about" | "core_values" | "areas" | "services" | "framework" | "showcase" | "clients" | "lifecycle" | "locations" | "stats" | "cta" | "footer" | "projects">("hero");
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [auditLogsLoading, setAuditLogsLoading] = useState(false);
 
@@ -607,13 +608,21 @@ const DEFAULT_HERO_SLIDES = [
     subtitle?: string;
     desc?: string;
     images?: string[];
+    regulatoryLogos?: { slug: string; label: string; img: string }[];
   }>({ 
     slides: [...DEFAULT_HERO_SLIDES],
     title1: "Designing", 
     title2: "The Future", 
     subtitle: "Elevating physical security through sophisticated architectural integration.", 
     desc: "We merge high-end architectural design with rigorous security protocols to create spaces that are both exceptionally safe and visually stunning. Inspired by global innovation leaders.", 
-    images: [] 
+    images: [],
+    regulatoryLogos: [
+      { slug: "moi", label: "MOI", img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png" },
+      { slug: "sais", label: "SAIS", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgBwqTj0FNNJJm59mHR1GKznOvHK23QpPB5jwKZQuFaQ&s=10" },
+      { slug: "neom", label: "NEOM", img: "https://neom.scene7.com/is/image/neom/logo-neom-en-spaced?fmt=png-alpha&scl=1" },
+      { slug: "api780", label: "API 780", img: "https://theshopmag.com/wp-content/uploads/2023/05/api-logo-stacked.png" },
+      { slug: "aramco", label: "ARAMCO", img: "https://upload.wikimedia.org/wikipedia/en/thumb/8/85/Saudi_Aramco_logo.svg/1200px-Saudi_Aramco_logo.svg.png" },
+    ]
   });
   const [uploadingSlideIdx, setUploadingSlideIdx] = useState<number | null>(null);
   const [draggingSlideIdx, setDraggingSlideIdx] = useState<number | null>(null);
@@ -749,6 +758,8 @@ const DEFAULT_HERO_SLIDES = [
   const [footerData, setFooterData] = useState<{ imageUrl: string }>({
     imageUrl: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790680329/ChatGPT_Image_Sep_29_2026_04_41_56_PM.png"
   });
+
+  const [projectsData, setProjectsData] = useState<ProjectItem[]>([...PROJECTS]);
 
   // Inquiries State
   const [inquiries, setInquiries] = useState<ContactSubmission[]>([]);
@@ -1678,6 +1689,12 @@ const DEFAULT_HERO_SLIDES = [
               >
                 Footer
               </button>
+              <button
+                onClick={() => setCmsSection('projects')}
+                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'projects' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
+              >
+                Projects Portfolio
+              </button>
               <div className="mt-8 border-t border-foreground/10 pt-4">
                 <button
                   onClick={async () => {
@@ -1919,6 +1936,139 @@ const DEFAULT_HERO_SLIDES = [
                     {(heroData.slides || []).length === 0 && (
                       <div className="p-4 text-center rounded-lg border border-dashed border-foreground/20 text-muted-foreground text-xs">
                         No slides configured. Click "+ Add Slide" to create one.
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Regulatory Logos Section */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 pt-6 border-b border-foreground/10 mt-4">
+                    <div>
+                      <h2 className="text-lg font-bold text-foreground">Standard & Compliance Logos</h2>
+                      <p className="text-[11px] text-muted-foreground">
+                        Logos displayed on the top left of the Hero Section.
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const currentLogos = heroData.regulatoryLogos || [];
+                          setHeroData({
+                            ...heroData,
+                            regulatoryLogos: [
+                              ...currentLogos,
+                              { slug: "new", label: "New Standard", img: "" },
+                            ],
+                          });
+                        }}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md border border-foreground/15 hover:bg-foreground/5 text-foreground transition-all cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        Add Logo
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    {(heroData.regulatoryLogos || []).map((logo, idx) => (
+                      <div
+                        key={idx}
+                        className="flex flex-col md:flex-row items-stretch md:items-center gap-2.5 p-2 rounded-lg border border-foreground/10 bg-background/60 hover:border-foreground/20 transition-all"
+                      >
+                        {/* Logo Thumbnail */}
+                        <div className="relative shrink-0 w-12 h-12 rounded-md overflow-hidden border border-foreground/15 bg-surface flex items-center justify-center">
+                          {logo.img ? (
+                            <img src={logo.img} alt={logo.label} className="w-full h-full object-contain p-1" />
+                          ) : (
+                            <ImageIcon className="w-4 h-4 text-muted-foreground/50" />
+                          )}
+                        </div>
+
+                        {/* Inputs */}
+                        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2">
+                          <input
+                            type="text"
+                            placeholder="Label (e.g. SAIS)"
+                            value={logo.label || ""}
+                            onChange={(e) => {
+                              const updated = [...(heroData.regulatoryLogos || [])];
+                              updated[idx] = { ...updated[idx], label: e.target.value };
+                              setHeroData({ ...heroData, regulatoryLogos: updated });
+                            }}
+                            className="w-full px-2.5 py-1.5 rounded-md bg-surface border border-foreground/15 text-xs text-foreground font-medium placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Slug (e.g. sais)"
+                            value={logo.slug || ""}
+                            onChange={(e) => {
+                              const updated = [...(heroData.regulatoryLogos || [])];
+                              updated[idx] = { ...updated[idx], slug: e.target.value };
+                              setHeroData({ ...heroData, regulatoryLogos: updated });
+                            }}
+                            className="w-full px-2.5 py-1.5 rounded-md bg-surface border border-foreground/15 text-xs text-foreground font-mono placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none"
+                          />
+                          <input
+                            type="url"
+                            placeholder="Image URL"
+                            value={logo.img || ""}
+                            onChange={(e) => {
+                              const updated = [...(heroData.regulatoryLogos || [])];
+                              updated[idx] = { ...updated[idx], img: e.target.value };
+                              setHeroData({ ...heroData, regulatoryLogos: updated });
+                            }}
+                            className="w-full px-2.5 py-1.5 rounded-md bg-surface border border-foreground/15 text-xs text-foreground font-mono placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none"
+                          />
+                        </div>
+
+                        {/* Controls */}
+                        <div className="flex items-center gap-1 shrink-0 self-end md:self-center">
+                          <button
+                            type="button"
+                            disabled={idx === 0}
+                            onClick={() => {
+                              if (idx === 0) return;
+                              const updated = [...(heroData.regulatoryLogos || [])];
+                              const temp = updated[idx];
+                              updated[idx] = updated[idx - 1];
+                              updated[idx - 1] = temp;
+                              setHeroData({ ...heroData, regulatoryLogos: updated });
+                            }}
+                            className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-20 disabled:hover:text-muted-foreground transition-colors cursor-pointer"
+                          >
+                            <ArrowUp className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            disabled={idx === (heroData.regulatoryLogos || []).length - 1}
+                            onClick={() => {
+                              if (idx === (heroData.regulatoryLogos || []).length - 1) return;
+                              const updated = [...(heroData.regulatoryLogos || [])];
+                              const temp = updated[idx];
+                              updated[idx] = updated[idx + 1];
+                              updated[idx + 1] = temp;
+                              setHeroData({ ...heroData, regulatoryLogos: updated });
+                            }}
+                            className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-20 disabled:hover:text-muted-foreground transition-colors cursor-pointer"
+                          >
+                            <ArrowDown className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updated = (heroData.regulatoryLogos || []).filter((_, i) => i !== idx);
+                              setHeroData({ ...heroData, regulatoryLogos: updated });
+                            }}
+                            className="p-1 rounded text-red-500/70 hover:text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                    {(heroData.regulatoryLogos || []).length === 0 && (
+                      <div className="p-4 text-center rounded-lg border border-dashed border-foreground/20 text-muted-foreground text-xs">
+                        No logos configured. Click "Add Logo" to create one.
                       </div>
                     )}
                   </div>
@@ -2731,6 +2881,199 @@ const DEFAULT_HERO_SLIDES = [
                     onChange={(url) => setFooterData({ ...footerData, imageUrl: url })}
                   />
                   <button onClick={() => handleSaveCmsSection('footer', footerData)} className="mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors w-fit font-medium">Save Footer</button>
+                </div>
+              )}
+
+              {/* PROJECTS CMS */}
+              {cmsSection === 'projects' && (
+                <div className="flex flex-col gap-4 max-w-5xl">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-foreground/10">
+                    <div>
+                      <h2 className="text-2xl mb-2">Projects Portfolio</h2>
+                      <p className="text-[11px] text-muted-foreground">Manage the list of ongoing and completed projects displayed on the Projects page.</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setProjectsData([
+                            {
+                              sNo: projectsData.length > 0 ? Math.max(...projectsData.map(p => p.sNo)) + 1 : 1,
+                              name: "New Project",
+                              client: "Client Name",
+                              endUser: "End User",
+                              sector: "SECTOR",
+                              category: "infra",
+                              status: "Ongoing",
+                              scope: "Project scope description..."
+                            },
+                            ...projectsData
+                          ]);
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-md border border-primary text-primary hover:bg-primary/10 transition-all cursor-pointer"
+                      >
+                        <Plus className="w-4 h-4" /> Add Project
+                      </button>
+                      <button
+                        onClick={() => handleSaveCmsSection('projects', projectsData)}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-all cursor-pointer shadow-xs"
+                      >
+                        <Save className="w-4 h-4" /> Save Projects
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 mt-4 h-[60vh] overflow-y-auto pr-2">
+                    {projectsData.map((project, idx) => (
+                      <div key={idx} className="bg-surface p-4 rounded-xl border border-foreground/10 space-y-3 relative group">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (confirm("Remove this project?")) {
+                              const newArr = [...projectsData];
+                              newArr.splice(idx, 1);
+                              setProjectsData(newArr);
+                            }
+                          }}
+                          className="absolute top-4 right-4 p-1.5 rounded-md text-red-500 hover:bg-red-500/10 transition-colors opacity-0 group-hover:opacity-100"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pr-8">
+                          <div>
+                            <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Project Name</label>
+                            <input
+                              type="text"
+                              value={project.name}
+                              onChange={(e) => {
+                                const newArr = [...projectsData];
+                                newArr[idx] = { ...newArr[idx], name: e.target.value };
+                                setProjectsData(newArr);
+                              }}
+                              className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Status</label>
+                            <select
+                              value={project.status}
+                              onChange={(e) => {
+                                const newArr = [...projectsData];
+                                newArr[idx] = { ...newArr[idx], status: e.target.value as "Ongoing" | "Completed" };
+                                setProjectsData(newArr);
+                              }}
+                              className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                            >
+                              <option value="Ongoing">Ongoing</option>
+                              <option value="Completed">Completed</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Client</label>
+                            <input
+                              type="text"
+                              value={project.client}
+                              onChange={(e) => {
+                                const newArr = [...projectsData];
+                                newArr[idx] = { ...newArr[idx], client: e.target.value };
+                                setProjectsData(newArr);
+                              }}
+                              className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">End User</label>
+                            <input
+                              type="text"
+                              value={project.endUser}
+                              onChange={(e) => {
+                                const newArr = [...projectsData];
+                                newArr[idx] = { ...newArr[idx], endUser: e.target.value };
+                                setProjectsData(newArr);
+                              }}
+                              className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Category (ID)</label>
+                            <select
+                              value={project.category}
+                              onChange={(e) => {
+                                const newArr = [...projectsData];
+                                newArr[idx] = { ...newArr[idx], category: e.target.value };
+                                setProjectsData(newArr);
+                              }}
+                              className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                            >
+                              <option value="oil-gas">Oil & Gas</option>
+                              <option value="water">Water</option>
+                              <option value="energy">Energy</option>
+                              <option value="giga-projects">Giga Projects</option>
+                              <option value="infra">Infra</option>
+                              <option value="defence">Defence</option>
+                              <option value="ports">Ports</option>
+                              <option value="mining">Mining</option>
+                              <option value="finance">Finance</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Sector Name (Display)</label>
+                            <input
+                              type="text"
+                              value={project.sector}
+                              onChange={(e) => {
+                                const newArr = [...projectsData];
+                                newArr[idx] = { ...newArr[idx], sector: e.target.value };
+                                setProjectsData(newArr);
+                              }}
+                              className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Location</label>
+                            <input
+                              type="text"
+                              value={project.location || ""}
+                              onChange={(e) => {
+                                const newArr = [...projectsData];
+                                newArr[idx] = { ...newArr[idx], location: e.target.value };
+                                setProjectsData(newArr);
+                              }}
+                              className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                              placeholder="e.g. Riyadh, KSA"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Highlight Badge</label>
+                            <input
+                              type="text"
+                              value={project.highlight || ""}
+                              onChange={(e) => {
+                                const newArr = [...projectsData];
+                                newArr[idx] = { ...newArr[idx], highlight: e.target.value };
+                                setProjectsData(newArr);
+                              }}
+                              className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                              placeholder="e.g. Flagship, VIP"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Scope of Work</label>
+                          <textarea
+                            value={project.scope}
+                            onChange={(e) => {
+                              const newArr = [...projectsData];
+                              newArr[idx] = { ...newArr[idx], scope: e.target.value };
+                              setProjectsData(newArr);
+                            }}
+                            className="w-full px-3 py-2 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none min-h-[60px]"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

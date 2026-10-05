@@ -102,7 +102,7 @@ function CertificatePdfView() {
 
         <div className="flex-grow relative z-0">
           <p className="text-base text-neutral-700 mb-12 leading-relaxed text-justify">
-            This document officially certifies that the translation provided for the project <strong className="text-neutral-900">{certData.project_name}</strong> has been completed by certified professionals and verified for accuracy and fidelity to the source document.
+            This document officially certifies that the translation provided for the client <strong className="text-neutral-900">{certData.project_name}</strong> has been completed by certified professionals and verified for accuracy and fidelity to the source document.
           </p>
 
           <div className="grid grid-cols-2 gap-y-8 gap-x-12 text-sm mb-16 border border-neutral-200 p-10 rounded-xl bg-neutral-50/50 relative">
@@ -120,8 +120,8 @@ function CertificatePdfView() {
               <span className="font-mono font-medium text-neutral-800 text-base">{certId}</span>
             </div>
             <div className="relative z-10">
-              <span className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-2">National ID</span>
-              <span className="font-mono font-medium text-neutral-800 text-base">{certData.national_id}</span>
+              <span className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-2">Client Name</span>
+              <span className="font-mono font-medium text-neutral-800 text-base">{certData.project_name}</span>
             </div>
             <div className="relative z-10">
               <span className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-2">Source Language</span>

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 import { TopNav } from "@/components/TopNav";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import {
@@ -116,7 +117,7 @@ const SECTORS: SectorCategory[] = [
 ];
 
 // ─── Master Project List (77 Items) ──────────────────────────────────────────
-const PROJECTS: ProjectItem[] = [
+export const PROJECTS: ProjectItem[] = [
   // ── Oil & Gas / Petrochemical (19 projects) ──
   { sNo: 14, client: "LINDE", name: "Jubail 3_NH3", endUser: "SIPCHEM", sector: "PETROCHEMICAL", category: "oil-gas", status: "Ongoing", location: "Jubail Industrial City", scope: "Integrated security engineering design, HCIS Stage-1 & Stage-2 compliance, CCTV surveillance and access control for ammonia chemical complex." },
   { sNo: 17, client: "SAMSUNG", name: "SASREF ETHANE CRACKER", endUser: "SAUDI ARAMCO", sector: "PETROCHEMICAL", category: "oil-gas", status: "Ongoing", highlight: "Aramco Project", location: "Jubail Industrial City", scope: "Industrial physical security system, perimeter intrusion detection (PIDS), and HCIS directives compliance review." },
@@ -395,6 +396,18 @@ function ProjectDetailModal({ project, onClose }: { project: ProjectItem; onClos
 
 // ─── Main Projects Page Component ─────────────────────────────────────────────
 function ProjectsPage() {
+  const [projectsList, setProjectsList] = useState<ProjectItem[]>(PROJECTS);
+
+  useEffect(() => {
+    async function loadProjects() {
+      const { data } = await supabase.from('cms_content').select('content').eq('section_key', 'projects').maybeSingle();
+      if (data && data.content && Array.isArray(data.content)) {
+        setProjectsList(data.content);
+      }
+    }
+    loadProjects();
+  }, []);
+
   const [selectedSector, setSelectedSector] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedClient, setSelectedClient] = useState<string>("all");
@@ -409,13 +422,13 @@ function ProjectsPage() {
   // Extract unique clients for filter dropdown
   const uniqueClients = useMemo(() => {
     const clients = new Set<string>();
-    PROJECTS.forEach((p) => clients.add(p.client));
+    projectsList.forEach((p) => clients.add(p.client));
     return ["all", ...Array.from(clients).sort()];
-  }, []);
+  }, [projectsList]);
 
   // Filter projects dynamically
   const filteredProjects = useMemo(() => {
-    return PROJECTS.filter((project) => {
+    return projectsList.filter((project) => {
       const matchesSector = selectedSector === "all" || project.category === selectedSector;
       const matchesClient = selectedClient === "all" || project.client === selectedClient;
       const matchesStatus = selectedStatus === "all" || project.status === selectedStatus;
@@ -430,18 +443,18 @@ function ProjectsPage() {
 
       return matchesSector && matchesClient && matchesStatus && matchesSearch;
     });
-  }, [selectedSector, selectedClient, selectedStatus, searchQuery]);
+  }, [selectedSector, selectedClient, selectedStatus, searchQuery, projectsList]);
 
   // Sector Counts Map
   const sectorCounts = useMemo(() => {
-    const map: Record<string, number> = { all: PROJECTS.length };
+    const map: Record<string, number> = { all: projectsList.length };
     SECTORS.forEach((s) => {
       if (s.id !== "all") {
-        map[s.id] = PROJECTS.filter((p) => p.category === s.id).length;
+        map[s.id] = projectsList.filter((p) => p.category === s.id).length;
       }
     });
     return map;
-  }, []);
+  }, [projectsList]);
 
   return (
     <>
@@ -480,7 +493,7 @@ function ProjectsPage() {
               className="inline-flex items-center gap-2 font-mono text-xs font-bold tracking-[0.3em] uppercase px-4 py-2 rounded-full border border-primary/30 bg-primary/10 text-primary mb-6 shadow-lg backdrop-blur-md"
             >
               <Activity className="w-3.5 h-3.5" />
-              Master Project Portfolio — {PROJECTS.length} Key Delivered Projects
+              Master Project Portfolio — {projectsList.length} Key Delivered Projects
             </motion.div>
 
             <motion.h1
@@ -519,7 +532,7 @@ function ProjectsPage() {
             className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-14 p-4 rounded-3xl bg-white/80 border border-black/10 backdrop-blur-xl shadow-sm"
           >
             <div className="p-4 rounded-2xl bg-black/[0.03] border border-black/[0.06] text-center">
-              <div className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-1">{PROJECTS.length}</div>
+              <div className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-1">{projectsList.length}</div>
               <div className="text-xs font-mono uppercase text-foreground/60 tracking-wider font-semibold">Total Delivered Projects</div>
             </div>
             <div className="p-4 rounded-2xl bg-black/[0.03] border border-black/[0.06] text-center">

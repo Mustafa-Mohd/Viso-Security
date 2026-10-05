@@ -17,7 +17,7 @@ type NavGroup = {
 
 function navItemClass(active: boolean) {
   return cn(
-    "relative inline-flex items-center gap-1 px-3 py-2.5 font-sans text-[11px] font-semibold tracking-[0.12em] uppercase whitespace-nowrap transition-all duration-300 rounded-md",
+    "relative inline-flex items-center gap-1 px-2 lg:px-2.5 xl:px-3 py-2 lg:py-2.5 font-sans text-[10px] xl:text-[11px] font-semibold tracking-[0.08em] xl:tracking-[0.12em] uppercase whitespace-nowrap transition-all duration-300 rounded-md",
     active
       ? "text-primary"
       : "text-foreground/65 hover:text-primary hover:bg-foreground/[0.05]",
@@ -156,15 +156,15 @@ export function TopNav() {
         className="fixed top-0 left-0 right-0 z-[150] bg-background/90 backdrop-blur-md border-b border-primary/15"
       >
         <div className="h-px w-full bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-10">
-          <div className="flex items-center gap-4 md:gap-6 h-20 md:h-24">
-            <Link to="/" className="flex items-center gap-3 group shrink-0">
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 md:px-10 xl:px-12">
+          <div className="flex items-center gap-2 md:gap-4 lg:gap-6 h-20 md:h-24">
+            <Link to="/" className="flex items-center gap-2 md:gap-3 group shrink-0">
               <img loading="lazy" decoding="async"
                 src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
                 alt="Viso Group"
-                className="h-16 md:h-20 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
+                className="h-14 md:h-16 lg:h-20 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
               />
-              <span className="font-display font-semibold text-sm md:text-base tracking-wide text-primary hidden xl:inline-flex items-center whitespace-nowrap w-[500px]">
+              <span className="font-display font-semibold text-sm md:text-base tracking-wide text-primary hidden 2xl:inline-flex items-center whitespace-nowrap w-auto xl:w-[400px] 2xl:w-[500px]">
                 <span className="text-black">{t("about_page.vision_for")}&nbsp;</span>
                 <TypewriterText phrases={[t("about_page.sec_consult"), t("about_page.trans_services")]} className="min-w-[240px]" />
               </span>

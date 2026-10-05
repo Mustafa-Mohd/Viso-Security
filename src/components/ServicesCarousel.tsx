@@ -22,7 +22,7 @@ export function ServicesCarousel({ items }: { items: ServiceItem[] }) {
     if (selectedService) return; // Pause carousel if modal is open
     const timer = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % items.length);
-    }, 3000);
+    }, 5000);
     return () => clearInterval(timer);
   }, [items.length, selectedService]);
 
@@ -102,61 +102,35 @@ export function ServicesCarousel({ items }: { items: ServiceItem[] }) {
                 }}
                 className="absolute top-0 left-0 w-full h-full"
               >
-                {isCenter && (item.url === "/security" || item.url === "/translation") ? (
-                  <Link 
-                    to={item.url}
-                    className="block group w-full h-full cursor-pointer" 
-                  >
-                    <div className={`relative bg-surface border border-foreground/10 rounded-2xl overflow-hidden h-full flex flex-col transition-all duration-500 shadow-xl hover:shadow-2xl shadow-black/10 ${item.color}`}>
-                      <div className="h-[45%] md:h-[55%] overflow-hidden relative">
-                        <div className="absolute inset-0 bg-transparent transition-colors duration-500 z-10" />
-                        <img 
-                          src={item.img} 
-                          alt={item.title} 
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        />
-                      </div>
-                      <div className="p-6 md:p-8 flex flex-col flex-grow bg-white text-start">
-                        <h3 className="font-display text-xl md:text-2xl mb-2 text-foreground transition-colors group-hover:text-primary">{item.title}</h3>
-                        <p className="font-sans text-sm md:text-base text-foreground/70 leading-relaxed mb-4 line-clamp-3">{item.desc}</p>
-                        <div className="mt-auto flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-foreground/50 transition-colors group-hover:text-primary">
-                          <span>{t("home_interactive.read_more")}</span>
-                          <span className="transform transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180 inline-block">→</span>
-                        </div>
-                      </div>
+                <div 
+                  className={`block group w-full h-full cursor-pointer`} 
+                  onClick={() => {
+                    if (!isCenter) {
+                      setActiveIndex(i);
+                    } else {
+                      setSelectedService(item);
+                    }
+                  }}
+                >
+                  <div className={`relative bg-surface border border-foreground/10 rounded-2xl overflow-hidden h-full flex flex-col transition-all duration-500 shadow-xl ${isCenter ? 'hover:shadow-2xl shadow-black/10' : ''} ${item.color}`}>
+                    <div className="h-[45%] md:h-[55%] overflow-hidden relative">
+                      <div className={`absolute inset-0 bg-black/20 ${isCenter ? 'group-hover:bg-transparent' : ''} transition-colors duration-500 z-10`} />
+                      <img 
+                        src={item.img} 
+                        alt={item.title} 
+                        className={`w-full h-full object-cover transition-transform duration-700 ${isCenter ? 'group-hover:scale-110' : ''}`}
+                      />
                     </div>
-                  </Link>
-                ) : (
-                  <div 
-                    className={`block group w-full h-full cursor-pointer`} 
-                    onClick={() => {
-                      if (!isCenter) {
-                        setActiveIndex(i);
-                      } else {
-                        setSelectedService(item);
-                      }
-                    }}
-                  >
-                    <div className={`relative bg-surface border border-foreground/10 rounded-2xl overflow-hidden h-full flex flex-col transition-all duration-500 shadow-xl ${isCenter ? 'hover:shadow-2xl shadow-black/10' : ''} ${item.color}`}>
-                      <div className="h-[45%] md:h-[55%] overflow-hidden relative">
-                        <div className={`absolute inset-0 bg-black/20 ${isCenter ? 'group-hover:bg-transparent' : ''} transition-colors duration-500 z-10`} />
-                        <img 
-                          src={item.img} 
-                          alt={item.title} 
-                          className={`w-full h-full object-cover transition-transform duration-700 ${isCenter ? 'group-hover:scale-110' : ''}`}
-                        />
-                      </div>
-                      <div className="p-6 md:p-8 flex flex-col flex-grow bg-white text-start">
-                        <h3 className={`font-display text-xl md:text-2xl mb-2 text-foreground transition-colors ${isCenter ? 'group-hover:text-primary' : ''}`}>{item.title}</h3>
-                        <p className="font-sans text-sm md:text-base text-foreground/70 leading-relaxed mb-4 line-clamp-3">{item.desc}</p>
-                        <div className={`mt-auto flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-foreground/50 transition-colors ${isCenter ? 'group-hover:text-primary' : ''}`}>
-                          <span>{t("home_interactive.read_more")}</span>
-                          <span className={`transform transition-transform inline-block rtl:rotate-180 ${isCenter ? 'group-hover:translate-x-1 rtl:group-hover:-translate-x-1' : ''}`}>→</span>
-                        </div>
+                    <div className="p-6 md:p-8 flex flex-col flex-grow bg-white text-start">
+                      <h3 className={`font-display text-xl md:text-2xl mb-2 text-foreground transition-colors ${isCenter ? 'group-hover:text-primary' : ''}`}>{item.title}</h3>
+                      <p className="font-sans text-sm md:text-base text-foreground/70 leading-relaxed mb-4 line-clamp-3">{item.desc}</p>
+                      <div className={`mt-auto flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-foreground/50 transition-colors ${isCenter ? 'group-hover:text-primary' : ''}`}>
+                        <span>{t("home_interactive.read_more")}</span>
+                        <span className={`transform transition-transform inline-block rtl:rotate-180 ${isCenter ? 'group-hover:translate-x-1 rtl:group-hover:-translate-x-1' : ''}`}>→</span>
                       </div>
                     </div>
                   </div>
-                )}
+                </div>
               </motion.div>
             );
           })}

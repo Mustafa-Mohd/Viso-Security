@@ -335,8 +335,8 @@ export function CertificatesDashboard() {
               <thead className="bg-foreground/[0.02] text-foreground/60 font-bold uppercase tracking-wider border-b border-foreground/5">
                 <tr>
                   <th className="px-6 py-4">Certificate ID</th>
-                  <th className="px-6 py-4">National ID</th>
-                  <th className="px-6 py-4">Document Details</th>
+                  <th className="px-6 py-4">Ref / Order No</th>
+                  <th className="px-6 py-4">Client Name</th>
                   <th className="px-6 py-4">Languages</th>
                   <th className="px-6 py-4">Timeline</th>
                   <th className="px-6 py-4 text-center">Status</th>
@@ -471,7 +471,7 @@ export function CertificatesDashboard() {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60">Saudi National ID / Order No.</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60">Internal Ref / Order No.</label>
                   <button
                     type="button"
                     onClick={() => setFormNationalId(`1${Math.floor(100000000 + Math.random() * 900000000)}`)}
@@ -491,7 +491,7 @@ export function CertificatesDashboard() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2">Document / Project Name</label>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2">Client Name</label>
                 <input
                   type="text"
                   value={formName}
