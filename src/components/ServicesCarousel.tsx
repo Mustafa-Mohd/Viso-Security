@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -15,6 +15,7 @@ interface ServiceItem {
 
 export function ServicesCarousel({ items }: { items: ServiceItem[] }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedService, setSelectedService] = useState<ServiceItem | null>(null);
 
@@ -107,6 +108,8 @@ export function ServicesCarousel({ items }: { items: ServiceItem[] }) {
                   onClick={() => {
                     if (!isCenter) {
                       setActiveIndex(i);
+                    } else if (item.url === "/translation" || item.url === "/security") {
+                      navigate({ to: item.url });
                     } else {
                       setSelectedService(item);
                     }

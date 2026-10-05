@@ -952,9 +952,37 @@ const DEFAULT_HERO_SLIDES = [
           if (!content.slides || content.slides.length === 0) {
             content.slides = [...DEFAULT_HERO_SLIDES];
           }
+          if (!content.regulatoryLogos || content.regulatoryLogos.length === 0) {
+            content.regulatoryLogos = [
+              { slug: "moi", label: "MOI", img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png" },
+              { slug: "sais", label: "SAIS", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgBwqTj0FNNJJm59mHR1GKznOvHK23QpPB5jwKZQuFaQ&s=10" },
+              { slug: "neom", label: "NEOM", img: "https://neom.scene7.com/is/image/neom/logo-neom-en-spaced?fmt=png-alpha&scl=1" },
+              { slug: "api780", label: "API 780", img: "https://theshopmag.com/wp-content/uploads/2023/05/api-logo-stacked.png" },
+              { slug: "aramco", label: "ARAMCO", img: "https://upload.wikimedia.org/wikipedia/en/thumb/8/85/Saudi_Aramco_logo.svg/1200px-Saudi_Aramco_logo.svg.png" },
+            ];
+          }
           setHeroData(content);
         }
-        if (row.section_key === 'about') setAboutData(row.content);
+        if (row.section_key === 'about') {
+          const content = row.content || {};
+          if (!content.services || content.services.length === 0) {
+            content.services = [
+              { title: "Security Consulting", desc: "Physical security lifecycle" },
+              { title: "Translation", desc: "Certified translation services" },
+              { title: "Digital Portal", desc: "Employee + DMS access" },
+              { title: "SAIS", desc: "Regulatory alignment" }
+            ];
+          }
+          if (!content.profileContents || content.profileContents.length === 0) {
+            content.profileContents = [
+              { num: "01", title: "Identity & Positioning", desc: "Clear corporate introduction, value proposition and service positioning." },
+              { num: "02", title: "Capabilities & Lifecycle", desc: "Four connected security consultancy stages." },
+              { num: "03", title: "Sectors & Clients", desc: "Approved client logos, sectors and project environments." },
+              { num: "04", title: "Credentials & Verification", desc: "Licensing, qualification and official verification links." }
+            ];
+          }
+          setAboutData(content);
+        }
         if (row.section_key === 'core_values') setCoreValuesData(row.content);
         if (row.section_key === 'areas') setAreasData(row.content);
         if (row.section_key === 'services') setServicesData(row.content);
@@ -995,9 +1023,37 @@ const DEFAULT_HERO_SLIDES = [
           if (!content.slides || content.slides.length === 0) {
             content.slides = [...DEFAULT_HERO_SLIDES];
           }
+          if (!content.regulatoryLogos || content.regulatoryLogos.length === 0) {
+            content.regulatoryLogos = [
+              { slug: "moi", label: "MOI", img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png" },
+              { slug: "sais", label: "SAIS", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgBwqTj0FNNJJm59mHR1GKznOvHK23QpPB5jwKZQuFaQ&s=10" },
+              { slug: "neom", label: "NEOM", img: "https://neom.scene7.com/is/image/neom/logo-neom-en-spaced?fmt=png-alpha&scl=1" },
+              { slug: "api780", label: "API 780", img: "https://theshopmag.com/wp-content/uploads/2023/05/api-logo-stacked.png" },
+              { slug: "aramco", label: "ARAMCO", img: "https://upload.wikimedia.org/wikipedia/en/thumb/8/85/Saudi_Aramco_logo.svg/1200px-Saudi_Aramco_logo.svg.png" },
+            ];
+          }
           setHeroData(content);
         }
-        if (row.section_key === 'about') setAboutData(row.content);
+        if (row.section_key === 'about') {
+          const content = row.content || {};
+          if (!content.services || content.services.length === 0) {
+            content.services = [
+              { title: "Security Consulting", desc: "Physical security lifecycle" },
+              { title: "Translation", desc: "Certified translation services" },
+              { title: "Digital Portal", desc: "Employee + DMS access" },
+              { title: "SAIS", desc: "Regulatory alignment" }
+            ];
+          }
+          if (!content.profileContents || content.profileContents.length === 0) {
+            content.profileContents = [
+              { num: "01", title: "Identity & Positioning", desc: "Clear corporate introduction, value proposition and service positioning." },
+              { num: "02", title: "Capabilities & Lifecycle", desc: "Four connected security consultancy stages." },
+              { num: "03", title: "Sectors & Clients", desc: "Approved client logos, sectors and project environments." },
+              { num: "04", title: "Credentials & Verification", desc: "Licensing, qualification and official verification links." }
+            ];
+          }
+          setAboutData(content);
+        }
         if (row.section_key === 'core_values') setCoreValuesData(row.content);
         if (row.section_key === 'areas') setAreasData(row.content);
         if (row.section_key === 'services') setServicesData(row.content);

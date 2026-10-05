@@ -132,7 +132,7 @@ export function AboutInteractive({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2, ease }}
-              className="mt-4 text-sm md:text-base text-foreground/80 leading-relaxed font-light text-left text-pretty ml-[3px] pl-5"
+              className="mt-4 text-sm md:text-base text-foreground/80 leading-relaxed font-light text-justify hyphens-none ml-[3px] pl-5"
             >
               {whoWeAreDesc}
             </motion.p>

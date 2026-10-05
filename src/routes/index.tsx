@@ -44,7 +44,7 @@ if (typeof window !== "undefined") {
 }
 
 function HomePage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(() => {
     if (typeof window !== "undefined") {
       return !sessionStorage.getItem("viso_intro_seen");
@@ -98,7 +98,15 @@ function HomePage() {
                 transition={{ duration: 1 }}
                 className="text-center mb-4 md:mb-8"
               >
-                <h2 className="text-4xl md:text-5xl font-light mb-4 text-foreground">{t("home_interactive.our_services")}</h2>
+                <h2 className="text-4xl md:text-5xl font-light mb-4 text-foreground">
+                  {i18n.language === 'ar' ? (
+                    <span className="text-gold">{t("home_interactive.our_services")}</span>
+                  ) : (
+                    <>
+                      {t("home_interactive.our_services").split(' ')[0]} <span className="text-gold">{t("home_interactive.our_services").split(' ').slice(1).join(' ')}</span>
+                    </>
+                  )}
+                </h2>
                 <p className="text-lg text-black max-w-2xl mx-auto">{t("home_interactive.our_services_desc")}</p>
               </motion.div>
 
@@ -351,6 +359,7 @@ const servicesList = [
 export function HeroSection({ data, isReady = true }: { data?: any; isReady?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [selectedCert, setSelectedCert] = useState<{ img: string, label: string } | null>(null);
 
   useEffect(() => {
     if (!isReady) return;
@@ -436,13 +445,13 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
             key={idx}
             to="/regulatory/$slug"
             params={{ slug: body.slug }}
-            className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg group relative cursor-pointer p-2 md:p-2.5"
+            className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg group relative cursor-pointer overflow-hidden"
             aria-label={body.label}
           >
             <img 
               src={body.img}
               alt={body.label}
-              className="w-full h-full object-contain filter grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500"
+              className="w-full h-full object-cover transition-all duration-500"
             />
             <span className="absolute top-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">
               {body.label}
@@ -474,11 +483,10 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
           { icon: <Briefcase size={20} />, img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100602/3d24f59b-1530-4316-bd0d-27ac9167ccff.png", label: "Business License" },
           { icon: <ShieldCheck size={20} />, img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100668/865e7db3-7be4-4ed4-920e-e0a8b29af7bb.png", label: "SAIS Certificate" }
         ].map((cert, idx) => (
-          <a 
+          <button 
             key={idx}
-            href={cert.img}
-            target="_blank"
-            rel="noopener noreferrer"
+            type="button"
+            onClick={() => setSelectedCert(cert)}
             className="w-12 h-12 rounded-full bg-white/10 hover:bg-gold backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-[0_4px_15px_rgba(0,0,0,0.3)] group relative cursor-pointer"
             aria-label={cert.label}
           >
@@ -486,9 +494,39 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
             <span className="absolute right-full mr-4 bg-black/80 backdrop-blur-sm border border-white/10 text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
               {cert.label}
             </span>
-          </a>
+          </button>
         ))}
       </div>
+
+      {/* Certificate Modal */}
+      <AnimatePresence>
+        {selectedCert && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
+            onClick={() => setSelectedCert(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center justify-center"
+            >
+              <button
+                onClick={() => setSelectedCert(null)}
+                className="absolute -top-12 right-0 text-white hover:text-gold transition-colors"
+                aria-label="Close"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+              <img src={selectedCert.img} alt={selectedCert.label} className="w-auto h-auto max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl" />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
@@ -1537,7 +1575,7 @@ function About({ data }: { data?: any }) {
   const springConfig = { damping: 30, stiffness: 150, mass: 0.5 };
   const smoothX = useSpring(mouseX, springConfig);
   const smoothY = useSpring(mouseY, springConfig);
-  const maskImage = useMotionTemplate`radial-gradient(600px circle at ${smoothX}px ${smoothY}px, black 0%, transparent 100%)`;
+  const maskImage = useMotionTemplate`radial-gradient(250px circle at ${smoothX}px ${smoothY}px, black 0%, transparent 100%)`;
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     if (!sectionRef.current) return;

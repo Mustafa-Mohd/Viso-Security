@@ -610,10 +610,10 @@ function VisionMission() {
                 <h3 className="font-sans font-bold text-3xl md:text-4xl text-foreground tracking-tight mb-3 group-hover:text-primary transition-colors duration-500">
                   {t("about_page.vision_h3")}
                 </h3>
-                <div className="font-mono text-[10px] tracking-[0.2em] text-primary uppercase mb-6">
+                <div className="font-sans text-[13px] font-semibold tracking-[0.1em] text-[#B8860B] uppercase mb-6">
                   {t("about_page.vision_sub")}
                 </div>
-                <p className="text-foreground/80 leading-relaxed font-normal text-base md:text-lg">
+                <p className="text-foreground/80 leading-relaxed font-normal text-base md:text-lg text-justify hyphens-none">
                   {t("about_page.vision_p")}
                 </p>
               </div>
@@ -629,10 +629,10 @@ function VisionMission() {
                 <h3 className="font-sans font-bold text-3xl md:text-4xl text-foreground tracking-tight mb-3 group-hover:text-primary transition-colors duration-500">
                   {t("about_page.mission_h3")}
                 </h3>
-                <div className="font-mono text-[10px] tracking-[0.2em] text-primary uppercase mb-6">
+                <div className="font-sans text-[13px] font-semibold tracking-[0.1em] text-[#B8860B] uppercase mb-6">
                   {t("about_page.mission_sub")}
                 </div>
-                <p className="text-foreground/80 leading-relaxed font-normal text-base md:text-lg">
+                <p className="text-foreground/80 leading-relaxed font-normal text-base md:text-lg text-justify hyphens-none">
                   {t("about_page.mission_p")}
                 </p>
               </div>
@@ -648,10 +648,10 @@ function VisionMission() {
                 <h3 className="font-sans font-bold text-3xl md:text-4xl text-foreground tracking-tight mb-3 group-hover:text-primary transition-colors duration-500">
                   {t("about_page.values_h3")}
                 </h3>
-                <div className="font-mono text-[10px] tracking-[0.2em] text-primary uppercase mb-6">
+                <div className="font-sans text-[13px] font-semibold tracking-[0.1em] text-[#B8860B] uppercase mb-6">
                   {t("about_page.values_sub")}
                 </div>
-                <p className="text-foreground/80 leading-relaxed font-normal text-base md:text-lg">
+                <p className="text-foreground/80 leading-relaxed font-normal text-base md:text-lg text-justify hyphens-none">
                   {t("about_page.values_p")}
                 </p>
               </div>

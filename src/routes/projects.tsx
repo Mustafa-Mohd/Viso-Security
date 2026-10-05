@@ -493,7 +493,7 @@ function ProjectsPage() {
               className="inline-flex items-center gap-2 font-mono text-xs font-bold tracking-[0.3em] uppercase px-4 py-2 rounded-full border border-primary/30 bg-primary/10 text-primary mb-6 shadow-lg backdrop-blur-md"
             >
               <Activity className="w-3.5 h-3.5" />
-              Master Project Portfolio — {projectsList.length} Key Delivered Projects
+              Master Project Portfolio
             </motion.div>
 
             <motion.h1
@@ -532,7 +532,7 @@ function ProjectsPage() {
             className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-14 p-4 rounded-3xl bg-white/80 border border-black/10 backdrop-blur-xl shadow-sm"
           >
             <div className="p-4 rounded-2xl bg-black/[0.03] border border-black/[0.06] text-center">
-              <div className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-1">{projectsList.length}</div>
+              <div className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-1">300+</div>
               <div className="text-xs font-mono uppercase text-foreground/60 tracking-wider font-semibold">Total Delivered Projects</div>
             </div>
             <div className="p-4 rounded-2xl bg-black/[0.03] border border-black/[0.06] text-center">

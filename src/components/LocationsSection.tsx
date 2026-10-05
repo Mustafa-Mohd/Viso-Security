@@ -64,7 +64,7 @@ export function LocationsSection({ data }: { data?: any }) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover object-bottom"
         />
       </AnimatePresence>
       <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/70 to-black/60 pointer-events-none" />
@@ -118,11 +118,11 @@ export function LocationsSection({ data }: { data?: any }) {
                   </h3>
                   
                   <p className={`inline-flex px-4 py-3 rounded-lg backdrop-blur-md transition-colors duration-300 text-sm leading-relaxed max-w-sm ${activeId === "riyadh" ? "bg-black/50 text-white/90 border border-white/10 shadow-lg" : "bg-black/20 text-white/60 border border-transparent"}`}>
-                    Office No. 110, At Taawun, 7423 Abi Bakr As Siddiq, Riyadh Saudi Arabia
+                    RHTA7423, Office No. 110, Al Taawun Dist. 7423 Abi Bakr Al Siddiq Road, Riyadh, Kingdom of Saudi Arabia.
                   </p>
                   
                   <a
-                    href="https://www.google.com/maps/search/?api=1&query=Office+No.+110,+At+Taawun,+7423+Abi+Bakr+As+Siddiq,+Riyadh+Saudi+Arabia"
+                    href="https://www.google.com/maps/search/?api=1&query=RHTA7423,+Office+No.+110,+Al+Taawun+Dist.+7423+Abi+Bakr+Al+Siddiq+Road,+Riyadh,+Kingdom+of+Saudi+Arabia"
                     target="_blank"
                     rel="noopener noreferrer"
                     className={`mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg backdrop-blur-md font-mono text-[10px] uppercase tracking-wider transition-all shadow-lg ${activeId === "riyadh" ? "bg-primary/80 hover:bg-primary text-white border border-primary/50" : "bg-black/40 hover:bg-black/60 text-white/70 border border-white/10"}`}

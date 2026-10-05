@@ -449,7 +449,7 @@ function TranslationPage() {
                 }}
                 className="px-8 py-4 rounded-full bg-primary text-black font-bold uppercase tracking-widest text-sm hover:scale-105 transition-all shadow-[0_10px_20px_-10px_rgba(212,175,55,0.5)] border border-primary/50"
               >
-                Certipedia Explorer
+                Certificate Search
               </button>
             </motion.div>
           </div>
