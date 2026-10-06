@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
-import { Eye, EyeOff, LayoutDashboard, Image as ImageIcon, Settings, LogOut, ChevronRight, Save, Plus, Trash2, Upload, AlertCircle, MessageSquare, Users, Briefcase, FileText, History, ArrowUp, ArrowDown, Loader2, Link } from "lucide-react";
+import { Eye, EyeOff, LayoutDashboard, Image as ImageIcon, Settings, LogOut, ChevronRight, Save, Plus, Trash2, Upload, AlertCircle, MessageSquare, Users, Briefcase, FileText, History, ArrowUp, ArrowDown, Loader2, Link, Video, ShieldCheck, ArrowLeft } from "lucide-react";
 import { DmsDashboard } from "@/components/DmsDashboard";
 import { HrDashboard } from "@/components/HrDashboard";
 import { CertificatesDashboard } from "@/components/CertificatesDashboard";
@@ -536,7 +536,7 @@ function AdminPage() {
   const seedAttempted = useRef(false);
   
   // Tabs
-  const [activeTab, setActiveTab] = useState<"gallery" | "core_values" | "homepage" | "inquiries" | "users" | "auth_users" | "job_apps" | "dms" | "hr" | "cms_history" | "certificates">("homepage");
+  const [activeTab, setActiveTab] = useState<"gallery" | "core_values" | "homepage" | "cms" | "inquiries" | "users" | "auth_users" | "job_apps" | "dms" | "hr" | "cms_history" | "certificates">("cms");
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Job Apps State
@@ -576,7 +576,8 @@ function AdminPage() {
   };
 
   // CMS State
-  const [cmsSection, setCmsSection] = useState<"hero" | "about" | "about_page" | "core_values" | "areas" | "services" | "framework" | "showcase" | "clients" | "lifecycle" | "locations" | "stats" | "cta" | "footer" | "projects">("hero");
+  const [selectedCmsPage, setSelectedCmsPage] = useState<string | null>(null);
+  const [cmsSection, setCmsSection] = useState<string | null>(null);
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [auditLogsLoading, setAuditLogsLoading] = useState(false);
 
@@ -587,34 +588,17 @@ function AdminPage() {
     setAuditLogsLoading(false);
   };
 const DEFAULT_HERO_SLIDES = [
-  {
-    title: "Strategic Security Architecture",
-    imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
-  },
-  {
-    title: "Physical Security Consulting",
-    imageUrl: "https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
-  },
-  {
-    title: "Certified Translation Services",
-    imageUrl: "https://res.cloudinary.com/dppwnds6z/image/upload/v1789934598/ChatGPT_Image_Sep_21_2026_01_32_49_AM.png",
-  },
-  {
-    title: "Risk Assessment & Compliance",
-    imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
-  },
-  {
-    title: "Critical Infrastructure Protection",
-    imageUrl: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
-  },
-  {
-    title: "Integrated Security Design",
-    imageUrl: "https://images.unsplash.com/photo-1431576901776-e539bd916ba2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
-  },
+  { title: "Strategic Security Architecture" },
+  { title: "Physical Security Consulting" },
+  { title: "Certified Translation Services" },
+  { title: "Risk Assessment & Compliance" },
+  { title: "Critical Infrastructure Protection" },
+  { title: "Integrated Security Design" },
 ];
 
   const [heroData, setHeroData] = useState<{
-    slides: { title: string; imageUrl: string }[];
+    videoUrl?: string;
+    slides: { title: string; imageUrl?: string }[];
     title1?: string;
     title2?: string;
     subtitle?: string;
@@ -622,6 +606,7 @@ const DEFAULT_HERO_SLIDES = [
     images?: string[];
     regulatoryLogos?: { slug: string; label: string; img: string }[];
   }>({ 
+    videoUrl: "https://res.cloudinary.com/dppwnds6z/video/upload/v1790273816/gemini_generated_video_8399bb9c.mp4",
     slides: [...DEFAULT_HERO_SLIDES],
     title1: "Designing", 
     title2: "The Future", 
@@ -1502,7 +1487,7 @@ const DEFAULT_HERO_SLIDES = [
 
 
   const navItems = [
-    { id: 'homepage', label: 'Homepage CMS', icon: LayoutDashboard, roles: ['super_admin', 'admin'] },
+    { id: 'cms', label: 'CMS', icon: LayoutDashboard, roles: ['super_admin', 'admin'] },
     { id: 'cms_history', label: 'CMS History', icon: History, roles: ['super_admin', 'admin'] },
     { id: 'certificates', label: 'Certificates', icon: FileText, roles: ['super_admin', 'admin'] },
     { id: 'gallery', label: 'Gallery', icon: ImageIcon, roles: ['super_admin', 'admin'] },
@@ -1711,102 +1696,40 @@ const DEFAULT_HERO_SLIDES = [
           </div>
         )}
 
-        {activeTab === 'homepage' && (
-          <div className="flex flex-col md:flex-row gap-8">
-            {/* CMS Sidebar */}
-            <div className="w-full md:w-64 flex flex-col gap-2 shrink-0">
-              <h3 className="font-bold text-foreground/60 mb-2 uppercase tracking-widest text-xs">Sections</h3>
-              <button
-                onClick={() => setCmsSection('hero')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'hero' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
-              >
-                Hero Section
-              </button>
-              <button
-                onClick={() => setCmsSection('about')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'about' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
-              >
-                About Section
-              </button>
-              <button
-                onClick={() => setCmsSection('about_page')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'about_page' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
-              >
-                About Page
-              </button>
-              <button
-                onClick={() => setCmsSection('core_values')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'core_values' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
-              >
-                Core Values
-              </button>
-              <button
-                onClick={() => setCmsSection('areas')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'areas' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
-              >
-                Areas We Serve
-              </button>
-              <button
-                onClick={() => setCmsSection('services')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'services' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
-              >
-                Services
-              </button>
-              <button
-                onClick={() => setCmsSection('framework')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'framework' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
-              >
-                Framework
-              </button>
-              <button
-                onClick={() => setCmsSection('showcase')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'showcase' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
-              >
-                Showcase
-              </button>
-              <button
-                onClick={() => setCmsSection('clients')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'clients' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
-              >
-                Leading Companies (Clients)
-              </button>
-              <button
-                onClick={() => setCmsSection('lifecycle')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'lifecycle' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
-              >
-                Service Lifecycle
-              </button>
-              <button
-                onClick={() => setCmsSection('locations')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'locations' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
-              >
-                Locations
-              </button>
-              <button
-                onClick={() => setCmsSection('stats')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'stats' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
-              >
-                Stats
-              </button>
-              <button
-                onClick={() => setCmsSection('cta')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'cta' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
-              >
-                Call to Action
-              </button>
-              <button
-                onClick={() => setCmsSection('footer')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'footer' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
-              >
-                Footer
-              </button>
-              <button
-                onClick={() => setCmsSection('projects')}
-                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'projects' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
-              >
-                Projects Portfolio
-              </button>
-              <div className="mt-8 border-t border-foreground/10 pt-4">
+        {(activeTab === 'homepage' || activeTab === 'cms') && (
+          <div className="flex flex-col gap-6">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-[#1C2541] p-6 rounded-2xl border border-foreground/10 shadow-xs">
+              <div>
+                <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+                  <LayoutDashboard className="w-5 h-5 text-primary" />
+                  {selectedCmsPage 
+                    ? `${[
+                        { id: "home", title: "Home Page" },
+                        { id: "about_us", title: "About Us Page" },
+                        { id: "security", title: "Security & Services Page" },
+                        { id: "projects_page", title: "Projects Portfolio Page" },
+                        { id: "footer_contact", title: "Contact & Footer" },
+                      ].find(p => p.id === selectedCmsPage)?.title || 'Page'} CMS Management`
+                    : "Website Content Management System (CMS)"}
+                </h2>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {selectedCmsPage
+                    ? "Editing sections and content for this page."
+                    : "Select a page card below to manage its specific content and sections."}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {selectedCmsPage && (
+                  <button
+                    onClick={() => { setSelectedCmsPage(null); setCmsSection(null); }}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 font-semibold text-xs transition-colors cursor-pointer"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    All Pages Cards
+                  </button>
+                )}
                 <button
                   onClick={async () => {
                     if (confirm("Are you sure you want to overwrite all sections with the default seed content? This cannot be undone.")) {
@@ -1814,58 +1737,179 @@ const DEFAULT_HERO_SLIDES = [
                       alert("Successfully seeded defaults!");
                     }
                   }}
-                  className="w-full text-left px-4 py-3 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 font-medium transition-colors"
+                  className="px-3 py-2 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500/20 text-xs font-medium transition-colors"
                 >
-                  Reset All to Defaults
+                  Reset Defaults
                 </button>
               </div>
             </div>
 
-            {/* CMS Editor Area */}
-            <div className="flex-1 bg-surface p-6 rounded border border-foreground/10">
+            {/* LEVEL 1: PAGE CARDS GRID (When no page is selected) */}
+            {!selectedCmsPage ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[
+                  {
+                    id: "home",
+                    title: "Home Page",
+                    badge: "MAIN LANDING PAGE",
+                    desc: "Hero background video, executive intro, core values, areas served, services, framework & clients.",
+                    icon: LayoutDashboard,
+                    badgeColor: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20",
+                    defaultSection: "hero",
+                    sectionCount: 9,
+                  },
+                  {
+                    id: "about_us",
+                    title: "About Us Page",
+                    badge: "ABOUT PAGE",
+                    desc: "Corporate vision statement, mission, core identity, and company values.",
+                    icon: Users,
+                    badgeColor: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20",
+                    defaultSection: "about_page",
+                    sectionCount: 2,
+                  },
+                  {
+                    id: "security",
+                    title: "Security & Services Page",
+                    badge: "SOLUTIONS & SERVICES",
+                    desc: "HCIS / SAIS security engineering directives, 4-stage framework & lifecycle deliverables.",
+                    icon: Briefcase,
+                    badgeColor: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20",
+                    defaultSection: "services",
+                    sectionCount: 3,
+                  },
+                  {
+                    id: "projects_page",
+                    title: "Projects Portfolio Page",
+                    badge: "PROJECTS & METRICS",
+                    desc: "Aramco/SIPCHEM project database, sector filters & performance metrics counters.",
+                    icon: Briefcase,
+                    badgeColor: "bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20",
+                    defaultSection: "projects",
+                    sectionCount: 2,
+                  },
+                  {
+                    id: "footer_contact",
+                    title: "Contact & Footer",
+                    badge: "FOOTER & BANNERS",
+                    desc: "Call-to-action consultation request banners, footer links, copyright & address.",
+                    icon: Link,
+                    badgeColor: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20",
+                    defaultSection: "cta",
+                    sectionCount: 2,
+                  },
+                ].map((card) => {
+                  const Icon = card.icon;
+                  return (
+                    <div
+                      key={card.id}
+                      onClick={() => {
+                        setSelectedCmsPage(card.id);
+                        setCmsSection(card.defaultSection);
+                      }}
+                      className="group cursor-pointer rounded-2xl border border-foreground/10 bg-white dark:bg-[#1C2541] p-6 shadow-xs hover:shadow-xl hover:border-primary/40 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between mb-4">
+                          <span className={`text-[10px] font-bold font-mono px-2.5 py-0.5 rounded-md uppercase tracking-wider ${card.badgeColor}`}>
+                            {card.badge}
+                          </span>
+                          <div className="p-2.5 rounded-xl bg-foreground/5 group-hover:bg-primary/10 transition-colors">
+                            <Icon className="w-5 h-5 text-primary" />
+                          </div>
+                        </div>
+                        <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors mb-2">
+                          {card.title}
+                        </h3>
+                        <p className="text-xs text-muted-foreground leading-relaxed mb-4">
+                          {card.desc}
+                        </p>
+                      </div>
+
+                      <div className="pt-4 border-t border-foreground/10 flex items-center justify-between text-xs font-bold text-primary">
+                        <span>Manage Page Content ({card.sectionCount} Sections)</span>
+                        <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              /* LEVEL 2: PAGE SECTIONS & EDITOR AREA */
+              <div className="flex flex-col md:flex-row gap-6">
+                {/* Left Sidebar: ONLY SECTIONS BELONGING TO THIS SELECTED PAGE */}
+                <div className="w-full md:w-60 flex flex-col gap-1.5 shrink-0 bg-white dark:bg-[#1C2541] p-4 rounded-2xl border border-foreground/10 shadow-xs h-fit">
+                  <div className="flex items-center justify-between px-2 py-1 mb-2 border-b border-foreground/10">
+                    <span className="font-bold text-foreground/70 uppercase tracking-widest text-[10px]">
+                      Page Sections
+                    </span>
+                    <button
+                      onClick={() => { setSelectedCmsPage(null); setCmsSection(null); }}
+                      className="text-[10px] font-bold text-primary hover:underline cursor-pointer"
+                    >
+                      Cards View
+                    </button>
+                  </div>
+                  {(selectedCmsPage === 'home'
+                    ? [
+                        { id: "hero", label: "Hero Banner & Video" },
+                        { id: "about", label: "Executive Intro" },
+                        { id: "core_values", label: "Core Values" },
+                        { id: "areas", label: "Areas We Serve" },
+                        { id: "services", label: "Security Services Overview" },
+                        { id: "framework", label: "Approval Framework Overview" },
+                        { id: "showcase", label: "Showcase Banner" },
+                        { id: "clients", label: "Leading Clients" },
+                        { id: "locations", label: "Office Locations" },
+                      ]
+                    : selectedCmsPage === 'about_us'
+                    ? [
+                        { id: "about_page", label: "Vision & Mission Statements" },
+                        { id: "core_values", label: "Core Values" },
+                      ]
+                    : selectedCmsPage === 'security'
+                    ? [
+                        { id: "services", label: "Security Engineering Directives" },
+                        { id: "framework", label: "4-Stage Approval Framework" },
+                        { id: "lifecycle", label: "Service Lifecycle Deliverables" },
+                      ]
+                    : selectedCmsPage === 'projects_page'
+                    ? [
+                        { id: "projects", label: "Projects Database" },
+                        { id: "stats", label: "Performance Metrics" },
+                      ]
+                    : [
+                        { id: "cta", label: "Call to Action Banners" },
+                        { id: "footer", label: "Footer & Legal Info" },
+                      ]
+                  ).map((s) => (
+                    <button
+                      key={s.id}
+                      onClick={() => setCmsSection(s.id)}
+                      className={`text-left px-3.5 py-2.5 rounded-xl text-xs transition-all cursor-pointer ${
+                        cmsSection === s.id
+                          ? 'bg-primary text-primary-foreground font-bold shadow-xs'
+                          : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground font-medium'
+                      }`}
+                    >
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Right Area: CMS Editor */}
+                <div className="flex-1 bg-white dark:bg-[#1C2541] p-6 rounded-2xl border border-foreground/10 shadow-xs">
               {cmsSection === 'hero' && (
                 <div className="flex flex-col gap-4 max-w-5xl">
                   {/* Compact Header */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-foreground/10">
                     <div>
-                      <h2 className="text-lg font-bold text-foreground">Hero Section Slides ({heroData.slides?.length || 0})</h2>
+                      <h2 className="text-lg font-bold text-foreground">Hero Section Configuration</h2>
                       <p className="text-[11px] text-muted-foreground">
-                        Rotating titles and background images for the main homepage banner.
+                        Configure the homepage hero background video and compliance logos.
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const currentSlides = heroData.slides || [];
-                          setHeroData({
-                            ...heroData,
-                            slides: [
-                              ...currentSlides,
-                              {
-                                title: "New Security Capability",
-                                imageUrl: "",
-                              },
-                            ],
-                          });
-                        }}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md border border-foreground/15 hover:bg-foreground/5 text-foreground transition-all cursor-pointer"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                        Add Slide
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (confirm("Reset slides to default set of 6 items?")) {
-                            setHeroData({ ...heroData, slides: [...DEFAULT_HERO_SLIDES] });
-                          }
-                        }}
-                        className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-md border border-foreground/15 hover:bg-foreground/5 text-muted-foreground hover:text-foreground transition-all cursor-pointer"
-                        title="Reset to default 6 slides"
-                      >
-                        Reset Defaults
-                      </button>
                       <button
                         type="button"
                         onClick={() => handleSaveCmsSection('hero', heroData)}
@@ -1877,178 +1921,35 @@ const DEFAULT_HERO_SLIDES = [
                     </div>
                   </div>
 
-                  {/* Compact 1-2 line slides list */}
-                  <div className="space-y-2">
-                    {(heroData.slides || []).map((slide, idx) => {
-                      const isDraggingThis = draggingSlideIdx === idx;
-                      const isUploadingThis = uploadingSlideIdx === idx;
-
-                      return (
-                        <div
-                          key={idx}
-                          className={`flex flex-col md:flex-row items-stretch md:items-center gap-2.5 p-2 rounded-lg border transition-all ${
-                            isDraggingThis
-                              ? "border-primary bg-primary/10 shadow-xs"
-                              : "border-foreground/10 bg-background/60 hover:border-foreground/20"
-                          }`}
+                  {/* Hero Background Video Section */}
+                  <div className="p-4 rounded-xl border border-foreground/10 bg-background/60 space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-2">
+                        <Video className="w-4 h-4 text-primary" />
+                        Hero Background Video URL
+                      </label>
+                      <span className="text-[10px] text-muted-foreground">MP4 video link for homepage background</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="url"
+                        placeholder="https://res.cloudinary.com/.../video.mp4"
+                        value={heroData.videoUrl || ""}
+                        onChange={(e) => setHeroData({ ...heroData, videoUrl: e.target.value })}
+                        className="flex-1 px-3 py-2 rounded-lg bg-surface border border-foreground/15 text-xs text-foreground font-mono placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none transition-colors"
+                      />
+                      {heroData.videoUrl && (
+                        <a
+                          href={heroData.videoUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 px-3 py-2 text-xs font-medium rounded-lg bg-foreground/5 hover:bg-foreground/10 text-foreground transition-colors shrink-0"
                         >
-                          {/* Left: Drag/Drop Thumbnail (compact) */}
-                          <div
-                            onDragOver={(e) => {
-                              e.preventDefault();
-                              setDraggingSlideIdx(idx);
-                            }}
-                            onDragLeave={(e) => {
-                              e.preventDefault();
-                              setDraggingSlideIdx(null);
-                            }}
-                            onDrop={async (e) => {
-                              e.preventDefault();
-                              setDraggingSlideIdx(null);
-                              if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-                                await handleSlideFileUpload(e.dataTransfer.files[0], idx);
-                              }
-                            }}
-                            className="relative shrink-0 w-16 h-10 rounded-md overflow-hidden border border-foreground/15 bg-surface flex items-center justify-center group cursor-pointer"
-                            title="Drag & drop or click to upload"
-                          >
-                            {slide.imageUrl ? (
-                              <img loading="lazy" decoding="async"
-                                src={slide.imageUrl}
-                                alt={slide.title || ""}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="flex flex-col items-center justify-center text-muted-foreground/50">
-                                <Upload className="w-3.5 h-3.5" />
-                                <span className="text-[8px] font-mono">Drop</span>
-                              </div>
-                            )}
-
-                            {/* Hover overlay with Upload icon & file input */}
-                            <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity">
-                              <Upload className="w-3.5 h-3.5 text-white" />
-                              <input
-                                type="file"
-                                accept="image/*"
-                                className="sr-only"
-                                onChange={async (e) => {
-                                  if (e.target.files && e.target.files.length > 0) {
-                                    await handleSlideFileUpload(e.target.files[0], idx);
-                                  }
-                                }}
-                              />
-                            </label>
-
-                            {isUploadingThis && (
-                              <div className="absolute inset-0 bg-background/90 flex items-center justify-center">
-                                <Loader2 className="w-4 h-4 text-primary animate-spin" />
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Slide Index Badge */}
-                          <span className="hidden md:inline-flex items-center justify-center w-5 h-5 rounded-full bg-foreground/5 text-foreground/70 text-[10px] font-bold font-mono shrink-0">
-                            {idx + 1}
-                          </span>
-
-                          {/* Title input (1 line) */}
-                          <div className="flex-1 min-w-[180px]">
-                            <input
-                              type="text"
-                              placeholder="Slide Title (e.g. Risk Assessment & Compliance)"
-                              value={slide.title || ""}
-                              onChange={(e) => {
-                                const updated = [...(heroData.slides || [])];
-                                updated[idx] = { ...updated[idx], title: e.target.value };
-                                setHeroData({ ...heroData, slides: updated });
-                              }}
-                              className="w-full px-2.5 py-1.5 rounded-md bg-surface border border-foreground/15 text-xs text-foreground font-medium placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none transition-colors"
-                            />
-                          </div>
-
-                          {/* URL Paste input (1 line) */}
-                          <div className="relative flex-1 min-w-[200px]">
-                            <input
-                              type="url"
-                              placeholder="Image URL (paste or upload)..."
-                              value={slide.imageUrl || ""}
-                              onChange={(e) => {
-                                const updated = [...(heroData.slides || [])];
-                                updated[idx] = { ...updated[idx], imageUrl: e.target.value };
-                                setHeroData({ ...heroData, slides: updated });
-                              }}
-                              className="w-full pl-7 pr-7 py-1.5 rounded-md bg-surface border border-foreground/15 text-xs text-foreground font-mono placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none transition-colors truncate"
-                            />
-                            <Link className="w-3 h-3 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/60" />
-                            {slide.imageUrl && (
-                              <a
-                                href={slide.imageUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground hover:text-primary transition-colors"
-                                title="Open full image"
-                              >
-                                <Eye className="w-3 h-3" />
-                              </a>
-                            )}
-                          </div>
-
-                          {/* Controls (Move Up, Down, Delete) */}
-                          <div className="flex items-center gap-1 shrink-0 self-end md:self-center">
-                            <button
-                              type="button"
-                              disabled={idx === 0}
-                              onClick={() => {
-                                if (idx === 0) return;
-                                const updated = [...(heroData.slides || [])];
-                                const temp = updated[idx];
-                                updated[idx] = updated[idx - 1];
-                                updated[idx - 1] = temp;
-                                setHeroData({ ...heroData, slides: updated });
-                              }}
-                              className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-20 disabled:hover:text-muted-foreground transition-colors cursor-pointer"
-                              title="Move Up"
-                            >
-                              <ArrowUp className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              type="button"
-                              disabled={idx === (heroData.slides || []).length - 1}
-                              onClick={() => {
-                                if (idx === (heroData.slides || []).length - 1) return;
-                                const updated = [...(heroData.slides || [])];
-                                const temp = updated[idx];
-                                updated[idx] = updated[idx + 1];
-                                updated[idx + 1] = temp;
-                                setHeroData({ ...heroData, slides: updated });
-                              }}
-                              className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-20 disabled:hover:text-muted-foreground transition-colors cursor-pointer"
-                              title="Move Down"
-                            >
-                              <ArrowDown className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const updated = (heroData.slides || []).filter((_, i) => i !== idx);
-                                setHeroData({ ...heroData, slides: updated });
-                              }}
-                              className="p-1 rounded text-red-500/70 hover:text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer"
-                              title="Remove Slide"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
-
-                    {(heroData.slides || []).length === 0 && (
-                      <div className="p-4 text-center rounded-lg border border-dashed border-foreground/20 text-muted-foreground text-xs">
-                        No slides configured. Click "+ Add Slide" to create one.
-                      </div>
-                    )}
+                          <Eye className="w-3.5 h-3.5" />
+                          Preview Video
+                        </a>
+                      )}
+                    </div>
                   </div>
 
                   {/* Regulatory Logos Section */}
@@ -3227,6 +3128,8 @@ const DEFAULT_HERO_SLIDES = [
             </div>
           </div>
         )}
+      </div>
+    )}
 
         {/* INQUIRIES TAB */}
         {activeTab === 'inquiries' && (session?.role === 'super_admin' || session?.role === 'admin') && (

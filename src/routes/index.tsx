@@ -361,15 +361,26 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedCert, setSelectedCert] = useState<{ img: string, label: string } | null>(null);
 
+  const slides = (data?.slides && data.slides.length > 0)
+    ? data.slides.map((s: any, idx: number) => ({
+        title: s.title || servicesList[idx % servicesList.length].title,
+        subtitle: s.subtitle || servicesList[idx % servicesList.length].subtitle,
+        link: s.link || servicesList[idx % servicesList.length].link,
+        buttonText: s.buttonText || servicesList[idx % servicesList.length].buttonText,
+      }))
+    : servicesList;
+
+  const videoUrl = data?.videoUrl || "https://res.cloudinary.com/dppwnds6z/video/upload/v1790273816/gemini_generated_video_8399bb9c.mp4";
+
   useEffect(() => {
     if (!isReady) return;
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % servicesList.length);
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, [isReady]);
+  }, [isReady, slides.length]);
 
-  const slide = servicesList[currentSlide];
+  const slide = slides[currentSlide % slides.length];
 
   return (
     <section
@@ -377,13 +388,14 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
       className="relative min-h-[calc(100dvh-4.25rem)] md:min-h-[calc(100dvh-4.5rem)] mt-[4.25rem] md:mt-[4.5rem] overflow-hidden bg-[#0d1117]"
     >
       <video
+        key={videoUrl}
         autoPlay
         loop
         muted
         playsInline
         className="absolute inset-0 w-full h-full object-cover"
       >
-        <source src="https://res.cloudinary.com/dppwnds6z/video/upload/v1790273816/gemini_generated_video_8399bb9c.mp4" type="video/mp4" />
+        <source src={videoUrl} type="video/mp4" />
       </video>
 
       {/* Gradient Overlays for Readability */}
