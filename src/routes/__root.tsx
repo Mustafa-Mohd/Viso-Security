@@ -6,7 +6,7 @@ import {
   useRouter,
   useLocation,
 } from "@tanstack/react-router";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import "../styles.css";
 
 const CustomCursor = lazy(() =>
@@ -86,6 +86,41 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const location = useLocation();
   const isAdmin = location.pathname.startsWith("/admin");
+
+  useEffect(() => {
+    const path = location.pathname;
+    let title = "Viso Group | #1 Security Consultancy in Saudi Arabia (KSA) | HCIS Approved";
+    let desc = "Viso Group (Vision of Solutions for Security Consultations Co. Ltd.) is Saudi Arabia's premier HCIS-certified security consultancy firm. Specializing in physical security engineering, HCIS Directive compliance, risk assessment, master planning, & certified technical translation in Riyadh, Jeddah, & Kingdom-wide.";
+
+    if (path === "/about") {
+      title = "About Viso Group | Premier Security Consultancy & Vision in KSA";
+      desc = "Learn about Viso Group (Vision of Solutions for Security Consultations Co. Ltd.), Saudi Arabia's trusted partner for HCIS physical security engineering & certified translation.";
+    } else if (path.startsWith("/security")) {
+      title = "HCIS Security Consultancy & Engineering Services in KSA | Viso Group";
+      desc = "Comprehensive HCIS Directive 1-5 compliance, physical security master planning, PIDS design, and risk assessments for critical infrastructure in Saudi Arabia.";
+    } else if (path.startsWith("/translation")) {
+      title = "Certified Technical Translation Services in Saudi Arabia | Viso Group";
+      desc = "Certified legal, engineering, and technical translation services in Riyadh, Jeddah, & Kingdom-wide by Viso Group.";
+    } else if (path.startsWith("/projects")) {
+      title = "Major Security & Infrastructure Projects in Saudi Arabia | Viso Group";
+      desc = "Explore Viso Group's mega security projects across Saudi Aramco, NEOM, NWC, Ma'aden, and Royal Commission for Riyadh City.";
+    } else if (path.startsWith("/clients")) {
+      title = "Tier-1 Government & Enterprise Clients | Viso Group Saudi Arabia";
+      desc = "Viso Group proudly serves Saudi Aramco, NEOM, NWC, Siemens, Ritz Carlton, and leading KSA government authorities.";
+    } else if (path.startsWith("/career")) {
+      title = "Careers & Jobs at Viso Group | Join Saudi Security Leaders";
+      desc = "Build your career with Viso Group in Riyadh, KSA. Explore job openings for security consultants, engineers, and translators.";
+    } else if (path.startsWith("/contact")) {
+      title = "Contact Viso Group | Riyadh & KSA Security Consultants";
+      desc = "Get in touch with Viso Group for security consultations, HCIS compliance reviews, and certified translation requests in Saudi Arabia.";
+    }
+
+    document.title = title;
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute("content", desc);
+    }
+  }, [location.pathname]);
 
   return (
     <QueryClientProvider client={queryClient}>

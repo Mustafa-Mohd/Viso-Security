@@ -18,7 +18,7 @@ type NavGroup = {
 
 function navItemClass(active: boolean) {
   return cn(
-    "relative inline-flex items-center gap-1 px-2 lg:px-2.5 xl:px-3 py-2 lg:py-2.5 font-sans text-[10px] xl:text-[11px] font-semibold tracking-[0.08em] xl:tracking-[0.12em] uppercase whitespace-nowrap transition-all duration-300 rounded-md",
+    "relative inline-flex items-center gap-1 px-1.5 lg:px-2 xl:px-2.5 py-1.5 font-sans text-[9px] xl:text-[10px] font-semibold tracking-[0.06em] xl:tracking-[0.08em] uppercase whitespace-nowrap transition-all duration-300 rounded-md",
     active
       ? "text-primary"
       : "text-foreground/65 hover:text-primary hover:bg-foreground/[0.05]",
@@ -171,17 +171,21 @@ export function TopNav() {
       >
         <div className="h-px w-full bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
         <div className="max-w-[1920px] mx-auto px-4 sm:px-6 md:px-10 xl:px-12">
-          <div className="flex items-center gap-2 md:gap-4 lg:gap-6 h-20 md:h-24">
-            <Link to="/" className="flex items-center gap-2 md:gap-3 group shrink-0">
+          <div className="flex items-center gap-2 md:gap-4 lg:gap-6 h-16 md:h-20">
+            <Link to="/" className="flex items-center gap-2 md:gap-3 group shrink-0 min-w-0">
               <img loading="lazy" decoding="async"
                 src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
                 alt="Viso Group"
-                className="h-14 md:h-16 lg:h-20 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
+                className="h-9 sm:h-11 md:h-13 lg:h-16 w-auto object-contain shrink-0 transition-transform duration-500 group-hover:scale-105"
               />
-              <span className="font-display font-semibold text-sm md:text-base tracking-wide text-primary hidden 2xl:inline-flex items-center whitespace-nowrap w-auto xl:w-[400px] 2xl:w-[500px]">
-                <span className="text-black">{t("about_page.vision_for")}&nbsp;</span>
-                <TypewriterText phrases={[t("about_page.sec_consult"), t("about_page.trans_services")]} className="min-w-[240px]" />
-              </span>
+              <div className="flex flex-col justify-center min-w-0 me-1 sm:me-2 lg:me-4 xl:me-8 lg:border-s border-foreground/15 lg:ps-3.5 py-0.5">
+                <span className="text-black font-display font-semibold text-[9px] sm:text-[10px] lg:text-xs tracking-tight uppercase whitespace-nowrap leading-tight">
+                  {t("about_page.vision_for")}
+                </span>
+                <span className="text-primary font-display font-bold text-[9.5px] sm:text-[11px] lg:text-xs xl:text-sm tracking-tight lg:tracking-wide uppercase whitespace-nowrap leading-tight">
+                  <TypewriterText phrases={[t("about_page.sec_consult"), t("about_page.trans_services")]} />
+                </span>
+              </div>
             </Link>
 
             <nav
@@ -232,7 +236,7 @@ export function TopNav() {
               <button
                 type="button"
                 onClick={toggleLanguage}
-                className="flex items-center justify-center px-3 h-9 rounded-md text-foreground/75 hover:bg-foreground/5 hover:text-primary transition-colors font-mono text-[11px] font-bold"
+                className="flex items-center justify-center px-2.5 h-7 rounded-md text-foreground/75 hover:bg-foreground/5 hover:text-primary transition-colors font-mono text-[10px] font-bold border border-primary/20 hover:border-primary/40 ms-1 shrink-0"
                 title={t("nav.lang_switch")}
               >
                 {t("nav.lang_toggle")}
@@ -243,7 +247,7 @@ export function TopNav() {
               <button
                 type="button"
                 onClick={toggleLanguage}
-                className="flex items-center justify-center px-3 h-9 rounded-md text-foreground/75 hover:bg-foreground/5 hover:text-primary transition-colors font-mono text-[11px] font-bold"
+                className="flex items-center justify-center px-2.5 h-7 rounded-md text-foreground/75 hover:bg-foreground/5 hover:text-primary transition-colors font-mono text-[10px] font-bold border border-primary/20 hover:border-primary/40"
                 title={t("nav.lang_switch")}
               >
                 {t("nav.lang_toggle")}
@@ -294,6 +298,13 @@ export function TopNav() {
 
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-[140] bg-background/98 backdrop-blur-lg flex flex-col overflow-y-auto pt-20 pb-12 px-6 lg:hidden animate-in fade-in duration-300">
+          <div className="mb-4 p-3.5 rounded-2xl bg-gradient-to-r from-primary/10 via-gold/5 to-transparent border border-primary/20 flex flex-col gap-1 shadow-sm">
+            <span className="text-[10px] uppercase font-mono font-bold tracking-wider text-primary/70">{t("about_page.vision_for")}</span>
+            <div className="font-display font-semibold text-xs text-primary flex items-center">
+              <TypewriterText phrases={[t("about_page.sec_consult"), t("about_page.trans_services")]} className="min-w-[180px] font-bold" />
+            </div>
+          </div>
+
           <Link
             to="/"
             onClick={() => setMobileMenuOpen(false)}

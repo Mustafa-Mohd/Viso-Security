@@ -289,12 +289,7 @@ function ProjectSimpleCard({
           </div>
         </div>
       </div>
-      
-      {project.highlight && (
-        <div className="absolute top-0 right-1/2 translate-x-1/2 -translate-y-1 bg-primary text-black px-4 py-1 rounded-b-xl text-[10px] font-bold shadow-sm">
-          {project.highlight}
-        </div>
-      )}
+
     </motion.div>
   );
 }
