@@ -89,9 +89,12 @@ function AboutPage() {
         const { data } = await supabase
           .from("cms_content")
           .select("*")
-          .eq("section_key", "about")
-          .maybeSingle();
-        if (data?.content) setCms(data.content);
+          .in("section_key", ["about", "about_page"]);
+        if (data) {
+          const aboutData = data.find((d) => d.section_key === "about")?.content || {};
+          const aboutPageData = data.find((d) => d.section_key === "about_page")?.content || {};
+          setCms({ ...aboutData, ...aboutPageData });
+        }
       } catch {
         /* use defaults */
       }
@@ -142,7 +145,7 @@ function AboutPage() {
       <AboutHero />
       <CEOMessage />
       <WhoWeAre title={whoTitle} desc={whoDesc} secondary={t("about.desc2")} />
-      <VisionMission />
+      <VisionMission cms={cms} />
       <StatsBand />
       <RegulatoryCards />
       <ProfileJourney items={profile} />
@@ -586,7 +589,7 @@ function CEOMessage() {
 }
 
 /* ---------- Vision & Mission ---------- */
-function VisionMission() {
+function VisionMission({ cms }: { cms?: any }) {
   const { t } = useTranslation();
   return (
     <section className="relative px-8 md:px-16 py-20 md:py-32 bg-background overflow-hidden border-t border-foreground/5">
@@ -608,13 +611,13 @@ function VisionMission() {
 
               <div className="relative z-10">
                 <h3 className="font-sans font-bold text-3xl md:text-4xl text-foreground tracking-tight mb-3 group-hover:text-primary transition-colors duration-500">
-                  {t("about_page.vision_h3")}
+                  {cms?.visionTitle || t("about_page.vision_h3")}
                 </h3>
                 <div className="font-sans text-[13px] font-semibold tracking-[0.1em] text-[#B8860B] uppercase mb-6">
-                  {t("about_page.vision_sub")}
+                  {cms?.visionSub || t("about_page.vision_sub")}
                 </div>
                 <p className="text-foreground/80 leading-relaxed font-normal text-base md:text-lg text-justify hyphens-none">
-                  {t("about_page.vision_p")}
+                  {cms?.visionP || t("about_page.vision_p")}
                 </p>
               </div>
             </div>
@@ -627,13 +630,13 @@ function VisionMission() {
 
               <div className="relative z-10">
                 <h3 className="font-sans font-bold text-3xl md:text-4xl text-foreground tracking-tight mb-3 group-hover:text-primary transition-colors duration-500">
-                  {t("about_page.mission_h3")}
+                  {cms?.missionTitle || t("about_page.mission_h3")}
                 </h3>
                 <div className="font-sans text-[13px] font-semibold tracking-[0.1em] text-[#B8860B] uppercase mb-6">
-                  {t("about_page.mission_sub")}
+                  {cms?.missionSub || t("about_page.mission_sub")}
                 </div>
                 <p className="text-foreground/80 leading-relaxed font-normal text-base md:text-lg text-justify hyphens-none">
-                  {t("about_page.mission_p")}
+                  {cms?.missionP || t("about_page.mission_p")}
                 </p>
               </div>
             </div>
@@ -646,13 +649,13 @@ function VisionMission() {
 
               <div className="relative z-10">
                 <h3 className="font-sans font-bold text-3xl md:text-4xl text-foreground tracking-tight mb-3 group-hover:text-primary transition-colors duration-500">
-                  {t("about_page.values_h3")}
+                  {cms?.valuesTitle || t("about_page.values_h3")}
                 </h3>
                 <div className="font-sans text-[13px] font-semibold tracking-[0.1em] text-[#B8860B] uppercase mb-6">
-                  {t("about_page.values_sub")}
+                  {cms?.valuesSub || t("about_page.values_sub")}
                 </div>
                 <p className="text-foreground/80 leading-relaxed font-normal text-base md:text-lg text-justify hyphens-none">
-                  {t("about_page.values_p")}
+                  {cms?.valuesP || t("about_page.values_p")}
                 </p>
               </div>
             </div>

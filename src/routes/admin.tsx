@@ -536,7 +536,7 @@ function AdminPage() {
   const seedAttempted = useRef(false);
   
   // Tabs
-  const [activeTab, setActiveTab] = useState<"gallery" | "core_values" | "homepage" | "inquiries" | "users" | "job_apps" | "dms" | "hr" | "cms_history" | "certificates">("homepage");
+  const [activeTab, setActiveTab] = useState<"gallery" | "core_values" | "homepage" | "inquiries" | "users" | "auth_users" | "job_apps" | "dms" | "hr" | "cms_history" | "certificates">("homepage");
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Job Apps State
@@ -563,8 +563,20 @@ function AdminPage() {
     if (data) setUsers(data);
   };
 
+  // Auth Users (Registered Employees) State
+  const [authUsers, setAuthUsers] = useState<any[]>([]);
+  const [authUsersLoading, setAuthUsersLoading] = useState(false);
+
+  const fetchAuthUsers = async () => {
+    setAuthUsersLoading(true);
+    const { data, error } = await supabase.rpc('get_all_employees');
+    if (data && !error) setAuthUsers(data);
+    else console.error("Error fetching auth users:", error);
+    setAuthUsersLoading(false);
+  };
+
   // CMS State
-  const [cmsSection, setCmsSection] = useState<"hero" | "about" | "core_values" | "areas" | "services" | "framework" | "showcase" | "clients" | "lifecycle" | "locations" | "stats" | "cta" | "footer" | "projects">("hero");
+  const [cmsSection, setCmsSection] = useState<"hero" | "about" | "about_page" | "core_values" | "areas" | "services" | "framework" | "showcase" | "clients" | "lifecycle" | "locations" | "stats" | "cta" | "footer" | "projects">("hero");
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [auditLogsLoading, setAuditLogsLoading] = useState(false);
 
@@ -651,6 +663,29 @@ const DEFAULT_HERO_SLIDES = [
       { num: "04", title: "Credentials & Verification", desc: "Licensing, qualification and official verification links." }
     ]
   });
+
+  const [aboutPageData, setAboutPageData] = useState<{
+    visionTitle: string;
+    visionSub: string;
+    visionP: string;
+    missionTitle: string;
+    missionSub: string;
+    missionP: string;
+    valuesTitle: string;
+    valuesSub: string;
+    valuesP: string;
+  }>({
+    visionTitle: "Our Vision",
+    visionSub: "TRUSTED LEADERSHIP IN PHYSICAL SECURITY",
+    visionP: "To lead the physical security consultancy sector through technical expertise, continuous innovation, and rigorous standards. We build resilient security frameworks that protect communities, operations, and assets for generations to come.",
+    missionTitle: "Our Mission",
+    missionSub: "SECURING CRITICAL ASSETS",
+    missionP: "To deliver integrated physical security consulting services that safeguard national infrastructure, corporate assets, and human life. We protect our clients through proactive risk management, robust engineering, and strict compliance with global standards.",
+    valuesTitle: "Our Values",
+    valuesSub: "INTEGRITY, EXCELLENCE & INNOVATION",
+    valuesP: "Grounded in transparency, integrity, and fair stakeholder engagement. We consistently exceed expectations by pairing client-focused service with disciplined leadership to build a culture of lasting operational safety."
+  });
+
   const [coreValuesData, setCoreValuesData] = useState<{ title: string, subtitle: string, items: any[] }>({
     title: "Our Core Values",
     subtitle: "Guiding principles that drive our excellence.",
@@ -809,7 +844,10 @@ const DEFAULT_HERO_SLIDES = [
           fetchJobApps();
           fetchPendingLeaves();
         }
-        if (storedSession.role === 'super_admin') fetchUsers();
+        if (storedSession.role === 'super_admin') {
+          fetchUsers();
+          fetchAuthUsers();
+        }
 
         // Default tab based on role if they re-open the page
         const dmsRoles = ['document_controller', 'manager', 'reviewer', 'viewer'];
@@ -858,7 +896,10 @@ const DEFAULT_HERO_SLIDES = [
          fetchJobApps();
          fetchPendingLeaves();
        }
-       if (data.role === 'super_admin') fetchUsers();
+       if (data.role === 'super_admin') {
+         fetchUsers();
+         fetchAuthUsers();
+       }
        
        if (['document_controller', 'manager', 'reviewer', 'viewer'].includes(data.role)) setActiveTab("dms");
        else if (data.role === 'employee' || data.role === 'hr') setActiveTab("hr");
@@ -928,6 +969,7 @@ const DEFAULT_HERO_SLIDES = [
     const defaultData: any[] = [
       { section_key: 'hero', content: heroData },
       { section_key: 'about', content: aboutData },
+      { section_key: 'about_page', content: aboutPageData },
       { section_key: 'core_values', content: coreValuesData },
       { section_key: 'areas', content: areasData },
       { section_key: 'services', content: servicesData },
@@ -982,6 +1024,9 @@ const DEFAULT_HERO_SLIDES = [
             ];
           }
           setAboutData(content);
+        }
+        if (row.section_key === 'about_page') {
+          setAboutPageData(row.content || {});
         }
         if (row.section_key === 'core_values') setCoreValuesData(row.content);
         if (row.section_key === 'areas') setAreasData(row.content);
@@ -1053,6 +1098,9 @@ const DEFAULT_HERO_SLIDES = [
             ];
           }
           setAboutData(content);
+        }
+        if (row.section_key === 'about_page') {
+          setAboutPageData(row.content || {});
         }
         if (row.section_key === 'core_values') setCoreValuesData(row.content);
         if (row.section_key === 'areas') setAreasData(row.content);
@@ -1462,7 +1510,8 @@ const DEFAULT_HERO_SLIDES = [
     { id: 'job_apps', label: 'Job Applications', icon: Briefcase, roles: ['super_admin', 'hr', 'admin'], badge: jobApps.filter((app) => app.status === 'New').length, badgeColor: 'bg-primary text-primary-foreground' },
     { id: 'dms', label: 'DMS Platform', icon: FileText, roles: ['super_admin', 'admin', 'manager', 'reviewer', 'employee', 'viewer', 'document_controller'] },
     { id: 'hr', label: 'HR / ESS Portal', icon: Users, roles: ['super_admin', 'hr', 'employee'], badge: pendingLeavesCount > 0 ? pendingLeavesCount : undefined, badgeColor: 'bg-orange-500 text-white' },
-    { id: 'users', label: 'Users & Roles', icon: Settings, roles: ['super_admin'] },
+    { id: 'users', label: 'Admin Access', icon: Settings, roles: ['super_admin'] },
+    { id: 'auth_users', label: 'Registered Employees', icon: Users, roles: ['super_admin'] },
   ];
 
   const visibleNavItems = navItems.filter(item => item.roles.includes(session?.role || ''));
@@ -1678,6 +1727,12 @@ const DEFAULT_HERO_SLIDES = [
                 className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'about' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
               >
                 About Section
+              </button>
+              <button
+                onClick={() => setCmsSection('about_page')}
+                className={`text-left px-4 py-3 rounded-lg transition-colors ${cmsSection === 'about_page' ? 'bg-primary text-primary-foreground font-medium' : 'bg-surface hover:bg-white dark:bg-[#1C2541]'}`}
+              >
+                About Page
               </button>
               <button
                 onClick={() => setCmsSection('core_values')}
@@ -2211,6 +2266,43 @@ const DEFAULT_HERO_SLIDES = [
                     className="mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors w-fit font-medium"
                   >
                     Save Digital Company Profile
+                  </button>
+                </div>
+              )}
+
+              {cmsSection === 'about_page' && (
+                <div className="flex flex-col gap-6">
+                  <h2 className="text-2xl mb-2">Edit About Page Content</h2>
+                  
+                  {/* Vision */}
+                  <div className="bg-background p-6 rounded border border-foreground/10 space-y-4">
+                    <h3 className="font-bold text-lg border-b border-foreground/10 pb-2 mb-4">Vision</h3>
+                    <div><label className="block text-sm font-medium mb-1">Title</label><input type="text" value={aboutPageData.visionTitle} onChange={(e) => setAboutPageData({ ...aboutPageData, visionTitle: e.target.value })} className="w-full px-4 py-2 rounded bg-surface border border-foreground/20 focus:border-primary focus:outline-none" /></div>
+                    <div><label className="block text-sm font-medium mb-1">Subtitle</label><input type="text" value={aboutPageData.visionSub} onChange={(e) => setAboutPageData({ ...aboutPageData, visionSub: e.target.value })} className="w-full px-4 py-2 rounded bg-surface border border-foreground/20 focus:border-primary focus:outline-none" /></div>
+                    <div><label className="block text-sm font-medium mb-1">Paragraph</label><textarea value={aboutPageData.visionP} onChange={(e) => setAboutPageData({ ...aboutPageData, visionP: e.target.value })} className="w-full px-4 py-2 rounded bg-surface border border-foreground/20 focus:border-primary focus:outline-none h-24" /></div>
+                  </div>
+
+                  {/* Mission */}
+                  <div className="bg-background p-6 rounded border border-foreground/10 space-y-4">
+                    <h3 className="font-bold text-lg border-b border-foreground/10 pb-2 mb-4">Mission</h3>
+                    <div><label className="block text-sm font-medium mb-1">Title</label><input type="text" value={aboutPageData.missionTitle} onChange={(e) => setAboutPageData({ ...aboutPageData, missionTitle: e.target.value })} className="w-full px-4 py-2 rounded bg-surface border border-foreground/20 focus:border-primary focus:outline-none" /></div>
+                    <div><label className="block text-sm font-medium mb-1">Subtitle</label><input type="text" value={aboutPageData.missionSub} onChange={(e) => setAboutPageData({ ...aboutPageData, missionSub: e.target.value })} className="w-full px-4 py-2 rounded bg-surface border border-foreground/20 focus:border-primary focus:outline-none" /></div>
+                    <div><label className="block text-sm font-medium mb-1">Paragraph</label><textarea value={aboutPageData.missionP} onChange={(e) => setAboutPageData({ ...aboutPageData, missionP: e.target.value })} className="w-full px-4 py-2 rounded bg-surface border border-foreground/20 focus:border-primary focus:outline-none h-24" /></div>
+                  </div>
+
+                  {/* Values */}
+                  <div className="bg-background p-6 rounded border border-foreground/10 space-y-4">
+                    <h3 className="font-bold text-lg border-b border-foreground/10 pb-2 mb-4">Values</h3>
+                    <div><label className="block text-sm font-medium mb-1">Title</label><input type="text" value={aboutPageData.valuesTitle} onChange={(e) => setAboutPageData({ ...aboutPageData, valuesTitle: e.target.value })} className="w-full px-4 py-2 rounded bg-surface border border-foreground/20 focus:border-primary focus:outline-none" /></div>
+                    <div><label className="block text-sm font-medium mb-1">Subtitle</label><input type="text" value={aboutPageData.valuesSub} onChange={(e) => setAboutPageData({ ...aboutPageData, valuesSub: e.target.value })} className="w-full px-4 py-2 rounded bg-surface border border-foreground/20 focus:border-primary focus:outline-none" /></div>
+                    <div><label className="block text-sm font-medium mb-1">Paragraph</label><textarea value={aboutPageData.valuesP} onChange={(e) => setAboutPageData({ ...aboutPageData, valuesP: e.target.value })} className="w-full px-4 py-2 rounded bg-surface border border-foreground/20 focus:border-primary focus:outline-none h-24" /></div>
+                  </div>
+
+                  <button
+                    onClick={() => handleSaveCmsSection('about_page', aboutPageData)}
+                    className="mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors w-fit font-medium"
+                  >
+                    Save About Page Content
                   </button>
                 </div>
               )}
@@ -3291,6 +3383,65 @@ const DEFAULT_HERO_SLIDES = [
                 </table>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* REGISTERED EMPLOYEES TAB */}
+        {activeTab === 'auth_users' && session?.role === 'super_admin' && (
+          <div className="flex-1 flex flex-col p-6 overflow-y-auto">
+            <div className="flex items-end justify-between mb-8">
+              <div>
+                <h1 className="text-3xl mb-2">Registered Employees</h1>
+                <p className="text-foreground/60">Employees who signed up via the employee login portal.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => fetchAuthUsers()}
+                className="text-sm px-4 py-2 rounded border border-foreground/15 hover:bg-foreground/5 font-medium"
+              >
+                Refresh
+              </button>
+            </div>
+
+            {authUsersLoading ? (
+              <div className="flex items-center justify-center p-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            ) : authUsers.length === 0 ? (
+              <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded p-12 text-center">
+                <p className="text-foreground/60 mb-2">No employees have signed up yet.</p>
+                <p className="text-sm text-foreground/45">They will appear here once they create an account.</p>
+              </div>
+            ) : (
+              <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm whitespace-nowrap">
+                    <thead className="bg-white dark:bg-[#1C2541] text-foreground/60 font-medium border-b border-foreground/10">
+                      <tr>
+                        <th className="px-6 py-4">Full Name</th>
+                        <th className="px-6 py-4">Email</th>
+                        <th className="px-6 py-4">Signed Up At</th>
+                        <th className="px-6 py-4">Last Sign In</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-foreground/5">
+                      {authUsers.map((user: any) => (
+                        <tr key={user.id} className="hover:bg-white dark:bg-[#1C2541] transition-colors">
+                          <td className="px-6 py-4 font-bold">{user.full_name || 'N/A'}</td>
+                          <td className="px-6 py-4 text-primary font-medium">{user.email}</td>
+                          <td className="px-6 py-4 text-foreground/70">
+                            {new Date(user.created_at).toLocaleString()}
+                          </td>
+                          <td className="px-6 py-4 text-foreground/70">
+                            {user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString() : 'Never'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

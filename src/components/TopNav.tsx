@@ -6,6 +6,7 @@ import { TypewriterText } from "@/components/TypewriterText";
 import { setAppLanguage, type AppLang } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { EmployeeLoginModal } from "@/components/EmployeeLoginModal";
+import { supabase } from "@/lib/supabase";
 
 type NavLink = { to: string; label: string };
 
@@ -82,11 +83,24 @@ export function TopNav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "signup" | "forgot" | "update_password">("login");
   const [isLanguageSwitching, setIsLanguageSwitching] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     setIsLoggedIn(localStorage.getItem("viso_emp_logged_in") === "true");
+    
+    // Listen for password recovery
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") {
+        setAuthMode("update_password");
+        setIsLoginModalOpen(true);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const isAr = i18n.language?.startsWith("ar");
@@ -387,7 +401,15 @@ export function TopNav() {
         </div>
       )}
       
-      <EmployeeLoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+      <EmployeeLoginModal 
+        isOpen={isLoginModalOpen} 
+        onClose={() => {
+          setIsLoginModalOpen(false);
+          // reset mode when closed so next time it opens as login
+          setTimeout(() => setAuthMode("login"), 300);
+        }} 
+        initialMode={authMode}
+      />
     </>
   );
 }

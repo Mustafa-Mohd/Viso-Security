@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { FileText, Download, ArrowLeft } from "lucide-react";
+import { FileText, Download, ArrowLeft, Edit2, Check, X, Upload, Camera } from "lucide-react";
 import { fetchLeaveRequests, submitLeaveRequest, type LeaveRequest } from '@/lib/leaveApi';
 import { Link } from "@tanstack/react-router";
+import { supabase } from "@/lib/supabase";
 
-export function EmployeeDashboard({ user }: { user: any }) {
+export function EmployeeDashboard({ user, supabaseUser }: { user: any, supabaseUser?: any }) {
   const [activeTab, setActiveTab] = useState<"profile" | "documents" | "reports" | "requests">("profile");
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
   const [loadingLeaves, setLoadingLeaves] = useState(true);
@@ -14,6 +15,15 @@ export function EmployeeDashboard({ user }: { user: any }) {
   const [endDate, setEndDate] = useState('');
   const [reason, setReason] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  // Profile Edit State
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editPhone, setEditPhone] = useState(user?.phone || '');
+  const [editDepartment, setEditDepartment] = useState(user?.department || '');
+  const [editJobTitle, setEditJobTitle] = useState(user?.role || '');
+  const [editEmergency, setEditEmergency] = useState(user?.emergency_contact || '');
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [avatarUploading, setAvatarUploading] = useState(false);
 
   useEffect(() => {
     if (activeTab === 'requests') {
@@ -55,6 +65,71 @@ export function EmployeeDashboard({ user }: { user: any }) {
     }
   };
 
+  const handleProfileSave = async () => {
+    if (!supabaseUser) return;
+    setSavingProfile(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: {
+          phone: editPhone,
+          department: editDepartment,
+          job_title: editJobTitle,
+          emergency_contact: editEmergency
+        }
+      });
+      if (error) throw error;
+      alert("Profile updated! Refresh the page to see changes across the app.");
+      setIsEditingProfile(false);
+      // Force page reload to reflect changes in routing wrapper
+      window.location.reload();
+    } catch (err: any) {
+      alert("Failed to update profile: " + err.message);
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0 || !supabaseUser) return;
+    const file = e.target.files[0];
+    
+    setAvatarUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${supabaseUser.id}-${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      // Upload to supabase storage 'avatars' bucket
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // Update user metadata
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: { avatar_url: publicUrl }
+      });
+
+      if (updateError) throw updateError;
+      
+      alert("Profile picture updated! Refresh the page to see changes.");
+      window.location.reload();
+    } catch (err: any) {
+      console.error(err);
+      alert("Failed to upload image. Note: An Admin must run the SQL to create the 'avatars' bucket first! Error: " + err.message);
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -78,8 +153,32 @@ export function EmployeeDashboard({ user }: { user: any }) {
         {/* Left Sidebar Profile */}
         <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded p-6 h-fit sticky top-6">
           <div className="flex flex-col items-center text-center border-b border-foreground/10 pb-6 mb-6">
-            <div className="w-24 h-24 bg-foreground/5 rounded-full flex items-center justify-center mb-4 border border-foreground/10">
-              <span className="text-3xl">👤</span>
+            <div className="relative group mb-4">
+              <div className="w-24 h-24 bg-foreground/5 rounded-full flex items-center justify-center border border-foreground/10 overflow-hidden">
+                {user?.avatar_url ? (
+                  <img src={user.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-3xl">👤</span>
+                )}
+              </div>
+              {/* Overlay for avatar upload */}
+              <label className="absolute inset-0 bg-black/60 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                {avatarUploading ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                ) : (
+                  <>
+                    <Camera className="w-6 h-6 text-white mb-1" />
+                    <span className="text-[10px] text-white font-bold uppercase tracking-wider">Change</span>
+                  </>
+                )}
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  className="hidden" 
+                  onChange={handleAvatarUpload} 
+                  disabled={avatarUploading}
+                />
+              </label>
             </div>
             <div className="text-center">
               <p className="text-sm font-bold capitalize">{user?.name || "Employee"}</p>
@@ -137,8 +236,11 @@ export function EmployeeDashboard({ user }: { user: any }) {
 
           <div className="mt-12 border-t border-foreground/10 pt-4">
             <button 
-              onClick={() => {
+              onClick={async () => {
+                const { supabase } = await import("@/lib/supabase");
+                await supabase.auth.signOut();
                 localStorage.removeItem("viso_emp_logged_in");
+                localStorage.removeItem("viso_emp_name");
                 window.location.href = "/";
               }}
               className="w-full text-left px-4 py-2.5 rounded-lg font-bold text-red-500 hover:bg-red-500/10 transition-colors uppercase text-xs tracking-wider"
@@ -152,23 +254,85 @@ export function EmployeeDashboard({ user }: { user: any }) {
         <div className="space-y-8">
           {activeTab === 'profile' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
-              <h3 className="text-xl font-bold border-b border-foreground/10 pb-4">Personal Information</h3>
+              <div className="flex justify-between items-center border-b border-foreground/10 pb-4">
+                <h3 className="text-xl font-bold">Personal Information</h3>
+                {!isEditingProfile ? (
+                  <button 
+                    onClick={() => setIsEditingProfile(true)}
+                    className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary hover:bg-primary/10 px-3 py-1.5 rounded transition-colors"
+                  >
+                    <Edit2 className="w-3.5 h-3.5" /> Edit Profile
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <button 
+                      onClick={() => setIsEditingProfile(false)}
+                      className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-foreground/50 hover:bg-foreground/5 px-3 py-1.5 rounded transition-colors"
+                    >
+                      <X className="w-3.5 h-3.5" /> Cancel
+                    </button>
+                    <button 
+                      onClick={handleProfileSave}
+                      disabled={savingProfile}
+                      className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-1.5 rounded transition-colors disabled:opacity-50"
+                    >
+                      {savingProfile ? 'Saving...' : <><Check className="w-3.5 h-3.5" /> Save</>}
+                    </button>
+                  </div>
+                )}
+              </div>
+              
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="bg-white dark:bg-[#1C2541] p-6 rounded border border-foreground/10 shadow-sm">
-                  <h4 className="font-bold mb-4 text-primary">Contact Details</h4>
-                  <ul className="space-y-3 text-sm">
-                    <li className="flex justify-between border-b border-foreground/5 pb-2"><span className="text-foreground/60">Email</span> <span>{user?.name?.toLowerCase().replace(' ', '.')}@viso.com</span></li>
-                    <li className="flex justify-between border-b border-foreground/5 pb-2"><span className="text-foreground/60">Phone</span> <span>+966 50 123 4567</span></li>
-                    <li className="flex justify-between border-b border-foreground/5 pb-2"><span className="text-foreground/60">Location</span> <span>Riyadh HQ</span></li>
-                  </ul>
+                  <h4 className="font-bold mb-4 text-primary">Contact & Role</h4>
+                  {isEditingProfile ? (
+                    <div className="space-y-4 text-sm">
+                      <div>
+                        <label className="block text-xs font-bold text-foreground/60 uppercase tracking-wider mb-1">Phone Number</label>
+                        <input type="text" value={editPhone} onChange={e => setEditPhone(e.target.value)} className="w-full bg-background border border-foreground/20 rounded px-3 py-2" placeholder="+966 5X XXX XXXX" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-foreground/60 uppercase tracking-wider mb-1">Job Title</label>
+                        <input type="text" value={editJobTitle} onChange={e => setEditJobTitle(e.target.value)} className="w-full bg-background border border-foreground/20 rounded px-3 py-2" placeholder="e.g. Security Engineer" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-foreground/60 uppercase tracking-wider mb-1">Department</label>
+                        <input type="text" value={editDepartment} onChange={e => setEditDepartment(e.target.value)} className="w-full bg-background border border-foreground/20 rounded px-3 py-2" placeholder="e.g. Operations" />
+                      </div>
+                    </div>
+                  ) : (
+                    <ul className="space-y-3 text-sm">
+                      <li className="flex justify-between border-b border-foreground/5 pb-2"><span className="text-foreground/60">Email</span> <span>{user?.email || 'N/A'}</span></li>
+                      <li className="flex justify-between border-b border-foreground/5 pb-2"><span className="text-foreground/60">Phone</span> <span>{user?.phone || 'Not provided'}</span></li>
+                      <li className="flex justify-between border-b border-foreground/5 pb-2"><span className="text-foreground/60">Job Title</span> <span className="capitalize">{user?.role?.replace('_', ' ') || 'Not provided'}</span></li>
+                      <li className="flex justify-between border-b border-foreground/5 pb-2"><span className="text-foreground/60">Department</span> <span>{user?.department || 'Not provided'}</span></li>
+                    </ul>
+                  )}
                 </div>
+                
                 <div className="bg-white dark:bg-[#1C2541] p-6 rounded border border-foreground/10 shadow-sm">
                   <h4 className="font-bold mb-4 text-primary">Emergency Contact</h4>
-                  <ul className="space-y-3 text-sm">
-                    <li className="flex justify-between border-b border-foreground/5 pb-2"><span className="text-foreground/60">Name</span> <span>Ahmed Al-Farsi</span></li>
-                    <li className="flex justify-between border-b border-foreground/5 pb-2"><span className="text-foreground/60">Relation</span> <span>Brother</span></li>
-                    <li className="flex justify-between border-b border-foreground/5 pb-2"><span className="text-foreground/60">Phone</span> <span>+966 55 987 6543</span></li>
-                  </ul>
+                  {isEditingProfile ? (
+                    <div className="space-y-4 text-sm">
+                      <div>
+                        <label className="block text-xs font-bold text-foreground/60 uppercase tracking-wider mb-1">Emergency Contact Details</label>
+                        <textarea 
+                          value={editEmergency} 
+                          onChange={e => setEditEmergency(e.target.value)} 
+                          className="w-full bg-background border border-foreground/20 rounded px-3 py-2 h-24" 
+                          placeholder="Name, Relation, Phone Number"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-sm bg-foreground/5 p-4 rounded-lg border border-foreground/10">
+                      {user?.emergency_contact ? (
+                        <p className="whitespace-pre-line">{user.emergency_contact}</p>
+                      ) : (
+                        <p className="text-foreground/50 italic">No emergency contact provided.</p>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -276,6 +440,26 @@ export function EmployeeDashboard({ user }: { user: any }) {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
               <div className="flex justify-between items-center border-b border-foreground/10 pb-4">
                 <h3 className="text-xl font-bold">HR Requests (Leave & Permissions)</h3>
+              </div>
+
+              {/* LEAVE BALANCES */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 p-4 rounded text-center shadow-sm">
+                  <div className="text-3xl font-bold text-primary mb-1">21</div>
+                  <div className="text-[10px] font-bold text-foreground/60 uppercase tracking-wider">Annual Leave (Days)</div>
+                </div>
+                <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 p-4 rounded text-center shadow-sm">
+                  <div className="text-3xl font-bold text-emerald-500 mb-1">10</div>
+                  <div className="text-[10px] font-bold text-foreground/60 uppercase tracking-wider">Sick Leave (Days)</div>
+                </div>
+                <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 p-4 rounded text-center shadow-sm">
+                  <div className="text-3xl font-bold text-amber-500 mb-1">0</div>
+                  <div className="text-[10px] font-bold text-foreground/60 uppercase tracking-wider">Unpaid Leave (Days)</div>
+                </div>
+                <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 p-4 rounded text-center shadow-sm">
+                  <div className="text-3xl font-bold text-purple-500 mb-1">{leaveRequests.filter(r => r.status === 'pending').length}</div>
+                  <div className="text-[10px] font-bold text-foreground/60 uppercase tracking-wider">Pending Requests</div>
+                </div>
               </div>
 
               <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 p-6 rounded mb-8">
