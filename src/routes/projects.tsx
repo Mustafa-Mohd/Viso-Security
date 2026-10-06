@@ -533,19 +533,19 @@ function ProjectsPage() {
           >
             <div className="p-4 rounded-2xl bg-black/[0.03] border border-black/[0.06] text-center">
               <div className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-1">300+</div>
-              <div className="text-xs font-mono uppercase text-foreground/60 tracking-wider font-semibold">Total Delivered Projects</div>
+              <div className="text-xs font-mono uppercase text-foreground/60 tracking-wider font-semibold">Total Projects</div>
             </div>
             <div className="p-4 rounded-2xl bg-black/[0.03] border border-black/[0.06] text-center">
               <div className="text-3xl sm:text-4xl font-display font-bold text-primary mb-1">9</div>
               <div className="text-xs font-mono uppercase text-foreground/60 tracking-wider font-semibold">Industrial Sectors</div>
             </div>
             <div className="p-4 rounded-2xl bg-black/[0.03] border border-black/[0.06] text-center">
-              <div className="text-3xl sm:text-4xl font-display font-bold text-sky-600 mb-1">20+</div>
-              <div className="text-xs font-mono uppercase text-foreground/60 tracking-wider font-semibold">Global Tier-1 Clients</div>
+              <div className="text-3xl sm:text-4xl font-display font-bold text-sky-600 mb-1">500+</div>
+              <div className="text-xs font-mono uppercase text-foreground/60 tracking-wider font-semibold">Technical Assessments</div>
             </div>
             <div className="p-4 rounded-2xl bg-black/[0.03] border border-black/[0.06] text-center">
-              <div className="text-3xl sm:text-4xl font-display font-bold text-emerald-600 mb-1">100%</div>
-              <div className="text-xs font-mono uppercase text-foreground/60 tracking-wider font-semibold">HCIS & Security Approval</div>
+              <div className="text-3xl sm:text-4xl font-display font-bold text-emerald-600 mb-1">99%</div>
+              <div className="text-xs font-mono uppercase text-foreground/60 tracking-wider font-semibold">On-Time Deliverables</div>
             </div>
           </motion.div>
 

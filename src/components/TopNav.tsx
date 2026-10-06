@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { TypewriterText } from "@/components/TypewriterText";
 import { setAppLanguage, type AppLang } from "@/i18n";
 import { cn } from "@/lib/utils";
-import { EmployeeLoginModal } from "@/components/EmployeeLoginModal";
+import { EmployeeLoginModal, type Mode } from "@/components/EmployeeLoginModal";
 import { supabase } from "@/lib/supabase";
 
 type NavLink = { to: string; label: string };
@@ -83,7 +83,7 @@ export function TopNav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<"login" | "signup" | "forgot" | "update_password">("login");
+  const [authMode, setAuthMode] = useState<Mode>("login");
   const [isLanguageSwitching, setIsLanguageSwitching] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
