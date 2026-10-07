@@ -415,11 +415,6 @@ function ThreeDLogoInteractive() {
         />
       </motion.div>
 
-      <div className="absolute bottom-6 left-6 right-6">
-        <p className="font-mono text-[10px] tracking-[0.25em] text-gold uppercase drop-shadow-md">
-          VISO GROUP HEADQUARTERS
-        </p>
-      </div>
     </div>
   );
 }
