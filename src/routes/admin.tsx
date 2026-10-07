@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
-import { Eye, EyeOff, LayoutDashboard, Image as ImageIcon, Settings, LogOut, ChevronRight, Save, Plus, Trash2, Upload, AlertCircle, MessageSquare, Users, Briefcase, FileText, History, ArrowUp, ArrowDown, Loader2, Link, Video, ShieldCheck, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, LayoutDashboard, Image as ImageIcon, Settings, LogOut, ChevronRight, Save, Plus, Trash2, Upload, AlertCircle, MessageSquare, Users, Briefcase, FileText, History, ArrowUp, ArrowDown, Loader2, Link, Video, ShieldCheck, ArrowLeft, Layers } from "lucide-react";
 import { DmsDashboard } from "@/components/DmsDashboard";
 import { HrDashboard } from "@/components/HrDashboard";
 import { CertificatesDashboard } from "@/components/CertificatesDashboard";
@@ -14,7 +14,8 @@ import {
   deleteGalleryImageRecord,
 } from "@/lib/galleryApi";
 import { fetchLeaveRequests } from "@/lib/leaveApi";
-import { PROJECTS, type ProjectItem } from "@/routes/projects";
+import { PROJECTS, type ProjectItem, parseMonthYear } from "@/routes/projects";
+import { clientCategoriesData, ClientLogo, type ClientCategory, type ClientItem } from "@/data/clientsData";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -588,17 +589,13 @@ function AdminPage() {
     setAuditLogsLoading(false);
   };
 const DEFAULT_HERO_SLIDES = [
-  { title: "Strategic Security Architecture" },
-  { title: "Physical Security Consulting" },
-  { title: "Certified Translation Services" },
-  { title: "Risk Assessment & Compliance" },
-  { title: "Critical Infrastructure Protection" },
-  { title: "Integrated Security Design" },
+  { title: "Security Consultancy" },
+  { title: "Translation Services" },
 ];
 
   const [heroData, setHeroData] = useState<{
     videoUrl?: string;
-    slides: { title: string; imageUrl?: string }[];
+    slides: { title: string; subtitle?: string; link?: string; buttonText?: string; imageUrl?: string }[];
     title1?: string;
     title2?: string;
     subtitle?: string;
@@ -734,6 +731,7 @@ const DEFAULT_HERO_SLIDES = [
       { name: "Jazan Port", sector: "Port", icon: "🛳️" },
     ] 
   });
+  const [clientPageCategoriesData, setClientPageCategoriesData] = useState<ClientCategory[]>(clientCategoriesData);
   
   const [lifecycleData, setLifecycleData] = useState<{ title: string, subtitle: string, items: any[] }>({
     title: "Service Lifecycle",
@@ -965,7 +963,9 @@ const DEFAULT_HERO_SLIDES = [
       { section_key: 'locations', content: locationsData },
       { section_key: 'stats', content: statsData },
       { section_key: 'cta', content: ctaData },
-      { section_key: 'footer', content: footerData }
+      { section_key: 'footer', content: footerData },
+      { section_key: 'client_page_categories', content: clientPageCategoriesData },
+      { section_key: 'projects', content: projectsData }
     ];
     for (const item of defaultData) {
       await supabase.from('cms_content').upsert(item, { onConflict: 'section_key' }).select();
@@ -974,6 +974,7 @@ const DEFAULT_HERO_SLIDES = [
     const { data, error } = await supabase.from('cms_content').select('*');
     if (!error && data) {
       data.forEach(row => {
+        if (row.section_key === 'client_page_categories') setClientPageCategoriesData(row.content || clientCategoriesData);
         if (row.section_key === 'hero') {
           const content = row.content || {};
           if (!content.slides || content.slides.length === 0) {
@@ -1036,6 +1037,7 @@ const DEFAULT_HERO_SLIDES = [
         if (row.section_key === 'stats') setStatsData(row.content);
         if (row.section_key === 'cta') setCtaData(row.content);
         if (row.section_key === 'footer') setFooterData(row.content);
+        if (row.section_key === 'projects') setProjectsData(row.content || PROJECTS);
       });
     }
   };
@@ -1110,6 +1112,8 @@ const DEFAULT_HERO_SLIDES = [
         if (row.section_key === 'stats') setStatsData(row.content);
         if (row.section_key === 'cta') setCtaData(row.content);
         if (row.section_key === 'footer') setFooterData(row.content);
+        if (row.section_key === 'client_page_categories') setClientPageCategoriesData(row.content || clientCategoriesData);
+        if (row.section_key === 'projects') setProjectsData(row.content || PROJECTS);
       });
     }
   };
@@ -1418,6 +1422,10 @@ const DEFAULT_HERO_SLIDES = [
         console.error("Failed to save audit log:", auditError);
       }
 
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("viso_cms_updated"));
+      }
+
       alert(`${section} section saved successfully!`);
     } catch (error: any) {
       console.error("Error saving CMS section:", error);
@@ -1709,6 +1717,7 @@ const DEFAULT_HERO_SLIDES = [
                         { id: "about_us", title: "About Us Page" },
                         { id: "security", title: "Security & Services Page" },
                         { id: "projects_page", title: "Projects Portfolio Page" },
+                        { id: "clients_page", title: "Clients Portfolio Page" },
                         { id: "footer_contact", title: "Contact & Footer" },
                       ].find(p => p.id === selectedCmsPage)?.title || 'Page'} CMS Management`
                     : "Website Content Management System (CMS)"}
@@ -1787,6 +1796,16 @@ const DEFAULT_HERO_SLIDES = [
                     badgeColor: "bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20",
                     defaultSection: "projects",
                     sectionCount: 2,
+                  },
+                  {
+                    id: "clients_page",
+                    title: "Clients Portfolio Page",
+                    badge: "OUR CLIENTS",
+                    desc: "Manage side headings (categories like ENERGY & PETROCHEMICALS) and logos with names.",
+                    icon: Briefcase,
+                    badgeColor: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20",
+                    defaultSection: "client_page_categories",
+                    sectionCount: 1,
                   },
                   {
                     id: "footer_contact",
@@ -1878,6 +1897,10 @@ const DEFAULT_HERO_SLIDES = [
                         { id: "projects", label: "Projects Database" },
                         { id: "stats", label: "Performance Metrics" },
                       ]
+                    : selectedCmsPage === 'clients_page'
+                    ? [
+                        { id: "client_page_categories", label: "Client Categories & Logos" },
+                      ]
                     : [
                         { id: "cta", label: "Call to Action Banners" },
                         { id: "footer", label: "Footer & Legal Info" },
@@ -1949,6 +1972,141 @@ const DEFAULT_HERO_SLIDES = [
                           Preview Video
                         </a>
                       )}
+                    </div>
+                  </div>
+
+                  {/* Hero Featured Core Services Section (Security Consultancy & Translation Services) */}
+                  <div className="p-4 rounded-xl border border-foreground/10 bg-background/60 space-y-4 mt-2">
+                    <div className="flex items-center justify-between pb-2 border-b border-foreground/10">
+                      <div>
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-2">
+                          <Layers className="w-4 h-4 text-primary" />
+                          Hero Core Services (Security Consultancy & Translation)
+                        </h3>
+                        <p className="text-[11px] text-muted-foreground">Manage the text, descriptions, links, and buttons for the 2 hero section services.</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Service 1: Security Consultancy */}
+                      <div className="p-3.5 rounded-lg border border-foreground/10 bg-surface space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-primary uppercase font-mono">Service #1: Security Consultancy</span>
+                        </div>
+                        <div>
+                          <label className="block text-[10px] uppercase font-bold text-foreground/60 mb-1">Title</label>
+                          <input
+                            type="text"
+                            value={heroData.slides?.[0]?.title || "Security Consultancy"}
+                            onChange={(e) => {
+                              const slides = [...(heroData.slides || [{ title: "Security Consultancy" }, { title: "Translation Services" }])];
+                              slides[0] = { ...slides[0], title: e.target.value };
+                              setHeroData({ ...heroData, slides });
+                            }}
+                            className="w-full px-3 py-1.5 text-xs rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] uppercase font-bold text-foreground/60 mb-1">Subtitle / Description</label>
+                          <textarea
+                            value={heroData.slides?.[0]?.subtitle || "Comprehensive Physical Security Threat and Risk Assessment."}
+                            onChange={(e) => {
+                              const slides = [...(heroData.slides || [{ title: "Security Consultancy" }, { title: "Translation Services" }])];
+                              slides[0] = { ...slides[0], subtitle: e.target.value };
+                              setHeroData({ ...heroData, slides });
+                            }}
+                            className="w-full px-3 py-1.5 text-xs rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none min-h-[55px]"
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-[10px] uppercase font-bold text-foreground/60 mb-1">Button Link</label>
+                            <input
+                              type="text"
+                              value={heroData.slides?.[0]?.link || "/security"}
+                              onChange={(e) => {
+                                const slides = [...(heroData.slides || [{ title: "Security Consultancy" }, { title: "Translation Services" }])];
+                                slides[0] = { ...slides[0], link: e.target.value };
+                                setHeroData({ ...heroData, slides });
+                              }}
+                              className="w-full px-2.5 py-1 text-xs font-mono rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] uppercase font-bold text-foreground/60 mb-1">Button Text</label>
+                            <input
+                              type="text"
+                              value={heroData.slides?.[0]?.buttonText || "Go to Security"}
+                              onChange={(e) => {
+                                const slides = [...(heroData.slides || [{ title: "Security Consultancy" }, { title: "Translation Services" }])];
+                                slides[0] = { ...slides[0], buttonText: e.target.value };
+                                setHeroData({ ...heroData, slides });
+                              }}
+                              className="w-full px-2.5 py-1 text-xs rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Service 2: Translation Services */}
+                      <div className="p-3.5 rounded-lg border border-foreground/10 bg-surface space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-primary uppercase font-mono">Service #2: Translation Services</span>
+                        </div>
+                        <div>
+                          <label className="block text-[10px] uppercase font-bold text-foreground/60 mb-1">Title</label>
+                          <input
+                            type="text"
+                            value={heroData.slides?.[1]?.title || "Translation Services"}
+                            onChange={(e) => {
+                              const slides = [...(heroData.slides || [{ title: "Security Consultancy" }, { title: "Translation Services" }])];
+                              slides[1] = { ...slides[1], title: e.target.value };
+                              setHeroData({ ...heroData, slides });
+                            }}
+                            className="w-full px-3 py-1.5 text-xs rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] uppercase font-bold text-foreground/60 mb-1">Subtitle / Description</label>
+                          <textarea
+                            value={heroData.slides?.[1]?.subtitle || "Certified Translation Services for Technical, Legal, Medical, Official, and Security Documents."}
+                            onChange={(e) => {
+                              const slides = [...(heroData.slides || [{ title: "Security Consultancy" }, { title: "Translation Services" }])];
+                              slides[1] = { ...slides[1], subtitle: e.target.value };
+                              setHeroData({ ...heroData, slides });
+                            }}
+                            className="w-full px-3 py-1.5 text-xs rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none min-h-[55px]"
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-[10px] uppercase font-bold text-foreground/60 mb-1">Button Link</label>
+                            <input
+                              type="text"
+                              value={heroData.slides?.[1]?.link || "/translation"}
+                              onChange={(e) => {
+                                const slides = [...(heroData.slides || [{ title: "Security Consultancy" }, { title: "Translation Services" }])];
+                                slides[1] = { ...slides[1], link: e.target.value };
+                                setHeroData({ ...heroData, slides });
+                              }}
+                              className="w-full px-2.5 py-1 text-xs font-mono rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] uppercase font-bold text-foreground/60 mb-1">Button Text</label>
+                            <input
+                              type="text"
+                              value={heroData.slides?.[1]?.buttonText || "Go to Translation"}
+                              onChange={(e) => {
+                                const slides = [...(heroData.slides || [{ title: "Security Consultancy" }, { title: "Translation Services" }])];
+                                slides[1] = { ...slides[1], buttonText: e.target.value };
+                                setHeroData({ ...heroData, slides });
+                              }}
+                              className="w-full px-2.5 py-1 text-xs rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
@@ -2936,12 +3094,34 @@ const DEFAULT_HERO_SLIDES = [
               {/* PROJECTS CMS */}
               {cmsSection === 'projects' && (
                 <div className="flex flex-col gap-4 max-w-5xl">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-foreground/10">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-foreground/10">
                     <div>
-                      <h2 className="text-2xl mb-2">Projects Portfolio</h2>
-                      <p className="text-[11px] text-muted-foreground">Manage the list of ongoing and completed projects displayed on the Projects page.</p>
+                      <h2 className="text-2xl mb-1 font-semibold">Projects Portfolio</h2>
+                      <p className="text-[11px] text-muted-foreground">Manage project cards, order position (Up/Down arrows), and month settings for the Projects page.</p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const sorted = [...projectsData].sort((a, b) => parseMonthYear(b.month) - parseMonthYear(a.month));
+                          setProjectsData(sorted);
+                        }}
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-md border border-foreground/20 text-foreground/80 hover:bg-foreground/5 transition-all cursor-pointer"
+                        title="Sort cards by month (Newest to Oldest)"
+                      >
+                        <ArrowDown className="w-3.5 h-3.5 text-primary" /> Month (Newest)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const sorted = [...projectsData].sort((a, b) => parseMonthYear(a.month) - parseMonthYear(b.month));
+                          setProjectsData(sorted);
+                        }}
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-md border border-foreground/20 text-foreground/80 hover:bg-foreground/5 transition-all cursor-pointer"
+                        title="Sort cards by month (Oldest to Newest)"
+                      >
+                        <ArrowUp className="w-3.5 h-3.5 text-primary" /> Month (Oldest)
+                      </button>
                       <button
                         type="button"
                         onClick={() => {
@@ -2954,43 +3134,96 @@ const DEFAULT_HERO_SLIDES = [
                               sector: "SECTOR",
                               category: "infra",
                               status: "Ongoing",
-                              scope: "Project scope description..."
+                              scope: "Project scope description...",
+                              month: "October 2024"
                             },
                             ...projectsData
                           ]);
                         }}
-                        className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-md border border-primary text-primary hover:bg-primary/10 transition-all cursor-pointer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-primary text-primary hover:bg-primary/10 transition-all cursor-pointer"
                       >
-                        <Plus className="w-4 h-4" /> Add Project
+                        <Plus className="w-3.5 h-3.5" /> Add Project
                       </button>
                       <button
                         onClick={() => handleSaveCmsSection('projects', projectsData)}
-                        className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-all cursor-pointer shadow-xs"
+                        className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-all cursor-pointer shadow-xs"
                       >
-                        <Save className="w-4 h-4" /> Save Projects
+                        <Save className="w-3.5 h-3.5" /> Save Projects
                       </button>
                     </div>
                   </div>
 
-                  <div className="space-y-4 mt-4 h-[60vh] overflow-y-auto pr-2">
+                  <div className="space-y-4 mt-2 h-[65vh] overflow-y-auto pr-2">
                     {projectsData.map((project, idx) => (
-                      <div key={idx} className="bg-surface p-4 rounded-xl border border-foreground/10 space-y-3 relative group">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (confirm("Remove this project?")) {
-                              const newArr = [...projectsData];
-                              newArr.splice(idx, 1);
-                              setProjectsData(newArr);
-                            }
-                          }}
-                          className="absolute top-4 right-4 p-1.5 rounded-md text-red-500 hover:bg-red-500/10 transition-colors opacity-0 group-hover:opacity-100"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pr-8">
-                          <div>
+                      <div key={idx} className="bg-surface p-4 rounded-xl border border-foreground/10 space-y-3 relative group shadow-xs">
+                        {/* Header bar with Up/Down arrows and controls */}
+                        <div className="flex items-center justify-between pb-2 border-b border-foreground/10 bg-background/50 -mx-4 -mt-4 p-3 rounded-t-xl">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-mono font-bold bg-primary/10 text-primary px-2.5 py-1 rounded-md">
+                              Card #{idx + 1}
+                            </span>
+                            <span className="text-xs text-muted-foreground font-mono">
+                              (S.No #{project.sNo})
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-1">
+                            {/* Move Up Arrow Button */}
+                            <button
+                              type="button"
+                              disabled={idx === 0}
+                              onClick={() => {
+                                if (idx <= 0) return;
+                                const newArr = [...projectsData];
+                                const temp = newArr[idx];
+                                newArr[idx] = newArr[idx - 1];
+                                newArr[idx - 1] = temp;
+                                setProjectsData(newArr);
+                              }}
+                              className="p-1.5 rounded-md border border-foreground/20 text-foreground hover:bg-primary/10 hover:border-primary hover:text-primary transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-foreground cursor-pointer"
+                              title="Move Card Up"
+                            >
+                              <ArrowUp className="w-4 h-4" />
+                            </button>
+
+                            {/* Move Down Arrow Button */}
+                            <button
+                              type="button"
+                              disabled={idx === projectsData.length - 1}
+                              onClick={() => {
+                                if (idx >= projectsData.length - 1) return;
+                                const newArr = [...projectsData];
+                                const temp = newArr[idx];
+                                newArr[idx] = newArr[idx + 1];
+                                newArr[idx + 1] = temp;
+                                setProjectsData(newArr);
+                              }}
+                              className="p-1.5 rounded-md border border-foreground/20 text-foreground hover:bg-primary/10 hover:border-primary hover:text-primary transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-foreground cursor-pointer"
+                              title="Move Card Down"
+                            >
+                              <ArrowDown className="w-4 h-4" />
+                            </button>
+
+                            {/* Delete Button */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (confirm(`Remove project "${project.name}"?`)) {
+                                  const newArr = [...projectsData];
+                                  newArr.splice(idx, 1);
+                                  setProjectsData(newArr);
+                                }
+                              }}
+                              className="p-1.5 rounded-md text-red-500 hover:bg-red-500/10 transition-colors ml-2 cursor-pointer"
+                              title="Delete Project"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <div className="md:col-span-2">
                             <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Project Name</label>
                             <input
                               type="text"
@@ -3003,6 +3236,22 @@ const DEFAULT_HERO_SLIDES = [
                               className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
                             />
                           </div>
+
+                          <div>
+                            <label className="block text-[10px] uppercase font-bold text-primary mb-1">Month / Date (Order Basis)</label>
+                            <input
+                              type="text"
+                              value={project.month || ""}
+                              onChange={(e) => {
+                                const newArr = [...projectsData];
+                                newArr[idx] = { ...newArr[idx], month: e.target.value };
+                                setProjectsData(newArr);
+                              }}
+                              className="w-full px-3 py-1.5 text-sm rounded bg-background border border-primary/40 focus:border-primary focus:outline-none font-mono"
+                              placeholder="e.g. October 2024, 2024-10"
+                            />
+                          </div>
+
                           <div>
                             <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Status</label>
                             <select
@@ -3124,6 +3373,15 @@ const DEFAULT_HERO_SLIDES = [
                     ))}
                   </div>
                 </div>
+              )}
+
+              {/* CLIENTS PAGE CATEGORIES & LOGOS CMS */}
+              {cmsSection === 'client_page_categories' && (
+                <CmsClientsPageEditor
+                  categories={clientPageCategoriesData}
+                  onChange={(updated) => setClientPageCategoriesData(updated)}
+                  onSave={() => handleSaveCmsSection('client_page_categories', clientPageCategoriesData)}
+                />
               )}
             </div>
           </div>
@@ -3440,3 +3698,410 @@ const DEFAULT_HERO_SLIDES = [
     </div>
   );
 }
+
+function MinimalClientLogoForm({
+  onSave,
+  onCancel,
+  initialData,
+}: {
+  onSave: (client: ClientItem) => void;
+  onCancel?: () => void;
+  initialData?: ClientItem;
+}) {
+  const [name, setName] = useState(initialData?.name || "");
+  const [icon, setIcon] = useState(initialData?.icon || "");
+  const [uploading, setUploading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleFile = async (file: File) => {
+    setUploading(true);
+    try {
+      let publicUrl = "";
+      try {
+        publicUrl = await uploadGalleryImage(file, "clients");
+      } catch (err) {
+        publicUrl = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target?.result as string);
+          reader.readAsDataURL(file);
+        });
+      }
+      if (publicUrl) setIcon(publicUrl);
+    } catch (err) {
+      alert("Failed to process image file.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="bg-[#0B1329]/5 dark:bg-[#0B1329]/60 border border-primary/30 rounded-xl p-3 text-xs space-y-3 shadow-inner my-2">
+      <div>
+        <label className="block text-[10px] font-bold text-foreground/70 uppercase mb-1">
+          Client Name *
+        </label>
+        <input
+          type="text"
+          placeholder="e.g. Saudi Aramco"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full px-3 py-1.5 rounded-lg bg-background border border-foreground/20 text-xs focus:outline-none focus:border-primary"
+        />
+      </div>
+
+      {/* Minimal Image Upload/Link Bar */}
+      <div>
+        <label className="block text-[10px] font-bold text-foreground/70 uppercase mb-1">
+          Client Logo (Upload File, Drag & Drop, or Image Link)
+        </label>
+        <div className="flex flex-col sm:flex-row items-center gap-2">
+          {/* File Dropzone */}
+          <div
+            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+            onDragLeave={(e) => { e.preventDefault(); setIsDragging(false); }}
+            onDrop={(e) => {
+              e.preventDefault();
+              setIsDragging(false);
+              if (e.dataTransfer.files?.[0]) handleFile(e.dataTransfer.files[0]);
+            }}
+            className={`flex-1 w-full border border-dashed rounded-lg p-2 text-center transition-colors flex items-center justify-between px-3 ${
+              isDragging ? "border-primary bg-primary/10" : "border-foreground/25 hover:border-primary/50"
+            }`}
+          >
+            <div className="flex items-center gap-1.5 text-foreground/70">
+              <Upload className="w-3.5 h-3.5 text-primary" />
+              <span className="text-[11px]">
+                {uploading ? "Uploading..." : "Drag & drop file or browse"}
+              </span>
+            </div>
+            <label className="cursor-pointer bg-primary/15 text-primary hover:bg-primary/25 px-2.5 py-1 rounded text-[10px] font-bold">
+              Choose File
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  if (e.target.files?.[0]) handleFile(e.target.files[0]);
+                }}
+                disabled={uploading}
+              />
+            </label>
+          </div>
+
+          <span className="text-[10px] font-bold text-foreground/40 uppercase">OR</span>
+
+          {/* URL Input */}
+          <input
+            type="text"
+            placeholder="Paste Logo Image URL"
+            value={icon}
+            onChange={(e) => setIcon(e.target.value)}
+            className="flex-1 w-full px-3 py-2 rounded-lg bg-background border border-foreground/20 text-xs focus:outline-none focus:border-primary"
+          />
+
+          {/* Preview Thumbnail */}
+          {icon && (
+            <div className="h-9 w-12 shrink-0 bg-white rounded-lg border border-foreground/15 p-1 flex items-center justify-center">
+              <img src={icon} alt="Preview" className="max-h-full max-w-full object-contain" />
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="flex items-center justify-end gap-2 pt-1.5 border-t border-foreground/10">
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="px-3 py-1 rounded-lg bg-foreground/10 hover:bg-foreground/20 text-xs font-medium"
+          >
+            Cancel
+          </button>
+        )}
+        <button
+          type="button"
+          disabled={!name.trim() || uploading}
+          onClick={() => {
+            if (!name.trim()) return;
+            onSave({ name: name.trim(), icon: icon.trim(), url: initialData?.url || "" });
+          }}
+          className="px-4 py-1.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-bold shadow-xs disabled:opacity-50"
+        >
+          {initialData ? "Update Logo" : "Add Logo"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function CmsClientsPageEditor({
+  categories,
+  onChange,
+  onSave,
+}: {
+  categories: ClientCategory[];
+  onChange: (updated: ClientCategory[]) => void;
+  onSave: () => void;
+}) {
+  const [addingToCategoryIdx, setAddingToCategoryIdx] = useState<number | null>(null);
+  const [editingClientKey, setEditingClientKey] = useState<string | null>(null);
+
+  const addCategory = () => {
+    const title = prompt("Enter new category side heading name (e.g. ENERGY & PETROCHEMICALS):");
+    if (!title || !title.trim()) return;
+    onChange([...categories, { title: title.trim().toUpperCase(), clients: [] }]);
+  };
+
+  const updateCategoryTitle = (idx: number, newTitle: string) => {
+    const updated = [...categories];
+    updated[idx] = { ...updated[idx], title: newTitle };
+    onChange(updated);
+  };
+
+  const deleteCategory = (idx: number) => {
+    if (!confirm(`Are you sure you want to delete category "${categories[idx].title}"?`)) return;
+    const updated = categories.filter((_, i) => i !== idx);
+    onChange(updated);
+  };
+
+  const moveCategory = (idx: number, direction: "up" | "down") => {
+    const targetIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (targetIdx < 0 || targetIdx >= categories.length) return;
+    const updated = [...categories];
+    const temp = updated[idx];
+    updated[idx] = updated[targetIdx];
+    updated[targetIdx] = temp;
+    onChange(updated);
+  };
+
+  const addClientLogo = (categoryIdx: number, client: ClientItem) => {
+    const updated = [...categories];
+    updated[categoryIdx] = {
+      ...updated[categoryIdx],
+      clients: [...updated[categoryIdx].clients, client],
+    };
+    onChange(updated);
+    setAddingToCategoryIdx(null);
+  };
+
+  const updateClientLogo = (categoryIdx: number, clientIdx: number, client: ClientItem) => {
+    const updated = [...categories];
+    const newClients = [...updated[categoryIdx].clients];
+    newClients[clientIdx] = client;
+    updated[categoryIdx] = { ...updated[categoryIdx], clients: newClients };
+    onChange(updated);
+    setEditingClientKey(null);
+  };
+
+  const deleteClientLogo = (categoryIdx: number, clientIdx: number) => {
+    const updated = [...categories];
+    const newClients = updated[categoryIdx].clients.filter((_, i) => i !== clientIdx);
+    updated[categoryIdx] = { ...updated[categoryIdx], clients: newClients };
+    onChange(updated);
+  };
+
+  const moveClientLogo = (categoryIdx: number, clientIdx: number, direction: "left" | "right") => {
+    const targetIdx = direction === "left" ? clientIdx - 1 : clientIdx + 1;
+    const list = categories[categoryIdx].clients;
+    if (targetIdx < 0 || targetIdx >= list.length) return;
+    const updated = [...categories];
+    const newClients = [...list];
+    const temp = newClients[clientIdx];
+    newClients[clientIdx] = newClients[targetIdx];
+    newClients[targetIdx] = temp;
+    updated[categoryIdx] = { ...updated[categoryIdx], clients: newClients };
+    onChange(updated);
+  };
+
+  return (
+    <div className="flex flex-col gap-6 max-w-6xl">
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-foreground/10">
+        <div>
+          <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+            <Briefcase className="w-5 h-5 text-primary" />
+            Clients Page Categories & Logos CMS
+          </h2>
+          <p className="text-xs text-muted-foreground mt-1">
+            Manage industry side headings (e.g. ENERGY & PETROCHEMICALS) and client logos.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={addCategory}
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl bg-foreground/10 hover:bg-foreground/15 text-foreground transition-colors cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            Add Side Heading Category
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              onSave();
+              window.dispatchEvent(new Event("viso_cms_updated"));
+            }}
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all cursor-pointer shadow-xs"
+          >
+            <Save className="w-4 h-4" />
+            Save Client Page Changes
+          </button>
+        </div>
+      </div>
+
+      {/* Categories List */}
+      <div className="flex flex-col gap-6">
+        {categories.map((category, catIdx) => (
+          <div
+            key={catIdx}
+            className="p-5 rounded-2xl border border-foreground/15 bg-background/50 space-y-4 shadow-xs"
+          >
+            {/* Category Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-foreground/10">
+              <div className="flex-1 flex items-center gap-2">
+                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-primary/10 text-primary uppercase">
+                  Side Heading #{catIdx + 1}
+                </span>
+                <input
+                  type="text"
+                  value={category.title}
+                  onChange={(e) => updateCategoryTitle(catIdx, e.target.value)}
+                  className="font-display font-bold text-base md:text-lg text-foreground bg-transparent border-b border-dashed border-foreground/30 focus:border-primary focus:outline-none px-1 py-0.5 w-full max-w-lg"
+                  placeholder="e.g. ENERGY & PETROCHEMICALS"
+                />
+                <span className="text-xs font-semibold text-muted-foreground whitespace-nowrap">
+                  ({category.clients.length} logos)
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  disabled={catIdx === 0}
+                  onClick={() => moveCategory(catIdx, "up")}
+                  className="p-1.5 rounded-lg hover:bg-foreground/10 text-foreground/70 disabled:opacity-30"
+                  title="Move category up"
+                >
+                  <ArrowUp className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  disabled={catIdx === categories.length - 1}
+                  onClick={() => moveCategory(catIdx, "down")}
+                  className="p-1.5 rounded-lg hover:bg-foreground/10 text-foreground/70 disabled:opacity-30"
+                  title="Move category down"
+                >
+                  <ArrowDown className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setAddingToCategoryIdx(addingToCategoryIdx === catIdx ? null : catIdx)
+                  }
+                  className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-lg bg-primary/15 text-primary hover:bg-primary/25 transition-colors"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Add Logo
+                </button>
+                <button
+                  type="button"
+                  onClick={() => deleteCategory(catIdx)}
+                  className="p-1.5 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
+                  title="Delete category"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Minimal Form when adding logo to this category */}
+            {addingToCategoryIdx === catIdx && (
+              <MinimalClientLogoForm
+                onSave={(client) => addClientLogo(catIdx, client)}
+                onCancel={() => setAddingToCategoryIdx(null)}
+              />
+            )}
+
+            {/* Logos Grid */}
+            {category.clients.length === 0 ? (
+              <p className="text-xs text-muted-foreground italic py-3 text-center">
+                No logos added yet under this side heading. Click "+ Add Logo" above.
+              </p>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                {category.clients.map((client, clientIdx) => {
+                  const key = `${catIdx}-${clientIdx}`;
+                  const isEditing = editingClientKey === key;
+
+                  if (isEditing) {
+                    return (
+                      <div key={key} className="col-span-full">
+                        <MinimalClientLogoForm
+                          initialData={client}
+                          onSave={(updated) => updateClientLogo(catIdx, clientIdx, updated)}
+                          onCancel={() => setEditingClientKey(null)}
+                        />
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div
+                      key={key}
+                      className="group relative flex flex-col items-center justify-between p-3 rounded-xl border border-foreground/10 bg-white dark:bg-[#1C2541] hover:border-primary/40 hover:shadow-md transition-all text-center"
+                    >
+                      <div className="h-16 w-full flex items-center justify-center p-1 mb-2">
+                        <ClientLogo src={client.icon} name={client.name} />
+                      </div>
+                      <h4 className="font-semibold text-xs text-foreground line-clamp-2 mb-2">
+                        {client.name}
+                      </h4>
+
+                      {/* Action buttons */}
+                      <div className="flex items-center justify-center gap-1 opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity pt-1 border-t border-foreground/10 w-full">
+                        <button
+                          type="button"
+                          disabled={clientIdx === 0}
+                          onClick={() => moveClientLogo(catIdx, clientIdx, "left")}
+                          className="p-1 hover:text-primary disabled:opacity-20 text-xs"
+                          title="Move Left"
+                        >
+                          ‹
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setEditingClientKey(key)}
+                          className="px-2 py-0.5 text-[10px] font-bold rounded bg-foreground/10 hover:bg-primary hover:text-white transition-colors"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => deleteClientLogo(catIdx, clientIdx)}
+                          className="p-1 text-red-500 hover:text-red-700 text-xs"
+                          title="Delete logo"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                        <button
+                          type="button"
+                          disabled={clientIdx === category.clients.length - 1}
+                          onClick={() => moveClientLogo(catIdx, clientIdx, "right")}
+                          className="p-1 hover:text-primary disabled:opacity-20 text-xs"
+                          title="Move Right"
+                        >
+                          ›
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+

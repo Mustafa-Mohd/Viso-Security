@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { TopNav } from "@/components/TopNav";
 import { SmoothScroll } from "@/components/SmoothScroll";
-import { clientCategoriesData, ClientLogo } from "@/data/clientsData";
+import { useClientCategories, ClientLogo } from "@/data/clientsData";
 import { TiltCard } from "@/components/TiltCard";
 
 export const Route = createFileRoute("/clients")({
@@ -19,6 +19,7 @@ export const Route = createFileRoute("/clients")({
 function ClientsPage() {
   const { t, i18n } = useTranslation();
   const isAr = i18n.language?.startsWith("ar");
+  const { categories } = useClientCategories();
 
   return (
     <div className={`bg-background min-h-screen text-foreground font-sans selection:bg-primary/20 selection:text-primary ${isAr ? "rtl" : "ltr"}`}>
@@ -56,7 +57,7 @@ function ClientsPage() {
           </div>
           
           <div className="space-y-16">
-            {clientCategoriesData.map((category) => (
+            {categories.map((category) => (
               <div key={category.title}>
                 <motion.h4
                   initial={{ opacity: 0, y: 10 }}

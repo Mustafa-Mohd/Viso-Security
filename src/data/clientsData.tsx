@@ -1,6 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 
-export const clientCategoriesData = [
+export interface ClientItem {
+  name: string;
+  icon: string;
+  url?: string;
+}
+
+export interface ClientCategory {
+  title: string;
+  clients: ClientItem[];
+}
+
+export const clientCategoriesData: ClientCategory[] = [
   {
     title: "ENERGY & PETROCHEMICALS",
     clients: [
@@ -88,4 +100,65 @@ export const ClientLogo = ({ src, name }: { src: string, name: string }) => {
     />
   );
 };
+
+export function useClientCategories() {
+  const [categories, setCategories] = useState<ClientCategory[]>(() => {
+    try {
+      const cached = localStorage.getItem("viso_cms_client_page_categories");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      // ignore
+    }
+    return clientCategoriesData;
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadData() {
+      try {
+        const { data, error } = await supabase
+          .from("cms_content")
+          .select("content")
+          .eq("section_key", "client_page_categories")
+          .maybeSingle();
+
+        if (!error && data?.content && Array.isArray(data.content) && data.content.length > 0) {
+          if (isMounted) {
+            setCategories(data.content);
+            localStorage.setItem("viso_cms_client_page_categories", JSON.stringify(data.content));
+          }
+        }
+      } catch (err) {
+        console.error("Error loading client categories:", err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    loadData();
+
+    const handleStorageChange = () => {
+      try {
+        const cached = localStorage.getItem("viso_cms_client_page_categories");
+        if (cached) setCategories(JSON.parse(cached));
+      } catch (e) {}
+    };
+
+    window.addEventListener("viso_cms_updated", handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener("viso_cms_updated", handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
+  return { categories, loading };
+}
+
 

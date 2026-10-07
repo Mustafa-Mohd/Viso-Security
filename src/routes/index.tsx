@@ -51,7 +51,17 @@ function HomePage() {
     }
     return true;
   });
-  const [cmsData, setCmsData] = useState<Record<string, any>>({});
+  const [cmsData, setCmsData] = useState<Record<string, any>>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem("viso_cms_cache");
+        if (cached) return JSON.parse(cached);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return {};
+  });
 
   useEffect(() => {
     async function fetchCmsData() {
@@ -60,6 +70,9 @@ function HomePage() {
         if (data) {
           const mapped = data.reduce((acc, row) => ({ ...acc, [row.section_key]: row.content }), {});
           setCmsData(mapped);
+          if (typeof window !== "undefined") {
+            localStorage.setItem("viso_cms_cache", JSON.stringify(mapped));
+          }
         }
       } catch (e) {
         console.error(e);
@@ -67,7 +80,11 @@ function HomePage() {
     }
     fetchCmsData();
 
-
+    const handleCmsUpdated = () => {
+      fetchCmsData();
+    };
+    window.addEventListener("viso_cms_updated", handleCmsUpdated);
+    return () => window.removeEventListener("viso_cms_updated", handleCmsUpdated);
   }, [t]);
 
   const handleLoaderDone = () => {
@@ -361,14 +378,8 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedCert, setSelectedCert] = useState<{ img: string, label: string } | null>(null);
 
-  const slides = (data?.slides && data.slides.length > 0)
-    ? data.slides.map((s: any, idx: number) => ({
-        title: s.title || servicesList[idx % servicesList.length].title,
-        subtitle: s.subtitle || servicesList[idx % servicesList.length].subtitle,
-        link: s.link || servicesList[idx % servicesList.length].link,
-        buttonText: s.buttonText || servicesList[idx % servicesList.length].buttonText,
-      }))
-    : servicesList;
+  // Strictly keep only the 2 core services: Security Consultancy & Translation Services
+  const slides = servicesList;
 
   const videoUrl = data?.videoUrl || "https://res.cloudinary.com/dppwnds6z/video/upload/v1790273816/gemini_generated_video_8399bb9c.mp4";
 
@@ -425,7 +436,7 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
                 </p>
                 <Link
                   to={slide.link}
-                  className="inline-flex items-center gap-2 rounded-sm bg-primary px-8 py-4 font-sans text-xs font-bold tracking-[0.2em] text-white transition-all duration-400 hover:bg-gold hover:scale-[1.03] shadow-[0_4px_20px_rgba(212,175,55,0.3)] uppercase"
+                  className="inline-flex items-center gap-2 rounded-sm bg-primary px-8 py-4 font-sans text-xs font-bold tracking-[0.2em] text-white transition-all duration-400 hover:bg-gold hover:scale-[1.03] shadow-[0_4px_20px_rgba(212,175,55,0.3)] uppercase cursor-pointer"
                 >
                   {slide.buttonText}
                 </Link>
@@ -444,9 +455,9 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
         />
       </div>
 
-      {/* Regulatory Bodies / Standards Icons on Top */}
+      {/* Regulatory Bodies / Standards Icons on Top — Transparent Circle, Colourless (Grayscale) & Full Color on Hover */}
       <div className="absolute top-6 left-6 md:top-8 md:left-12 z-30 flex gap-3 md:gap-4 items-center">
-        {(data?.regulatoryLogos || [
+        {(data?.regulatoryLogos && data.regulatoryLogos.length > 0 ? data.regulatoryLogos : [
           { slug: "moi", label: "MOI", img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png" },
           { slug: "sais", label: "SAIS", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgBwqTj0FNNJJm59mHR1GKznOvHK23QpPB5jwKZQuFaQ&s=10" },
           { slug: "neom", label: "NEOM", img: "https://neom.scene7.com/is/image/neom/logo-neom-en-spaced?fmt=png-alpha&scl=1" },
@@ -457,15 +468,15 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
             key={idx}
             to="/regulatory/$slug"
             params={{ slug: body.slug }}
-            className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg group relative cursor-pointer overflow-hidden"
+            className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-transparent border border-white/30 hover:border-[#D4AF37] flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-md hover:shadow-[0_0_20px_rgba(212,175,55,0.6)] group relative cursor-pointer shrink-0 overflow-hidden"
             aria-label={body.label}
           >
             <img 
               src={body.img}
               alt={body.label}
-              className="w-full h-full object-cover transition-all duration-500"
+              className="w-full h-full object-cover rounded-full transition-all duration-500 grayscale opacity-75 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105"
             />
-            <span className="absolute top-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">
+            <span className="absolute top-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-[#D4AF37]/40 text-gold text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none shadow-lg z-40">
               {body.label}
             </span>
           </Link>

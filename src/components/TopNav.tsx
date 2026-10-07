@@ -273,7 +273,8 @@ export function TopNav() {
           </div>
         </div>
 
-        {/* Employee Login Hanging Button */}
+        {/* Employee Login Hanging Button (Hidden) */}
+        {/* 
         <div className="absolute right-4 sm:right-6 md:right-10 top-full">
           {isLoggedIn ? (
             <Link
@@ -294,6 +295,7 @@ export function TopNav() {
             </button>
           )}
         </div>
+        */}
       </header>
 
       {mobileMenuOpen && (

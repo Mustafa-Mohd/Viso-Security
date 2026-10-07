@@ -7,7 +7,7 @@ import { SmoothScroll } from "@/components/SmoothScroll";
 import {
   Building2, Droplets, Zap, Shield, Briefcase, Anchor, Map, Pickaxe,
   Flame, Activity, CheckCircle2, Search, X, UserCheck, Layers,
-  ChevronRight, Sparkles, Filter, Factory, Compass
+  ChevronRight, Sparkles, Filter, Factory, Compass, Calendar, ArrowUpDown
 } from "lucide-react";
 
 export const Route = createFileRoute("/projects")({
@@ -29,9 +29,28 @@ export interface ProjectItem {
   sector: string;
   category: string;
   location?: string;
-  status: "Ongoing" | "Completed" | "Ongoing";
+  status: "Ongoing" | "Completed";
   highlight?: string;
   scope: string;
+  month?: string; // e.g., "October 2024" or "2024-10"
+}
+
+/** Helper function to parse month/year string for sorting */
+export function parseMonthYear(mStr?: string): number {
+  if (!mStr) return 0;
+  const isoMatch = mStr.match(/(\d{4})[-/](\d{1,2})/);
+  if (isoMatch) {
+    return parseInt(isoMatch[1], 10) * 100 + parseInt(isoMatch[2], 10);
+  }
+  const yearMatch = mStr.match(/\b(19|20)\d{2}\b/);
+  const year = yearMatch ? parseInt(yearMatch[0], 10) : 2000;
+  const monthNames = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+  const lower = mStr.toLowerCase();
+  let mIdx = 1;
+  monthNames.forEach((name, idx) => {
+    if (lower.includes(name)) mIdx = idx + 1;
+  });
+  return year * 100 + mIdx;
 }
 
 export interface SectorCategory {
@@ -258,7 +277,14 @@ function ProjectSimpleCard({
           : "bg-white border border-black shadow-sm hover:shadow-[0_20px_40px_-15px_rgba(212,175,55,0.2)]"
       }`}
     >
-      <div className="flex justify-end items-start mb-5">
+      <div className="flex justify-between items-center mb-5 gap-2">
+        {project.month ? (
+          <span className="text-[11px] font-mono font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full flex items-center gap-1 border border-primary/20 shrink-0">
+            <Calendar className="w-3 h-3 text-primary" /> {project.month}
+          </span>
+        ) : (
+          <span className="text-[11px] font-mono text-black/40">#{project.sNo}</span>
+        )}
         <StatusBadge status={project.status} />
       </div>
       
@@ -336,6 +362,11 @@ function ProjectDetailModal({ project, onClose }: { project: ProjectItem; onClos
             <div className="mb-4">
               <div className="flex items-center gap-2 mb-2">
                 <StatusBadge status={project.status} />
+                {project.month && (
+                  <span className="text-xs font-mono font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full flex items-center gap-1 border border-primary/20">
+                    <Calendar className="w-3.5 h-3.5" /> {project.month}
+                  </span>
+                )}
               </div>
               <h2 className="text-xl sm:text-2xl font-sans font-bold text-black leading-tight">
                 {project.name}
@@ -401,12 +432,19 @@ function ProjectsPage() {
       }
     }
     loadProjects();
+
+    const handleCmsUpdated = () => {
+      loadProjects();
+    };
+    window.addEventListener("viso_cms_updated", handleCmsUpdated);
+    return () => window.removeEventListener("viso_cms_updated", handleCmsUpdated);
   }, []);
 
   const [selectedSector, setSelectedSector] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedClient, setSelectedClient] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [sortOrder, setSortOrder] = useState<"cms" | "month-newest" | "month-oldest">("cms");
   const [activeModalProject, setActiveModalProject] = useState<ProjectItem | null>(null);
 
   const activeSector = useMemo(
@@ -421,9 +459,9 @@ function ProjectsPage() {
     return ["all", ...Array.from(clients).sort()];
   }, [projectsList]);
 
-  // Filter projects dynamically
+  // Filter & sort projects dynamically
   const filteredProjects = useMemo(() => {
-    return projectsList.filter((project) => {
+    let result = projectsList.filter((project) => {
       const matchesSector = selectedSector === "all" || project.category === selectedSector;
       const matchesClient = selectedClient === "all" || project.client === selectedClient;
       const matchesStatus = selectedStatus === "all" || project.status === selectedStatus;
@@ -434,11 +472,20 @@ function ProjectsPage() {
         project.client.toLowerCase().includes(q) ||
         project.endUser.toLowerCase().includes(q) ||
         project.sector.toLowerCase().includes(q) ||
+        (project.month && project.month.toLowerCase().includes(q)) ||
         project.sNo.toString().includes(q);
 
       return matchesSector && matchesClient && matchesStatus && matchesSearch;
     });
-  }, [selectedSector, selectedClient, selectedStatus, searchQuery, projectsList]);
+
+    if (sortOrder === "month-newest") {
+      result = [...result].sort((a, b) => parseMonthYear(b.month) - parseMonthYear(a.month));
+    } else if (sortOrder === "month-oldest") {
+      result = [...result].sort((a, b) => parseMonthYear(a.month) - parseMonthYear(b.month));
+    }
+
+    return result;
+  }, [selectedSector, selectedClient, selectedStatus, searchQuery, sortOrder, projectsList]);
 
   // Sector Counts Map
   const sectorCounts = useMemo(() => {
@@ -586,13 +633,13 @@ function ProjectsPage() {
           </div>
 
           {/* ── Search & Filter Controls Bar ── */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10 p-4 rounded-3xl bg-white/80 border border-black/10 backdrop-blur-xl shadow-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-10 p-4 rounded-3xl bg-white/80 border border-black/10 backdrop-blur-xl shadow-sm">
             {/* Text Search Input */}
-            <div className="relative md:col-span-2">
+            <div className="relative sm:col-span-2 lg:col-span-2">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/40" />
               <input
                 type="text"
-                placeholder="Search by S.No, project name, client..."
+                placeholder="Search by S.No, project name, client, month..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-11 pr-10 py-3 rounded-xl bg-black/[0.03] border border-black/10 text-black placeholder-black/40 text-xs font-mono focus:outline-none focus:border-primary transition-colors"
@@ -637,29 +684,44 @@ function ProjectsPage() {
                 <option value="Completed">Completed</option>
               </select>
             </div>
+
+            {/* Sort Order Dropdown */}
+            <div className="relative">
+              <ArrowUpDown className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/40" />
+              <select
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value as any)}
+                className="w-full pl-11 pr-8 py-3 rounded-xl bg-black/[0.03] border border-black/10 text-black text-xs font-mono uppercase focus:outline-none focus:border-primary transition-colors appearance-none cursor-pointer"
+              >
+                <option value="cms">Order: CMS Sequence</option>
+                <option value="month-newest">Order: Month (Newest)</option>
+                <option value="month-oldest">Order: Month (Oldest)</option>
+              </select>
+            </div>
           </div>
 
           {/* ── Results Info Bar ── */}
           <div className="flex items-center justify-between mb-8 text-xs font-mono text-foreground/60">
             <div>
               Showing <span className="font-bold text-foreground">{filteredProjects.length}</span> of{" "}
-              <span className="font-bold text-foreground">{PROJECTS.length}</span> projects
+              <span className="font-bold text-foreground">{projectsList.length}</span> projects
               {selectedSector !== "all" && (
                 <span> in <span className="text-primary font-bold">{activeSector.label}</span></span>
               )}
             </div>
 
-            {(searchQuery || selectedClient !== "all" || selectedSector !== "all" || selectedStatus !== "all") && (
+            {(searchQuery || selectedClient !== "all" || selectedSector !== "all" || selectedStatus !== "all" || sortOrder !== "cms") && (
               <button
                 onClick={() => {
                   setSelectedSector("all");
                   setSelectedClient("all");
                   setSelectedStatus("all");
+                  setSortOrder("cms");
                   setSearchQuery("");
                 }}
                 className="text-primary hover:underline font-semibold flex items-center gap-1"
               >
-                Reset Filters <X className="w-3 h-3" />
+                Reset Filters & Order <X className="w-3 h-3" />
               </button>
             )}
           </div>
