@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
-import { Eye, EyeOff, LayoutDashboard, Image as ImageIcon, Settings, LogOut, ChevronRight, Save, Plus, Trash2, Upload, AlertCircle, MessageSquare, Users, Briefcase, FileText, History, ArrowUp, ArrowDown, Loader2, Link, Video, ShieldCheck, ArrowLeft, Layers } from "lucide-react";
+import { Eye, EyeOff, LayoutDashboard, Image as ImageIcon, Settings, LogOut, ChevronRight, Save, Plus, Trash2, Upload, AlertCircle, MessageSquare, Users, Briefcase, FileText, History, ArrowUp, ArrowDown, Loader2, Link, Video, ShieldCheck, ArrowLeft, Layers, Search, X, Calendar } from "lucide-react";
 import { DmsDashboard } from "@/components/DmsDashboard";
 import { HrDashboard } from "@/components/HrDashboard";
 import { CertificatesDashboard } from "@/components/CertificatesDashboard";
@@ -26,6 +26,21 @@ export const Route = createFileRoute("/admin")({
   }),
   component: AdminPage,
 });
+
+const MONTH_NAMES = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+const YEAR_OPTIONS = Array.from({ length: 15 }, (_, i) => 2020 + i);
+
+function getMonthYearComponents(monthStr?: string) {
+  if (!monthStr) return { month: "October", year: "2024" };
+  const lower = monthStr.toLowerCase();
+  const matchedMonth = MONTH_NAMES.find(m => lower.includes(m.toLowerCase())) || "October";
+  const yearMatch = monthStr.match(/\b(19|20)\d{2}\b/);
+  const matchedYear = yearMatch ? yearMatch[0] : "2024";
+  return { month: matchedMonth, year: matchedYear };
+}
 
 type FieldChange = {
   path: string;
@@ -581,6 +596,8 @@ function AdminPage() {
   const [cmsSection, setCmsSection] = useState<string | null>(null);
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [auditLogsLoading, setAuditLogsLoading] = useState(false);
+  const [projectCmsSearch, setProjectCmsSearch] = useState("");
+  const [projectCmsCategoryFilter, setProjectCmsCategoryFilter] = useState("all");
 
   const fetchAuditLogs = async () => {
     setAuditLogsLoading(true);
@@ -2808,7 +2825,10 @@ const DEFAULT_HERO_SLIDES = [
               {/* CLIENTS CMS */}
               {cmsSection === 'clients' && (
                 <div className="flex flex-col gap-4">
-                  <h2 className="text-2xl mb-4">Edit Leading Companies (Clients) Section</h2>
+                  <h2 className="text-2xl mb-1">Edit Leading Companies (Homepage Clients)</h2>
+                  <div className="p-3 bg-primary/10 border border-primary/30 rounded-lg text-xs text-primary font-medium mb-2">
+                    💡 <strong>Live Dynamic Sync:</strong> The Homepage marquee automatically fetches all logos and categories from <strong>Client Page Categories & Logos</strong>. Any additions or updates made in the Client Page CMS instantly update the Homepage slider!
+                  </div>
                   
                   <div>
                     <label className="block text-sm font-medium mb-1">Small Top Title</label>
@@ -3094,10 +3114,11 @@ const DEFAULT_HERO_SLIDES = [
               {/* PROJECTS CMS */}
               {cmsSection === 'projects' && (
                 <div className="flex flex-col gap-4 max-w-5xl">
+                  {/* Top Header & Global Actions */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-foreground/10">
                     <div>
                       <h2 className="text-2xl mb-1 font-semibold">Projects Portfolio</h2>
-                      <p className="text-[11px] text-muted-foreground">Manage project cards, order position (Up/Down arrows), and month settings for the Projects page.</p>
+                      <p className="text-[11px] text-muted-foreground">Manage project cards, search & filter, select month/year, auto-sort by date (latest on top), or use manual Up/Down arrows.</p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                       <button
@@ -3106,10 +3127,10 @@ const DEFAULT_HERO_SLIDES = [
                           const sorted = [...projectsData].sort((a, b) => parseMonthYear(b.month) - parseMonthYear(a.month));
                           setProjectsData(sorted);
                         }}
-                        className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-md border border-foreground/20 text-foreground/80 hover:bg-foreground/5 transition-all cursor-pointer"
-                        title="Sort cards by month (Newest to Oldest)"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 transition-all cursor-pointer shadow-xs"
+                        title="Auto-sort projects by Month/Year (Latest on Top)"
                       >
-                        <ArrowDown className="w-3.5 h-3.5 text-primary" /> Month (Newest)
+                        <ArrowDown className="w-3.5 h-3.5 text-primary" /> Latest First (Descending)
                       </button>
                       <button
                         type="button"
@@ -3118,27 +3139,25 @@ const DEFAULT_HERO_SLIDES = [
                           setProjectsData(sorted);
                         }}
                         className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-md border border-foreground/20 text-foreground/80 hover:bg-foreground/5 transition-all cursor-pointer"
-                        title="Sort cards by month (Oldest to Newest)"
+                        title="Sort cards by month (Oldest First)"
                       >
-                        <ArrowUp className="w-3.5 h-3.5 text-primary" /> Month (Oldest)
+                        <ArrowUp className="w-3.5 h-3.5 text-foreground/60" /> Oldest First
                       </button>
                       <button
                         type="button"
                         onClick={() => {
-                          setProjectsData([
-                            {
-                              sNo: projectsData.length > 0 ? Math.max(...projectsData.map(p => p.sNo)) + 1 : 1,
-                              name: "New Project",
-                              client: "Client Name",
-                              endUser: "End User",
-                              sector: "SECTOR",
-                              category: "infra",
-                              status: "Ongoing",
-                              scope: "Project scope description...",
-                              month: "October 2024"
-                            },
-                            ...projectsData
-                          ]);
+                          const newProj = {
+                            sNo: projectsData.length > 0 ? Math.max(...projectsData.map(p => p.sNo)) + 1 : 1,
+                            name: "New Project",
+                            client: "Client Name",
+                            endUser: "End User",
+                            sector: "SECTOR",
+                            category: "infra",
+                            status: "Ongoing" as const,
+                            scope: "Project scope description...",
+                            month: "October 2024"
+                          };
+                          setProjectsData([newProj, ...projectsData]);
                         }}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-primary text-primary hover:bg-primary/10 transition-all cursor-pointer"
                       >
@@ -3153,224 +3172,363 @@ const DEFAULT_HERO_SLIDES = [
                     </div>
                   </div>
 
-                  <div className="space-y-4 mt-2 h-[65vh] overflow-y-auto pr-2">
-                    {projectsData.map((project, idx) => (
-                      <div key={idx} className="bg-surface p-4 rounded-xl border border-foreground/10 space-y-3 relative group shadow-xs">
-                        {/* Header bar with Up/Down arrows and controls */}
-                        <div className="flex items-center justify-between pb-2 border-b border-foreground/10 bg-background/50 -mx-4 -mt-4 p-3 rounded-t-xl">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-mono font-bold bg-primary/10 text-primary px-2.5 py-1 rounded-md">
-                              Card #{idx + 1}
-                            </span>
-                            <span className="text-xs text-muted-foreground font-mono">
-                              (S.No #{project.sNo})
-                            </span>
-                          </div>
+                  {/* Search and Category Filter Bar */}
+                  <div className="flex flex-col sm:flex-row items-center gap-3 bg-surface p-3 rounded-xl border border-foreground/10">
+                    <div className="relative flex-1 w-full">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <input
+                        type="text"
+                        placeholder="Search project name, client, end user, sector, scope, month..."
+                        value={projectCmsSearch}
+                        onChange={(e) => setProjectCmsSearch(e.target.value)}
+                        className="w-full pl-9 pr-8 py-2 text-xs rounded-lg bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                      />
+                      {projectCmsSearch && (
+                        <button
+                          onClick={() => setProjectCmsSearch("")}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
 
-                          <div className="flex items-center gap-1">
-                            {/* Move Up Arrow Button */}
-                            <button
-                              type="button"
-                              disabled={idx === 0}
-                              onClick={() => {
-                                if (idx <= 0) return;
-                                const newArr = [...projectsData];
-                                const temp = newArr[idx];
-                                newArr[idx] = newArr[idx - 1];
-                                newArr[idx - 1] = temp;
-                                setProjectsData(newArr);
-                              }}
-                              className="p-1.5 rounded-md border border-foreground/20 text-foreground hover:bg-primary/10 hover:border-primary hover:text-primary transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-foreground cursor-pointer"
-                              title="Move Card Up"
-                            >
-                              <ArrowUp className="w-4 h-4" />
-                            </button>
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                      <select
+                        value={projectCmsCategoryFilter}
+                        onChange={(e) => setProjectCmsCategoryFilter(e.target.value)}
+                        className="px-3 py-2 text-xs rounded-lg bg-background border border-foreground/20 focus:border-primary focus:outline-none shrink-0"
+                      >
+                        <option value="all">All Sectors ({projectsData.length})</option>
+                        <option value="oil-gas">Oil & Gas</option>
+                        <option value="water">Water</option>
+                        <option value="energy">Energy</option>
+                        <option value="giga-projects">Giga Projects</option>
+                        <option value="infra">Infra</option>
+                        <option value="defence">Defence</option>
+                        <option value="ports">Ports</option>
+                        <option value="mining">Mining</option>
+                        <option value="finance">Finance</option>
+                      </select>
 
-                            {/* Move Down Arrow Button */}
-                            <button
-                              type="button"
-                              disabled={idx === projectsData.length - 1}
-                              onClick={() => {
-                                if (idx >= projectsData.length - 1) return;
-                                const newArr = [...projectsData];
-                                const temp = newArr[idx];
-                                newArr[idx] = newArr[idx + 1];
-                                newArr[idx + 1] = temp;
-                                setProjectsData(newArr);
-                              }}
-                              className="p-1.5 rounded-md border border-foreground/20 text-foreground hover:bg-primary/10 hover:border-primary hover:text-primary transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-foreground cursor-pointer"
-                              title="Move Card Down"
-                            >
-                              <ArrowDown className="w-4 h-4" />
-                            </button>
+                      {(projectCmsSearch || projectCmsCategoryFilter !== "all") && (
+                        <button
+                          onClick={() => {
+                            setProjectCmsSearch("");
+                            setProjectCmsCategoryFilter("all");
+                          }}
+                          className="px-2.5 py-2 text-xs text-red-500 hover:bg-red-500/10 rounded-lg transition-colors shrink-0"
+                        >
+                          Reset Filter
+                        </button>
+                      )}
+                    </div>
+                  </div>
 
-                            {/* Delete Button */}
-                            <button
-                              type="button"
-                              onClick={() => {
-                                if (confirm(`Remove project "${project.name}"?`)) {
+                  {/* List of Cards */}
+                  <div className="space-y-4 mt-1 h-[62vh] overflow-y-auto pr-2">
+                    {projectsData
+                      .map((project, originalIndex) => ({ project, originalIndex }))
+                      .filter(({ project }) => {
+                        const q = projectCmsSearch.toLowerCase().trim();
+                        const catMatch = projectCmsCategoryFilter === "all" || project.category === projectCmsCategoryFilter;
+                        const textMatch =
+                          !q ||
+                          project.name.toLowerCase().includes(q) ||
+                          project.client.toLowerCase().includes(q) ||
+                          project.endUser.toLowerCase().includes(q) ||
+                          project.sector.toLowerCase().includes(q) ||
+                          project.scope.toLowerCase().includes(q) ||
+                          (project.month && project.month.toLowerCase().includes(q)) ||
+                          project.sNo.toString().includes(q);
+                        return catMatch && textMatch;
+                      })
+                      .map(({ project, originalIndex }) => {
+                        const { month: curMonth, year: curYear } = getMonthYearComponents(project.month);
+
+                        return (
+                          <div key={originalIndex} className="bg-surface p-4 rounded-xl border border-foreground/10 space-y-3 relative group shadow-xs">
+                            {/* Card Top Control Header */}
+                            <div className="flex items-center justify-between pb-2 border-b border-foreground/10 bg-background/50 -mx-4 -mt-4 p-3 rounded-t-xl">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-mono font-bold bg-primary/10 text-primary px-2.5 py-1 rounded-md">
+                                  Card #{originalIndex + 1}
+                                </span>
+                                <span className="text-xs text-muted-foreground font-mono">
+                                  (S.No #{project.sNo})
+                                </span>
+                                {project.month && (
+                                  <span className="text-[11px] font-mono text-primary/80 bg-primary/5 px-2 py-0.5 rounded border border-primary/20 flex items-center gap-1">
+                                    <Calendar className="w-3 h-3" /> {project.month}
+                                  </span>
+                                )}
+                              </div>
+
+                              <div className="flex items-center gap-1">
+                                {/* Move Up Arrow Button */}
+                                <button
+                                  type="button"
+                                  disabled={originalIndex === 0}
+                                  onClick={() => {
+                                    if (originalIndex <= 0) return;
+                                    const newArr = [...projectsData];
+                                    const temp = newArr[originalIndex];
+                                    newArr[originalIndex] = newArr[originalIndex - 1];
+                                    newArr[originalIndex - 1] = temp;
+                                    setProjectsData(newArr);
+                                  }}
+                                  className="p-1.5 rounded-md border border-foreground/20 text-foreground hover:bg-primary/10 hover:border-primary hover:text-primary transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-foreground cursor-pointer"
+                                  title="Move Card Up"
+                                >
+                                  <ArrowUp className="w-4 h-4" />
+                                </button>
+
+                                {/* Move Down Arrow Button */}
+                                <button
+                                  type="button"
+                                  disabled={originalIndex === projectsData.length - 1}
+                                  onClick={() => {
+                                    if (originalIndex >= projectsData.length - 1) return;
+                                    const newArr = [...projectsData];
+                                    const temp = newArr[originalIndex];
+                                    newArr[originalIndex] = newArr[originalIndex + 1];
+                                    newArr[originalIndex + 1] = temp;
+                                    setProjectsData(newArr);
+                                  }}
+                                  className="p-1.5 rounded-md border border-foreground/20 text-foreground hover:bg-primary/10 hover:border-primary hover:text-primary transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-foreground cursor-pointer"
+                                  title="Move Card Down"
+                                >
+                                  <ArrowDown className="w-4 h-4" />
+                                </button>
+
+                                {/* Delete Button */}
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    if (confirm(`Remove project "${project.name}"?`)) {
+                                      const newArr = [...projectsData];
+                                      newArr.splice(originalIndex, 1);
+                                      setProjectsData(newArr);
+                                    }
+                                  }}
+                                  className="p-1.5 rounded-md text-red-500 hover:bg-red-500/10 transition-colors ml-2 cursor-pointer"
+                                  title="Delete Project"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                              <div className="md:col-span-2">
+                                <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Project Name</label>
+                                <input
+                                  type="text"
+                                  value={project.name}
+                                  onChange={(e) => {
+                                    const newArr = [...projectsData];
+                                    newArr[originalIndex] = { ...newArr[originalIndex], name: e.target.value };
+                                    setProjectsData(newArr);
+                                  }}
+                                  className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                                />
+                              </div>
+
+                              {/* Month & Year Selection Box */}
+                              <div className="md:col-span-1 bg-background/60 p-2.5 rounded-lg border border-primary/30">
+                                <label className="block text-[10px] uppercase font-bold text-primary mb-1 flex items-center gap-1">
+                                  <Calendar className="w-3 h-3 text-primary" /> Month & Year Selection
+                                </label>
+                                <div className="grid grid-cols-2 gap-1.5 mb-1.5">
+                                  <select
+                                    value={curMonth}
+                                    onChange={(e) => {
+                                      const newMonthStr = `${e.target.value} ${curYear}`;
+                                      const newArr = [...projectsData];
+                                      newArr[originalIndex] = { ...newArr[originalIndex], month: newMonthStr };
+                                      setProjectsData(newArr);
+                                    }}
+                                    className="px-2 py-1 text-xs rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none font-medium"
+                                  >
+                                    {MONTH_NAMES.map(m => (
+                                      <option key={m} value={m}>{m}</option>
+                                    ))}
+                                  </select>
+
+                                  <select
+                                    value={curYear}
+                                    onChange={(e) => {
+                                      const newMonthStr = `${curMonth} ${e.target.value}`;
+                                      const newArr = [...projectsData];
+                                      newArr[originalIndex] = { ...newArr[originalIndex], month: newMonthStr };
+                                      setProjectsData(newArr);
+                                    }}
+                                    className="px-2 py-1 text-xs rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none font-mono font-medium"
+                                  >
+                                    {YEAR_OPTIONS.map(y => (
+                                      <option key={y} value={String(y)}>{y}</option>
+                                    ))}
+                                  </select>
+                                </div>
+                                <input
+                                  type="text"
+                                  value={project.month || ""}
+                                  onChange={(e) => {
+                                    const newArr = [...projectsData];
+                                    newArr[originalIndex] = { ...newArr[originalIndex], month: e.target.value };
+                                    setProjectsData(newArr);
+                                  }}
+                                  className="w-full px-2 py-1 text-[11px] rounded bg-background border border-foreground/15 focus:border-primary focus:outline-none font-mono text-foreground/80"
+                                  placeholder="e.g. October 2024"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Status</label>
+                                <select
+                                  value={project.status}
+                                  onChange={(e) => {
+                                    const newArr = [...projectsData];
+                                    newArr[originalIndex] = { ...newArr[originalIndex], status: e.target.value as "Ongoing" | "Completed" };
+                                    setProjectsData(newArr);
+                                  }}
+                                  className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                                >
+                                  <option value="Ongoing">Ongoing</option>
+                                  <option value="Completed">Completed</option>
+                                </select>
+                              </div>
+
+                              <div>
+                                <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Client</label>
+                                <input
+                                  type="text"
+                                  value={project.client}
+                                  onChange={(e) => {
+                                    const newArr = [...projectsData];
+                                    newArr[originalIndex] = { ...newArr[originalIndex], client: e.target.value };
+                                    setProjectsData(newArr);
+                                  }}
+                                  className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">End User</label>
+                                <input
+                                  type="text"
+                                  value={project.endUser}
+                                  onChange={(e) => {
+                                    const newArr = [...projectsData];
+                                    newArr[originalIndex] = { ...newArr[originalIndex], endUser: e.target.value };
+                                    setProjectsData(newArr);
+                                  }}
+                                  className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Category (ID)</label>
+                                <select
+                                  value={project.category}
+                                  onChange={(e) => {
+                                    const newArr = [...projectsData];
+                                    newArr[originalIndex] = { ...newArr[originalIndex], category: e.target.value };
+                                    setProjectsData(newArr);
+                                  }}
+                                  className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                                >
+                                  <option value="oil-gas">Oil & Gas</option>
+                                  <option value="water">Water</option>
+                                  <option value="energy">Energy</option>
+                                  <option value="giga-projects">Giga Projects</option>
+                                  <option value="infra">Infra</option>
+                                  <option value="defence">Defence</option>
+                                  <option value="ports">Ports</option>
+                                  <option value="mining">Mining</option>
+                                  <option value="finance">Finance</option>
+                                </select>
+                              </div>
+
+                              <div>
+                                <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Sector Name (Display)</label>
+                                <input
+                                  type="text"
+                                  value={project.sector}
+                                  onChange={(e) => {
+                                    const newArr = [...projectsData];
+                                    newArr[originalIndex] = { ...newArr[originalIndex], sector: e.target.value };
+                                    setProjectsData(newArr);
+                                  }}
+                                  className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Location</label>
+                                <input
+                                  type="text"
+                                  value={project.location || ""}
+                                  onChange={(e) => {
+                                    const newArr = [...projectsData];
+                                    newArr[originalIndex] = { ...newArr[originalIndex], location: e.target.value };
+                                    setProjectsData(newArr);
+                                  }}
+                                  className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                                  placeholder="e.g. Riyadh, KSA"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Highlight Badge</label>
+                                <input
+                                  type="text"
+                                  value={project.highlight || ""}
+                                  onChange={(e) => {
+                                    const newArr = [...projectsData];
+                                    newArr[originalIndex] = { ...newArr[originalIndex], highlight: e.target.value };
+                                    setProjectsData(newArr);
+                                  }}
+                                  className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                                  placeholder="e.g. Flagship, VIP"
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Scope of Work</label>
+                              <textarea
+                                value={project.scope}
+                                onChange={(e) => {
                                   const newArr = [...projectsData];
-                                  newArr.splice(idx, 1);
+                                  newArr[originalIndex] = { ...newArr[originalIndex], scope: e.target.value };
                                   setProjectsData(newArr);
-                                }
-                              }}
-                              className="p-1.5 rounded-md text-red-500 hover:bg-red-500/10 transition-colors ml-2 cursor-pointer"
-                              title="Delete Project"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
+                                }}
+                                className="w-full px-3 py-2 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none min-h-[60px]"
+                              />
+                            </div>
                           </div>
-                        </div>
+                        );
+                      })}
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                          <div className="md:col-span-2">
-                            <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Project Name</label>
-                            <input
-                              type="text"
-                              value={project.name}
-                              onChange={(e) => {
-                                const newArr = [...projectsData];
-                                newArr[idx] = { ...newArr[idx], name: e.target.value };
-                                setProjectsData(newArr);
-                              }}
-                              className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-[10px] uppercase font-bold text-primary mb-1">Month / Date (Order Basis)</label>
-                            <input
-                              type="text"
-                              value={project.month || ""}
-                              onChange={(e) => {
-                                const newArr = [...projectsData];
-                                newArr[idx] = { ...newArr[idx], month: e.target.value };
-                                setProjectsData(newArr);
-                              }}
-                              className="w-full px-3 py-1.5 text-sm rounded bg-background border border-primary/40 focus:border-primary focus:outline-none font-mono"
-                              placeholder="e.g. October 2024, 2024-10"
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Status</label>
-                            <select
-                              value={project.status}
-                              onChange={(e) => {
-                                const newArr = [...projectsData];
-                                newArr[idx] = { ...newArr[idx], status: e.target.value as "Ongoing" | "Completed" };
-                                setProjectsData(newArr);
-                              }}
-                              className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
-                            >
-                              <option value="Ongoing">Ongoing</option>
-                              <option value="Completed">Completed</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Client</label>
-                            <input
-                              type="text"
-                              value={project.client}
-                              onChange={(e) => {
-                                const newArr = [...projectsData];
-                                newArr[idx] = { ...newArr[idx], client: e.target.value };
-                                setProjectsData(newArr);
-                              }}
-                              className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">End User</label>
-                            <input
-                              type="text"
-                              value={project.endUser}
-                              onChange={(e) => {
-                                const newArr = [...projectsData];
-                                newArr[idx] = { ...newArr[idx], endUser: e.target.value };
-                                setProjectsData(newArr);
-                              }}
-                              className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Category (ID)</label>
-                            <select
-                              value={project.category}
-                              onChange={(e) => {
-                                const newArr = [...projectsData];
-                                newArr[idx] = { ...newArr[idx], category: e.target.value };
-                                setProjectsData(newArr);
-                              }}
-                              className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
-                            >
-                              <option value="oil-gas">Oil & Gas</option>
-                              <option value="water">Water</option>
-                              <option value="energy">Energy</option>
-                              <option value="giga-projects">Giga Projects</option>
-                              <option value="infra">Infra</option>
-                              <option value="defence">Defence</option>
-                              <option value="ports">Ports</option>
-                              <option value="mining">Mining</option>
-                              <option value="finance">Finance</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Sector Name (Display)</label>
-                            <input
-                              type="text"
-                              value={project.sector}
-                              onChange={(e) => {
-                                const newArr = [...projectsData];
-                                newArr[idx] = { ...newArr[idx], sector: e.target.value };
-                                setProjectsData(newArr);
-                              }}
-                              className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Location</label>
-                            <input
-                              type="text"
-                              value={project.location || ""}
-                              onChange={(e) => {
-                                const newArr = [...projectsData];
-                                newArr[idx] = { ...newArr[idx], location: e.target.value };
-                                setProjectsData(newArr);
-                              }}
-                              className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
-                              placeholder="e.g. Riyadh, KSA"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Highlight Badge</label>
-                            <input
-                              type="text"
-                              value={project.highlight || ""}
-                              onChange={(e) => {
-                                const newArr = [...projectsData];
-                                newArr[idx] = { ...newArr[idx], highlight: e.target.value };
-                                setProjectsData(newArr);
-                              }}
-                              className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
-                              placeholder="e.g. Flagship, VIP"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Scope of Work</label>
-                          <textarea
-                            value={project.scope}
-                            onChange={(e) => {
-                              const newArr = [...projectsData];
-                              newArr[idx] = { ...newArr[idx], scope: e.target.value };
-                              setProjectsData(newArr);
-                            }}
-                            className="w-full px-3 py-2 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none min-h-[60px]"
-                          />
-                        </div>
+                    {projectsData.filter(({ project }) => {
+                      const q = projectCmsSearch.toLowerCase().trim();
+                      const catMatch = projectCmsCategoryFilter === "all" || project.category === projectCmsCategoryFilter;
+                      const textMatch =
+                        !q ||
+                        project.name.toLowerCase().includes(q) ||
+                        project.client.toLowerCase().includes(q) ||
+                        project.endUser.toLowerCase().includes(q) ||
+                        project.sector.toLowerCase().includes(q) ||
+                        project.scope.toLowerCase().includes(q) ||
+                        (project.month && project.month.toLowerCase().includes(q)) ||
+                        project.sNo.toString().includes(q);
+                      return catMatch && textMatch;
+                    }).length === 0 && (
+                      <div className="p-8 text-center rounded-xl border border-dashed border-foreground/20 bg-surface/50 text-muted-foreground text-xs">
+                        No projects match your current search/filter criteria.
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
               )}

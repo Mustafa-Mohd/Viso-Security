@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, useMemo } from "react";
 import { TiltCard } from "@/components/TiltCard";
 import { motion, useScroll, useTransform, useInView, AnimatePresence, animate, useMotionValue, useSpring, useMotionTemplate } from "framer-motion";
 import { useTranslation } from "react-i18next";
@@ -9,7 +9,7 @@ import { TopNav } from "@/components/TopNav";
 import { supabase } from "@/lib/supabase";
 import { LazyMount } from "@/components/LazyMount";
 import { ServicesCarousel } from "@/components/ServicesCarousel";
-import { clientCategoriesData, ClientLogo } from "@/data/clientsData";
+import { clientCategoriesData, ClientLogo, useClientCategories } from "@/data/clientsData";
 import { X, FileText, Briefcase, ShieldCheck, Star, HeartHandshake, Target, Sparkles } from "lucide-react";
 
 const AboutInteractive = lazy(() =>
@@ -745,18 +745,30 @@ function ClientsSection({ data }: { data?: any }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.2 });
+  const { categories } = useClientCategories();
 
   const titleMono = data?.titleMono || "Trusted By";
   const title1 = data?.title1 || "Industry";
   const title2 = data?.title2 || "Titans.";
   
-  // Extract clients from centralized data
-  const clients = clientCategoriesData.flatMap(cat => 
-    cat.clients.map(client => ({
-      ...client,
-      sector: cat.title
-    }))
-  );
+  // Extract clients from dynamic categories managed in CMS
+  const clients = useMemo(() => {
+    if (categories && categories.length > 0) {
+      const extracted = categories.flatMap(cat => 
+        (cat.clients || []).map(client => ({
+          ...client,
+          sector: cat.title
+        }))
+      );
+      if (extracted.length > 0) return extracted;
+    }
+    return clientCategoriesData.flatMap(cat => 
+      cat.clients.map(client => ({
+        ...client,
+        sector: cat.title
+      }))
+    );
+  }, [categories]);
 
   const row1 = clients.slice(0, Math.ceil(clients.length / 2));
   const row2 = clients.slice(Math.ceil(clients.length / 2));
