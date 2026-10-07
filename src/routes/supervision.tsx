@@ -1,19 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useRef } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { 
   Building2, 
   ShieldCheck, 
-  FileSpreadsheet, 
-  Clock, 
-  CheckCircle2, 
   HardHat, 
-  Layers, 
   Activity, 
   ArrowRight, 
+  ChevronLeft,
+  ChevronRight,
+  CheckCircle2, 
   ClipboardCheck, 
   SlidersHorizontal,
-  Compass
+  Compass,
+  Sparkles
 } from "lucide-react";
 import { TopNav } from "@/components/TopNav";
 import { SmoothScroll } from "@/components/SmoothScroll";
@@ -79,7 +80,7 @@ const supervisionProjects: SupervisionProject[] = [
       "Industrial Physical Security & Plant Oversight",
       "Progress & Cost Baseline Control",
       "Testing & Commissioning Validation",
-      "Stakeholder & Multi-Contractor Interface Management"
+      "Multi-Contractor Interface Management"
     ],
     image: "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?auto=format&fit=crop&w=1200&q=80"
   },
@@ -145,6 +146,16 @@ const lifecycleSteps = [
 function SupervisionPage() {
   const { i18n } = useTranslation();
   const isAr = i18n.language?.startsWith("ar");
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = (direction: "left" | "right") => {
+    if (scrollRef.current) {
+      const scrollAmount = isAr 
+        ? (direction === "left" ? 440 : -440)
+        : (direction === "left" ? -440 : 440);
+      scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
+  };
 
   return (
     <div className={`bg-background min-h-screen text-foreground font-sans selection:bg-primary/20 selection:text-primary ${isAr ? "rtl" : "ltr"}`}>
@@ -152,59 +163,178 @@ function SupervisionPage() {
       <TopNav />
 
       <main className="pb-32">
-        {/* Banner Section */}
-        <section className="relative w-full overflow-hidden flex items-center justify-center min-h-[55vh] pt-24 pb-16 bg-neutral-950">
+        {/* Banner + Horizontal Projects Showcase Hero */}
+        <section className="relative w-full overflow-hidden pt-24 pb-20 bg-neutral-950 min-h-[85vh] flex flex-col justify-between">
+          {/* Background Image & Ambient Effects */}
           <div className="absolute inset-0 pointer-events-none">
             <img 
               src="https://res.cloudinary.com/dppwnds6z/image/upload/v1791402753/xbhbmqdtijfo7a92lwf8.png" 
               alt="Project Management & Supervision Banner" 
               className="w-full h-full object-cover filter brightness-[0.7] saturate-125 scale-105 transition-transform duration-1000"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-black/40 to-black/60" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.15)_0%,transparent_70%)]" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-neutral-950" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_center,rgba(212,175,55,0.2)_0%,transparent_60%)]" />
           </div>
 
-          <div className="relative z-10 max-w-[1400px] mx-auto px-4 md:px-8 text-center flex flex-col items-center">
+          {/* Hero Header Text */}
+          <div className="relative z-10 max-w-[1400px] mx-auto px-4 md:px-8 pt-6 pb-10 text-center flex flex-col items-center">
             <motion.div
               initial={{ opacity: 0, y: 25 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               className="flex flex-col items-center"
             >
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/20 border border-primary/40 text-primary font-mono text-xs font-bold uppercase tracking-widest mb-6 backdrop-blur-md">
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/20 border border-primary/40 text-primary font-mono text-xs font-bold uppercase tracking-widest mb-4 backdrop-blur-md">
                 <Building2 className="w-3.5 h-3.5" />
                 Engineering Services & Project Delivery
               </span>
 
-              <h1 className="font-display text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white tracking-tight uppercase leading-[1.1] mb-6 drop-shadow-2xl">
+              <h1 className="font-display text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white tracking-tight uppercase leading-[1.1] mb-4 drop-shadow-2xl">
                 PROJECT MANAGEMENT & <span className="text-primary block sm:inline">SUPERVISION</span>
               </h1>
 
-              <p className="max-w-3xl text-base sm:text-lg md:text-xl text-neutral-200 font-light leading-relaxed mb-8 drop-shadow">
+              <p className="max-w-3xl text-sm sm:text-base md:text-lg text-neutral-200 font-light leading-relaxed drop-shadow">
                 End-to-end project management and supervision services supporting major water transmission, industrial facilities, and critical infrastructure across the Kingdom of Saudi Arabia.
               </p>
-
-              {/* Stat Counters */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 w-full max-w-3xl mt-4">
-                <div className="p-4 rounded-xl bg-black/40 backdrop-blur-md border border-primary/20 flex flex-col items-center">
-                  <span className="font-display font-black text-2xl md:text-3xl text-primary">3+ Major</span>
-                  <span className="text-xs text-neutral-300 uppercase tracking-wider font-mono">Infrastructure Projects</span>
-                </div>
-                <div className="p-4 rounded-xl bg-black/40 backdrop-blur-md border border-primary/20 flex flex-col items-center">
-                  <span className="font-display font-black text-2xl md:text-3xl text-emerald-400">100%</span>
-                  <span className="text-xs text-neutral-300 uppercase tracking-wider font-mono">SAIS & Quality Compliance</span>
-                </div>
-                <div className="col-span-2 md:col-span-1 p-4 rounded-xl bg-black/40 backdrop-blur-md border border-primary/20 flex flex-col items-center">
-                  <span className="font-display font-black text-2xl md:text-3xl text-primary">SWA & WTCO</span>
-                  <span className="text-xs text-neutral-300 uppercase tracking-wider font-mono">Key Client Partners</span>
-                </div>
-              </div>
             </motion.div>
+          </div>
+
+          {/* Integrated Horizontal Projects Carousel */}
+          <div className="relative z-10 max-w-[1450px] mx-auto px-4 md:px-8 w-full mt-4">
+            <div className="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-primary animate-pulse" />
+                <span className="font-mono text-xs font-bold text-primary uppercase tracking-widest">
+                  Featured Supervision Projects
+                </span>
+                <span className="text-[10px] font-mono text-white/50 hidden sm:inline-block ms-2">
+                  (Drag or scroll horizontally)
+                </span>
+              </div>
+
+              {/* Slider Arrow Controls */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleScroll("left")}
+                  aria-label="Scroll left"
+                  className="w-9 h-9 rounded-full bg-white/10 hover:bg-primary hover:text-black text-white border border-white/20 flex items-center justify-center backdrop-blur-md transition-all duration-300 shadow-md active:scale-95"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleScroll("right")}
+                  aria-label="Scroll right"
+                  className="w-9 h-9 rounded-full bg-white/10 hover:bg-primary hover:text-black text-white border border-white/20 flex items-center justify-center backdrop-blur-md transition-all duration-300 shadow-md active:scale-95"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Scrollable Container */}
+            <div
+              ref={scrollRef}
+              className="flex gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-none py-4 px-1 scroll-smooth"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
+              {supervisionProjects.map((project, index) => (
+                <div 
+                  key={project.id} 
+                  className="w-[88vw] sm:w-[440px] lg:w-[470px] shrink-0 snap-center"
+                >
+                  <TiltCard className="h-full">
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: index * 0.15 }}
+                      className="flex flex-col justify-between bg-black/60 backdrop-blur-xl border border-primary/30 rounded-3xl overflow-hidden hover:border-primary transition-all duration-500 h-full group shadow-2xl relative"
+                    >
+                      {/* Top Image Banner */}
+                      <div className="relative h-48 sm:h-52 w-full overflow-hidden bg-neutral-900">
+                        <img 
+                          src={project.image} 
+                          alt={project.title} 
+                          className="w-full h-full object-cover filter brightness-[0.8] group-hover:scale-105 transition-transform duration-700"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+
+                        {/* Status Badge */}
+                        <div className="absolute top-3 right-3 z-10">
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-[11px] font-mono font-bold uppercase backdrop-blur-md shadow-md">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                            {project.status}
+                          </span>
+                        </div>
+
+                        {/* Sector Badge */}
+                        <div className="absolute bottom-3 left-3 z-10">
+                          <span className="px-2.5 py-1 rounded-md bg-black/70 border border-white/20 text-white text-[10px] font-mono uppercase tracking-wider backdrop-blur-md">
+                            {project.sector}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Body Content */}
+                      <div className="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                          {/* Client Header with Logo */}
+                          <div className="flex items-center justify-between gap-4 mb-4 pb-3 border-b border-white/10">
+                            <div className="flex flex-col">
+                              <span className="text-[9px] font-mono uppercase font-bold text-white/50">Client Partner</span>
+                              <span className="text-xs font-display font-bold text-white group-hover:text-primary transition-colors">{project.client}</span>
+                            </div>
+                            {project.clientLogo && (
+                              <div className="h-9 w-20 bg-white/95 rounded-lg p-1 border border-white/20 flex items-center justify-center shrink-0 shadow-sm">
+                                <img 
+                                  src={project.clientLogo} 
+                                  alt={project.client} 
+                                  className="max-h-full max-w-full object-contain"
+                                  onError={(e) => {
+                                    (e.target as HTMLElement).style.display = "none";
+                                  }}
+                                />
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Project Title */}
+                          <h3 className="font-display font-bold text-lg sm:text-xl text-white mb-2 leading-snug group-hover:text-primary transition-colors">
+                            {project.title}
+                          </h3>
+
+                          <p className="text-xs text-neutral-300 leading-relaxed mb-4 font-sans line-clamp-3">
+                            {project.description}
+                          </p>
+
+                          {/* Key Highlights */}
+                          <div className="space-y-1.5 mb-4">
+                            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-primary">Supervision Scope</span>
+                            {project.highlights.slice(0, 3).map((h, idx) => (
+                              <div key={idx} className="flex items-start gap-2 text-[11px] text-neutral-200">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
+                                <span className="line-clamp-1">{h}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-white/50 font-mono">
+                          <span>{project.location}</span>
+                          <span className="text-primary font-bold">SAIS Compliant</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </TiltCard>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
         {/* Executive Overview Section */}
-        <section className="max-w-[1400px] mx-auto px-4 md:px-8 -mt-8 relative z-20">
+        <section className="max-w-[1400px] mx-auto px-4 md:px-8 mt-16 relative z-20">
           <div className="p-8 md:p-12 rounded-3xl bg-surface border border-primary/20 shadow-2xl backdrop-blur-xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
             
@@ -247,113 +377,6 @@ function SupervisionPage() {
                 })}
               </div>
             </div>
-          </div>
-        </section>
-
-        {/* Featured Projects Section */}
-        <section className="max-w-[1400px] mx-auto px-4 md:px-8 mt-24">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 border-b border-foreground/10 pb-6">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="font-mono text-xs font-bold text-primary uppercase tracking-widest">Active Engagements</span>
-              </div>
-              <h2 className="font-display text-3xl sm:text-5xl font-extrabold text-foreground uppercase tracking-tight">
-                FEATURED SUPERVISION <span className="text-primary">PROJECTS</span>
-              </h2>
-            </div>
-            <p className="text-sm text-foreground/60 max-w-md mt-4 md:mt-0 font-sans">
-              Delivering high-precision supervision and engineering management for landmark water transmission networks and desalination facilities across KSA.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {supervisionProjects.map((project) => (
-              <TiltCard key={project.id} className="h-full">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5 }}
-                  className="flex flex-col justify-between bg-surface border border-foreground/15 rounded-3xl overflow-hidden hover:border-primary/50 transition-all duration-500 h-full group shadow-xl relative"
-                >
-                  {/* Top Image Banner */}
-                  <div className="relative h-56 w-full overflow-hidden bg-neutral-900">
-                    <img 
-                      src={project.image} 
-                      alt={project.title} 
-                      className="w-full h-full object-cover filter brightness-[0.8] group-hover:scale-105 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-black/40" />
-
-                    {/* Status Badge */}
-                    <div className="absolute top-4 right-4 z-10">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-mono font-bold uppercase backdrop-blur-md">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                        {project.status}
-                      </span>
-                    </div>
-
-                    {/* Sector Badge */}
-                    <div className="absolute bottom-4 left-4 z-10">
-                      <span className="px-2.5 py-1 rounded-md bg-black/60 border border-white/10 text-white text-[10px] font-mono uppercase tracking-wider backdrop-blur-md">
-                        {project.sector}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Body Content */}
-                  <div className="p-6 sm:p-8 flex-1 flex flex-col justify-between">
-                    <div>
-                      {/* Client Header with Logo */}
-                      <div className="flex items-center justify-between gap-4 mb-6 pb-4 border-b border-foreground/10">
-                        <div className="flex flex-col">
-                          <span className="text-[10px] font-mono uppercase font-bold text-foreground/50">Client Organization</span>
-                          <span className="text-sm font-display font-bold text-foreground group-hover:text-primary transition-colors">{project.client}</span>
-                        </div>
-                        {project.clientLogo && (
-                          <div className="h-10 w-24 bg-white/90 dark:bg-neutral-900/90 rounded-xl p-1.5 border border-foreground/10 flex items-center justify-center shrink-0 shadow-sm">
-                            <img 
-                              src={project.clientLogo} 
-                              alt={project.client} 
-                              className="max-h-full max-w-full object-contain"
-                              onError={(e) => {
-                                (e.target as HTMLElement).style.display = "none";
-                              }}
-                            />
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Project Title */}
-                      <h3 className="font-display font-bold text-xl sm:text-2xl text-foreground mb-3 leading-snug group-hover:text-primary transition-colors">
-                        {project.title}
-                      </h3>
-
-                      <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed mb-6 font-sans">
-                        {project.description}
-                      </p>
-
-                      {/* Key Highlights */}
-                      <div className="space-y-2 mb-6">
-                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-primary">Supervision Scope</span>
-                        {project.highlights.map((h, idx) => (
-                          <div key={idx} className="flex items-start gap-2 text-xs text-foreground/80">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
-                            <span>{h}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="pt-4 border-t border-foreground/10 flex items-center justify-between text-xs text-foreground/50 font-mono">
-                      <span>{project.location}</span>
-                      <span className="text-primary font-bold">SAIS Compliant</span>
-                    </div>
-                  </div>
-                </motion.div>
-              </TiltCard>
-            ))}
           </div>
         </section>
 

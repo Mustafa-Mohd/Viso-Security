@@ -131,7 +131,6 @@ export function TopNav() {
     label: t("nav.security"),
     items: [
       { to: "/security", label: t("nav.overview", "Overview") },
-      { to: "/supervision", label: "Project Management & Supervision" },
       { to: "/clients", label: t("nav.clients", "Clients") },
     ],
   };
@@ -140,8 +139,8 @@ export function TopNav() {
     id: "projects_menu",
     label: t("nav.group_impact", "Projects"),
     items: [
-      { to: "/projects", label: "All Projects" },
-      { to: "/supervision", label: "Supervision Projects" },
+      { to: "/projects", label: "Consultancy" },
+      { to: "/supervision", label: "Supervision" },
     ],
   };
 
