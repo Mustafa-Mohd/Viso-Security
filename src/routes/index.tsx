@@ -455,7 +455,7 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
         />
       </div>
 
-      {/* Regulatory Bodies / Standards Icons on Top — Transparent Circle, Colourless (Grayscale) & Full Color on Hover */}
+      {/* Regulatory Bodies / Standards Icons on Top — Transparent Circle with Golden Border, Logo Name Tooltip on Hover */}
       <div className="absolute top-6 left-6 md:top-8 md:left-12 z-30 flex gap-3 md:gap-4 items-center">
         {(data?.regulatoryLogos && data.regulatoryLogos.length > 0 ? data.regulatoryLogos : [
           { slug: "moi", label: "MOI", img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png" },
@@ -464,22 +464,24 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
           { slug: "api780", label: "API 780", img: "https://theshopmag.com/wp-content/uploads/2023/05/api-logo-stacked.png" },
           { slug: "aramco", label: "ARAMCO", img: "https://upload.wikimedia.org/wikipedia/en/thumb/8/85/Saudi_Aramco_logo.svg/1200px-Saudi_Aramco_logo.svg.png" },
         ]).map((body: any, idx: number) => (
-          <Link
-            key={idx}
-            to="/regulatory/$slug"
-            params={{ slug: body.slug }}
-            className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-transparent border border-white/30 hover:border-[#D4AF37] flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-md hover:shadow-[0_0_20px_rgba(212,175,55,0.6)] group relative cursor-pointer shrink-0 overflow-hidden"
-            aria-label={body.label}
-          >
-            <img 
-              src={body.img}
-              alt={body.label}
-              className="w-full h-full object-cover rounded-full transition-all duration-500 grayscale opacity-75 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105"
-            />
-            <span className="absolute top-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-[#D4AF37]/40 text-gold text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none shadow-lg z-40">
+          <div key={idx} className="relative group shrink-0">
+            <Link
+              to="/regulatory/$slug"
+              params={{ slug: body.slug }}
+              className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-transparent border-2 border-[#D4AF37] hover:border-[#FFD700] flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-[0_0_10px_rgba(212,175,55,0.3)] hover:shadow-[0_0_20px_rgba(212,175,55,0.8)] cursor-pointer overflow-hidden block"
+              aria-label={body.label}
+            >
+              <img 
+                src={body.img}
+                alt={body.label}
+                className="w-full h-full object-cover rounded-full transition-all duration-500 grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105"
+              />
+            </Link>
+            {/* Logo Name Tooltip on Hover */}
+            <span className="absolute top-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2 bg-black/90 backdrop-blur-md border border-[#D4AF37] text-gold text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none shadow-[0_4px_15px_rgba(0,0,0,0.8)] z-50">
               {body.label}
             </span>
-          </Link>
+          </div>
         ))}
       </div>
 

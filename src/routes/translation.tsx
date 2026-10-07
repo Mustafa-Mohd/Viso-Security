@@ -197,7 +197,7 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
         {/* Certificate Search Bar (TUV Style) */}
         <div className="bg-white border border-neutral-200 shadow-sm rounded-xl p-6 md:p-8 mb-12 relative z-20">
           <h3 className="text-lg font-bold text-neutral-800 mb-6 flex items-center gap-2">
-            <Search className="w-5 h-5 text-primary" /> Certificate Lookup
+            <Search className="w-5 h-5 text-primary" /> Certificate Search
           </h3>
           <form id="verify-form" onSubmit={handleVerify} className="flex flex-col md:flex-row gap-6 items-end">
             <div className="flex-1 w-full">

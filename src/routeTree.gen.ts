@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TranslationRouteImport } from './routes/translation'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TechnicalProposalRouteImport } from './routes/technical-proposal'
+import { Route as SupervisionRouteImport } from './routes/supervision'
 import { Route as SecurityRouteImport } from './routes/security'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -42,6 +43,11 @@ const TermsRoute = TermsRouteImport.update({
 const TechnicalProposalRoute = TechnicalProposalRouteImport.update({
   id: '/technical-proposal',
   path: '/technical-proposal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SupervisionRoute = SupervisionRouteImport.update({
+  id: '/supervision',
+  path: '/supervision',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SecurityRoute = SecurityRouteImport.update({
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/projects': typeof ProjectsRoute
   '/security': typeof SecurityRoute
+  '/supervision': typeof SupervisionRoute
   '/technical-proposal': typeof TechnicalProposalRoute
   '/terms': typeof TermsRoute
   '/translation': typeof TranslationRoute
@@ -159,6 +166,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/projects': typeof ProjectsRoute
   '/security': typeof SecurityRoute
+  '/supervision': typeof SupervisionRoute
   '/technical-proposal': typeof TechnicalProposalRoute
   '/terms': typeof TermsRoute
   '/translation': typeof TranslationRoute
@@ -181,6 +189,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/projects': typeof ProjectsRoute
   '/security': typeof SecurityRoute
+  '/supervision': typeof SupervisionRoute
   '/technical-proposal': typeof TechnicalProposalRoute
   '/terms': typeof TermsRoute
   '/translation': typeof TranslationRoute
@@ -204,6 +213,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/projects'
     | '/security'
+    | '/supervision'
     | '/technical-proposal'
     | '/terms'
     | '/translation'
@@ -225,6 +235,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/projects'
     | '/security'
+    | '/supervision'
     | '/technical-proposal'
     | '/terms'
     | '/translation'
@@ -246,6 +257,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/projects'
     | '/security'
+    | '/supervision'
     | '/technical-proposal'
     | '/terms'
     | '/translation'
@@ -268,6 +280,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ProjectsRoute: typeof ProjectsRoute
   SecurityRoute: typeof SecurityRoute
+  SupervisionRoute: typeof SupervisionRoute
   TechnicalProposalRoute: typeof TechnicalProposalRoute
   TermsRoute: typeof TermsRoute
   TranslationRoute: typeof TranslationRoute
@@ -298,6 +311,13 @@ declare module '@tanstack/react-router' {
       path: '/technical-proposal'
       fullPath: '/technical-proposal'
       preLoaderRoute: typeof TechnicalProposalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/supervision': {
+      id: '/supervision'
+      path: '/supervision'
+      fullPath: '/supervision'
+      preLoaderRoute: typeof SupervisionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/security': {
@@ -428,6 +448,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ProjectsRoute: ProjectsRoute,
   SecurityRoute: SecurityRoute,
+  SupervisionRoute: SupervisionRoute,
   TechnicalProposalRoute: TechnicalProposalRoute,
   TermsRoute: TermsRoute,
   TranslationRoute: TranslationRoute,

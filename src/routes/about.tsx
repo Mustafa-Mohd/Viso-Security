@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { TopNav } from "@/components/TopNav";
 import { TypewriterText } from "@/components/TypewriterText";
 import { supabase } from "@/lib/supabase";
+import { Eye, Target, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/about")({
   component: AboutPage,
@@ -586,75 +587,111 @@ function CEOMessage() {
 /* ---------- Vision & Mission ---------- */
 function VisionMission({ cms }: { cms?: any }) {
   const { t } = useTranslation();
+
+  const items = [
+    {
+      num: "01",
+      badge: "FUTURE DIRECTION",
+      title: cms?.visionTitle || t("about_page.vision_h3"),
+      subtitle: cms?.visionSub || t("about_page.vision_sub"),
+      desc: cms?.visionP || t("about_page.vision_p"),
+      icon: <Eye className="w-6 h-6 text-primary group-hover:scale-110 transition-transform duration-500" />,
+      delay: 0.15,
+      gradient: "from-amber-500/20 via-primary/10 to-transparent",
+    },
+    {
+      num: "02",
+      badge: "OPERATIONAL PURPOSE",
+      title: cms?.missionTitle || t("about_page.mission_h3"),
+      subtitle: cms?.missionSub || t("about_page.mission_sub"),
+      desc: cms?.missionP || t("about_page.mission_p"),
+      icon: <Target className="w-6 h-6 text-primary group-hover:scale-110 group-hover:rotate-45 transition-transform duration-500" />,
+      delay: 0.25,
+      gradient: "from-primary/20 via-amber-500/10 to-transparent",
+    },
+    {
+      num: "03",
+      badge: "CORE PHILOSOPHY",
+      title: cms?.valuesTitle || t("about_page.values_h3"),
+      subtitle: cms?.valuesSub || t("about_page.values_sub"),
+      desc: cms?.valuesP || t("about_page.values_p"),
+      icon: <Sparkles className="w-6 h-6 text-primary group-hover:scale-110 group-hover:rotate-12 transition-transform duration-500" />,
+      delay: 0.35,
+      gradient: "from-gold/20 via-primary/10 to-transparent",
+    },
+  ];
+
   return (
-    <section className="relative px-8 md:px-16 py-20 md:py-32 bg-background overflow-hidden border-t border-foreground/5">
-      <div className="max-w-[1600px] mx-auto">
+    <section className="relative px-8 md:px-16 py-24 md:py-36 bg-background overflow-hidden border-t border-foreground/5">
+      {/* Background Decorative Ambient Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-primary/[0.03] blur-[140px] rounded-full pointer-events-none" />
+
+      <div className="max-w-[1600px] mx-auto relative z-10">
         <Reveal delay={0.1}>
-          <div className="text-center mb-16 md:mb-20">
-            <h2 className="font-sans text-4xl md:text-5xl lg:text-6xl tracking-tight leading-[1.1] mb-6">
+          <div className="text-center mb-16 md:mb-24">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.25em] text-primary mb-4 shadow-sm">
+              <Sparkles className="w-3.5 h-3.5" /> Core Principles
+            </div>
+            <h2 className="font-sans text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] mb-6 text-foreground">
               {t("about_page.vm_title")}
             </h2>
-            <div className="w-16 h-1 bg-gradient-to-r from-primary via-gold to-secondary mx-auto rounded-full" />
+            <div className="w-20 h-1 bg-gradient-to-r from-primary via-gold to-secondary mx-auto rounded-full shadow-sm" />
           </div>
         </Reveal>
 
-        <div className="grid lg:grid-cols-3 gap-6 lg:gap-10">
-          {/* Vision Card */}
-          <Reveal delay={0.15}>
-            <div className="group relative h-full p-8 lg:p-12 border border-foreground/10 bg-surface rounded-[2rem] shadow-sm hover:shadow-xl hover:border-primary/40 transition-all duration-500 overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary via-gold to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <div className="grid lg:grid-cols-3 gap-8 lg:gap-10">
+          {items.map((item, idx) => (
+            <Reveal key={idx} delay={item.delay}>
+              <div className="group relative h-full p-8 lg:p-12 border border-foreground/15 bg-surface/80 backdrop-blur-md rounded-[2.5rem] shadow-md hover:shadow-2xl hover:border-primary/60 transition-all duration-500 hover:-translate-y-3.5 hover:scale-[1.01] overflow-hidden flex flex-col justify-between cursor-pointer">
+                {/* Shining Sheen Light Effect on Hover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none z-20" />
 
-              <div className="relative z-10">
-                <h3 className="font-sans font-bold text-3xl md:text-4xl text-foreground tracking-tight mb-3 group-hover:text-primary transition-colors duration-500">
-                  {cms?.visionTitle || t("about_page.vision_h3")}
-                </h3>
-                <div className="font-sans text-[13px] font-semibold tracking-[0.1em] text-[#B8860B] uppercase mb-6">
-                  {cms?.visionSub || t("about_page.vision_sub")}
+                {/* Animated Top Golden Line */}
+                <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary via-gold to-primary opacity-30 group-hover:opacity-100 transition-opacity duration-500" />
+
+                {/* Radial Glow on Hover */}
+                <div className={`absolute -top-24 -right-24 w-64 h-64 bg-gradient-to-br ${item.gradient} blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none`} />
+
+                <div className="relative z-10">
+                  {/* Top Header: Badge & Icon */}
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-2.5">
+                      <span className="font-mono text-xs font-extrabold text-primary bg-primary/10 border border-primary/20 px-3 py-1 rounded-full">
+                        {item.num}
+                      </span>
+                      <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-foreground/40 uppercase">
+                        {item.badge}
+                      </span>
+                    </div>
+
+                    <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-inner group-hover:bg-primary/20 group-hover:border-primary/40 transition-all duration-500">
+                      {item.icon}
+                    </div>
+                  </div>
+
+                  {/* Title & Subtitle */}
+                  <h3 className="font-sans font-bold text-3xl md:text-4xl text-foreground tracking-tight mb-3 group-hover:text-primary transition-colors duration-500">
+                    {item.title}
+                  </h3>
+                  <div className="font-sans text-[12px] font-semibold tracking-[0.12em] text-[#B8860B] dark:text-gold uppercase mb-6 flex items-center gap-2">
+                    <span className="w-3 h-px bg-[#B8860B]/60 group-hover:w-6 transition-all duration-300" />
+                    {item.subtitle}
+                  </div>
+
+                  {/* Body Paragraph */}
+                  <p className="text-foreground/80 leading-relaxed font-normal text-base md:text-lg text-justify hyphens-none">
+                    {item.desc}
+                  </p>
                 </div>
-                <p className="text-foreground/80 leading-relaxed font-normal text-base md:text-lg text-justify hyphens-none">
-                  {cms?.visionP || t("about_page.vision_p")}
-                </p>
-              </div>
-            </div>
-          </Reveal>
 
-          {/* Mission Card */}
-          <Reveal delay={0.25}>
-            <div className="group relative h-full p-8 lg:p-12 border border-foreground/10 bg-surface rounded-[2rem] shadow-sm hover:shadow-xl hover:border-primary/40 transition-all duration-500 overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary via-gold to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-              <div className="relative z-10">
-                <h3 className="font-sans font-bold text-3xl md:text-4xl text-foreground tracking-tight mb-3 group-hover:text-primary transition-colors duration-500">
-                  {cms?.missionTitle || t("about_page.mission_h3")}
-                </h3>
-                <div className="font-sans text-[13px] font-semibold tracking-[0.1em] text-[#B8860B] uppercase mb-6">
-                  {cms?.missionSub || t("about_page.mission_sub")}
+                {/* Card Footer Accent */}
+                <div className="relative z-10 pt-8 mt-8 border-t border-foreground/10 flex items-center justify-between text-xs font-mono font-medium text-foreground/40 group-hover:text-primary transition-colors duration-300">
+                  <span>EXCELLENCE IN KSA</span>
+                  <span className="group-hover:translate-x-1.5 transition-transform duration-300">→</span>
                 </div>
-                <p className="text-foreground/80 leading-relaxed font-normal text-base md:text-lg text-justify hyphens-none">
-                  {cms?.missionP || t("about_page.mission_p")}
-                </p>
               </div>
-            </div>
-          </Reveal>
-
-          {/* Values Card */}
-          <Reveal delay={0.35}>
-            <div className="group relative h-full p-8 lg:p-12 border border-foreground/10 bg-surface rounded-[2rem] shadow-sm hover:shadow-xl hover:border-primary/40 transition-all duration-500 overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary via-gold to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-              <div className="relative z-10">
-                <h3 className="font-sans font-bold text-3xl md:text-4xl text-foreground tracking-tight mb-3 group-hover:text-primary transition-colors duration-500">
-                  {cms?.valuesTitle || t("about_page.values_h3")}
-                </h3>
-                <div className="font-sans text-[13px] font-semibold tracking-[0.1em] text-[#B8860B] uppercase mb-6">
-                  {cms?.valuesSub || t("about_page.values_sub")}
-                </div>
-                <p className="text-foreground/80 leading-relaxed font-normal text-base md:text-lg text-justify hyphens-none">
-                  {cms?.valuesP || t("about_page.values_p")}
-                </p>
-              </div>
-            </div>
-          </Reveal>
+            </Reveal>
+          ))}
         </div>
       </div>
     </section>
@@ -1201,21 +1238,6 @@ const certificatesData = [
     img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100668/865e7db3-7be4-4ed4-920e-e0a8b29af7bb.png"
   },
   {
-    org: "Higher Commission for Industrial Security (HCIS)",
-    certs: ["License to Practice Security Consultancy", "Security Consultancy Qualification Certificate"],
-    img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790755927/ChatGPT_Image_Sep_30__2026__01_39_49_PM-removebg-preview.png"
-  },
-  {
-    org: "Literature, Publishing & Translation commission",
-    certs: ["License to Practice Translation Profession"],
-    img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790757968/ChatGPT_Image_Sep_30_2026_02_15_55_PM.png"
-  },
-  {
-    org: "Ministry of Commerce",
-    certs: ["Commercial Register for Security Consultancy Activities", "Commercial Register for Translation Activities"],
-    img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790600382/imgi_14_Ministry-of-commerce.png"
-  },
-  {
     org: "Balady",
     certs: ["Municipal License"],
     img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790600394/imgi_15_Balady.png"
@@ -1267,8 +1289,11 @@ function LicensesAndCertifications() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ delay: (i % 3) * 0.1, duration: 0.6 }}
-                className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-foreground/10 bg-surface shadow-sm hover:shadow-xl transition-all duration-500 hover:border-primary/40"
+                className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-foreground/15 bg-surface shadow-sm hover:shadow-2xl transition-all duration-500 hover:border-black dark:hover:border-neutral-200 cursor-pointer"
               >
+                {/* Shining Sheen Light Effect on Hover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 dark:via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none z-20" />
+
                 <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10" />
 
                 {/* Clickable Image Container */}
@@ -1283,15 +1308,6 @@ function LicensesAndCertifications() {
                     alt={item.org}
                     className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-700 mix-blend-multiply"
                   />
-
-                  {/* Zoom indicator overlay */}
-                  <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
-                    <div className="bg-black/60 backdrop-blur-sm text-white rounded-full p-4 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-lg">
-                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                      </svg>
-                    </div>
-                  </div>
                 </div>
 
                 {/* Card Information */}

@@ -27,14 +27,13 @@ function ClientsPage() {
       <TopNav />
 
       <main className="pb-40">
-        <div className="relative w-full overflow-hidden flex items-center justify-center bg-black h-[50vh] mb-16">
+        <div className="relative w-full overflow-hidden flex items-center justify-center h-[50vh] mb-16">
           <div className="absolute inset-0 pointer-events-none">
             <img 
-              src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=80" 
-              alt="Clients" 
-              className="w-full h-full object-cover filter brightness-[0.5] saturate-125"
+              src="https://res.cloudinary.com/dppwnds6z/image/upload/v1791402753/xbhbmqdtijfo7a92lwf8.png" 
+              alt="Clients Banner" 
+              className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-black/50" />
           </div>
           
           <div className="relative z-10 max-w-[1400px] mx-auto px-4 md:px-8 text-center flex flex-col items-center">
@@ -43,8 +42,8 @@ function ClientsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <h1 className="font-display text-4xl md:text-6xl font-bold text-white tracking-tight leading-tight mb-4 drop-shadow-lg uppercase">
-                OUR <span className="text-primary block sm:inline">CLIENTS</span>
+              <h1 className="font-display text-4xl md:text-6xl font-extrabold text-white tracking-tight leading-tight mb-4 drop-shadow-[0_4px_16px_rgba(0,0,0,0.85)] uppercase">
+                OUR <span className="text-primary block sm:inline drop-shadow-[0_4px_16px_rgba(0,0,0,0.85)]">CLIENTS</span>
               </h1>
             </motion.div>
           </div>

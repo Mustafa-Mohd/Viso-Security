@@ -131,7 +131,17 @@ export function TopNav() {
     label: t("nav.security"),
     items: [
       { to: "/security", label: t("nav.overview", "Overview") },
+      { to: "/supervision", label: "Project Management & Supervision" },
       { to: "/clients", label: t("nav.clients", "Clients") },
+    ],
+  };
+
+  const projectsGroup: NavGroup = {
+    id: "projects_menu",
+    label: t("nav.group_impact", "Projects"),
+    items: [
+      { to: "/projects", label: "All Projects" },
+      { to: "/supervision", label: "Supervision Projects" },
     ],
   };
 
@@ -172,17 +182,18 @@ export function TopNav() {
         <div className="h-px w-full bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
         <div className="max-w-[1920px] mx-auto px-4 sm:px-6 md:px-10 xl:px-12">
           <div className="flex items-center gap-2 md:gap-4 lg:gap-6 h-16 md:h-20">
-            <Link to="/" className="flex items-center gap-2 md:gap-3 group shrink-0 min-w-0">
+            <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0 min-w-0">
               <img loading="lazy" decoding="async"
                 src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
                 alt="Viso Group"
                 className="h-9 sm:h-11 md:h-13 lg:h-16 w-auto object-contain shrink-0 transition-transform duration-500 group-hover:scale-105"
               />
-              <div className="flex flex-col justify-center min-w-0 me-1 sm:me-2 lg:me-4 xl:me-8 lg:border-s border-foreground/15 lg:ps-3.5 py-0.5">
-                <span className="text-black font-display font-semibold text-[9px] sm:text-[10px] lg:text-xs tracking-tight uppercase whitespace-nowrap leading-tight">
+              <div className="flex flex-col justify-center min-w-0 me-1 sm:me-2 lg:me-3 xl:me-6 border-s border-foreground/20 ps-2.5 sm:ps-3.5 py-0.5 font-brand-condensed">
+                <span className="text-foreground font-brand-condensed font-semibold text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] xl:text-[17px] tracking-[0.08em] uppercase whitespace-nowrap leading-tight">
                   {t("about_page.vision_for")}
                 </span>
-                <span className="text-primary font-display font-bold text-[9.5px] sm:text-[11px] lg:text-xs xl:text-sm tracking-tight lg:tracking-wide uppercase whitespace-nowrap leading-tight">
+                <div className="h-[1.5px] w-full bg-gradient-to-r from-primary via-gold to-primary/50 my-[3px] rounded-full" />
+                <span className="text-primary font-brand-condensed font-semibold text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] xl:text-[16px] tracking-[0.06em] uppercase whitespace-nowrap leading-tight">
                   <TypewriterText phrases={[t("about_page.sec_consult"), t("about_page.trans_services")]} />
                 </span>
               </div>
@@ -215,13 +226,7 @@ export function TopNav() {
                 {t("nav.translation")}
               </Link>
 
-              <Link
-                to="/projects"
-                className={navItemClass(isActivePath("/projects"))}
-                aria-current={isActivePath("/projects") ? "page" : undefined}
-              >
-                {t("nav.group_impact")}
-              </Link>
+              <NavDropdown key={projectsGroup.id} group={projectsGroup} isActive={isActivePath} />
               
               <NavDropdown key={joinTeamGroup.id} group={joinTeamGroup} isActive={isActivePath} />
 

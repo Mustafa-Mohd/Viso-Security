@@ -36,7 +36,8 @@ export function TypewriterText({ phrases, className, cursorClassName }: Typewrit
 
   return (
     <span className={cn("inline-flex items-center", className)}>
-      {text}
+      <span>{text}</span>
+      <span className={cn("inline-block w-[2px] h-[1.1em] bg-primary ms-0.5 animate-pulse shrink-0", cursorClassName)} aria-hidden="true" />
     </span>
   );
 }
