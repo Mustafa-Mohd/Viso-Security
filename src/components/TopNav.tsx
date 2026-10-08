@@ -2,11 +2,112 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { motion } from "framer-motion";
 import { TypewriterText } from "@/components/TypewriterText";
 import { setAppLanguage, type AppLang } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { EmployeeLoginModal, type Mode } from "@/components/EmployeeLoginModal";
 import { supabase } from "@/lib/supabase";
+
+function ShiningSwordLine() {
+  return (
+    <div className="relative w-full h-3.5 my-0.5 flex items-center overflow-hidden">
+      <svg
+        viewBox="0 0 240 20"
+        className="w-full h-full filter drop-shadow-[0_0_5px_rgba(212,175,55,0.7)]"
+        preserveAspectRatio="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          {/* Main Gold Gradient */}
+          <linearGradient id="swordGold" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#9A7B2C" />
+            <stop offset="20%" stopColor="#F5D061" />
+            <stop offset="40%" stopColor="#FFF2B2" />
+            <stop offset="65%" stopColor="#D4AF37" />
+            <stop offset="85%" stopColor="#F5D061" />
+            <stop offset="100%" stopColor="#E2B742" />
+          </linearGradient>
+
+          {/* Blade Upper Edge Highlight */}
+          <linearGradient id="bladeEdge" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#FFF8D6" />
+            <stop offset="45%" stopColor="#E5C158" />
+            <stop offset="50%" stopColor="#8A6B22" />
+            <stop offset="55%" stopColor="#FFF2B2" />
+            <stop offset="100%" stopColor="#A8842A" />
+          </linearGradient>
+
+          {/* Dark Gold Accent */}
+          <linearGradient id="darkGold" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#5B4515" />
+            <stop offset="50%" stopColor="#8C6F23" />
+            <stop offset="100%" stopColor="#3D2D0B" />
+          </linearGradient>
+        </defs>
+
+        {/* ── 1. ORNATE POMMEL (Left Knob) ── */}
+        <path
+          d="M 2 10 C 2 7, 5 5, 8 7 C 10 8, 10 12, 8 13 C 5 15, 2 13, 2 10 Z"
+          fill="url(#swordGold)"
+          stroke="#5B4515"
+          strokeWidth="0.5"
+        />
+        <circle cx="5.5" cy="10" r="1.2" fill="url(#bladeEdge)" />
+
+        {/* ── 2. TEXTURED GRIP (Handle) ── */}
+        <rect x="8" y="8.5" width="13" height="3" rx="0.5" fill="url(#swordGold)" stroke="#5B4515" strokeWidth="0.4" />
+        {/* Grip Ridges */}
+        <line x1="11" y1="8.5" x2="11" y2="11.5" stroke="url(#darkGold)" strokeWidth="0.8" />
+        <line x1="14" y1="8.5" x2="14" y2="11.5" stroke="url(#darkGold)" strokeWidth="0.8" />
+        <line x1="17" y1="8.5" x2="17" y2="11.5" stroke="url(#darkGold)" strokeWidth="0.8" />
+        <line x1="19.5" y1="8.5" x2="19.5" y2="11.5" stroke="url(#darkGold)" strokeWidth="0.8" />
+
+        {/* ── 3. ROYAL ORNATE CROSSGUARD ── */}
+        {/* Curved Wings/Quillons */}
+        <path
+          d="M 21 10 C 21 5, 19 3, 17 1 C 21 1, 25 4, 25 10 C 25 16, 21 19, 17 19 C 19 17, 21 15, 21 10 Z"
+          fill="url(#swordGold)"
+          stroke="#5B4515"
+          strokeWidth="0.5"
+        />
+        {/* Guard Central Medallion */}
+        <circle cx="23" cy="10" r="2.8" fill="url(#bladeEdge)" stroke="#5B4515" strokeWidth="0.5" />
+        <circle cx="23" cy="10" r="1.1" fill="#5B4515" />
+
+        {/* ── 4. ORNATE RICASSO SHOULDER ── */}
+        <path
+          d="M 25 8.2 L 34 7.2 L 36 10 L 34 12.8 L 25 11.8 Z"
+          fill="url(#swordGold)"
+          stroke="#5B4515"
+          strokeWidth="0.4"
+        />
+
+        {/* ── 5. BLADE (Stretches to Sharp Tip) ── */}
+        {/* Top Blade Edge */}
+        <path d="M 34 8.5 L 230 9 L 238 10 L 34 10 Z" fill="url(#bladeEdge)" />
+        {/* Bottom Blade Edge */}
+        <path d="M 34 10 L 238 10 L 230 11 L 34 11.5 Z" fill="url(#swordGold)" />
+        {/* Central Fuller / Ridge Line */}
+        <line x1="34" y1="10" x2="236" y2="10" stroke="#705216" strokeWidth="0.5" />
+      </svg>
+
+      {/* Traveling Glint & Shine Animation Overlay */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          animate={{ x: ["-100%", "250%"] }}
+          transition={{
+            duration: 2.0,
+            repeat: Infinity,
+            repeatDelay: 0.6,
+            ease: "easeInOut",
+          }}
+          className="w-1/3 h-full bg-gradient-to-r from-transparent via-white/90 to-transparent filter drop-shadow-[0_0_8px_#ffffff]"
+        />
+      </div>
+    </div>
+  );
+}
 
 type NavLink = { to: string; label: string };
 
@@ -18,10 +119,10 @@ type NavGroup = {
 
 function navItemClass(active: boolean) {
   return cn(
-    "relative inline-flex items-center gap-1 px-1.5 lg:px-2 xl:px-2.5 py-1.5 font-sans text-[9px] xl:text-[10px] font-semibold tracking-[0.06em] xl:tracking-[0.08em] uppercase whitespace-nowrap transition-all duration-300 rounded-md",
+    "relative inline-flex items-center gap-1 px-1.5 lg:px-2 xl:px-2.5 py-1.5 font-sans text-[10px] xl:text-[11px] font-bold tracking-[0.06em] xl:tracking-[0.08em] uppercase whitespace-nowrap transition-all duration-300 rounded-md",
     active
       ? "text-primary"
-      : "text-foreground/65 hover:text-primary hover:bg-foreground/[0.05]",
+      : "text-black hover:text-primary hover:bg-black/[0.05]",
   );
 }
 
@@ -44,7 +145,7 @@ function NavDropdown({
       >
         {group.label}
         <ChevronDown
-          className="h-3.5 w-3.5 shrink-0 opacity-55 transition-transform duration-300 group-hover/nav:rotate-180"
+          className="h-3.5 w-3.5 shrink-0 text-black opacity-90 transition-transform duration-300 group-hover/nav:rotate-180 group-hover/nav:text-primary"
           aria-hidden
         />
       </button>
@@ -53,7 +154,7 @@ function NavDropdown({
         className="absolute top-full pt-2 opacity-0 invisible translate-y-1 group-hover/nav:opacity-100 group-hover/nav:visible group-hover/nav:translate-y-0 group-focus-within/nav:opacity-100 group-focus-within/nav:visible group-focus-within/nav:translate-y-0 transition-all duration-200 z-[200] min-w-[220px]"
         style={{ insetInlineStart: 0 }}
       >
-        <div className="rounded-md border border-foreground/10 bg-background/98 backdrop-blur-md shadow-[0_20px_50px_rgba(0,0,0,0.14)] overflow-hidden">
+        <div className="rounded-md border border-black/10 bg-white/98 backdrop-blur-md shadow-[0_20px_50px_rgba(0,0,0,0.14)] overflow-hidden">
           <ul className="py-1.5">
             {group.items.map((item) => (
               <li key={item.to}>
@@ -62,8 +163,8 @@ function NavDropdown({
                   className={cn(
                     "flex items-center gap-2 px-4 py-2.5 font-sans text-sm tracking-wide transition-colors border-s-2 border-transparent",
                     isActive(item.to)
-                      ? "text-primary font-semibold"
-                      : "text-foreground/80 hover:bg-foreground/[0.04] hover:text-primary hover:border-primary/40",
+                      ? "text-primary font-bold"
+                      : "text-black font-semibold hover:bg-black/[0.04] hover:text-primary hover:border-primary/40",
                   )}
                   aria-current={isActive(item.to) ? "page" : undefined}
                 >
@@ -154,8 +255,8 @@ export function TopNav() {
 
   const mobileNavClass = (to: string) =>
     isActivePath(to)
-      ? "font-display text-xl tracking-wide text-primary font-semibold border-s-4 border-primary ps-3"
-      : "font-display text-xl tracking-wide text-foreground/75 hover:text-primary transition-colors ps-3 border-s-4 border-transparent";
+      ? "font-display text-xl tracking-wide text-primary font-bold border-s-4 border-primary ps-3"
+      : "font-display text-xl tracking-wide text-black font-bold hover:text-primary transition-colors ps-3 border-s-4 border-transparent";
 
   const toggleMobileGroup = (id: string) => {
     setMobileExpanded((prev) => (prev === id ? null : id));
@@ -191,7 +292,7 @@ export function TopNav() {
                 <span className="text-foreground font-brand-condensed font-semibold text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] xl:text-[17px] tracking-[0.08em] uppercase whitespace-nowrap leading-tight">
                   {t("about_page.vision_for")}
                 </span>
-                <div className="h-[1.5px] w-full bg-gradient-to-r from-primary via-gold to-primary/50 my-[3px] rounded-full" />
+                <ShiningSwordLine />
                 <span className="text-primary font-brand-condensed font-semibold text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] xl:text-[16px] tracking-[0.06em] uppercase whitespace-nowrap leading-tight">
                   <TypewriterText phrases={[t("about_page.sec_consult"), t("about_page.trans_services")]} />
                 </span>
@@ -240,7 +341,7 @@ export function TopNav() {
               <button
                 type="button"
                 onClick={toggleLanguage}
-                className="flex items-center justify-center px-2.5 h-7 rounded-md text-foreground/75 hover:bg-foreground/5 hover:text-primary transition-colors font-mono text-[10px] font-bold border border-primary/20 hover:border-primary/40 ms-1 shrink-0"
+                className="flex items-center justify-center px-2.5 h-7 rounded-md text-black hover:bg-black/5 hover:text-primary transition-colors font-mono text-[10px] font-bold border border-black/30 hover:border-primary/40 ms-1 shrink-0"
                 title={t("nav.lang_switch")}
               >
                 {t("nav.lang_toggle")}
@@ -251,7 +352,7 @@ export function TopNav() {
               <button
                 type="button"
                 onClick={toggleLanguage}
-                className="flex items-center justify-center px-2.5 h-7 rounded-md text-foreground/75 hover:bg-foreground/5 hover:text-primary transition-colors font-mono text-[10px] font-bold border border-primary/20 hover:border-primary/40"
+                className="flex items-center justify-center px-2.5 h-7 rounded-md text-black hover:bg-black/5 hover:text-primary transition-colors font-mono text-[10px] font-bold border border-black/30 hover:border-primary/40"
                 title={t("nav.lang_switch")}
               >
                 {t("nav.lang_toggle")}

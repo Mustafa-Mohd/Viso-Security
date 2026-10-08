@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
-import { Eye, EyeOff, LayoutDashboard, Image as ImageIcon, Settings, LogOut, ChevronRight, Save, Plus, Trash2, Upload, AlertCircle, MessageSquare, Users, Briefcase, FileText, History, ArrowUp, ArrowDown, Loader2, Link, Video, ShieldCheck, ArrowLeft, Layers, Search, X, Calendar } from "lucide-react";
+import { Eye, EyeOff, LayoutDashboard, Image as ImageIcon, Settings, LogOut, ChevronRight, Save, Plus, Trash2, Upload, AlertCircle, MessageSquare, Users, Briefcase, FileText, History, ArrowUp, ArrowDown, Loader2, Link, Video, ShieldCheck, ArrowLeft, Layers, Search, X, Calendar, RefreshCw } from "lucide-react";
 import { DmsDashboard } from "@/components/DmsDashboard";
 import { HrDashboard } from "@/components/HrDashboard";
 import { CertificatesDashboard } from "@/components/CertificatesDashboard";
@@ -3164,6 +3164,19 @@ const DEFAULT_HERO_SLIDES = [
                         <Plus className="w-3.5 h-3.5" /> Add Project
                       </button>
                       <button
+                        onClick={async () => {
+                          if (confirm("Reset and seed all 80 official projects from default spreadsheet dataset to CMS?")) {
+                            setProjectsData(PROJECTS);
+                            await handleSaveCmsSection('projects', PROJECTS);
+                            alert("Successfully seeded all 80 projects to CMS!");
+                          }
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-amber-500/50 text-amber-500 hover:bg-amber-500/10 transition-all cursor-pointer"
+                        title="Reset and seed all 80 projects from default spreadsheet"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" /> Seed 80 Projects
+                      </button>
+                      <button
                         onClick={() => handleSaveCmsSection('projects', projectsData)}
                         className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-all cursor-pointer shadow-xs"
                       >
@@ -3230,17 +3243,18 @@ const DEFAULT_HERO_SLIDES = [
                     {projectsData
                       .map((project, originalIndex) => ({ project, originalIndex }))
                       .filter(({ project }) => {
+                        if (!project) return false;
                         const q = projectCmsSearch.toLowerCase().trim();
                         const catMatch = projectCmsCategoryFilter === "all" || project.category === projectCmsCategoryFilter;
                         const textMatch =
                           !q ||
-                          project.name.toLowerCase().includes(q) ||
-                          project.client.toLowerCase().includes(q) ||
-                          project.endUser.toLowerCase().includes(q) ||
-                          project.sector.toLowerCase().includes(q) ||
-                          project.scope.toLowerCase().includes(q) ||
+                          (project.name && project.name.toLowerCase().includes(q)) ||
+                          (project.client && project.client.toLowerCase().includes(q)) ||
+                          (project.endUser && project.endUser.toLowerCase().includes(q)) ||
+                          (project.sector && project.sector.toLowerCase().includes(q)) ||
+                          (project.scope && project.scope.toLowerCase().includes(q)) ||
                           (project.month && project.month.toLowerCase().includes(q)) ||
-                          project.sNo.toString().includes(q);
+                          (project.sNo != null && project.sNo.toString().includes(q));
                         return catMatch && textMatch;
                       })
                       .map(({ project, originalIndex }) => {
@@ -3511,18 +3525,19 @@ const DEFAULT_HERO_SLIDES = [
                         );
                       })}
 
-                    {projectsData.filter(({ project }) => {
+                    {projectsData.filter((project) => {
+                      if (!project) return false;
                       const q = projectCmsSearch.toLowerCase().trim();
                       const catMatch = projectCmsCategoryFilter === "all" || project.category === projectCmsCategoryFilter;
                       const textMatch =
                         !q ||
-                        project.name.toLowerCase().includes(q) ||
-                        project.client.toLowerCase().includes(q) ||
-                        project.endUser.toLowerCase().includes(q) ||
-                        project.sector.toLowerCase().includes(q) ||
-                        project.scope.toLowerCase().includes(q) ||
+                        (project.name && project.name.toLowerCase().includes(q)) ||
+                        (project.client && project.client.toLowerCase().includes(q)) ||
+                        (project.endUser && project.endUser.toLowerCase().includes(q)) ||
+                        (project.sector && project.sector.toLowerCase().includes(q)) ||
+                        (project.scope && project.scope.toLowerCase().includes(q)) ||
                         (project.month && project.month.toLowerCase().includes(q)) ||
-                        project.sNo.toString().includes(q);
+                        (project.sNo != null && project.sNo.toString().includes(q));
                       return catMatch && textMatch;
                     }).length === 0 && (
                       <div className="p-8 text-center rounded-xl border border-dashed border-foreground/20 bg-surface/50 text-muted-foreground text-xs">

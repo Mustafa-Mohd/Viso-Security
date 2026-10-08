@@ -135,102 +135,88 @@ const SECTORS: SectorCategory[] = [
   }
 ];
 
-// ─── Master Project List (77 Items) ──────────────────────────────────────────
+// ─── Master Project List (80 Items) ──────────────────────────────────────────
 export const PROJECTS: ProjectItem[] = [
-  // ── Oil & Gas / Petrochemical (19 projects) ──
-  { sNo: 14, client: "LINDE", name: "Jubail 3_NH3", endUser: "SIPCHEM", sector: "PETROCHEMICAL", category: "oil-gas", status: "Ongoing", location: "Jubail Industrial City", scope: "Integrated security engineering design, HCIS Stage-1 & Stage-2 compliance, CCTV surveillance and access control for ammonia chemical complex." },
-  { sNo: 17, client: "SAMSUNG", name: "SASREF ETHANE CRACKER", endUser: "SAUDI ARAMCO", sector: "PETROCHEMICAL", category: "oil-gas", status: "Ongoing", highlight: "Aramco Project", location: "Jubail Industrial City", scope: "Industrial physical security system, perimeter intrusion detection (PIDS), and HCIS directives compliance review." },
-  { sNo: 19, client: "Siemens", name: "Khurais CPF", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Completed", highlight: "Flagship", location: "Khurais Field", scope: "Central Processing Facility security control systems, perimeter fence sensors, and emergency response integration." },
-  { sNo: 20, client: "Siemens", name: "Khurais CPF-Variation Order", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Completed", location: "Khurais Field", scope: "Variation order scope expansion for security coverage, extended CCTV surveillance, and gate control integration." },
-  { sNo: 26, client: "KBR", name: "Bio-Reactor-STAGE-01 & STAGE-02 / SAUDI ARAMCO", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Ongoing", location: "Eastern Province", scope: "Stage-01 & Stage-02 HCIS security design engineering approval, risk assessment, and technical security validation." },
-  { sNo: 27, client: "WORLEY", name: "ZULUF STAGE-02", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Ongoing", highlight: "Major Mega Program", location: "Zuluf Offshore / Onshore", scope: "Zuluf Field Stage-02 comprehensive security infrastructure engineering, perimeter defense, and central command design." },
-  { sNo: 28, client: "L&T", name: "UPGRADE FILTRATION SYSTEM - AINDAR STAGE-02 REDEVELOPMENT PROGRAM STAGE-01 & MARJAN STAGE-01,02,03 & 04", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Ongoing", location: "Ain Dar & Marjan Fields", scope: "Multi-stage filtration system upgrade physical security design, access control, and HCIS SEC compliance." },
-  { sNo: 29, client: "NMDC", name: "CRPOS 79,80,81,82 & 83 STAGE-03", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Ongoing", location: "Offshore Fields", scope: "Offshore platform security systems design review, stage-03 compliance certification, and marine vessel monitoring." },
-  { sNo: 31, client: "KBR", name: "SAFANIYAH AH RESIDUAL OFFSHORE WATER INJECTION STAGE-01 & STAGE-02", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Ongoing", location: "Safaniyah Offshore Field", scope: "Water injection facility security engineering, access restriction, explosion-proof CCTV camera deployment." },
-  { sNo: 34, client: "IDOM", name: "BAO STEEL", endUser: "NEOM / BAO STEEL", sector: "PETROCHEMICAL", category: "oil-gas", status: "Ongoing", location: "NEOM Industrial City", scope: "Green steel complex security master plan, industrial access management, and perimeter fence intrusion detection." },
-  { sNo: 38, client: "KBR", name: "Zuluf Redevelopment Program - Safaniyah Plant", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Ongoing", location: "Safaniyah Onshore Plant", scope: "Redevelopment program physical security engineering, HCIS security directives compliance & site verification." },
-  { sNo: 39, client: "S-Chem", name: "S-CHEM PLANT STAGE-03", endUser: "S-CHEM", sector: "PETROCHEMICAL", category: "oil-gas", status: "Completed", location: "Jubail Industrial City", scope: "Stage-03 petrochem plant security upgrade, blast-resistant CCTV camera enclosures, and central monitoring station." },
-  { sNo: 40, client: "KBR", name: "ABO GOSP2-WATER WELL", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Completed", location: "Abqaiq / GOSP-2", scope: "Water well perimeter physical security, automated gate barriers, and remote telemetry security monitoring." },
-  { sNo: 48, client: "S-CHEM", name: "UPGRADE GATES-GAP ANALYSIS & STAGE-01", endUser: "S-CHEM", sector: "PETROCHEMICAL", category: "oil-gas", status: "Completed", location: "Jubail Industrial City", scope: "Security gate upgrade gap analysis, HCIS compliance assessment, and Stage-01 preliminary engineering." },
-  { sNo: 68, client: "IDOM", name: "JOTUN FACTORY", endUser: "JOTUN", sector: "PETROCHEMICAL", category: "oil-gas", status: "Completed", location: "Jeddah Industrial City", scope: "Chemical factory security design, automated vehicle access barriers, hazard zone CCTV coverage, and alarm response." },
-  { sNo: 71, client: "KBR", name: "INCREASE SHAYBAH GAS HANDLING-11 STAGE-1", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Ongoing", location: "Shaybah, Rub' al Khali", scope: "Shaybah gas handling expansion physical security system design, HCIS Stage-1 review, and remote facility surveillance." },
-  { sNo: 72, client: "KBR", name: "INCREASE SHAYBAH GAS HANDLING-11 STAGE-1 VARIATION ORDER", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Ongoing", location: "Shaybah, Rub' al Khali", scope: "Variation order scope extension for perimeter security sensors and remote telecommunication integration." },
-  { sNo: 74, client: "KBR", name: "UPGRADE NORTHERN AREA UPSTREAM TRUNKLINES & FLOWLINES-STAGE-1", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Ongoing", location: "Northern Area Fields", scope: "Pipeline trunkline security design, block valve station protection, and Stage-1 HCIS compliance documentation." },
-  { sNo: 75, client: "KBR", name: "UPGRADE NORTHERN AREA UPSTREAM TRUNKLINES & FLOWLINES-STAGE-2", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Ongoing", location: "Northern Area Fields", scope: "Stage-2 detailed design engineering approval, fiber optic perimeter detection, and central control room integration." },
-
-  // ── Water (21 projects) ──
-  { sNo: 1, client: "NWC", name: "217 Sites", endUser: "NWC", sector: "WATER", category: "water", status: "Ongoing", highlight: "Kingdom-Wide", location: "Across Saudi Arabia", scope: "Kingdom-wide physical security master assessment and CCTV surveillance deployment across 217 water facility sites." },
-  { sNo: 2, client: "NWC", name: "Madina", endUser: "NWC", sector: "WATER", category: "water", status: "Ongoing", location: "Madina Region", scope: "Regional water distribution network physical security design, control center integration, and access authorization systems." },
-  { sNo: 3, client: "NWC", name: "Tabuk", endUser: "NWC", sector: "WATER", category: "water", status: "Ongoing", location: "Tabuk Region", scope: "Tabuk sector water reservoirs and pumping station security engineering and perimeter defense." },
-  { sNo: 4, client: "NWC", name: "Hail (5 Locations)", endUser: "NWC", sector: "WATER", category: "water", status: "Ongoing", location: "Hail Region (5 Locations)", scope: "Physical security upgrade and access control integration across 5 strategic water facility sites in Hail." },
-  { sNo: 5, client: "NWC", name: "Jouf (13 locations)", endUser: "NWC", sector: "WATER", category: "water", status: "Ongoing", location: "Al Jouf Region (13 Locations)", scope: "Integrated security system implementation, intrusion alarms, and surveillance monitoring for 13 Jouf locations." },
-  { sNo: 6, client: "NWC", name: "Eastern Region (28 locations)", endUser: "NWC", sector: "WATER", category: "water", status: "Ongoing", location: "Eastern Region (28 Locations)", scope: "Comprehensive physical security master plan & CCTV infrastructure deployment across 28 Eastern Region water sites." },
-  { sNo: 7, client: "NWC", name: "Southern Region (80 Locations)", endUser: "NWC", sector: "WATER", category: "water", status: "Ongoing", highlight: "Massive Scope", location: "Southern Region (80 Locations)", scope: "Large-scale security engineering covering 80 key water assets, dams, and purification stations in the Southern Region." },
-  { sNo: 8, client: "NWC", name: "Qassim (31 Locations)", endUser: "NWC", sector: "WATER", category: "water", status: "Ongoing", location: "Al Qassim (31 Locations)", scope: "Security architecture, perimeter fencing review, and automated gate control for 31 water distribution centers." },
-  { sNo: 9, client: "NWC", name: "Northern Borders (15 locations)", endUser: "NWC", sector: "WATER", category: "water", status: "Ongoing", location: "Northern Borders (15 Locations)", scope: "Physical security assessment, central command integration, and video surveillance across 15 border region sites." },
-  { sNo: 21, client: "NWC", name: "Madina Region - Stage-1 & Stage-2", endUser: "NWC", sector: "WATER", category: "water", status: "Completed", location: "Madina Region", scope: "Stage-1 preliminary design & Stage-2 final engineering approval for Madina main water treatment plant." },
-  { sNo: 22, client: "NWC", name: "Jeddah Region - Stage-1 & Stage-2", endUser: "NWC", sector: "WATER", category: "water", status: "Completed", location: "Jeddah Metro", scope: "Metropolitan water security master design, automated access gates, and central monitoring station approval." },
-  { sNo: 23, client: "Siemens", name: "Rabigh Power Plant - Stage-3", endUser: "RABIGH ELECTRICITY COMPANY", sector: "WATER", category: "water", status: "Completed", location: "Rabigh", scope: "Desalination and power water plant security infrastructure design and HCIS Class-1 security compliance." },
-  { sNo: 41, client: "TAAQAT", name: "ECZA-Desalination Plant - STAGE-03", endUser: "ACWA POWER", sector: "WATER", category: "water", status: "Ongoing", location: "Rabigh / ECZA", scope: "Economic City Desalination Plant Stage-03 security detailed design, perimeter fiber optics, and control room setup." },
-  { sNo: 44, client: "TAAQAT", name: "ECZA-Desalination Plant -STAGE-04", endUser: "ACWA POWER", sector: "WATER", category: "water", status: "Ongoing", location: "Rabigh / ECZA", scope: "Stage-04 validation and security installation supervision, final authority audit, and commissioning." },
-  { sNo: 47, client: "METITO", name: "ROSHN SEDRA-STP STAGE-01", endUser: "NWC", sector: "WATER", category: "water", status: "Completed", location: "Riyadh, Sedra", scope: "ROSHN Sedra Sewage Treatment Plant (STP) Stage-01 security design approval and surveillance integration." },
-  { sNo: 55, client: "TAAQAT", name: "ECZA-Desalination Plant-STAGE-03-MOI SCOPE", endUser: "ACWA POWER", sector: "WATER", category: "water", status: "Ongoing", location: "Rabigh / ECZA", scope: "Ministry of Interior (MOI) security directives alignment, Stage-03 compliance certification, and threat analysis." },
-  { sNo: 63, client: "Al Agadir Hail", name: "SECURITY CONTROL CENTER", endUser: "NWC", sector: "WATER", category: "water", status: "Completed", location: "Hail", scope: "Dedicated regional water Security Control Center (SCC) architectural & technology system engineering." },
-  { sNo: 65, client: "NWC", name: "JOUF (3 locations)", endUser: "NWC", sector: "WATER", category: "water", status: "Completed", location: "Al Jouf", scope: "Physical security enhancement and access verification for 3 primary water supply nodes in Jouf." },
-  { sNo: 66, client: "NWC", name: "QASSSIM (3 locations)", endUser: "NWC", sector: "WATER", category: "water", status: "Completed", location: "Al Qassim", scope: "Security upgrade and central camera telemetry integration across 3 key water storage tanks." },
-  { sNo: 67, client: "NWC", name: "Northern Borders (3 locations)", endUser: "NWC", sector: "WATER", category: "water", status: "Completed", location: "Northern Borders", scope: "Border region water station security perimeter review, intrusion detection, and central control tie-in." },
-  { sNo: 70, client: "CWC", name: "ARAR SEWAGE TREATMENT PLANT - Stage-1,2,3 & 4", endUser: "NWC", sector: "WATER", category: "water", status: "Ongoing", highlight: "Full Lifecycle", location: "Arar", scope: "Comprehensive Stage 1-4 full lifecycle security engineering for Arar STP, including testing and final authority handover." },
-
-  // ── Energy (8 projects) ──
-  { sNo: 11, client: "AL GIHAZ", name: "NEOM-380kv Substation", endUser: "SAUDI ENERGY", sector: "ENERGY", category: "energy", status: "Ongoing", highlight: "High Voltage", location: "NEOM Region", scope: "380kV extra high voltage substation physical security engineering, HCIS compliance, thermal perimeter imaging." },
-  { sNo: 12, client: "AL GIHAZ", name: "Um Aljoud-380kv Substation", endUser: "SAUDI ENERGY", sector: "ENERGY", category: "energy", status: "Ongoing", location: "Makkah Al Mukarramah", scope: "380kV major electrical substation security master design, anti-ram vehicle barriers, and biometric control." },
-  { sNo: 13, client: "AL GIHAZ", name: "Arafat 5-110kv Substation", endUser: "SAUDI ENERGY", sector: "ENERGY", category: "energy", status: "Completed", location: "Arafat / Makkah", scope: "110kV substation physical security design, automated intrusion detection, and security authority certification." },
-  { sNo: 24, client: "Doosan", name: "Rabigh Power Plant", endUser: "RABIGH ELECTRICITY COMPANY", sector: "ENERGY", category: "energy", status: "Completed", location: "Rabigh", scope: "Thermal power plant security infrastructure, coastal perimeter surveillance, and emergency response integration." },
-  { sNo: 46, client: "TAAQAT", name: "HENAKIYAH SUB STATION - STAGE-03", endUser: "SAUDI ENERGY", sector: "ENERGY", category: "energy", status: "Ongoing", location: "Henakiyah, Madina", scope: "Solar power interconnection substation Stage-03 detailed security engineering and testing." },
-  { sNo: 69, client: "AL SHARIF GROUP", name: "REVIEW AND CERTIFY SECURITY CONTROL CENTER", endUser: "SAUDI ENERGY", sector: "ENERGY", category: "energy", status: "Completed", location: "Riyadh", scope: "Third-party audit, review, and authority certification of national electricity Security Control Center." },
-  { sNo: 76, client: "MARAFIQ", name: "YANBU", endUser: "MARAFIQ", sector: "ENERGY", category: "energy", status: "Ongoing", location: "Yanbu Industrial City", scope: "Industrial utility complex perimeter physical security, asset protection, and access management." },
-  { sNo: 77, client: "MARAFIQ", name: "JUBAIL", endUser: "MARAFIQ", sector: "ENERGY", category: "energy", status: "Ongoing", location: "Jubail Industrial City", scope: "Multi-facility utility security upgrade, central monitoring station design, and security directive compliance." },
-
-  // ── Infra (5 projects) ──
-  { sNo: 16, client: "RITZ CARLTON", name: "Upgradation of CCTV system", endUser: "RITZ CARLTON", sector: "HOSPITALITY", category: "infra", status: "Completed", highlight: "VIP Hospitality", location: "Riyadh", scope: "Full upgrade of high-definition CCTV camera system, AI facial recognition, and executive surveillance integration." },
-  { sNo: 49, client: "RCRC", name: "UPGRADE SURVEILLANCE CAMERA", endUser: "ROYAL COMMISSION FOR RIYADH CITY", sector: "SMART CITY", category: "infra", status: "Ongoing", highlight: "Royal Commission", location: "Riyadh Metro", scope: "Capital city smart surveillance upgrade, high-definition camera network expansion, and municipal control center link." },
-  { sNo: 56, client: "IDOM", name: "DATA CENTER-RIYADH-CONCEPTUAL DESIGN", endUser: "Riyadh City / Telecommunications", sector: "SMART CITY", category: "infra", status: "Completed", location: "Riyadh", scope: "Tier-IV Data Center conceptual physical security design, threat risk assessment, and setback zone engineering." },
-  { sNo: 57, client: "IDOM", name: "DATA CENTER - RIYADH - PRELIMINARY DESIGN", endUser: "Riyadh City / Telecommunications", sector: "SMART CITY", category: "infra", status: "Completed", location: "Riyadh", scope: "Preliminary security architecture design, biometric mantrap access control, and blast mitigation review." },
-  { sNo: 58, client: "IDOM", name: "DATA CENTER-RIYADH-DETAIL DESIGN", endUser: "Riyadh City / Telecommunications", sector: "SMART CITY", category: "infra", status: "Ongoing", highlight: "Tier-4 Security", location: "Riyadh", scope: "Final detailed engineering design, regulatory authority submission package, and command center specification." },
-
-  // ── Finance (1 project) ──
-  { sNo: 10, client: "SAMA", name: "CCTV coverage", endUser: "SAMA", sector: "FINANCE", category: "finance", status: "Ongoing", highlight: "Central Bank", location: "Riyadh HQ", scope: "Saudi Central Bank (SAMA) high-security ultra-HD CCTV coverage engineering, cash vault monitoring, and access logging." },
-
-  // ── Ports (4 projects) ──
-  { sNo: 32, client: "CAPITAL ENGINEERING", name: "AMAZON JED4 STAGE-01 & 04", endUser: "MAWANI", sector: "PORTS", category: "ports", status: "Ongoing", highlight: "Logistics Hub", location: "Jeddah Port Zone", scope: "Major logistics center Stage-01 concept & Stage-04 validation security engineering under MAWANI directives." },
-  { sNo: 60, client: "Al Ibtekar", name: "AL IBTEKAR MARINE COMPANY-STAGE-01", endUser: "MAWANI", sector: "PORTS", category: "ports", status: "Completed", location: "Jeddah Commercial Port", scope: "Marine facility Stage-01 security risk assessment, perimeter fence design, and harbor access control." },
-  { sNo: 61, client: "Western Coast", name: "SERVICE HARBOR & SLIPWAY JEDDAH AND JAZAN-STAGE-01", endUser: "MAWANI", sector: "PORTS", category: "ports", status: "Completed", location: "Jeddah & Jazan Ports", scope: "Dual port marine service harbor and slipway physical security master design for Stage-01 approval." },
-  { sNo: 62, client: "Western Coast", name: "SERVICE HARBOR & SLIPWAY JEDDAH AND JAZAN-SITE VISIT", endUser: "MAWANI", sector: "PORTS", category: "ports", status: "Completed", location: "Jeddah & Jazan Ports", scope: "Comprehensive site audit, physical vulnerability assessment, and existing security system gap analysis." },
-
-  // ── Defence (3 projects) ──
-  { sNo: 18, client: "HLP", name: "Ammunition Factory", endUser: "GAMI", sector: "DEFENCE", category: "defence", status: "Ongoing", highlight: "Classified Military", location: "KSA Defense Zone", scope: "High-security ammunition manufacturing plant physical security design, blast perimeter protection, and GAMI compliance." },
-  { sNo: 36, client: "MKKN", name: "MKKN FOR STEEL FACTORY STAGE-01 & 02", endUser: "MKKN / Military Authority", sector: "DEFENCE", category: "defence", status: "Ongoing", location: "Industrial Military Zone", scope: "Defense-grade industrial facility physical security design Stage-01 & Stage-02, perimeter defense, and visitor vetting." },
-  { sNo: 73, client: "SAUDI CHEMICAL", name: "EXPLOSIVE MAGAZINE-STAGE-04", endUser: "SAUDI CHEMICAL", sector: "DEFENCE", category: "defence", status: "Ongoing", highlight: "High Hazard", location: "Central Province", scope: "Explosive magazine storage facility Stage-04 final security validation, seismic barrier sensors, and MOI compliance." },
-
-  // ── Giga Projects (11 projects) ──
-  { sNo: 15, client: "Red Sea Alluminium", name: "The Aluminium Super Cluster", endUser: "RED SEA ALLUMINIUM (RSA)", sector: "PETROCHEMICAL / GIGA PROJECTS", category: "giga-projects", status: "Ongoing", highlight: "Super Cluster", location: "Red Sea Economic Zone", scope: "Super cluster industrial physical security master plan, perimeter surveillance, and heavy vehicle screening gates." },
-  { sNo: 25, client: "GEO", name: "Bio-Reactor-STAGE-01 & STAGE-02", endUser: "NEOM", sector: "GIGA PROJECTS", category: "giga-projects", status: "Ongoing", highlight: "NEOM Mega", location: "NEOM, Tabuk", scope: "NEOM bio-reactor facility security engineering Stage-01 & Stage-02, environmental sensor link, and perimeter defense." },
-  { sNo: 30, client: "NEOM", name: "TELCO PARK-STAGE-01,02.03 & 04", endUser: "NEOM", sector: "GIGA PROJECTS", category: "giga-projects", status: "Ongoing", highlight: "Full Stage 1-4", location: "NEOM Telco Park", scope: "Complete Stage 1 through 4 security master planning, data privacy physical protection, and AI surveillance." },
-  { sNo: 33, client: "IDOM", name: "CORAL NURSERY-STAGE-03", endUser: "NEOM", sector: "GIGA PROJECTS", category: "giga-projects", status: "Completed", location: "NEOM Coast", scope: "Marine coral nursery environmental security system, waterborne perimeter intrusion detection, and station security." },
-  { sNo: 35, client: "WORLEY", name: "HIDC STAGE-01", endUser: "NEOM", sector: "GIGA PROJECTS", category: "giga-projects", status: "Completed", location: "NEOM Region", scope: "Hydrogen Innovation & Development Center Stage-01 security concept engineering and hazard zone mapping." },
-  { sNo: 42, client: "BARQ", name: "OXAGON-COMMUNITY", endUser: "NEOM", sector: "GIGA PROJECTS", category: "giga-projects", status: "Ongoing", highlight: "Oxagon City", location: "Oxagon, KSA", scope: "Oxagon floating city residential community physical security design, smart access gates, and video analytics." },
-  { sNo: 43, client: "BARQ", name: "MAGNA EXPLOSIVES", endUser: "NEOM", sector: "GIGA PROJECTS", category: "giga-projects", status: "Ongoing", location: "NEOM Magna", scope: "Magna development site explosives store physical security compliance, armed perimeter barriers, and access control." },
-  { sNo: 45, client: "RED SEA INTERNATIONAL", name: "RESIDENTIAL CAMP-WEBUILD-STRA", endUser: "NEOM", sector: "GIGA PROJECTS", category: "giga-projects", status: "Ongoing", location: "NEOM Trojena / Line", scope: "WeBuild workforce mega camp security system, automated turnstiles, CCTV coverage, and site perimeter fencing." },
-  { sNo: 50, client: "HASSAN ALLAM", name: "CORAL NURSERY-STAGE-03 & STAGE-04", endUser: "NEOM", sector: "GIGA PROJECTS", category: "giga-projects", status: "Ongoing", location: "NEOM Coast", scope: "Stage-03 & Stage-04 construction oversight, final system validation, and security authority signoff." },
-  { sNo: 54, client: "ADVANCED ENERGY", name: "ADVANCED ENERGY - CONSTRUCTION FENCE", endUser: "NEOM", sector: "GIGA PROJECTS", category: "giga-projects", status: "Completed", location: "NEOM Energy Hub", scope: "High-security temporary and permanent construction perimeter fencing, automated access check points, and CCTV telemetry." },
-  { sNo: 64, client: "IDOM", name: "FERRF AND SANITARY LANDFILL AT NEOM-Stage-01", endUser: "NEOM", sector: "GIGA PROJECTS", category: "giga-projects", status: "Completed", location: "NEOM Sector", scope: "Sanitary landfill and facility environmental physical security design Stage-01 risk assessment." },
-
-  // ── Mining (5 projects) ──
-  { sNo: 37, client: "WORLEY", name: "MAADEN PHOSPHATE STAGE-03 & 04 (Ras al Khair)", endUser: "MAADEN", sector: "MINING", category: "mining", status: "Ongoing", highlight: "Phase 1", location: "Ras Al Khair", scope: "Stage-03 & Stage-04 detailed security design, heavy transport gate access control, and perimeter radar." },
-  { sNo: 51, client: "WORLEY", name: "MAADEN PHOSPHATE STAGE-03 & 04 (Wa’ad Al-Shamal)", endUser: "MAADEN", sector: "MINING", category: "mining", status: "Ongoing", location: "Wa'ad Al Shamal", scope: "Phosphate processing plant Stage 3/4 security compliance certification and central command deployment." },
-  { sNo: 52, client: "WORLEY", name: "MAADEN PHOSPHATE STAGE-01 (Wa’ad Al-Shamal MGA loading area)", endUser: "MAADEN", sector: "MINING", category: "mining", status: "Ongoing", highlight: "Phase 2", location: "Wa'ad Al Shamal", scope: "Mining complex extension physical security validation, automated weighbridge integration, and surveillance." },
-  { sNo: 53, client: "WORLEY", name: "MAADEN PHOSPHATE STAGE-01 & 02 (Ras al Khair)", endUser: "MAADEN", sector: "MINING", category: "mining", status: "Ongoing", location: "Ras Al Khair", scope: "Phosphate mine security directives implementation, remote perimeter monitoring, and crisis control center design." },
-  { sNo: 59, client: "WORLEY", name: "MAADEN PHOSPHATE 3 PHASE 2 STAGE-01 & 02 (Wa’ad Al-Shamal)", endUser: "MAADEN", sector: "MINING", category: "mining", status: "Ongoing", highlight: "Phase 2 Expansion", location: "Wa'ad Al Shamal", scope: "Phosphate 3 Phase 2 expansion Stage-01 conceptual and Stage-02 preliminary security engineering." }
+  { sNo: 1, name: "HYDROGEN INNOVATION & DEVELOPMENT CENTER", client: "WORLEY", endUser: "NEOM", sector: "GIGA PROJECTS", category: "giga-projects", status: "Completed", location: "NEOM", scope: "STAGE-01", month: "Jul 2021" },
+  { sNo: 2, name: "RELOCATE GROUNDWATER WELLS - NORTH GHAWAR", client: "SLFE", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Completed", location: "North Ghawar", scope: "STAGE-01", month: "Apr 2022" },
+  { sNo: 3, name: "INSTALL INTEGRATED SECURITY SYSTEM IN OFFSHORE FACILITIES", client: "WORLEY", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Completed", location: "Offshore Facilities", scope: "STAGE-01 & STAGE-02", month: "May 2022" },
+  { sNo: 4, name: "TAIBA FUEL PIPELINE", client: "SLFE", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Completed", location: "Taiba", scope: "STAGE-01", month: "May 2022" },
+  { sNo: 5, name: "QASSIM FUEL PIPELINE", client: "SLFE", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Completed", location: "Qassim", scope: "STAGE-01", month: "May 2022" },
+  { sNo: 6, name: "DEVELOP SECURITY OPERATION PROCEDURES", client: "DAHLAN", endUser: "SAUDI ENERGY", sector: "ENERGY", category: "energy", status: "Completed", location: "Riyadh", scope: "POLICY & PROCEDURES", month: "Jun 2022" },
+  { sNo: 7, name: "ACCELERATED CARBON CAPTURE AND SEQUESTRATION", client: "WOOD", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Completed", location: "Eastern Province", scope: "STAGE-01", month: "Aug 2022" },
+  { sNo: 8, name: "JAZAN - ROSTP", client: "KAES", endUser: "SAUDI ARAMCO/JV", sector: "OIL & GAS", category: "oil-gas", status: "Completed", location: "Jazan", scope: "STAGE-04", month: "Nov 2022" },
+  { sNo: 9, name: "INSTALL INTEGRATED SECURITY SYSTEM IN PLANT FACILITIES, PHASE III", client: "SLFE", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Completed", location: "Plant Facilities", scope: "STAGE-01", month: "Nov 2022" },
+  { sNo: 10, name: "NEOM - 380kv Substation", client: "AL GIHAZ", endUser: "SAUDI ENERGY", sector: "ENERGY", category: "energy", status: "Completed", location: "NEOM", scope: "STAGE-03", month: "Jan 2023" },
+  { sNo: 11, name: "SATORP", client: "WORLEY", endUser: "SATORP", sector: "OIL & GAS", category: "oil-gas", status: "Completed", location: "Jubail", scope: "STAGE-01", month: "Jan 2023" },
+  { sNo: 12, name: "217 Sites", client: "NWC", endUser: "NWC", sector: "WATER", category: "water", status: "Completed", location: "Across Saudi Arabia", scope: "STAGE-01", month: "Feb 2023" },
+  { sNo: 13, name: "H2 POWER VAULT", client: "WORLEY", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Completed", location: "Jubail", scope: "STAGE-01", month: "Feb 2023" },
+  { sNo: 14, name: "Tabuk", client: "NWC", endUser: "NWC", sector: "WATER", category: "water", status: "Completed", location: "Tabuk", scope: "STAGE-01 & 02", month: "May 2023" },
+  { sNo: 15, name: "CCTV coverage", client: "SAMA", endUser: "SAMA", sector: "FINANCE", category: "finance", status: "Completed", location: "Riyadh", scope: "DESIGN", month: "May 2023" },
+  { sNo: 16, name: "Um Aljoud - 380kv Substation", client: "AL GIHAZ", endUser: "SAUDI ENERGY", sector: "ENERGY", category: "energy", status: "Completed", location: "Makkah", scope: "STAGE-03", month: "May 2023" },
+  { sNo: 17, name: "CRPOs 79,80,81,82 & 83", client: "NMDC", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Ongoing", location: "Offshore", scope: "STAGE-03", month: "May 2023" },
+  { sNo: 18, name: "Madina", client: "NWC", endUser: "NWC", sector: "WATER", category: "water", status: "Completed", location: "Madina", scope: "STAGE-01", month: "Jun 2023" },
+  { sNo: 19, name: "AMAZON JED4", client: "CAPITAL ENGINEERING", endUser: "MAWANI", sector: "PORTS", category: "ports", status: "Completed", location: "Jeddah", scope: "STAGE-01", month: "Jun 2023" },
+  { sNo: 20, name: "BAO STEEL", client: "IDOM", endUser: "NEOM", sector: "GIGA PROJECTS", category: "giga-projects", status: "Completed", location: "NEOM", scope: "STAGE-01", month: "Jul 2023" },
+  { sNo: 21, name: "NEOM - FIRST DESALINATION PLANT", client: "WORLEY", endUser: "SAUDI ARAMCO", sector: "WATER", category: "water", status: "Completed", location: "NEOM", scope: "STAGE-1 & STAGE-02 (REVIEW ONLY)", month: "Aug 2023" },
+  { sNo: 22, name: "Jouf (13 locations)", client: "NWC", endUser: "NWC", sector: "WATER", category: "water", status: "Completed", location: "Al Jouf", scope: "STAGE-01", month: "Oct 2023" },
+  { sNo: 23, name: "ZULUF REDEVELOPMENT PROGRAM", client: "WORLEY", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Completed", location: "Zuluf Field", scope: "STAGE-01 & STAGE-02", month: "Oct 2023" },
+  { sNo: 24, name: "SAFANIYAH AH DEVELOPMENT - OFFSHORE OIL AND WATER INJECTION FAC", client: "WORLEY", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Completed", location: "Safaniyah Field", scope: "STAGE-02", month: "Oct 2023" },
+  { sNo: 25, name: "Eastern Region (28 locations)", client: "NWC", endUser: "NWC", sector: "WATER", category: "water", status: "Ongoing", location: "Eastern Region", scope: "STAGE-01 & STAGE-02", month: "Nov 2023" },
+  { sNo: 26, name: "Qassim (31 Locations)", client: "NWC", endUser: "NWC", sector: "WATER", category: "water", status: "Completed", location: "Qassim", scope: "STAGE-01 & STAGE-02", month: "Dec 2023" },
+  { sNo: 27, name: "Northern Borders (15 locations)", client: "NWC", endUser: "NWC", sector: "WATER", category: "water", status: "Completed", location: "Northern Borders", scope: "STAGE-01 & STAGE-02", month: "Dec 2023" },
+  { sNo: 28, name: "Hail (5 Locations)", client: "NWC", endUser: "NWC", sector: "WATER", category: "water", status: "Completed", location: "Hail", scope: "STAGE-01 & STAGE-02", month: "Jan 2024" },
+  { sNo: 29, name: "Southern Region (80 Locations)", client: "NWC", endUser: "NWC", sector: "WATER", category: "water", status: "Ongoing", location: "Southern Region", scope: "STAGE-01 & STAGE-02", month: "Jan 2024" },
+  { sNo: 30, name: "MARJAN", client: "L&T", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Ongoing", location: "Marjan Field", scope: "STAGE-01,02,03 & 04", month: "Jan 2024" },
+  { sNo: 31, name: "The Aluminium Super Cluster", client: "RED SEA ALUMINIUM", endUser: "RED SEA ALUMINIUM", sector: "INFRA", category: "infra", status: "Completed", location: "Red Sea Zone", scope: "STAGE-01", month: "Mar 2024" },
+  { sNo: 32, name: "MKKN FOR STEEL FACTORY", client: "MKKN", endUser: "MKKN", sector: "INFRA", category: "infra", status: "Completed", location: "Riyadh", scope: "STAGE-01", month: "Mar 2024" },
+  { sNo: 33, name: "Arafat 5 - 110kv Substation", client: "AL GIHAZ", endUser: "SAUDI ENERGY", sector: "ENERGY", category: "energy", status: "Completed", location: "Arafat", scope: "STAGE-01 & STAGE-02", month: "Apr 2024" },
+  { sNo: 34, name: "Bio-Reactor", client: "GEO", endUser: "NEOM", sector: "GIGA PROJECTS", category: "giga-projects", status: "Completed", location: "NEOM", scope: "STAGE-01 & STAGE-02", month: "Jun 2024" },
+  { sNo: 35, name: "UPGRADE FILTRATION SYSTEM - AINDAR", client: "KBR", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Completed", location: "Ain Dar", scope: "STAGE-02", month: "Jun 2024" },
+  { sNo: 36, name: "Jubail_3_NH3", client: "LINDE", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Completed", location: "Jubail", scope: "STAGE-01", month: "Jul 2024" },
+  { sNo: 37, name: "SAFANIYAH AH RESIDUAL OFFSHORE WATER INJECTION STAGE-01 & STAGE-02", client: "KBR", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Completed", location: "Safaniyah", scope: "STAGE-01 & STAGE-02", month: "Aug 2024" },
+  { sNo: 38, name: "MAADEN PHOSPHATE - PHASE 1", client: "WORLEY", endUser: "SAUDI ARAMCO", sector: "MINING", category: "mining", status: "Ongoing", location: "Wa'ad Al Shamal", scope: "STAGE-03 & 04", month: "Aug 2024" },
+  { sNo: 39, name: "AL IBTEKAR MARINE COMPANY -", client: "AL IBTEKAR", endUser: "MAWANI", sector: "PORTS", category: "ports", status: "Completed", location: "Jeddah Port", scope: "STAGE-01", month: "Aug 2024" },
+  { sNo: 40, name: "SERVICE HARBOR & SLIPWAY JEDDAH", client: "WESTERN COAST", endUser: "MAWANI", sector: "PORTS", category: "ports", status: "Completed", location: "Jeddah Port", scope: "STAGE-01", month: "Aug 2024" },
+  { sNo: 41, name: "TELCO PARK -", client: "NEOM", endUser: "NEOM", sector: "GIGA PROJECTS", category: "giga-projects", status: "Ongoing", location: "NEOM", scope: "STAGE-01,02,03 & 04", month: "Sep 2024" },
+  { sNo: 42, name: "HIDC STAGE-01", client: "WORLEY", endUser: "NEOM", sector: "GIGA PROJECTS", category: "giga-projects", status: "Completed", location: "NEOM", scope: "STAGE-01", month: "Sep 2024" },
+  { sNo: 43, name: "SECURITY CONTROL CENTER", client: "AL AGADIR HAIL", endUser: "NWC", sector: "WATER", category: "water", status: "Ongoing", location: "Hail", scope: "STAGE-04", month: "Sep 2024" },
+  { sNo: 44, name: "SERVICE HARBOR & SLIPWAY JAZAN", client: "WESTERN COAST", endUser: "MAWANI", sector: "PORTS", category: "ports", status: "Completed", location: "Jazan Port", scope: "STAGE-01", month: "Sep 2024" },
+  { sNo: 45, name: "CORAL NURSERY -", client: "IDOM", endUser: "NEOM", sector: "GIGA PROJECTS", category: "giga-projects", status: "Completed", location: "NEOM Coast", scope: "STAGE-03", month: "Oct 2024" },
+  { sNo: 46, name: "Zuluf Redevelopment Program - Safaniyah Plant", client: "KBR", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Completed", location: "Safaniyah", scope: "STAGE-01", month: "Oct 2024" },
+  { sNo: 47, name: "S-CHEM PLANT", client: "S-CHEM", endUser: "S-CHEM", sector: "OIL & GAS", category: "oil-gas", status: "Completed", location: "Jubail", scope: "STAGE-03", month: "Oct 2024" },
+  { sNo: 48, name: "FERRF AND SANITARY LANDFILL AT NEOM-", client: "IDOM", endUser: "NEOM", sector: "GIGA PROJECTS", category: "giga-projects", status: "Completed", location: "NEOM", scope: "STAGE-01", month: "Nov 2024" },
+  { sNo: 49, name: "ABQ GOSP2- WATER WELL", client: "KBR", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Completed", location: "Abqaiq", scope: "STAGE-01", month: "Dec 2024" },
+  { sNo: 50, name: "ECZA - Desalination Plant", client: "TAAQAT", endUser: "AQUA POWER", sector: "WATER", category: "water", status: "Completed", location: "ECZA Zone", scope: "STAGE-03", month: "Dec 2024" },
+  { sNo: 51, name: "Upgradation of CCTV system", client: "RITZ CARLTON", endUser: "RITZ CARLTON", sector: "INFRA", category: "infra", status: "Completed", location: "Riyadh", scope: "DESIGN & SUPERVISION", month: "Feb 2025" },
+  { sNo: 52, name: "OXAGON - COMMUNITY", client: "BARQ", endUser: "NEOM", sector: "GIGA PROJECTS", category: "giga-projects", status: "Completed", location: "Oxagon", scope: "STAGE-01", month: "Feb 2025" },
+  { sNo: 53, name: "SASREF ETHANE CRACKER", client: "SAMSUNG", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Completed", location: "Jubail", scope: "STAGE-01", month: "Mar 2025" },
+  { sNo: 54, name: "MAGNA - EXPLOSIVES", client: "BARQ", endUser: "NEOM", sector: "GIGA PROJECTS", category: "giga-projects", status: "Completed", location: "NEOM Magna", scope: "STAGE-01", month: "Mar 2025" },
+  { sNo: 55, name: "ROSHN SEDRA - STP STAGE-01", client: "METITO", endUser: "NWC", sector: "WATER", category: "water", status: "Completed", location: "Riyadh", scope: "STAGE-01", month: "Apr 2025" },
+  { sNo: 56, name: "JOUF ( 3 locations)", client: "NWC", endUser: "NWC", sector: "WATER", category: "water", status: "Ongoing", location: "Al Jouf", scope: "STAGE-01 & STAGE-02", month: "Apr 2025" },
+  { sNo: 57, name: "QASSIM (3 locations)", client: "NWC", endUser: "NWC", sector: "WATER", category: "water", status: "Ongoing", location: "Qassim", scope: "STAGE-01 & STAGE-02", month: "Apr 2025" },
+  { sNo: 58, name: "Khurais CPF", client: "SIEMENS", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Completed", location: "Khurais Field", scope: "STAGE-03", month: "May 2025" },
+  { sNo: 59, name: "Northern Borders (3 locations)", client: "NWC", endUser: "NWC", sector: "WATER", category: "water", status: "Ongoing", location: "Northern Borders", scope: "STAGE-01 & STAGE-02", month: "May 2025" },
+  { sNo: 60, name: "Ammunition Factory", client: "HLP", endUser: "GAMI", sector: "DEFENCE", category: "defence", status: "Completed", location: "Al Kharj", scope: "STAGE-01 & STAGE-02", month: "Jul 2025" },
+  { sNo: 61, name: "ARAR SEWAGE TREATMENT PLANT", client: "CWC", endUser: "NWC", sector: "WATER", category: "water", status: "Ongoing", location: "Arar", scope: "STAGE-1,2,3 & 4", month: "Jul 2025" },
+  { sNo: 62, name: "UPGRADE NORTHERN AREA UPSTREAM TRUNKLINES & FLOWLINES", client: "KBR", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Ongoing", location: "Northern Area", scope: "STAGE-01 & STAGE-02", month: "Aug 2025" },
+  { sNo: 63, name: "ECZA - Desalination Plant", client: "TAAQAT", endUser: "AQUA POWER", sector: "WATER", category: "water", status: "Completed", location: "ECZA Zone", scope: "STAGE-04", month: "Sep 2025" },
+  { sNo: 64, name: "EXPLOSIVE MAGAZINE", client: "SAUDI CHEMICAL", endUser: "SAUDI CHEMICAL", sector: "DEFENCE", category: "defence", status: "Ongoing", location: "Riyadh", scope: "STAGE-04", month: "Sep 2025" },
+  { sNo: 65, name: "CORAL NURSERY", client: "HASSAN ALLAM", endUser: "NEOM", sector: "GIGA PROJECTS", category: "giga-projects", status: "Ongoing", location: "NEOM Coast", scope: "STAGE-03 & STAGE-04", month: "Oct 2025" },
+  { sNo: 66, name: "INCREASE SHAYBAH GAS HANDLING - 11", client: "KBR", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Ongoing", location: "Shaybah", scope: "STAGE-1", month: "Oct 2025" },
+  { sNo: 67, name: "Madina Region", client: "NWC", endUser: "NWC", sector: "WATER", category: "water", status: "Ongoing", location: "Madina Region", scope: "STAGE-01 & STAGE-02", month: "Nov 2025" },
+  { sNo: 68, name: "RESIDENTIAL CAMP - WEBUILD", client: "RED SEA INTERNATIONAL", endUser: "RED SEA INTERNATIONAL", sector: "INFRA", category: "infra", status: "Completed", location: "Red Sea Zone", scope: "STAGE-1", month: "Nov 2025" },
+  { sNo: 69, name: "UPGRADE GATES -", client: "S-CHEM", endUser: "S-CHEM", sector: "OIL & GAS", category: "oil-gas", status: "Completed", location: "Jubail", scope: "GAP ANALYSIS & STAGE-01", month: "Nov 2025" },
+  { sNo: 70, name: "ADVANCED ENERGY - CONSTRUCTION FENCE", client: "ADVANCED ENERGY", endUser: "MAADEN", sector: "MINING", category: "mining", status: "Completed", location: "Ras Al Khair", scope: "STAGE-03", month: "Nov 2025" },
+  { sNo: 71, name: "UPGRADE SURVEILLANCE CAMERA", client: "RCRC", endUser: "RCRC", sector: "INFRA", category: "infra", status: "Ongoing", location: "Riyadh", scope: "DESIGN", month: "Dec 2025" },
+  { sNo: 72, name: "JEDDAH REGION", client: "NWC", endUser: "NWC", sector: "WATER", category: "water", status: "Ongoing", location: "Jeddah Region", scope: "STAGE-01 & STAGE-02", month: "Dec 2025" },
+  { sNo: 73, name: "DATA CENTER - RIYADH", client: "IDOM", endUser: "CONFIDENTIAL", sector: "INFRA", category: "infra", status: "Ongoing", location: "Riyadh", scope: "SECURITY CONSULTANCY", month: "Jan 2026" },
+  { sNo: 74, name: "YANBU & JUBAIL", client: "MARAFIQ", endUser: "MARAFIQ", sector: "ENERGY", category: "energy", status: "Ongoing", location: "Yanbu & Jubail", scope: "SECURITY CONSULTANCY", month: "Jan 2026" },
+  { sNo: 75, name: "RIYADH EXPO - 2030", client: "BURO HAPPOLD", endUser: "EXPO RIYADH COMPANY", sector: "GIGA PROJECTS", category: "giga-projects", status: "Ongoing", location: "Riyadh", scope: "SECURITY CONSULTANCY", month: "Feb 2026" },
+  { sNo: 76, name: "JOTUN FACTORY", client: "IDOM", endUser: "JOTUN", sector: "INFRA", category: "infra", status: "Ongoing", location: "Yanbu", scope: "STAGE-01", month: "Feb 2026" },
+  { sNo: 77, name: "Rabigh Power Plant", client: "SIEMENS", endUser: "SAUDI ENERGY", sector: "ENERGY", category: "energy", status: "Ongoing", location: "Rabigh", scope: "STAGE-03", month: "May 2026" },
+  { sNo: 78, name: "Rabigh Power Plant", client: "DOOSAN", endUser: "SAUDI ENERGY", sector: "ENERGY", category: "energy", status: "Ongoing", location: "Rabigh", scope: "GAP ANALYSIS", month: "May 2026" },
+  { sNo: 79, name: "MAADEN PHOSPHATE 3 PHASE 2", client: "WORLEY", endUser: "SAUDI ARAMCO", sector: "MINING", category: "mining", status: "Ongoing", location: "Wa'ad Al Shamal", scope: "STAGE-01 & STAGE-02", month: "Jun 2026" },
+  { sNo: 80, name: "NORTHERN AREA GAS INCREMENT UPSTREAM GAS PRODUCTION FACILITIES", client: "KBR", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Ongoing", location: "Northern Area", scope: "STAGE-02", month: "Aug 2026" }
 ];
 
 // ─── Status Badge Component ───────────────────────────────────────────────────
@@ -444,7 +430,7 @@ function ProjectsPage() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedClient, setSelectedClient] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
-  const [sortOrder, setSortOrder] = useState<"cms" | "month-newest" | "month-oldest">("cms");
+  const [sortOrder, setSortOrder] = useState<"month-newest" | "month-oldest">("month-newest");
   const [activeModalProject, setActiveModalProject] = useState<ProjectItem | null>(null);
 
   const activeSector = useMemo(
@@ -478,10 +464,10 @@ function ProjectsPage() {
       return matchesSector && matchesClient && matchesStatus && matchesSearch;
     });
 
-    if (sortOrder === "month-newest") {
-      result = [...result].sort((a, b) => parseMonthYear(b.month) - parseMonthYear(a.month));
-    } else if (sortOrder === "month-oldest") {
+    if (sortOrder === "month-oldest") {
       result = [...result].sort((a, b) => parseMonthYear(a.month) - parseMonthYear(b.month));
+    } else {
+      result = [...result].sort((a, b) => parseMonthYear(b.month) - parseMonthYear(a.month));
     }
 
     return result;
@@ -693,7 +679,6 @@ function ProjectsPage() {
                 onChange={(e) => setSortOrder(e.target.value as any)}
                 className="w-full pl-11 pr-8 py-3 rounded-xl bg-black/[0.03] border border-black/10 text-black text-xs font-mono uppercase focus:outline-none focus:border-primary transition-colors appearance-none cursor-pointer"
               >
-                <option value="cms">Order: CMS Sequence</option>
                 <option value="month-newest">Order: Month (Newest)</option>
                 <option value="month-oldest">Order: Month (Oldest)</option>
               </select>
@@ -710,13 +695,13 @@ function ProjectsPage() {
               )}
             </div>
 
-            {(searchQuery || selectedClient !== "all" || selectedSector !== "all" || selectedStatus !== "all" || sortOrder !== "cms") && (
+            {(searchQuery || selectedClient !== "all" || selectedSector !== "all" || selectedStatus !== "all" || sortOrder !== "month-newest") && (
               <button
                 onClick={() => {
                   setSelectedSector("all");
                   setSelectedClient("all");
                   setSelectedStatus("all");
-                  setSortOrder("cms");
+                  setSortOrder("month-newest");
                   setSearchQuery("");
                 }}
                 className="text-primary hover:underline font-semibold flex items-center gap-1"

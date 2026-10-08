@@ -185,20 +185,20 @@ function HomePage() {
           </LazyMount>
 
           {cmsData.core_values && (
-            <LazyMount minHeight={480} fallback={<SectionFallback h={480} />}>
-              <div className="mt-20">
+            <LazyMount minHeight={540} fallback={<SectionFallback h={540} />}>
+              <div className="mt-10 md:mt-12 mb-12 md:mb-16">
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 1 }}
-                  className="text-center mb-16"
+                  className="text-center mb-5"
                 >
-                  <h2 className="text-4xl md:text-5xl font-light mb-4 text-foreground">{cmsData.core_values.title}</h2>
-                  <p className="text-lg text-black">{cmsData.core_values.subtitle}</p>
+                  <h2 className="text-3xl md:text-5xl font-light mb-2 text-foreground">{cmsData.core_values.title}</h2>
+                  <p className="text-base md:text-lg text-black">{cmsData.core_values.subtitle}</p>
                 </motion.div>
 
-                <div className="mt-8 mb-12">
+                <div>
                   <ExpandingValueCards items={cmsData.core_values.items} />
                 </div>
               </div>
@@ -1184,7 +1184,7 @@ function ExpandingValueCards({ items }: { items: any[] }) {
   const [activeIdx, setActiveIdx] = useState(0);
 
   return (
-    <div className="flex flex-col lg:flex-row h-[900px] lg:h-[600px] w-full gap-[2px] px-4 md:px-0 rounded-3xl overflow-hidden bg-white/20">
+    <div className="flex flex-col lg:flex-row h-[750px] lg:h-[540px] w-full gap-[2px] rounded-3xl overflow-hidden bg-white/20 shadow-xl border border-white/10">
       {items.map((cv, i) => {
         const isActive = activeIdx === i;
         return (
@@ -1273,14 +1273,14 @@ function ExpandingValueCards({ items }: { items: any[] }) {
                     animate={{ opacity: 1, y: 0, rotateX: 0 }}
                     exit={{ opacity: 0, y: 20, rotateX: 45 }}
                     transition={{ duration: 0.5, staggerChildren: 0.1 }}
-                    className="absolute inset-0 flex flex-col justify-end p-6 md:p-10 transform-gpu"
+                    className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 transform-gpu"
                   >
                     {/* Large Animated Floating Symbol */}
                     <motion.div
                       initial={{ opacity: 0, scale: 0.3, rotate: -30 }}
                       animate={{ opacity: 0.25, scale: 1, rotate: 0 }}
                       transition={{ duration: 1.2, ease: "easeOut", delay: 0.3 }}
-                      className="absolute top-10 right-10 md:top-16 md:right-16 w-32 h-32 md:w-56 md:h-56 pointer-events-none z-0"
+                      className="absolute top-8 right-8 md:top-12 md:right-12 w-28 h-28 md:w-48 md:h-48 pointer-events-none z-0"
                     >
                       <motion.div
                         animate={{ y: [0, -15, 0] }}
@@ -1298,7 +1298,7 @@ function ExpandingValueCards({ items }: { items: any[] }) {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.5, delay: 0.1 }}
-                      className="font-mono text-xs tracking-[0.2em] text-primary uppercase mb-3 flex items-center gap-3"
+                      className="font-mono text-xs tracking-[0.2em] text-primary uppercase mb-2 flex items-center gap-3"
                     >
                       <span className="w-8 h-px bg-primary" />
                       Core Value {String(i + 1).padStart(2, '0')}
@@ -1308,7 +1308,7 @@ function ExpandingValueCards({ items }: { items: any[] }) {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.5, delay: 0.15 }}
-                      className="font-display text-3xl md:text-5xl text-white tracking-tight mb-4 md:mb-6 drop-shadow-md whitespace-nowrap"
+                      className="font-display text-3xl md:text-5xl text-white tracking-tight mb-3 md:mb-4 drop-shadow-md whitespace-nowrap"
                     >
                       {cv.title}
                     </motion.h3>
@@ -1351,7 +1351,7 @@ function ExpandingValueCards({ items }: { items: any[] }) {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: 0.5 }}
-                      className="mt-6 md:mt-8"
+                      className="mt-4 md:mt-6"
                     >
                       <Link to="/about" className="inline-block text-[10px] md:text-xs font-bold font-mono tracking-[0.2em] text-black bg-gold hover:bg-white px-6 py-3 rounded-sm uppercase transition-colors shadow-[0_4px_15px_rgba(212,175,55,0.3)]">
                         Learn More
