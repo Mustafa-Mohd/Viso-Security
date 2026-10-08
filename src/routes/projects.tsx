@@ -233,7 +233,7 @@ const LOGO_MAP: { keywords: string[]; logo: string }[] = [
   { keywords: ["mkkn"], logo: "https://mkkn.com.sa/wp-content/uploads/2022/02/logo-copy-2.png" },
   { keywords: ["nwc", "national water company"], logo: "/clients/nwc.png" },
   { keywords: ["saudi water authority", "swa"], logo: "https://www.swa.gov.sa/assets/images/logos/swa-logo-dark.svg" },
-  { keywords: ["water transmission", "wtc", "wtco"], logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4rNUCMe2NSrf-9bHhEVrJAiweLdjsaPBTDaoVKBrw6A&s=10" },
+  { keywords: ["water transmission", "wtc", "wtco"], logo: "https://res.cloudinary.com/dppwnds6z/image/upload/v1791403689/halrzfairpmo4hwt6irw.png" },
   { keywords: ["taaqat", "taqqat"], logo: "https://www.taqqat.com/images/taqat-name-logo.png" },
   { keywords: ["acwa", "aqua power"], logo: "/clients/acwa.png" },
   { keywords: ["saudi energy", "sec", "saudi electricity"], logo: "/clients/sec.png" },
@@ -552,7 +552,6 @@ function ProjectsPage() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedClient, setSelectedClient] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
-  const [sortOrder, setSortOrder] = useState<"month-newest" | "month-oldest">("month-newest");
   const [activeModalProject, setActiveModalProject] = useState<ProjectItem | null>(null);
 
   const activeSector = useMemo(
@@ -586,14 +585,8 @@ function ProjectsPage() {
       return matchesSector && matchesClient && matchesStatus && matchesSearch;
     });
 
-    if (sortOrder === "month-oldest") {
-      result = [...result].sort((a, b) => parseMonthYear(a.month) - parseMonthYear(b.month));
-    } else {
-      result = [...result].sort((a, b) => parseMonthYear(b.month) - parseMonthYear(a.month));
-    }
-
-    return result;
-  }, [selectedSector, selectedClient, selectedStatus, searchQuery, sortOrder, projectsList]);
+    return [...result].sort((a, b) => parseMonthYear(b.month) - parseMonthYear(a.month));
+  }, [selectedSector, selectedClient, selectedStatus, searchQuery, projectsList]);
 
   // Sector Counts Map
   const sectorCounts = useMemo(() => {
@@ -741,7 +734,7 @@ function ProjectsPage() {
           </div>
 
           {/* ── Search & Filter Controls Bar ── */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-10 p-4 rounded-3xl bg-white/80 border border-black/10 backdrop-blur-xl shadow-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10 p-4 rounded-3xl bg-white/80 border border-black/10 backdrop-blur-xl shadow-sm">
             {/* Text Search Input */}
             <div className="relative sm:col-span-2 lg:col-span-2">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/40" />
@@ -792,19 +785,6 @@ function ProjectsPage() {
                 <option value="Completed">Completed</option>
               </select>
             </div>
-
-            {/* Sort Order Dropdown */}
-            <div className="relative">
-              <ArrowUpDown className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/40" />
-              <select
-                value={sortOrder}
-                onChange={(e) => setSortOrder(e.target.value as any)}
-                className="w-full pl-11 pr-8 py-3 rounded-xl bg-black/[0.03] border border-black/10 text-black text-xs font-mono uppercase focus:outline-none focus:border-primary transition-colors appearance-none cursor-pointer"
-              >
-                <option value="month-newest">Order: Month (Newest)</option>
-                <option value="month-oldest">Order: Month (Oldest)</option>
-              </select>
-            </div>
           </div>
 
           {/* ── Results Info Bar ── */}
@@ -817,18 +797,17 @@ function ProjectsPage() {
               )}
             </div>
 
-            {(searchQuery || selectedClient !== "all" || selectedSector !== "all" || selectedStatus !== "all" || sortOrder !== "month-newest") && (
+            {(searchQuery || selectedClient !== "all" || selectedSector !== "all" || selectedStatus !== "all") && (
               <button
                 onClick={() => {
                   setSelectedSector("all");
                   setSelectedClient("all");
                   setSelectedStatus("all");
-                  setSortOrder("month-newest");
                   setSearchQuery("");
                 }}
                 className="text-primary hover:underline font-semibold flex items-center gap-1"
               >
-                Reset Filters & Order <X className="w-3 h-3" />
+                Reset Filters <X className="w-3 h-3" />
               </button>
             )}
           </div>

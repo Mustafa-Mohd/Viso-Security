@@ -60,6 +60,7 @@ const REGULATORY_BODIES_BASE: RegulatoryBody[] = [
       "Support owners operating across multiple MOI-regulated and sector-specific requirements.",
     ],
     relatedSlugs: ["sais", "hcis"],
+    cardImageUrl: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png",
     heroImageUrl: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png",
   },
   {

@@ -184,7 +184,8 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary font-mono text-[10px] tracking-[0.2em] uppercase mb-6 shadow-xs">
             <ShieldCheck className="w-4 h-4" />
-            Certificate Search 🔍
+            <span>Certificate Search</span>
+            <Search className="w-3.5 h-3.5" />
           </div>
           <h2 className="font-display text-4xl md:text-5xl text-neutral-900 mb-4">
             VISO Certificate Database
@@ -197,7 +198,7 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
         {/* Certificate Search Bar (TUV Style) */}
         <div className="bg-white border border-neutral-200 shadow-sm rounded-xl p-6 md:p-8 mb-12 relative z-20">
           <h3 className="text-lg font-bold text-neutral-800 mb-6 flex items-center gap-2">
-            <Search className="w-5 h-5 text-primary" /> Certificate Search 🔍
+            <Search className="w-5 h-5 text-primary" /> Certificate Search
           </h3>
           <form id="verify-form" onSubmit={handleVerify} className="flex flex-col md:flex-row gap-6 items-end">
             <div className="flex-1 w-full">
@@ -220,7 +221,10 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
-                <>Search Registry</>
+                <>
+                  <Search className="w-4 h-4" />
+                  Search Registry
+                </>
               )}
             </button>
           </form>
@@ -447,9 +451,10 @@ function TranslationPage() {
                     window.scrollTo({ top: y, behavior: 'smooth' });
                   }
                 }}
-                className="px-8 py-4 rounded-full bg-primary text-black font-bold uppercase tracking-widest text-sm hover:scale-105 transition-all shadow-[0_10px_20px_-10px_rgba(212,175,55,0.5)] border border-primary/50"
+                className="px-8 py-4 rounded-full bg-primary text-black font-bold uppercase tracking-widest text-sm hover:scale-105 transition-all shadow-[0_10px_20px_-10px_rgba(212,175,55,0.5)] border border-primary/50 flex items-center gap-2"
               >
-                Certificate Search
+                <span>Certificate Search</span>
+                <Search className="w-4 h-4 stroke-[2.5]" />
               </button>
             </motion.div>
           </div>

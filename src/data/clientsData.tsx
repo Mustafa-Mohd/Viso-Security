@@ -38,7 +38,7 @@ export const clientCategoriesData: ClientCategory[] = [
     clients: [
       { name: "NWC (National Water Company)", icon: "https://upload.wikimedia.org/wikipedia/commons/2/25/%D8%B4%D8%B9%D8%A7%D8%B1_%D8%B4%D8%B1%D9%83%D8%A9_%D8%A7%D9%84%D9%85%D9%8A%D8%A7%D9%87_%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A%D8%A9_2021.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original", url: "https://www.nwc.com.sa/" },
       { name: "Saudi Water Authority", icon: "https://www.swa.gov.sa/assets/images/logos/swa-logo-dark.svg", url: "https://swa.gov.sa/" },
-      { name: "Water Transmission Company (WTC)", icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4rNUCMe2NSrf-9bHhEVrJAiweLdjsaPBTDaoVKBrw6A&s=10", url: "https://wtc.com.sa/" },
+      { name: "Water Transmission Company (WTC)", icon: "https://res.cloudinary.com/dppwnds6z/image/upload/v1791403689/halrzfairpmo4hwt6irw.png", url: "https://wtc.com.sa/" },
       { name: "TAQQAT (Abdulla Fouad Group)", icon: "https://www.taqqat.com/images/taqat-name-logo.png", url: "https://www.taqqat.com/" },
       { name: "SE (Saudi Energy / Saudi Electricity)", icon: "/clients/sec.png", url: "https://www.se.com.sa/" },
       { name: "MARAFIQ", icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWmI1RlEzzSnT03QsEN1QN2uCRN4vBRERlbz1q-g99Sg&s=10", url: "https://www.marafiq.com.sa/" },

@@ -38,7 +38,7 @@ export interface SupervisionProject {
   id: string;
   title: string;
   client: string;
-  endUser: string;
+  endUser?: string;
   status: "Ongoing" | "Completed";
   location: string;
   sector: string;
@@ -50,30 +50,27 @@ export const SUPERVISION_PROJECTS: SupervisionProject[] = [
     id: "khobar-wts",
     title: "Khobar Water Transmission System (WTS)",
     client: "Saudi Water Authority (SWA)",
-    endUser: "Saudi Water Authority (SWA)",
     status: "Ongoing",
     location: "Al Khobar, Eastern Province",
-    sector: "Water Transmission Infrastructure",
+    sector: "Integrated Security System",
     scope: "End-to-end technical supervision, contractor interface management, quality assurance, progress monitoring, and SAIS directive compliance for the Khobar WTS network."
   },
   {
     id: "jubail-desalination",
     title: "Jubail Desalination Plant",
     client: "Saudi Water Authority (SWA)",
-    endUser: "Saudi Water Authority (SWA)",
     status: "Ongoing",
     location: "Jubail Industrial City",
-    sector: "Desalination & Heavy Industrial Facility",
+    sector: "Integrated Security System",
     scope: "Comprehensive engineering oversight, progress and cost monitoring, contractor management, risk mitigation, quality & HSE control, and commissioning supervision for Jubail Desalination operations."
   },
   {
     id: "jubail-line-abqc",
     title: "Jubail Water Transmission Line – AB, Q & C",
     client: "WTCO",
-    endUser: "Water Transmission Company (WTCO)",
     status: "Ongoing",
     location: "Jubail Region",
-    sector: "Pipeline & Civil Infrastructure",
+    sector: "Integrated Security System",
     scope: "Specialized construction supervision across sections AB, Q & C, managing interfaces, technical reviews, commercial coordination, and ensuring compliance with SAIS and SWA specifications."
   }
 ];
@@ -166,7 +163,6 @@ function SupervisionProjectCard({
   onSelect: (p: SupervisionProject) => void;
 }) {
   const clientLogo = getClientLogo(project.client);
-  const endUserLogo = getClientLogo(project.endUser);
 
   return (
     <motion.div
@@ -186,39 +182,26 @@ function SupervisionProjectCard({
         <StatusBadge status={project.status} />
       </div>
 
-      <h3 className="font-sans font-bold text-[15px] text-black leading-snug mb-1.5 group-hover:text-primary transition-colors">
+      <h3 className="font-sans font-bold text-[16px] text-black leading-snug mb-1.5 group-hover:text-primary transition-colors">
         {project.title}
       </h3>
       <span className="text-sm font-medium text-primary mb-6 block">
         {project.sector}
       </span>
 
-      <div className="mt-auto space-y-3">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-black/5 border border-black/10 flex items-center justify-center shrink-0 overflow-hidden p-1.5">
+      <div className="mt-auto pt-2">
+        <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-black/[0.03] border border-black/10">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white border border-black/15 flex items-center justify-center shrink-0 overflow-hidden p-2 shadow-sm">
             <ClientLogoBadge
               src={clientLogo}
               alt={project.client}
-              fallbackIcon={<Building2 className="w-4 h-4 text-black/60" />}
+              fallbackIcon={<Building2 className="w-7 h-7 text-black/60" />}
+              className="max-h-10 max-w-10 sm:max-h-12 sm:max-w-12 object-contain"
             />
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-[11px] text-black/50 font-medium">Client</span>
-            <span className="text-sm font-semibold text-black truncate">{project.client}</span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-black/5 border border-black/10 flex items-center justify-center shrink-0 overflow-hidden p-1.5">
-            <ClientLogoBadge
-              src={endUserLogo}
-              alt={project.endUser}
-              fallbackIcon={<UserCheck className="w-4 h-4 text-black/60" />}
-            />
-          </div>
-          <div className="flex flex-col min-w-0">
-            <span className="text-[11px] text-black/50 font-medium">End User</span>
-            <span className="text-sm font-semibold text-black truncate">{project.endUser}</span>
+            <span className="text-[11px] text-black/50 font-mono font-bold uppercase tracking-wider">Client Partner</span>
+            <span className="text-base sm:text-lg font-bold text-black leading-tight truncate">{project.client}</span>
           </div>
         </div>
       </div>
@@ -228,7 +211,6 @@ function SupervisionProjectCard({
 
 function SupervisionDetailModal({ project, onClose }: { project: SupervisionProject; onClose: () => void }) {
   const clientLogo = getClientLogo(project.client);
-  const endUserLogo = getClientLogo(project.endUser);
 
   return (
     <motion.div
@@ -271,40 +253,21 @@ function SupervisionDetailModal({ project, onClose }: { project: SupervisionProj
             </h2>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="p-3 rounded-2xl bg-black/5 border border-black/10 flex items-center justify-between">
+          <div className="grid grid-cols-1 gap-3">
+            <div className="p-4 rounded-2xl bg-black/5 border border-black/10 flex items-center justify-between gap-4">
               <div>
                 <div className="text-[10px] font-mono uppercase text-foreground/50 font-bold mb-1 flex items-center gap-1.5">
                   <Building2 className="w-3.5 h-3.5 text-primary" /> Client Contracting Party
                 </div>
-                <div className="text-base font-bold text-black">{project.client}</div>
+                <div className="text-lg font-bold text-black">{project.client}</div>
               </div>
               {clientLogo && (
-                <div className="w-10 h-10 rounded-xl bg-white border border-black/10 p-1.5 flex items-center justify-center shrink-0 shadow-sm ml-2">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white border border-black/15 p-2.5 flex items-center justify-center shrink-0 shadow-md ml-2">
                   <ClientLogoBadge
                     src={clientLogo}
                     alt={project.client}
                     fallbackIcon={null}
-                    className="max-h-7 max-w-7 object-contain"
-                  />
-                </div>
-              )}
-            </div>
-
-            <div className="p-3 rounded-2xl bg-black/5 border border-black/10 flex items-center justify-between">
-              <div>
-                <div className="text-[10px] font-mono uppercase text-foreground/50 font-bold mb-1 flex items-center gap-1.5">
-                  <UserCheck className="w-3.5 h-3.5 text-emerald-600" /> Beneficiary / End User
-                </div>
-                <div className="text-base font-bold text-black">{project.endUser}</div>
-              </div>
-              {endUserLogo && (
-                <div className="w-10 h-10 rounded-xl bg-white border border-black/10 p-1.5 flex items-center justify-center shrink-0 shadow-sm ml-2">
-                  <ClientLogoBadge
-                    src={endUserLogo}
-                    alt={project.endUser}
-                    fallbackIcon={null}
-                    className="max-h-7 max-w-7 object-contain"
+                    className="max-h-12 max-w-12 sm:max-h-16 sm:max-w-16 object-contain"
                   />
                 </div>
               )}
