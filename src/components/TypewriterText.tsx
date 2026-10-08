@@ -5,9 +5,10 @@ interface TypewriterTextProps {
   phrases: string[];
   className?: string;
   cursorClassName?: string;
+  showCursor?: boolean;
 }
 
-export function TypewriterText({ phrases, className, cursorClassName }: TypewriterTextProps) {
+export function TypewriterText({ phrases, className, cursorClassName, showCursor = false }: TypewriterTextProps) {
   const [text, setText] = useState("");
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -37,7 +38,9 @@ export function TypewriterText({ phrases, className, cursorClassName }: Typewrit
   return (
     <span className={cn("inline-flex items-center", className)}>
       <span>{text}</span>
-      <span className={cn("inline-block w-[2px] h-[1.1em] bg-primary ms-0.5 animate-pulse shrink-0", cursorClassName)} aria-hidden="true" />
+      {showCursor && (
+        <span className={cn("inline-block w-[2px] h-[1.1em] bg-primary ms-0.5 animate-pulse shrink-0", cursorClassName)} aria-hidden="true" />
+      )}
     </span>
   );
 }

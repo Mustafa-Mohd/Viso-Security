@@ -11,10 +11,10 @@ import { supabase } from "@/lib/supabase";
 
 function ShiningSwordLine() {
   return (
-    <div className="relative w-full h-3.5 my-0.5 flex items-center overflow-hidden">
+    <div className="relative w-full h-2.5 my-0.5 flex items-center overflow-hidden opacity-85">
       <svg
         viewBox="0 0 240 20"
-        className="w-full h-full filter drop-shadow-[0_0_5px_rgba(212,175,55,0.7)]"
+        className="w-full h-full filter drop-shadow-[0_0_2px_rgba(212,175,55,0.3)]"
         preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -92,17 +92,17 @@ function ShiningSwordLine() {
         <line x1="34" y1="10" x2="236" y2="10" stroke="#705216" strokeWidth="0.5" />
       </svg>
 
-      {/* Traveling Glint & Shine Animation Overlay */}
+      {/* Subtle Traveling Glint Overlay */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
           animate={{ x: ["-100%", "250%"] }}
           transition={{
-            duration: 2.0,
+            duration: 2.2,
             repeat: Infinity,
-            repeatDelay: 0.6,
+            repeatDelay: 3.5,
             ease: "easeInOut",
           }}
-          className="w-1/3 h-full bg-gradient-to-r from-transparent via-white/90 to-transparent filter drop-shadow-[0_0_8px_#ffffff]"
+          className="w-1/4 h-full bg-gradient-to-r from-transparent via-white/40 to-transparent"
         />
       </div>
     </div>

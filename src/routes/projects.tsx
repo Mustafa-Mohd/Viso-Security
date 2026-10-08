@@ -219,6 +219,85 @@ export const PROJECTS: ProjectItem[] = [
   { sNo: 80, name: "NORTHERN AREA GAS INCREMENT UPSTREAM GAS PRODUCTION FACILITIES", client: "KBR", endUser: "SAUDI ARAMCO", sector: "OIL & GAS", category: "oil-gas", status: "Ongoing", location: "Northern Area", scope: "STAGE-02", month: "Aug 2026" }
 ];
 
+// ─── Client Logo Helper & Badge ───────────────────────────────────────────────
+const LOGO_MAP: { keywords: string[]; logo: string }[] = [
+  { keywords: ["aramco"], logo: "/clients/aramco.png" },
+  { keywords: ["satorp"], logo: "/clients/satorp.png" },
+  { keywords: ["s-chem", "schem"], logo: "https://schem.com/assets/img/logo-schem.png" },
+  { keywords: ["nmdc"], logo: "https://www.nmdc-energy.com/assets/images/logo/NMDC%20Energy%20white.svg" },
+  { keywords: ["advanced"], logo: "https://advancedpetrochem.com/wp-content/uploads/2022/09/advanced-logos-111-4.gif" },
+  { keywords: ["neom"], logo: "/clients/neom.png" },
+  { keywords: ["ma'aden", "maaden"], logo: "/clients/maaden.png" },
+  { keywords: ["red sea aluminium"], logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJnSK4CumDRELOlBQJg_dU7W7aO2YNryTbrBxqbTnsYw&s=10" },
+  { keywords: ["oxagon"], logo: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790588462/download.jpg" },
+  { keywords: ["mkkn"], logo: "https://mkkn.com.sa/wp-content/uploads/2022/02/logo-copy-2.png" },
+  { keywords: ["nwc", "national water company"], logo: "/clients/nwc.png" },
+  { keywords: ["saudi water authority", "swa"], logo: "https://www.swa.gov.sa/assets/images/logos/swa-logo-dark.svg" },
+  { keywords: ["water transmission", "wtc", "wtco"], logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4rNUCMe2NSrf-9bHhEVrJAiweLdjsaPBTDaoVKBrw6A&s=10" },
+  { keywords: ["taaqat", "taqqat"], logo: "https://www.taqqat.com/images/taqat-name-logo.png" },
+  { keywords: ["acwa", "aqua power"], logo: "/clients/acwa.png" },
+  { keywords: ["saudi energy", "sec", "saudi electricity"], logo: "/clients/sec.png" },
+  { keywords: ["marafiq"], logo: "/clients/marafiq.png" },
+  { keywords: ["sama", "saudi central bank"], logo: "/clients/sama.png" },
+  { keywords: ["mawani", "saudi ports"], logo: "/clients/mawani.png" },
+  { keywords: ["rcrc", "royal commission for riyadh"], logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2czWYhQ99YmeQijpZnDefTU-5wRxuzVxg2KnXQOrYQg&s=10" },
+  { keywords: ["gami"], logo: "https://www.gami.gov.sa/sites/default/files/160x22px_logo_GAMI.svg" },
+  { keywords: ["worley"], logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFyOpJdepx0wZ8yYEX3LmMBYPV4pMRvm3HHxiFlgdfdg&s=10" },
+  { keywords: ["wood"], logo: "https://www.woodgroup.com/__data/assets/file/0024/368601/Logo-Wood-Sidara.svg" },
+  { keywords: ["slfe", "snc-lavalin", "snc lavalin"], logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjYzRdA_sKcoN2QDryI05gyDlRxnX86WHzz_vMOLDE2A&s=10" },
+  { keywords: ["kbr"], logo: "https://www.kbr.com/modules/custom/kbr_language/images/kbr-logo-color.svg" },
+  { keywords: ["idom"], logo: "https://www.idom.com/wp-content/themes/idom/images/IDOM.svg" },
+  { keywords: ["siemens"], logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsrBNa5TuhWdFYRFwUaCOn-KAnm1gVrAmL_LFjTstyiQ&s=10" },
+  { keywords: ["l&t", "larsen"], logo: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790588341/download.png" },
+  { keywords: ["samsung"], logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfOebKDRgPNQCWw-4f8EFl--l8sqWuk1FWJ8pYjod6Zg&s=10" },
+  { keywords: ["doosan"], logo: "https://www.doosan.com/images/common/CI_new.png" },
+  { keywords: ["ritz", "ritz carlton", "ritz-carlton"], logo: "/clients/ritz.png" },
+  { keywords: ["red sea international", "red sea intl"], logo: "/clients/red-sea-intl.png" },
+  { keywords: ["red sea global"], logo: "/clients/red-sea-global.png" },
+  { keywords: ["amazon"], logo: "/clients/amazon.svg" },
+  { keywords: ["jotun"], logo: "/clients/jotun.png" },
+  { keywords: ["roshn"], logo: "/clients/roshn.png" },
+  { keywords: ["saudi chemical"], logo: "/clients/saudi-chemical.png" },
+];
+
+export function getClientLogo(name?: string): string | null {
+  if (!name) return null;
+  const lower = name.toLowerCase().trim();
+  for (const item of LOGO_MAP) {
+    if (item.keywords.some((kw) => lower.includes(kw))) {
+      return item.logo;
+    }
+  }
+  return null;
+}
+
+function ClientLogoBadge({
+  src,
+  alt,
+  fallbackIcon,
+  className = "w-4 h-4 object-contain"
+}: {
+  src: string | null;
+  alt: string;
+  fallbackIcon: React.ReactNode;
+  className?: string;
+}) {
+  const [error, setError] = useState(false);
+
+  if (!src || error) {
+    return <>{fallbackIcon}</>;
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      onError={() => setError(true)}
+    />
+  );
+}
+
 // ─── Status Badge Component ───────────────────────────────────────────────────
 function StatusBadge({ status }: { status: ProjectItem["status"] }) {
   const config = {
@@ -248,6 +327,9 @@ function ProjectSimpleCard({
   index: number;
   onSelect: (p: ProjectItem) => void;
 }) {
+  const clientLogo = getClientLogo(project.client);
+  const endUserLogo = getClientLogo(project.endUser);
+
   return (
     <motion.div
       layout
@@ -283,21 +365,35 @@ function ProjectSimpleCard({
 
       <div className="mt-auto space-y-3">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-black/5 flex items-center justify-center shrink-0">
-            <Building2 className="w-4 h-4 text-black/60" />
+          <div className="w-8 h-8 rounded-xl bg-black/5 border border-black/10 flex items-center justify-center shrink-0 overflow-hidden p-1.5">
+            <ClientLogoBadge
+              src={clientLogo}
+              alt={project.client}
+              fallbackIcon={<Building2 className="w-4 h-4 text-black/60" />}
+              className="max-h-5 max-w-5 object-contain"
+            />
           </div>
           <div className="flex flex-col min-w-0">
             <span className="text-[11px] text-black/50 font-medium">Client</span>
-            <span className="text-sm font-semibold text-black truncate">{project.client}</span>
+            <span className="text-sm font-semibold text-black truncate flex items-center gap-1.5">
+              {project.client}
+            </span>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-black/5 flex items-center justify-center shrink-0">
-            <UserCheck className="w-4 h-4 text-black/60" />
+          <div className="w-8 h-8 rounded-xl bg-black/5 border border-black/10 flex items-center justify-center shrink-0 overflow-hidden p-1.5">
+            <ClientLogoBadge
+              src={endUserLogo}
+              alt={project.endUser}
+              fallbackIcon={<UserCheck className="w-4 h-4 text-black/60" />}
+              className="max-h-5 max-w-5 object-contain"
+            />
           </div>
           <div className="flex flex-col min-w-0">
             <span className="text-[11px] text-black/50 font-medium">End User</span>
-            <span className="text-sm font-semibold text-black truncate">{project.endUser}</span>
+            <span className="text-sm font-semibold text-black truncate flex items-center gap-1.5">
+              {project.endUser}
+            </span>
           </div>
         </div>
       </div>
@@ -309,6 +405,8 @@ function ProjectSimpleCard({
 // ─── Modal Detail View ────────────────────────────────────────────────────────
 function ProjectDetailModal({ project, onClose }: { project: ProjectItem; onClose: () => void }) {
   const currentSector = SECTORS.find((s) => s.id === project.category) || SECTORS[0];
+  const clientLogo = getClientLogo(project.client);
+  const endUserLogo = getClientLogo(project.endUser);
 
   return (
       <motion.div
@@ -360,18 +458,42 @@ function ProjectDetailModal({ project, onClose }: { project: ProjectItem; onClos
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="p-3 rounded-2xl bg-black/5 border border-black/10">
-                <div className="text-[10px] font-mono uppercase text-foreground/50 font-bold mb-1 flex items-center gap-1.5">
-                  <Building2 className="w-3.5 h-3.5 text-primary" /> Client Contracting Party
+              <div className="p-3 rounded-2xl bg-black/5 border border-black/10 flex items-center justify-between">
+                <div>
+                  <div className="text-[10px] font-mono uppercase text-foreground/50 font-bold mb-1 flex items-center gap-1.5">
+                    <Building2 className="w-3.5 h-3.5 text-primary" /> Client Contracting Party
+                  </div>
+                  <div className="text-base font-bold text-black">{project.client}</div>
                 </div>
-                <div className="text-base font-bold text-black">{project.client}</div>
+                {clientLogo && (
+                  <div className="w-10 h-10 rounded-xl bg-white border border-black/10 p-1.5 flex items-center justify-center shrink-0 shadow-sm ml-2">
+                    <ClientLogoBadge
+                      src={clientLogo}
+                      alt={project.client}
+                      fallbackIcon={null}
+                      className="max-h-7 max-w-7 object-contain"
+                    />
+                  </div>
+                )}
               </div>
 
-              <div className="p-3 rounded-2xl bg-black/5 border border-black/10">
-                <div className="text-[10px] font-mono uppercase text-foreground/50 font-bold mb-1 flex items-center gap-1.5">
-                  <UserCheck className="w-3.5 h-3.5 text-emerald-600" /> Beneficiary / End User
+              <div className="p-3 rounded-2xl bg-black/5 border border-black/10 flex items-center justify-between">
+                <div>
+                  <div className="text-[10px] font-mono uppercase text-foreground/50 font-bold mb-1 flex items-center gap-1.5">
+                    <UserCheck className="w-3.5 h-3.5 text-emerald-600" /> Beneficiary / End User
+                  </div>
+                  <div className="text-base font-bold text-black">{project.endUser}</div>
                 </div>
-                <div className="text-base font-bold text-black">{project.endUser}</div>
+                {endUserLogo && (
+                  <div className="w-10 h-10 rounded-xl bg-white border border-black/10 p-1.5 flex items-center justify-center shrink-0 shadow-sm ml-2">
+                    <ClientLogoBadge
+                      src={endUserLogo}
+                      alt={project.endUser}
+                      fallbackIcon={null}
+                      className="max-h-7 max-w-7 object-contain"
+                    />
+                  </div>
+                )}
               </div>
             </div>
 

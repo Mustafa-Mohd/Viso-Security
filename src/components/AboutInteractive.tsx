@@ -19,7 +19,7 @@ function renderVisionTitle(title: string) {
 
 const METRICS_COUNTERS = [
   { num: 4, suffix: "+", labelKey: "hubs", subKey: "hubs_sub" },
-  { num: 100, suffix: "+", labelKey: "mega", subKey: "mega_sub" },
+  { num: 300, suffix: "+", labelKey: "mega", subKey: "mega_sub" },
   { num: 100, suffix: "%", labelKey: "hcis", subKey: "hcis_sub" },
   { num: 24, suffix: "/7", labelKey: "mission", subKey: "mission_sub" },
 ];

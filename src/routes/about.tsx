@@ -704,7 +704,7 @@ function StatsBand() {
   const stats = [
     { value: 2019, suffix: "", label: t("about.stats.established"), prefix: "" },
     { value: 4, suffix: "", label: t("about.stats.offices"), prefix: "" },
-    { value: 120, suffix: "+", label: t("about.stats.projects"), prefix: "" },
+    { value: 300, suffix: "+", label: t("about.stats.projects"), prefix: "" },
     { value: 100, suffix: "%", label: "CLIENT SATISFACTION", prefix: "" },
   ];
 
@@ -1063,7 +1063,7 @@ function RegulatoryCards() {
     },
     {
       title: "ARAMCO",
-      desc: "Saudi Aramco Safety and Security Standards.",
+      desc: "Saudi Aramco Security Standards (SAES).",
       url: "/regulatory/aramco",
       logo: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790621083/aramco.jpg",
       color: "from-cyan-100 to-cyan-50 border-cyan-200 hover:border-cyan-300 shadow-sm"
