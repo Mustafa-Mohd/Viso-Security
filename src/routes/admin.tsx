@@ -16,6 +16,7 @@ import {
 import { fetchLeaveRequests } from "@/lib/leaveApi";
 import { PROJECTS, type ProjectItem, parseMonthYear } from "@/routes/projects";
 import { clientCategoriesData, ClientLogo, type ClientCategory, type ClientItem } from "@/data/clientsData";
+import { defaultStandardsComplianceData, type StandardsComplianceData, COLOR_THEME_PRESETS } from "@/data/standardsComplianceData";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -795,6 +796,7 @@ const DEFAULT_HERO_SLIDES = [
   });
 
   const [projectsData, setProjectsData] = useState<ProjectItem[]>([...PROJECTS]);
+  const [standardsComplianceData, setStandardsComplianceData] = useState<StandardsComplianceData>(defaultStandardsComplianceData);
 
   // Inquiries State
   const [inquiries, setInquiries] = useState<ContactSubmission[]>([]);
@@ -982,7 +984,8 @@ const DEFAULT_HERO_SLIDES = [
       { section_key: 'cta', content: ctaData },
       { section_key: 'footer', content: footerData },
       { section_key: 'client_page_categories', content: clientPageCategoriesData },
-      { section_key: 'projects', content: projectsData }
+      { section_key: 'projects', content: projectsData },
+      { section_key: 'standards_compliance', content: standardsComplianceData }
     ];
     for (const item of defaultData) {
       await supabase.from('cms_content').upsert(item, { onConflict: 'section_key' }).select();
@@ -1055,6 +1058,7 @@ const DEFAULT_HERO_SLIDES = [
         if (row.section_key === 'cta') setCtaData(row.content);
         if (row.section_key === 'footer') setFooterData(row.content);
         if (row.section_key === 'projects') setProjectsData(row.content || PROJECTS);
+        if (row.section_key === 'standards_compliance') setStandardsComplianceData(row.content || defaultStandardsComplianceData);
       });
     }
   };
@@ -1131,6 +1135,7 @@ const DEFAULT_HERO_SLIDES = [
         if (row.section_key === 'footer') setFooterData(row.content);
         if (row.section_key === 'client_page_categories') setClientPageCategoriesData(row.content || clientCategoriesData);
         if (row.section_key === 'projects') setProjectsData(row.content || PROJECTS);
+        if (row.section_key === 'standards_compliance') setStandardsComplianceData(row.content || defaultStandardsComplianceData);
       });
     }
   };
@@ -1732,6 +1737,7 @@ const DEFAULT_HERO_SLIDES = [
                     ? `${[
                         { id: "home", title: "Home Page" },
                         { id: "about_us", title: "About Us Page" },
+                        { id: "standards_compliance_page", title: "Standards & Compliance" },
                         { id: "security", title: "Security & Services Page" },
                         { id: "projects_page", title: "Projects Portfolio Page" },
                         { id: "clients_page", title: "Clients Portfolio Page" },
@@ -1792,7 +1798,17 @@ const DEFAULT_HERO_SLIDES = [
                     icon: Users,
                     badgeColor: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20",
                     defaultSection: "about_page",
-                    sectionCount: 2,
+                    sectionCount: 3,
+                  },
+                  {
+                    id: "standards_compliance_page",
+                    title: "Standards & Compliance",
+                    badge: "REGULATORY & GOVERNANCE",
+                    desc: "Manage governance frameworks (SAIS, ARAMCO, NEOM, API, MOI), logos, URLs, badges & colors.",
+                    icon: ShieldCheck,
+                    badgeColor: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20",
+                    defaultSection: "standards_compliance",
+                    sectionCount: 1,
                   },
                   {
                     id: "security",
@@ -1898,9 +1914,14 @@ const DEFAULT_HERO_SLIDES = [
                         { id: "clients", label: "Leading Clients" },
                         { id: "locations", label: "Office Locations" },
                       ]
+                    : selectedCmsPage === 'standards_compliance_page'
+                    ? [
+                        { id: "standards_compliance", label: "Regulatory Framework Cards" },
+                      ]
                     : selectedCmsPage === 'about_us'
                     ? [
                         { id: "about_page", label: "Vision & Mission Statements" },
+                        { id: "standards_compliance", label: "Standards & Compliance" },
                         { id: "core_values", label: "Core Values" },
                       ]
                     : selectedCmsPage === 'security'
@@ -2380,6 +2401,387 @@ const DEFAULT_HERO_SLIDES = [
                   >
                     Save About Page Content
                   </button>
+                </div>
+              )}
+
+              {/* STANDARDS & COMPLIANCE CMS */}
+              {cmsSection === 'standards_compliance' && (
+                <div className="flex flex-col gap-6 max-w-5xl">
+                  {/* Top Action Bar */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-foreground/10">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                          <ShieldCheck className="w-5 h-5" />
+                        </div>
+                        <h2 className="text-xl font-bold text-foreground">
+                          Standards & Compliance Frameworks
+                        </h2>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Manage the regulatory bodies cards (SAIS, ARAMCO, NEOM, API, MOI), badges, titles, logos, links, and background gradients displayed on the About Us page.
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => handleSaveCmsSection('standards_compliance', standardsComplianceData)}
+                        className="inline-flex items-center gap-2 px-5 py-2 text-xs font-bold rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all cursor-pointer shadow-md"
+                      >
+                        <Save className="w-4 h-4" />
+                        Save Changes
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Section Headings Configuration */}
+                  <div className="bg-background/80 p-5 rounded-2xl border border-foreground/10 space-y-4">
+                    <h3 className="font-bold text-sm text-foreground uppercase tracking-wider flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-primary" />
+                      Section Header Configuration
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold mb-1 opacity-70">
+                          Small Top Badge / Tag
+                        </label>
+                        <input
+                          type="text"
+                          value={standardsComplianceData.badge || ""}
+                          onChange={(e) =>
+                            setStandardsComplianceData({
+                              ...standardsComplianceData,
+                              badge: e.target.value,
+                            })
+                          }
+                          placeholder="e.g. Governance"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-foreground/20 text-xs font-medium focus:border-primary focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1 opacity-70">
+                          Main Section Heading
+                        </label>
+                        <input
+                          type="text"
+                          value={standardsComplianceData.title || ""}
+                          onChange={(e) =>
+                            setStandardsComplianceData({
+                              ...standardsComplianceData,
+                              title: e.target.value,
+                            })
+                          }
+                          placeholder="e.g. Standards and Compliance"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-foreground/20 text-xs font-medium focus:border-primary focus:outline-none"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Cards List Manager */}
+                  <div className="space-y-5">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-bold text-base text-foreground">
+                          Compliance Framework Cards ({standardsComplianceData.cards?.length || 0})
+                        </h3>
+                        <p className="text-xs text-muted-foreground">
+                          Cards are displayed in order horizontally across the frontend. Reorder or click to customize.
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newCard = {
+                            title: "NEW FRAMEWORK",
+                            desc: "Regulatory and compliance framework overview and guidelines.",
+                            url: "/regulatory",
+                            logo: "https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png",
+                            color: "from-emerald-100 to-emerald-50 border-emerald-200 hover:border-emerald-300 shadow-sm",
+                            logoBg: "bg-white",
+                          };
+                          setStandardsComplianceData({
+                            ...standardsComplianceData,
+                            cards: [...(standardsComplianceData.cards || []), newCard],
+                          });
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 text-xs font-bold transition-colors cursor-pointer"
+                      >
+                        <Plus className="w-4 h-4" />
+                        Add Framework Card
+                      </button>
+                    </div>
+
+                    <div className="flex flex-col gap-6">
+                      {standardsComplianceData.cards?.map((card, idx) => (
+                        <div
+                          key={card.id || idx}
+                          className="bg-background rounded-2xl border border-foreground/10 overflow-hidden shadow-xs"
+                        >
+                          {/* Card Header & Controls */}
+                          <div className="bg-surface px-5 py-3 border-b border-foreground/10 flex items-center justify-between flex-wrap gap-2">
+                            <div className="flex items-center gap-3">
+                              <span className="font-mono text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">
+                                #{idx + 1}
+                              </span>
+                              <span className="font-bold text-sm text-foreground">
+                                {card.title || "Untitled Card"}
+                              </span>
+                              {card.url && (
+                                <span className="text-[11px] text-muted-foreground font-mono">
+                                  {card.url}
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                type="button"
+                                disabled={idx === 0}
+                                onClick={() => {
+                                  if (idx === 0) return;
+                                  const updated = [...standardsComplianceData.cards];
+                                  const temp = updated[idx];
+                                  updated[idx] = updated[idx - 1];
+                                  updated[idx - 1] = temp;
+                                  setStandardsComplianceData({
+                                    ...standardsComplianceData,
+                                    cards: updated,
+                                  });
+                                }}
+                                className="p-1.5 rounded-lg border border-foreground/10 bg-background hover:bg-primary/10 text-foreground/70 hover:text-primary disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                                title="Move Left / Up"
+                              >
+                                <ArrowUp className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                disabled={idx === standardsComplianceData.cards.length - 1}
+                                onClick={() => {
+                                  if (idx === standardsComplianceData.cards.length - 1) return;
+                                  const updated = [...standardsComplianceData.cards];
+                                  const temp = updated[idx];
+                                  updated[idx] = updated[idx + 1];
+                                  updated[idx + 1] = temp;
+                                  setStandardsComplianceData({
+                                    ...standardsComplianceData,
+                                    cards: updated,
+                                  });
+                                }}
+                                className="p-1.5 rounded-lg border border-foreground/10 bg-background hover:bg-primary/10 text-foreground/70 hover:text-primary disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                                title="Move Right / Down"
+                              >
+                                <ArrowDown className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (confirm(`Delete "${card.title || `Card #${idx + 1}`}"?`)) {
+                                    const updated = [...standardsComplianceData.cards];
+                                    updated.splice(idx, 1);
+                                    setStandardsComplianceData({
+                                      ...standardsComplianceData,
+                                      cards: updated,
+                                    });
+                                  }
+                                }}
+                                className="p-1.5 rounded-lg border border-red-500/20 bg-red-500/5 hover:bg-red-500/15 text-red-500 transition-colors ml-1"
+                                title="Delete Card"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Card Content & Preview */}
+                          <div className="p-5 grid grid-cols-1 lg:grid-cols-12 gap-6">
+                            {/* Editor Form Columns */}
+                            <div className="lg:col-span-8 space-y-4">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                  <label className="block text-xs font-bold mb-1 opacity-70">
+                                    Card Title / Acronym
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={card.title}
+                                    onChange={(e) => {
+                                      const updated = [...standardsComplianceData.cards];
+                                      updated[idx].title = e.target.value;
+                                      setStandardsComplianceData({
+                                        ...standardsComplianceData,
+                                        cards: updated,
+                                      });
+                                    }}
+                                    placeholder="e.g. SAIS, ARAMCO, MOI"
+                                    className="w-full px-3 py-2 rounded-lg bg-surface border border-foreground/20 text-xs font-bold focus:border-primary focus:outline-none"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-xs font-bold mb-1 opacity-70">
+                                    Target Page URL / Route
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={card.url}
+                                    onChange={(e) => {
+                                      const updated = [...standardsComplianceData.cards];
+                                      updated[idx].url = e.target.value;
+                                      setStandardsComplianceData({
+                                        ...standardsComplianceData,
+                                        cards: updated,
+                                      });
+                                    }}
+                                    placeholder="e.g. /regulatory/sais"
+                                    className="w-full px-3 py-2 rounded-lg bg-surface border border-foreground/20 text-xs font-mono focus:border-primary focus:outline-none"
+                                  />
+                                </div>
+                              </div>
+
+                              <div>
+                                <label className="block text-xs font-bold mb-1 opacity-70">
+                                  Framework Description
+                                </label>
+                                <textarea
+                                  value={card.desc}
+                                  onChange={(e) => {
+                                    const updated = [...standardsComplianceData.cards];
+                                    updated[idx].desc = e.target.value;
+                                    setStandardsComplianceData({
+                                      ...standardsComplianceData,
+                                      cards: updated,
+                                    });
+                                  }}
+                                  rows={2}
+                                  placeholder="Brief description of regulatory oversight..."
+                                  className="w-full px-3 py-2 rounded-lg bg-surface border border-foreground/20 text-xs focus:border-primary focus:outline-none"
+                                />
+                              </div>
+
+                              {/* Logo Uploader */}
+                              <MediaUploader
+                                label="Organization Logo (Image URL or Upload)"
+                                value={card.logo || ""}
+                                folder="compliance"
+                                onChange={(url) => {
+                                  const updated = [...standardsComplianceData.cards];
+                                  updated[idx].logo = url;
+                                  setStandardsComplianceData({
+                                    ...standardsComplianceData,
+                                    cards: updated,
+                                  });
+                                }}
+                              />
+
+                              {/* Gradient Theme Preset Selector */}
+                              <div>
+                                <label className="block text-xs font-bold mb-2 opacity-70">
+                                  Card Color & Gradient Preset
+                                </label>
+                                <div className="flex flex-wrap gap-2 mb-2">
+                                  {COLOR_THEME_PRESETS.map((preset) => {
+                                    const isSelected = card.color === preset.value;
+                                    return (
+                                      <button
+                                        key={preset.name}
+                                        type="button"
+                                        onClick={() => {
+                                          const updated = [...standardsComplianceData.cards];
+                                          updated[idx].color = preset.value;
+                                          setStandardsComplianceData({
+                                            ...standardsComplianceData,
+                                            cards: updated,
+                                          });
+                                        }}
+                                        className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all ${
+                                          isSelected
+                                            ? "ring-2 ring-primary bg-surface font-bold text-foreground"
+                                            : "bg-surface/60 hover:bg-surface text-foreground/70 border border-foreground/10"
+                                        }`}
+                                      >
+                                        <span className={`w-3 h-3 rounded-full ${preset.badgeColor}`} />
+                                        <span>{preset.name}</span>
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                                <div className="mt-2">
+                                  <label className="block text-[10px] text-muted-foreground mb-1">
+                                    Custom Tailwind Classes (Gradient / Border / Shadow)
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={card.color}
+                                    onChange={(e) => {
+                                      const updated = [...standardsComplianceData.cards];
+                                      updated[idx].color = e.target.value;
+                                      setStandardsComplianceData({
+                                        ...standardsComplianceData,
+                                        cards: updated,
+                                      });
+                                    }}
+                                    className="w-full px-3 py-1.5 rounded-lg bg-surface border border-foreground/15 text-[11px] font-mono focus:border-primary focus:outline-none"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Live Card Preview Column */}
+                            <div className="lg:col-span-4 flex flex-col justify-center">
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1">
+                                <Eye className="w-3.5 h-3.5 text-primary" /> Live Card Preview
+                              </span>
+                              <div
+                                className={`relative flex flex-col p-6 rounded-[2rem] border bg-gradient-to-br ${
+                                  card.color || "from-emerald-100 to-emerald-50 border-emerald-200"
+                                } shadow-md overflow-hidden min-h-[260px]`}
+                              >
+                                <div className="absolute -top-10 -right-10 w-32 h-32 bg-foreground/5 rounded-full blur-xl pointer-events-none" />
+
+                                <div
+                                  className={`mb-4 w-20 h-20 ${
+                                    card.logoBg || "bg-white"
+                                  } rounded-xl p-2.5 flex items-center justify-center shadow-sm border border-foreground/5 relative z-10`}
+                                >
+                                  {card.logo ? (
+                                    <img
+                                      src={card.logo}
+                                      alt={card.title}
+                                      className="max-h-full max-w-full object-contain"
+                                    />
+                                  ) : (
+                                    <span className="text-[10px] text-neutral-400 font-mono">No Logo</span>
+                                  )}
+                                </div>
+
+                                <h4 className="text-xl font-display font-bold text-foreground mb-2 relative z-10">
+                                  {card.title || "TITLE"}
+                                </h4>
+                                <p className="text-foreground/75 font-sans text-xs leading-relaxed mb-4 flex-grow relative z-10">
+                                  {card.desc || "Description text goes here..."}
+                                </p>
+                                <div className="mt-auto flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase text-foreground/50 relative z-10">
+                                  <span>Explore Framework</span>
+                                  <span>→</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Bottom Save Action */}
+                  <div className="pt-4 border-t border-foreground/10 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => handleSaveCmsSection('standards_compliance', standardsComplianceData)}
+                      className="inline-flex items-center gap-2 px-8 py-3 text-sm font-bold rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all cursor-pointer shadow-md"
+                    >
+                      <Save className="w-4 h-4" />
+                      Save Standards & Compliance
+                    </button>
+                  </div>
                 </div>
               )}
               {cmsSection === 'core_values' && (

@@ -15,6 +15,7 @@ import { TopNav } from "@/components/TopNav";
 import { TypewriterText } from "@/components/TypewriterText";
 import { supabase } from "@/lib/supabase";
 import { Eye, Target, Sparkles } from "lucide-react";
+import { defaultStandardsComplianceData, type StandardsComplianceData } from "@/data/standardsComplianceData";
 
 export const Route = createFileRoute("/about")({
   component: AboutPage,
@@ -77,6 +78,7 @@ const defaultProfile = [
 function AboutPage() {
   const { t } = useTranslation();
   const [cms, setCms] = useState<any>(null);
+  const [complianceData, setComplianceData] = useState<StandardsComplianceData>(defaultStandardsComplianceData);
   const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
@@ -90,17 +92,24 @@ function AboutPage() {
         const { data } = await supabase
           .from("cms_content")
           .select("*")
-          .in("section_key", ["about", "about_page"]);
+          .in("section_key", ["about", "about_page", "standards_compliance"]);
         if (data) {
           const aboutData = data.find((d) => d.section_key === "about")?.content || {};
           const aboutPageData = data.find((d) => d.section_key === "about_page")?.content || {};
+          const compData = data.find((d) => d.section_key === "standards_compliance")?.content;
           setCms({ ...aboutData, ...aboutPageData });
+          if (compData && compData.cards && compData.cards.length > 0) {
+            setComplianceData(compData);
+          }
         }
       } catch {
         /* use defaults */
       }
     }
     load();
+    const handleUpdate = () => load();
+    window.addEventListener("viso_cms_updated", handleUpdate);
+    return () => window.removeEventListener("viso_cms_updated", handleUpdate);
   }, []);
 
   const whoTitle =
@@ -148,7 +157,7 @@ function AboutPage() {
       <WhoWeAre title={whoTitle} desc={whoDesc} secondary={t("about.desc2")} />
       <VisionMission cms={cms} />
       <StatsBand />
-      <RegulatoryCards />
+      <RegulatoryCards data={complianceData} />
       <ProfileJourney items={profile} />
       <LicensesAndCertifications />
       <AboutCta />
@@ -1052,44 +1061,10 @@ function AboutFooter() {
 }
 
 /* ---------- Regulatory Cards ---------- */
-function RegulatoryCards() {
-  const cards: Array<{ title: string; desc: string; url: string; logo: string; color: string; logoBg?: string }> = [
-    {
-      title: "SAIS",
-      desc: "Supreme Authority for Industrial Security Standards.",
-      url: "/regulatory/sais",
-      logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgBwqTj0FNNJJm59mHR1GKznOvHK23QpPB5jwKZQuFaQ&s=10",
-      color: "from-emerald-100 to-emerald-50 border-emerald-200 hover:border-emerald-300 shadow-sm"
-    },
-    {
-      title: "ARAMCO",
-      desc: "Saudi Aramco Security Standards (SAES).",
-      url: "/regulatory/aramco",
-      logo: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790621083/aramco.jpg",
-      color: "from-cyan-100 to-cyan-50 border-cyan-200 hover:border-cyan-300 shadow-sm"
-    },
-    {
-      title: "NEOM",
-      desc: "NEOM Public Safety & Security Consultancy Services.",
-      url: "/regulatory/neom",
-      logo: "https://neom.scene7.com/is/image/neom/logo-neom-en-spaced?fmt=png-alpha&scl=1",
-      color: "from-purple-100 to-purple-50 border-purple-200 hover:border-purple-300 shadow-sm"
-    },
-    {
-      title: "API",
-      desc: "Security Risk Assessment for Petroleum & Petrochemical Industries.",
-      url: "/regulatory/api780",
-      logo: "https://theshopmag.com/wp-content/uploads/2023/05/api-logo-stacked.png",
-      color: "from-sky-100 to-sky-50 border-sky-200 hover:border-sky-300 shadow-sm"
-    },
-    {
-      title: "MOI",
-      desc: "Ministry of Interior Regulatory Frameworks.",
-      url: "/regulatory/moi",
-      logo: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png",
-      color: "from-blue-100 to-blue-50 border-blue-200 hover:border-blue-300 shadow-sm"
-    }
-  ];
+function RegulatoryCards({ data }: { data?: StandardsComplianceData }) {
+  const badge = data?.badge || "Governance";
+  const title = data?.title || "Standards and Compliance";
+  const cards = data?.cards && data.cards.length > 0 ? data.cards : defaultStandardsComplianceData.cards;
 
   return (
     <section className="py-24 bg-background relative z-10 border-t border-foreground/10">
@@ -1104,7 +1079,7 @@ function RegulatoryCards() {
           >
             <div className="h-px w-8 bg-primary" />
             <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary">
-              Governance
+              {badge}
             </span>
           </motion.div>
           <motion.h2
@@ -1114,18 +1089,18 @@ function RegulatoryCards() {
             transition={{ duration: 0.8, delay: 0.1 }}
             className="font-display text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground"
           >
-            Standards and Compliance
+            {title}
           </motion.h2>
         </div>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {cards.map((card, i) => (
-            <Link key={i} to={card.url} className="block group">
+            <Link key={card.id || i} to={card.url || "#"} className="block group">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className={`relative h-full flex flex-col p-6 md:p-8 rounded-[2rem] border bg-gradient-to-br ${card.color} transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl overflow-hidden`}
+                className={`relative h-full flex flex-col p-6 md:p-8 rounded-[2rem] border bg-gradient-to-br ${card.color || "from-emerald-100 to-emerald-50 border-emerald-200 hover:border-emerald-300 shadow-sm"} transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl overflow-hidden`}
               >
                 {/* Decorative background element */}
                 <div className="absolute -top-12 -right-12 w-48 h-48 bg-foreground/5 rounded-full blur-2xl group-hover:bg-foreground/10 transition-colors duration-500 pointer-events-none" />
