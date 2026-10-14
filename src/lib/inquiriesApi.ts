@@ -1,4 +1,4 @@
-import { supabase } from "./supabase";
+import { supabase, isSupabaseConfigured } from "./supabase";
 
 export interface ContactSubmission {
   id: string;
@@ -11,6 +11,12 @@ export interface ContactSubmission {
 }
 
 export async function fetchContactSubmissions(): Promise<ContactSubmission[]> {
+  if (!isSupabaseConfigured) {
+    throw new Error(
+      "Supabase environment variables (VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY) are missing in deployment. Please add them in your hosting provider's project settings (e.g. Vercel / Netlify) and redeploy."
+    );
+  }
+
   const { data, error } = await supabase
     .from("contact_submissions")
     .select("*")
@@ -28,6 +34,12 @@ export async function submitContactInquiry(payload: {
   company?: string | null;
   message: string;
 }): Promise<void> {
+  if (!isSupabaseConfigured) {
+    throw new Error(
+      "Supabase configuration is missing in deployment. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in hosting environment variables."
+    );
+  }
+
   const { error } = await supabase.from("contact_submissions").insert([
     {
       name: payload.name,
@@ -44,6 +56,10 @@ export async function submitContactInquiry(payload: {
 }
 
 export async function markInquiryRead(id: string): Promise<void> {
+  if (!isSupabaseConfigured) {
+    throw new Error("Supabase is not configured.");
+  }
+
   const { error } = await supabase
     .from("contact_submissions")
     .update({ status: "read" })
@@ -53,3 +69,4 @@ export async function markInquiryRead(id: string): Promise<void> {
     throw new Error(error.message);
   }
 }
+

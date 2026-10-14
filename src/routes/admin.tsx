@@ -4115,9 +4115,46 @@ const DEFAULT_HERO_SLIDES = [
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               </div>
             ) : inquiries.length === 0 && !inquiriesError ? (
-              <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded p-12 text-center">
-                <p className="text-foreground/60 mb-2">No inquiries yet.</p>
-                <p className="text-sm text-foreground/45">Submit a test message at <strong>/contact</strong>, then refresh here.</p>
+              <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded-2xl p-8 sm:p-12 text-center max-w-2xl mx-auto shadow-sm">
+                <p className="text-foreground font-bold text-lg mb-1">No Inquiries Found</p>
+                <p className="text-sm text-foreground/60 mb-6">
+                  If visitors have submitted the contact form but inquiries do not appear here, this is caused by Supabase Row-Level Security (RLS) or missing deployment environment variables.
+                </p>
+
+                <div className="bg-amber-500/[0.08] border border-amber-500/25 rounded-xl p-4 text-left text-xs space-y-2.5">
+                  <div className="font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider text-[11px]">
+                    Step 1: Check Supabase RLS Policy (Most Common)
+                  </div>
+                  <p className="text-foreground/80 leading-relaxed font-sans text-xs">
+                    In your <strong>Supabase Project → SQL Editor</strong>, paste and run:
+                  </p>
+                  <pre className="p-3 bg-black/90 text-amber-300 rounded-lg text-[11px] overflow-x-auto whitespace-pre-wrap select-all font-mono">
+{`ALTER TABLE public.contact_submissions ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow public all access on contact_submissions" ON public.contact_submissions;
+DROP POLICY IF EXISTS "Allow authenticated full access on contact_submissions" ON public.contact_submissions;
+DROP POLICY IF EXISTS "Allow public insert on contact_submissions" ON public.contact_submissions;
+
+CREATE POLICY "Allow public all access on contact_submissions"
+    ON public.contact_submissions
+    FOR ALL
+    TO public
+    USING (true)
+    WITH CHECK (true);`}
+                  </pre>
+                  <p className="text-[11px] text-foreground/60 font-sans">
+                    After running this query in Supabase, click <strong>Refresh</strong> above.
+                  </p>
+                </div>
+
+                <div className="mt-4 p-3 rounded-xl bg-foreground/[0.03] border border-foreground/10 text-left text-xs">
+                  <div className="font-bold text-foreground/75 uppercase tracking-wider text-[11px] mb-1">
+                    Step 2: Deployment Environment Variables
+                  </div>
+                  <p className="text-foreground/60 leading-relaxed font-sans">
+                    Ensure <code className="bg-foreground/10 px-1 py-0.5 rounded text-[11px]">VITE_SUPABASE_URL</code> and <code className="bg-foreground/10 px-1 py-0.5 rounded text-[11px]">VITE_SUPABASE_ANON_KEY</code> are configured in your hosting platform (Vercel / Netlify / Cloudflare) under <strong>Project Settings → Environment Variables</strong> and redeploy.
+                  </p>
+                </div>
               </div>
             ) : (
               <div className="space-y-4">
