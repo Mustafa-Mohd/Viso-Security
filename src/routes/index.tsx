@@ -10,7 +10,7 @@ import { supabase } from "@/lib/supabase";
 import { LazyMount } from "@/components/LazyMount";
 import { ServicesCarousel } from "@/components/ServicesCarousel";
 import { clientCategoriesData, ClientLogo, useClientCategories } from "@/data/clientsData";
-import { X, FileText, Briefcase, ShieldCheck, Star, HeartHandshake, Target, Sparkles } from "lucide-react";
+import { X, FileText, Briefcase, ShieldCheck, Award, Star, HeartHandshake, Target, Sparkles } from "lucide-react";
 
 const AboutInteractive = lazy(() =>
   import("@/components/AboutInteractive").then((m) => ({ default: m.AboutInteractive }))
@@ -504,7 +504,8 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
         {[
           { icon: <FileText size={20} />, img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100377/8aef84d0-fbe6-426d-b485-b4241b30daae.png", label: "CR 2026-2027" },
           { icon: <Briefcase size={20} />, img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100602/3d24f59b-1530-4316-bd0d-27ac9167ccff.png", label: "Business License" },
-          { icon: <ShieldCheck size={20} />, img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100668/865e7db3-7be4-4ed4-920e-e0a8b29af7bb.png", label: "SAIS Certificate" }
+          { icon: <ShieldCheck size={20} />, img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100668/865e7db3-7be4-4ed4-920e-e0a8b29af7bb.png", label: "SAIS Certificate" },
+          { icon: <Award size={20} />, img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1791982868/b88077c8-e8df-4ec4-9c8f-28236a827324.png", label: "CCC Certificate" }
         ].map((cert, idx) => (
           <button 
             key={idx}

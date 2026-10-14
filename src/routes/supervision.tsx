@@ -198,20 +198,15 @@ function SupervisionProjectCard({
       onClick={() => onSelect(project)}
       className="group flex flex-col rounded-3xl p-6 cursor-pointer transition-all duration-300 relative overflow-hidden bg-white border border-black shadow-sm hover:shadow-[0_20px_40px_-15px_rgba(212,175,55,0.3)]"
     >
-      {/* Top Meta Badges */}
-      <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-[11px] font-mono font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full flex items-center gap-1 border border-primary/20 shrink-0">
+      {/* Top Meta Header: Supervision tag + Status */}
+      <div className="flex items-center justify-between gap-2 mb-3.5">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span className="text-[11px] font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full flex items-center gap-1.5 border border-primary/20 shrink-0">
             <Activity className="w-3 h-3 text-primary" /> Supervision
           </span>
-          {project.month && (
-            <span className="text-[11px] font-mono font-semibold text-neutral-800 bg-neutral-100 px-2.5 py-1 rounded-full flex items-center gap-1 border border-neutral-200 shrink-0">
-              <Calendar className="w-3 h-3 text-primary" /> {project.month}
-            </span>
-          )}
           {project.highlight && (
-            <span className="text-[11px] font-mono font-semibold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full flex items-center gap-1 border border-amber-200 shrink-0">
-              <Sparkles className="w-3 h-3 text-amber-500" /> {project.highlight}
+            <span className="text-[11px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full flex items-center gap-1 border border-amber-200 truncate">
+              <Sparkles className="w-3 h-3 text-amber-500 shrink-0" /> {project.highlight}
             </span>
           )}
         </div>
@@ -219,33 +214,33 @@ function SupervisionProjectCard({
       </div>
 
       {/* Project Title */}
-      <h3 className="font-sans font-bold text-[17px] text-black leading-snug mb-1.5 group-hover:text-primary transition-colors">
+      <h3 className="font-sans font-bold text-[16px] sm:text-[17px] text-black leading-snug min-h-[44px] group-hover:text-primary transition-colors mb-2 line-clamp-2">
         {project.title}
       </h3>
 
       {/* Sector & Location */}
-      <div className="flex items-center justify-between gap-2 text-xs font-medium mb-3">
-        <span className="text-primary font-bold font-mono tracking-wider uppercase">
-          {project.sector}
-        </span>
-        {project.location && (
-          <span className="text-black/60 font-mono flex items-center gap-1">
-            <MapPin className="w-3.5 h-3.5 text-primary shrink-0" /> {project.location}
+      <div className="space-y-1.5 mb-3.5">
+        {/* Sector and Date */}
+        <div className="flex items-center justify-between gap-2 text-xs">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-primary truncate">
+            {project.sector}
           </span>
+          {project.month && (
+            <span className="text-[11px] font-medium text-black/50 flex items-center gap-1 shrink-0">
+              <Calendar className="w-3 h-3 text-primary" /> {project.month}
+            </span>
+          )}
+        </div>
+
+        {/* Location Pill */}
+        {project.location && (
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/[0.03] border border-black/10 text-xs font-medium text-black/80 max-w-full">
+            <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
+            <span className="truncate">{project.location}</span>
+          </div>
         )}
       </div>
 
-      {/* Scope of Work Box */}
-      {project.scope && (
-        <div className="mb-4 p-2.5 rounded-xl bg-black/[0.03] border border-black/5">
-          <span className="text-[10px] font-mono font-bold uppercase text-primary block mb-0.5 tracking-wider">
-            Scope of Work
-          </span>
-          <p className="text-xs text-black/75 line-clamp-2 leading-relaxed">
-            {project.scope}
-          </p>
-        </div>
-      )}
 
       {/* Client & End User */}
       <div className="mt-auto pt-2 space-y-2 border-t border-black/5">
@@ -259,7 +254,7 @@ function SupervisionProjectCard({
             />
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-[10px] text-black/50 font-mono font-bold uppercase tracking-wider">
+            <span className="text-[10px] text-black/50 font-bold uppercase tracking-wider">
               {isSameClientAndEndUser ? "Client & End User" : "Client Partner"}
             </span>
             <span className="text-sm sm:text-base font-bold text-black leading-tight truncate">
@@ -279,7 +274,7 @@ function SupervisionProjectCard({
               />
             </div>
             <div className="flex flex-col min-w-0">
-              <span className="text-[10px] text-black/50 font-mono font-bold uppercase tracking-wider">
+              <span className="text-[10px] text-black/50 font-bold uppercase tracking-wider">
                 End User
               </span>
               <span className="text-sm sm:text-base font-bold text-black leading-tight truncate">
@@ -386,22 +381,22 @@ function SupervisionDetailModal({ project, onClose }: { project: SupervisionProj
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-3 text-xs font-mono">
-            <div className="p-2.5 rounded-xl bg-black/5 border border-black/10">
-              <span className="text-foreground/50 uppercase block mb-0.5 text-[10px]">Sector</span>
-              <span className="font-bold text-black tracking-wide">{project.sector}</span>
+          <div className="grid grid-cols-2 gap-3 text-xs">
+            <div className="p-3 rounded-2xl bg-black/[0.03] border border-black/10">
+              <span className="text-black/50 uppercase block mb-1 text-[10px] font-bold tracking-wider">Sector</span>
+              <span className="font-bold text-black text-sm">{project.sector}</span>
             </div>
 
-            <div className="p-2.5 rounded-xl bg-black/5 border border-black/10">
-              <span className="text-foreground/50 uppercase block mb-0.5 text-[10px]">Location</span>
-              <span className="font-bold text-black tracking-wide flex items-center gap-1">
-                <MapPin className="w-3 h-3 text-primary" /> {project.location}
+            <div className="p-3 rounded-2xl bg-black/[0.03] border border-black/10">
+              <span className="text-black/50 uppercase block mb-1 text-[10px] font-bold tracking-wider">Location</span>
+              <span className="font-bold text-black text-sm flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-primary shrink-0" /> {project.location}
               </span>
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <h4 className="text-[10px] font-mono uppercase font-bold text-primary tracking-widest flex items-center gap-1.5">
+            <h4 className="text-[10px] uppercase font-bold text-primary tracking-widest flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-primary" /> Supervision Scope & Engineering Oversight
             </h4>
             <p className="text-[13px] text-foreground/80 leading-relaxed bg-black/[0.03] p-3 rounded-2xl border border-black/10">
