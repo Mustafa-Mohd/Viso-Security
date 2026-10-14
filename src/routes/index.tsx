@@ -207,12 +207,6 @@ function HomePage() {
 
 
 
-          <LazyMount minHeight={480} fallback={<SectionFallback h={480} />}>
-            <Suspense fallback={<SectionFallback h={480} />}>
-              <LocationsSection data={cmsData.locations} />
-            </Suspense>
-          </LazyMount>
-
           <LazyMount minHeight={320} fallback={<SectionFallback h={320} />}>
             <ClientsSection data={cmsData.clients} />
           </LazyMount>
@@ -221,9 +215,13 @@ function HomePage() {
             <ServicesSection data={cmsData.services} />
           </LazyMount> */}
 
-
-
           <LinkedInPosts />
+
+          <LazyMount minHeight={480} fallback={<SectionFallback h={480} />}>
+            <Suspense fallback={<SectionFallback h={480} />}>
+              <LocationsSection data={cmsData.locations} />
+            </Suspense>
+          </LazyMount>
         </main>
         <Footer data={cmsData.footer} />
       </div>
@@ -2046,14 +2044,65 @@ function Footer({ data }: { data?: any }) {
           {/* Socials Col */}
           <div>
             <h4 className="font-display font-bold text-lg mb-6 text-gold">Connect</h4>
-            <div className="flex gap-4">
-              <a href="https://www.linkedin.com/company/viso-security-consultant/posts/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-black/20 flex items-center justify-center text-black/70 hover:bg-gold hover:text-white hover:border-gold transition-all duration-300">
+            <div className="flex items-center gap-5">
+              <a
+                href="https://www.linkedin.com/company/viso-security-consultant/posts/"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="LinkedIn"
+                className="inline-flex items-center justify-center transition-all duration-300 hover:scale-115 hover:-translate-y-0.5 active:scale-95 focus:outline-none"
+              >
                 <span className="sr-only">LinkedIn</span>
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                <svg
+                  className="w-9 h-9 drop-shadow-sm hover:drop-shadow-md transition-all duration-300"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <rect width="24" height="24" rx="4.5" fill="#0A66C2" />
+                  <path
+                    fill="#FFFFFF"
+                    d="M19 19h-3.13v-4.9c0-1.17-.02-2.67-1.63-2.67-1.63 0-1.88 1.27-1.88 2.59V19H9.23V8.87h3V10.25h.04c.42-.79 1.44-1.63 2.96-1.63 3.17 0 3.75 2.08 3.75 4.8V19zM5.7 7.48a1.82 1.82 0 110-3.64 1.82 1.82 0 010 3.64zm1.56 11.52H4.13V8.87h3.13V19z"
+                  />
+                </svg>
               </a>
-              <a href="#" className="w-10 h-10 rounded-full border border-black/20 flex items-center justify-center text-black/70 hover:bg-gold hover:text-white hover:border-gold transition-all duration-300">
+
+              <a
+                href="#"
+                title="Twitter"
+                className="inline-flex items-center justify-center transition-all duration-300 hover:scale-115 hover:-translate-y-0.5 active:scale-95 focus:outline-none"
+              >
                 <span className="sr-only">Twitter</span>
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"/></svg>
+                <svg
+                  className="w-9 h-9 text-[#1DA1F2] drop-shadow-sm hover:drop-shadow-md transition-all duration-300"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.936 9.936 0 0024 4.59z" />
+                </svg>
+              </a>
+
+              <a
+                href="https://portal.us.bn.cloud.ariba.com/dashboard/public/appext/company-profile#/certifications?bnoId=BNO-100000037809844"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="SAP Ariba Certifications"
+                className="inline-flex items-center justify-center transition-all duration-300 hover:scale-115 hover:-translate-y-0.5 active:scale-95 focus:outline-none"
+              >
+                <span className="sr-only">SAP Ariba Certifications</span>
+                <svg
+                  className="w-10 h-10 drop-shadow-sm hover:drop-shadow-md transition-all duration-300"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path d="M0 6.064v11.872h12.13L24 6.064z" fill="#FFFFFF" />
+                  <path
+                    fill="#0070BA"
+                    d="M0 6.064v11.872h12.13L24 6.064zm3.264 2.208h.005c.863.001 1.915.245 2.676.633l-.82 1.43c-.835-.404-1.255-.442-1.73-.467-.708-.038-1.064.215-1.069.488-.007.332.669.633 1.305.838.964.306 2.19.715 2.377 1.9L7.77 8.437h2.046l2.064 5.576-.007-5.575h2.37c2.257 0 3.318.764 3.318 2.519 0 1.575-1.09 2.514-2.936 2.514h-.763l-.01 2.094-3.588-.003-.25-.908c-.37.122-.787.189-1.23.189-.456 0-.885-.071-1.263-.2l-.358.919-2 .006.09-.462c-.029.025-.057.05-.087.074-.535.43-1.208.629-2.037.644l-.213.002a5.075 5.075 0 0 1-2.581-.675l.73-1.448c.79.467 1.286.572 1.956.558.347-.007.598-.07.761-.239a.557.557 0 0 0 .156-.369c.007-.376-.53-.553-1.185-.756-.531-.164-1.135-.389-1.606-.735-.559-.41-.825-.924-.812-1.65a1.99 1.99 0 0 1 .566-1.377c.519-.537 1.357-.863 2.363-.863zm10.597 1.67v1.904h.521c.694 0 1.247-.23 1.248-.964 0-.709-.554-.94-1.248-.94zm-5.087.767l-.748 2.362c.223.085.481.133.757.133.268 0 .52-.047.742-.126l-.736-2.37z"
+                  />
+                </svg>
               </a>
             </div>
           </div>

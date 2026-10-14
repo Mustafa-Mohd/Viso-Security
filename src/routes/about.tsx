@@ -1213,6 +1213,11 @@ const certificatesData = [
     img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100668/865e7db3-7be4-4ed4-920e-e0a8b29af7bb.png"
   },
   {
+    org: "CCC Certificate",
+    certs: ["Cybersecurity Compliance Certificate"],
+    img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1791982868/b88077c8-e8df-4ec4-9c8f-28236a827324.png"
+  },
+  {
     org: "Balady",
     certs: ["Municipal License"],
     img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790600394/imgi_15_Balady.png"
@@ -1256,15 +1261,15 @@ function LicensesAndCertifications() {
               Our official licenses, credentials, and international certifications underscoring our commitment to compliance and excellence.
             </motion.p>
           </div>
-          <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+          <div className="flex flex-wrap justify-center gap-6 xl:gap-8">
             {certificatesData.map((item, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
-                transition={{ delay: (i % 3) * 0.1, duration: 0.6 }}
-                className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-foreground/15 bg-surface shadow-sm hover:shadow-2xl transition-all duration-500 hover:border-black dark:hover:border-neutral-200 cursor-pointer"
+                transition={{ delay: (i % 4) * 0.08, duration: 0.6 }}
+                className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-foreground/15 bg-surface shadow-sm hover:shadow-2xl transition-all duration-500 hover:border-black dark:hover:border-neutral-200 cursor-pointer w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.2rem)] xl:w-[calc(25%-1.55rem)]"
               >
                 {/* Shining Sheen Light Effect on Hover */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 dark:via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none z-20" />
@@ -1286,7 +1291,7 @@ function LicensesAndCertifications() {
                 </div>
 
                 {/* Card Information */}
-                <div className="p-8 flex flex-col flex-1 bg-surface relative z-10">
+                <div className="p-6 xl:p-8 flex flex-col flex-1 bg-surface relative z-10">
                   <h3 className="text-xl font-display font-bold text-foreground mb-4 leading-snug group-hover:text-primary transition-colors duration-300">
                     {item.org}
                   </h3>

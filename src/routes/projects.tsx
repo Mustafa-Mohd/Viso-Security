@@ -25,7 +25,9 @@ export interface ProjectItem {
   sNo: number;
   name: string;
   client: string;
+  clientLogo?: string;
   endUser: string;
+  endUserLogo?: string;
   sector: string;
   category: string;
   location?: string;
@@ -327,8 +329,8 @@ function ProjectSimpleCard({
   index: number;
   onSelect: (p: ProjectItem) => void;
 }) {
-  const clientLogo = getClientLogo(project.client);
-  const endUserLogo = getClientLogo(project.endUser);
+  const clientLogo = project.clientLogo || getClientLogo(project.client);
+  const endUserLogo = project.endUserLogo || getClientLogo(project.endUser);
 
   return (
     <motion.div
@@ -405,8 +407,8 @@ function ProjectSimpleCard({
 // ─── Modal Detail View ────────────────────────────────────────────────────────
 function ProjectDetailModal({ project, onClose }: { project: ProjectItem; onClose: () => void }) {
   const currentSector = SECTORS.find((s) => s.id === project.category) || SECTORS[0];
-  const clientLogo = getClientLogo(project.client);
-  const endUserLogo = getClientLogo(project.endUser);
+  const clientLogo = project.clientLogo || getClientLogo(project.client);
+  const endUserLogo = project.endUserLogo || getClientLogo(project.endUser);
 
   return (
       <motion.div

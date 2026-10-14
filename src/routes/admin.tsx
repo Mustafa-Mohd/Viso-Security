@@ -525,6 +525,118 @@ const MediaUploader = ({ value, onChange, folder, label, type = "image", classNa
   );
 };
 
+const CompactLogoInput = ({
+  value,
+  onChange,
+  placeholder = "Logo URL or drop image...",
+  label = "Logo",
+  folder = "projects-logos",
+}: {
+  value?: string;
+  onChange: (url: string) => void;
+  placeholder?: string;
+  label?: string;
+  folder?: string;
+}) => {
+  const [uploading, setUploading] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      alert("Please upload a valid image file.");
+      return;
+    }
+    setUploading(true);
+    try {
+      const publicUrl = await uploadGalleryImage(file, folder);
+      onChange(publicUrl);
+    } catch (err) {
+      alert(`Error uploading logo: ${err instanceof Error ? err.message : "unknown"}`);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="mt-1.5">
+      <div className="flex items-center justify-between mb-0.5">
+        <label className="text-[10px] uppercase font-bold text-foreground/50">{label}</label>
+        {value && (
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="text-[9px] text-red-500 hover:underline cursor-pointer"
+          >
+            Remove Logo
+          </button>
+        )}
+      </div>
+      <div
+        className={`flex items-center gap-1.5 p-1 rounded-lg border border-dashed transition-all ${
+          dragOver
+            ? "border-primary bg-primary/10"
+            : "border-foreground/20 bg-background/80 hover:border-primary/50"
+        }`}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragOver(true);
+        }}
+        onDragLeave={(e) => {
+          e.preventDefault();
+          setDragOver(false);
+        }}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDragOver(false);
+          if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            handleFile(e.dataTransfer.files[0]);
+          }
+        }}
+      >
+        <div className="w-6 h-6 rounded bg-white border border-black/10 flex items-center justify-center shrink-0 overflow-hidden p-0.5 shadow-xs">
+          {value ? (
+            <img src={value} alt={label} className="max-h-full max-w-full object-contain" />
+          ) : (
+            <ImageIcon size={12} className="text-foreground/30" />
+          )}
+        </div>
+        <input
+          type="text"
+          value={value || ""}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          disabled={uploading}
+          className="flex-1 min-w-0 bg-transparent text-[11px] px-1 py-0.5 text-foreground placeholder:text-foreground/40 focus:outline-none font-mono"
+        />
+        <label
+          className="inline-flex items-center gap-1 bg-primary/15 hover:bg-primary/25 text-primary px-2 py-0.5 rounded text-[10px] font-bold cursor-pointer transition-colors shrink-0"
+          title="Upload or Drag Image"
+        >
+          {uploading ? (
+            <Loader2 size={11} className="animate-spin" />
+          ) : (
+            <Upload size={11} />
+          )}
+          <span>{uploading ? "..." : "Upload"}</span>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            disabled={uploading}
+            onChange={(e) => {
+              if (e.target.files && e.target.files[0]) {
+                handleFile(e.target.files[0]);
+              }
+            }}
+          />
+        </label>
+      </div>
+    </div>
+  );
+};
+
 function AdminPage() {
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -3552,7 +3664,9 @@ const DEFAULT_HERO_SLIDES = [
                             sNo: projectsData.length > 0 ? Math.max(...projectsData.map(p => p.sNo)) + 1 : 1,
                             name: "New Project",
                             client: "Client Name",
+                            clientLogo: "",
                             endUser: "End User",
+                            endUserLogo: "",
                             sector: "SECTOR",
                             category: "infra",
                             status: "Ongoing" as const,
@@ -3827,6 +3941,16 @@ const DEFAULT_HERO_SLIDES = [
                                   }}
                                   className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
                                 />
+                                <CompactLogoInput
+                                  label="Client Logo"
+                                  value={project.clientLogo}
+                                  onChange={(url) => {
+                                    const newArr = [...projectsData];
+                                    newArr[originalIndex] = { ...newArr[originalIndex], clientLogo: url };
+                                    setProjectsData(newArr);
+                                  }}
+                                  placeholder="Logo URL or drop..."
+                                />
                               </div>
 
                               <div>
@@ -3840,6 +3964,16 @@ const DEFAULT_HERO_SLIDES = [
                                     setProjectsData(newArr);
                                   }}
                                   className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
+                                />
+                                <CompactLogoInput
+                                  label="End User Logo"
+                                  value={project.endUserLogo}
+                                  onChange={(url) => {
+                                    const newArr = [...projectsData];
+                                    newArr[originalIndex] = { ...newArr[originalIndex], endUserLogo: url };
+                                    setProjectsData(newArr);
+                                  }}
+                                  placeholder="Logo URL or drop..."
                                 />
                               </div>
 
@@ -3892,21 +4026,6 @@ const DEFAULT_HERO_SLIDES = [
                                   }}
                                   className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
                                   placeholder="e.g. Riyadh, KSA"
-                                />
-                              </div>
-
-                              <div>
-                                <label className="block text-[10px] uppercase font-bold text-foreground/50 mb-1">Highlight Badge</label>
-                                <input
-                                  type="text"
-                                  value={project.highlight || ""}
-                                  onChange={(e) => {
-                                    const newArr = [...projectsData];
-                                    newArr[originalIndex] = { ...newArr[originalIndex], highlight: e.target.value };
-                                    setProjectsData(newArr);
-                                  }}
-                                  className="w-full px-3 py-1.5 text-sm rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none"
-                                  placeholder="e.g. Flagship, VIP"
                                 />
                               </div>
                             </div>
