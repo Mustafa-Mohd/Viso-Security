@@ -15,7 +15,8 @@ import {
   Sparkles,
   X,
   Layers,
-  MapPin
+  MapPin,
+  Calendar
 } from "lucide-react";
 import { TopNav } from "@/components/TopNav";
 import { SmoothScroll } from "@/components/SmoothScroll";
@@ -43,9 +44,24 @@ export interface SupervisionProject {
   location: string;
   sector: string;
   scope: string;
+  category?: string;
+  month?: string;
+  highlight?: string;
 }
 
 export const SUPERVISION_PROJECTS: SupervisionProject[] = [
+  {
+    id: "upgradation-cctv-ritz-carlton",
+    title: "Upgradation of CCTV system",
+    client: "RITZ CARLTON",
+    endUser: "RITZ CARLTON",
+    category: "infra",
+    sector: "INFRA",
+    status: "Completed",
+    location: "Riyadh",
+    scope: "DESIGN & SUPERVISION",
+    month: "Feb 2025"
+  },
   {
     id: "khobar-wts",
     title: "Khobar Water Transmission System (WTS)",
@@ -142,12 +158,17 @@ function ClientLogoBadge({
 }
 
 function StatusBadge({ status }: { status: SupervisionProject["status"] }) {
+  const isCompleted = status === "Completed";
   return (
     <span
-      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase backdrop-blur-md border shadow-sm"
-      style={{ color: "#F59E0B", background: "rgba(245,158,11,0.15)", borderColor: "rgba(245,158,11,0.3)" }}
+      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase backdrop-blur-md border shadow-xs"
+      style={{
+        color: isCompleted ? "#22C55E" : "#F59E0B",
+        background: isCompleted ? "rgba(34,197,94,0.15)" : "rgba(245,158,11,0.15)",
+        borderColor: isCompleted ? "rgba(34,197,94,0.3)" : "rgba(245,158,11,0.3)"
+      }}
     >
-      <span className="w-2 h-2 rounded-full animate-ping bg-amber-500" />
+      <span className={`w-2 h-2 rounded-full ${isCompleted ? "bg-emerald-500" : "animate-ping bg-amber-500"}`} />
       {status}
     </span>
   );
@@ -163,6 +184,8 @@ function SupervisionProjectCard({
   onSelect: (p: SupervisionProject) => void;
 }) {
   const clientLogo = getClientLogo(project.client);
+  const endUserLogo = project.endUser ? getClientLogo(project.endUser) : null;
+  const isSameClientAndEndUser = Boolean(project.endUser && project.endUser.trim().toLowerCase() === project.client.trim().toLowerCase());
 
   return (
     <motion.div
@@ -175,35 +198,96 @@ function SupervisionProjectCard({
       onClick={() => onSelect(project)}
       className="group flex flex-col rounded-3xl p-6 cursor-pointer transition-all duration-300 relative overflow-hidden bg-white border border-black shadow-sm hover:shadow-[0_20px_40px_-15px_rgba(212,175,55,0.3)]"
     >
-      <div className="flex justify-between items-center mb-5 gap-2">
-        <span className="text-[11px] font-mono font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full flex items-center gap-1 border border-primary/20 shrink-0">
-          <Activity className="w-3 h-3 text-primary" /> Supervision
-        </span>
+      {/* Top Meta Badges */}
+      <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className="text-[11px] font-mono font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full flex items-center gap-1 border border-primary/20 shrink-0">
+            <Activity className="w-3 h-3 text-primary" /> Supervision
+          </span>
+          {project.month && (
+            <span className="text-[11px] font-mono font-semibold text-neutral-800 bg-neutral-100 px-2.5 py-1 rounded-full flex items-center gap-1 border border-neutral-200 shrink-0">
+              <Calendar className="w-3 h-3 text-primary" /> {project.month}
+            </span>
+          )}
+          {project.highlight && (
+            <span className="text-[11px] font-mono font-semibold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full flex items-center gap-1 border border-amber-200 shrink-0">
+              <Sparkles className="w-3 h-3 text-amber-500" /> {project.highlight}
+            </span>
+          )}
+        </div>
         <StatusBadge status={project.status} />
       </div>
 
-      <h3 className="font-sans font-bold text-[16px] text-black leading-snug mb-1.5 group-hover:text-primary transition-colors">
+      {/* Project Title */}
+      <h3 className="font-sans font-bold text-[17px] text-black leading-snug mb-1.5 group-hover:text-primary transition-colors">
         {project.title}
       </h3>
-      <span className="text-sm font-medium text-primary mb-6 block">
-        {project.sector}
-      </span>
 
-      <div className="mt-auto pt-2">
-        <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-black/[0.03] border border-black/10">
-          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white border border-black/15 flex items-center justify-center shrink-0 overflow-hidden p-2 shadow-sm">
+      {/* Sector & Location */}
+      <div className="flex items-center justify-between gap-2 text-xs font-medium mb-3">
+        <span className="text-primary font-bold font-mono tracking-wider uppercase">
+          {project.sector}
+        </span>
+        {project.location && (
+          <span className="text-black/60 font-mono flex items-center gap-1">
+            <MapPin className="w-3.5 h-3.5 text-primary shrink-0" /> {project.location}
+          </span>
+        )}
+      </div>
+
+      {/* Scope of Work Box */}
+      {project.scope && (
+        <div className="mb-4 p-2.5 rounded-xl bg-black/[0.03] border border-black/5">
+          <span className="text-[10px] font-mono font-bold uppercase text-primary block mb-0.5 tracking-wider">
+            Scope of Work
+          </span>
+          <p className="text-xs text-black/75 line-clamp-2 leading-relaxed">
+            {project.scope}
+          </p>
+        </div>
+      )}
+
+      {/* Client & End User */}
+      <div className="mt-auto pt-2 space-y-2 border-t border-black/5">
+        <div className="flex items-center gap-3.5 p-2.5 rounded-2xl bg-black/[0.03] border border-black/10">
+          <div className="w-12 h-12 rounded-xl bg-white border border-black/15 flex items-center justify-center shrink-0 overflow-hidden p-1.5 shadow-xs">
             <ClientLogoBadge
               src={clientLogo}
               alt={project.client}
-              fallbackIcon={<Building2 className="w-7 h-7 text-black/60" />}
-              className="max-h-10 max-w-10 sm:max-h-12 sm:max-w-12 object-contain"
+              fallbackIcon={<Building2 className="w-6 h-6 text-black/60" />}
+              className="max-h-9 max-w-9 object-contain"
             />
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-[11px] text-black/50 font-mono font-bold uppercase tracking-wider">Client Partner</span>
-            <span className="text-base sm:text-lg font-bold text-black leading-tight truncate">{project.client}</span>
+            <span className="text-[10px] text-black/50 font-mono font-bold uppercase tracking-wider">
+              {isSameClientAndEndUser ? "Client & End User" : "Client Partner"}
+            </span>
+            <span className="text-sm sm:text-base font-bold text-black leading-tight truncate">
+              {project.client}
+            </span>
           </div>
         </div>
+
+        {project.endUser && !isSameClientAndEndUser && (
+          <div className="flex items-center gap-3.5 p-2.5 rounded-2xl bg-black/[0.03] border border-black/10">
+            <div className="w-12 h-12 rounded-xl bg-white border border-black/15 flex items-center justify-center shrink-0 overflow-hidden p-1.5 shadow-xs">
+              <ClientLogoBadge
+                src={endUserLogo}
+                alt={project.endUser}
+                fallbackIcon={<UserCheck className="w-6 h-6 text-black/60" />}
+                className="max-h-9 max-w-9 object-contain"
+              />
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span className="text-[10px] text-black/50 font-mono font-bold uppercase tracking-wider">
+                End User
+              </span>
+              <span className="text-sm sm:text-base font-bold text-black leading-tight truncate">
+                {project.endUser}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     </motion.div>
   );
@@ -211,6 +295,8 @@ function SupervisionProjectCard({
 
 function SupervisionDetailModal({ project, onClose }: { project: SupervisionProject; onClose: () => void }) {
   const clientLogo = getClientLogo(project.client);
+  const endUserLogo = project.endUser ? getClientLogo(project.endUser) : null;
+  const isSameClientAndEndUser = Boolean(project.endUser && project.endUser.trim().toLowerCase() === project.client.trim().toLowerCase());
 
   return (
     <motion.div
@@ -242,36 +328,62 @@ function SupervisionDetailModal({ project, onClose }: { project: SupervisionProj
         {/* Modal Body */}
         <div className="p-5 sm:p-6 space-y-4 overflow-y-auto">
           <div className="mb-4">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
               <StatusBadge status={project.status} />
               <span className="text-xs font-mono font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full flex items-center gap-1 border border-primary/20">
                 <Activity className="w-3.5 h-3.5" /> Project Management & Supervision
               </span>
+              {project.month && (
+                <span className="text-xs font-mono font-semibold text-neutral-800 bg-neutral-100 px-3 py-1 rounded-full flex items-center gap-1 border border-neutral-200">
+                  <Calendar className="w-3.5 h-3.5 text-primary" /> {project.month}
+                </span>
+              )}
             </div>
             <h2 className="text-xl sm:text-2xl font-sans font-bold text-black leading-tight">
               {project.title}
             </h2>
           </div>
           
-          <div className="grid grid-cols-1 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="p-4 rounded-2xl bg-black/5 border border-black/10 flex items-center justify-between gap-4">
               <div>
                 <div className="text-[10px] font-mono uppercase text-foreground/50 font-bold mb-1 flex items-center gap-1.5">
-                  <Building2 className="w-3.5 h-3.5 text-primary" /> Client Contracting Party
+                  <Building2 className="w-3.5 h-3.5 text-primary" /> {isSameClientAndEndUser ? "Client & End User" : "Client Contracting Party"}
                 </div>
-                <div className="text-lg font-bold text-black">{project.client}</div>
+                <div className="text-base sm:text-lg font-bold text-black">{project.client}</div>
               </div>
               {clientLogo && (
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white border border-black/15 p-2.5 flex items-center justify-center shrink-0 shadow-md ml-2">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white border border-black/15 p-2 flex items-center justify-center shrink-0 shadow-md ml-2">
                   <ClientLogoBadge
                     src={clientLogo}
                     alt={project.client}
                     fallbackIcon={null}
-                    className="max-h-12 max-w-12 sm:max-h-16 sm:max-w-16 object-contain"
+                    className="max-h-10 max-w-10 sm:max-h-12 sm:max-w-12 object-contain"
                   />
                 </div>
               )}
             </div>
+
+            {project.endUser && !isSameClientAndEndUser && (
+              <div className="p-4 rounded-2xl bg-black/5 border border-black/10 flex items-center justify-between gap-4">
+                <div>
+                  <div className="text-[10px] font-mono uppercase text-foreground/50 font-bold mb-1 flex items-center gap-1.5">
+                    <UserCheck className="w-3.5 h-3.5 text-primary" /> End User
+                  </div>
+                  <div className="text-base sm:text-lg font-bold text-black">{project.endUser}</div>
+                </div>
+                {endUserLogo && (
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white border border-black/15 p-2 flex items-center justify-center shrink-0 shadow-md ml-2">
+                    <ClientLogoBadge
+                      src={endUserLogo}
+                      alt={project.endUser}
+                      fallbackIcon={null}
+                      className="max-h-10 max-w-10 sm:max-h-12 sm:max-w-12 object-contain"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-3 text-xs font-mono">
@@ -361,7 +473,7 @@ function SupervisionPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
             {SUPERVISION_PROJECTS.map((project, idx) => (
               <SupervisionProjectCard
                 key={project.id}
