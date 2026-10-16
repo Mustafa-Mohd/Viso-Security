@@ -130,7 +130,7 @@ function RootComponent() {
       <Outlet />
       {!isAdmin && (
         <Suspense fallback={null}>
-          {/* <Chatbot /> */}
+          <Chatbot />
           <WhatsAppButton />
         </Suspense>
       )}
