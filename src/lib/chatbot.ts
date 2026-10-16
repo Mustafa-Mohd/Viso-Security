@@ -436,12 +436,30 @@ It is the sovereign regulatory authority in Saudi Arabia operating under the **M
     return "I am the official AI assistant for **VISO Group Consultancy**. I specialize in VISO's physical security engineering, HCIS sovereign compliance, engineering supervision, and translation services. How may I assist you with VISO's services or project requirements today?";
   }
 
-  // 15. General query: If the question is about an unknown VISO fact
-  if (/\b(founder|ceo|salary|fee|cost|price|pricing|revenue|net worth)\b/i.test(query)) {
+  // 14. Unknown specific financial / private detail (salary, revenue, profit, fee)
+  if (/\b(salary|fee|pricing|cost|price|revenue|net worth|net profit|turnover)\b/i.test(query)) {
     if (isArabic) {
       return "هذه المعلومة المحددة غير متوفرة حالياً في سجلات المعرفة المعتمدة للشركة. يسعد فريقنا الهندسي والإداري تزويدك بكافة التفاصيل المطلوبة مباشرة عند التواصل معنا عبر البريد الإلكتروني الرسمي: info@visogroup.com.";
     }
     return "This specific detail is not available in our verified company knowledge base. To get confirmed information regarding your specific inquiry, our engineering team is available via our official communication channels at info@visogroup.com.";
+  }
+
+  // 15. Leadership / CEO / Founder
+  if (
+    /\b(ceo|founder|mohammad bin sadiq)\b/i.test(query) ||
+    /(محمد\s*بن\s*صادق|الرئيس\s*التنفيذي|المؤسس|رئيس\s*مجلس|مدير\s*عام|ceo\s*kaun)/i.test(
+      query,
+    )
+  ) {
+    const faq = FAQS_KNOWLEDGE.find((f) => f.id === "ceo-leadership");
+    if (faq) return isArabic ? faq.answerAr : faq.answerEn;
+    if (isArabic) {
+      return `**الأستاذ محمد بن صادق** هو **المؤسس والرئيس التنفيذي (Founder & CEO)** لشركة رؤية الحلول للاستشارات الأمنية (VISO). وتحت قيادته منذ تأسيس الشركة في فبراير 2019 بالرياض، رسخت فيسو مكانتها كبيت خبرة استشاري هندسي محايد ومستقل للأمن المادي ومعايير الهيئة العليا للأمن الصناعي (HCIS).`;
+    }
+    if (isHindiOrUrdu) {
+      return `VISO Group (**Vision of Solutions for Security Consultations Co. Ltd**) ke **Founder & CEO Mohammad Bin Sadiq** (محمد بن صادق) hain. Unhon ne February 2019 mein company establish ki thi.`;
+    }
+    return `**Mohammad Bin Sadiq** is the **Founder & CEO** of **VISO Group (Vision of Solutions for Security Consultations Co. Ltd)**. He founded VISO in February 2019 in Riyadh, guiding the firm to become Saudi Arabia's benchmark pure-play physical security and sovereign compliance consultancy.`;
   }
 
   // 16. Helpful default

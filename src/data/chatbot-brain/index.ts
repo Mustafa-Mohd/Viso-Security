@@ -58,6 +58,10 @@ COMPANY PURPOSE & VALUES:
 - Core Values:
 ${comp.coreValues.map((v) => `  * ${v}`).join("\n")}
 
+LEADERSHIP & EXECUTIVE MANAGEMENT:
+- Founder & CEO: ${comp.leadership.ceo.nameEn} (${comp.leadership.ceo.nameAr}) - ${comp.leadership.ceo.titleEn} (${comp.leadership.ceo.titleAr})
+- Founder & CEO Message: "${comp.leadership.ceo.message}"
+
 REGULATORY AUTHORITIES & GOVERNANCE:
 ${lic.regulatoryBodies
   .map(
@@ -208,6 +212,16 @@ export function getFastTrackAnswer(userQuery: string, currentLang: string): stri
     )
   ) {
     const faq = FAQS_KNOWLEDGE.find((f) => f.id === "office-locations");
+    if (faq) return isArabic ? faq.answerAr : faq.answerEn;
+  }
+
+  // Who is the CEO / Founder of VISO?
+  if (
+    /^(who is the ceo\??|who is the founder\??|who is the ceo of viso\??|who is the founder of viso\??|ceo name\??|ceo of viso\??|viso ceo\??|من هو الرئيس التنفيذي\??|من هو مؤسس فيسو\??|من هو مؤسس شركة فيسو\??|من هو رئيس شركة فيسو\??|viso ka ceo kaun hai\??|ceo kaun hai\??)$/i.test(
+      query.trim(),
+    )
+  ) {
+    const faq = FAQS_KNOWLEDGE.find((f) => f.id === "ceo-leadership");
     if (faq) return isArabic ? faq.answerAr : faq.answerEn;
   }
 

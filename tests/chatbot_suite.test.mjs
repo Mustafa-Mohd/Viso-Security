@@ -41,6 +41,10 @@ assert(
   "Knowledge brain includes full form of HCIS",
 );
 assert(
+  masterBrain.includes("Mohammad Bin Sadiq"),
+  "Knowledge brain includes Founder & CEO Mohammad Bin Sadiq from About page",
+);
+assert(
   masterBrain.includes("SUPERVISION"),
   "Knowledge brain includes Project Management & Supervision",
 );
@@ -262,6 +266,28 @@ assert(
 
 const res20b = getNaturalFallback("Explain VISO services بالعربي", "ar");
 assert(/[\u0600-\u06FF]/.test(res20b), "Case 20b: Mixed Arabic-English responds in Arabic");
+
+// Case 21: "Who is the CEO of VISO?" (Executive Leadership query)
+const res21a = getNaturalFallback("Who is the CEO of VISO?", "en");
+assert(
+  res21a.includes("Mohammad Bin Sadiq"),
+  "Case 21a: 'Who is the CEO of VISO?' correctly returns Founder & CEO Mohammad Bin Sadiq",
+);
+
+const res21b = getNaturalFallback("من هو الرئيس التنفيذي لشركة فيسو؟", "ar");
+assert(res21b.includes("محمد بن صادق"), "Case 21b: CEO query in Arabic returns محمد بن صادق");
+
+const res21c = getNaturalFallback("VISO ka CEO kaun hai?", "en");
+assert(
+  res21c.includes("Mohammad Bin Sadiq"),
+  "Case 21c: CEO query in Hinglish returns Mohammad Bin Sadiq",
+);
+
+const ftCeo = getFastTrackAnswer("Who is the CEO of VISO?", "en");
+assert(
+  ftCeo !== null && ftCeo.includes("Mohammad Bin Sadiq"),
+  "Case 21d: Fast-track instantly resolves CEO question",
+);
 
 // ─── TEST 4: Live Gemini Model Generation ─────────────────────
 console.log("\n--- Group 4: Live Gemini Model & Backend Compatibility ---");

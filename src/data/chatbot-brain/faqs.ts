@@ -6,8 +6,15 @@ export const FAQS_KNOWLEDGE = [
     id: "what-is-viso",
     questionEn: "What is VISO?",
     questionAr: "ما هي شركة فيسو (VISO)؟",
-    answerEn: `**VISO (Vision of Solutions for Security Consultations Co. Ltd)** is an independent pure-play physical security engineering, project management, and sovereign regulatory compliance consultancy headquartered in Riyadh, Saudi Arabia. Established in 2019, VISO is 100% vendor-agnostic (never selling hardware or accepting vendor commissions) and guides clients through the full engineering lifecycle across all 13 provinces of the Kingdom.`,
-    answerAr: `**شركة رؤية الحلول للاستشارات الأمنية (VISO)** هي بيت خبرة استشاري هندسي مستقل ومتخصص في هندسة الأمن المادي، إدارة المشاريع والإشراف الهندسي، والامتثال التنظيمي للجهات السيادية في المملكة العربية السعودية. تأسست في فبراير 2019 ومقرها الرياض، وتعمل كجهة استشارية محايدة تماماً (Vendor-Agnostic) دون بيع معدات أو قبول عمولات موردين، وتغطي مشاريعها كافة مناطق المملكة الـ 13.`,
+    answerEn: `**VISO (Vision of Solutions for Security Consultations Co. Ltd)** is an independent pure-play physical security engineering, project management, and sovereign regulatory compliance consultancy headquartered in Riyadh, Saudi Arabia. Established in February 2019 by Founder & CEO Mohammad Bin Sadiq, VISO is 100% vendor-agnostic (never selling hardware or accepting vendor commissions) and guides clients through the full engineering lifecycle across all 13 provinces of the Kingdom.`,
+    answerAr: `**شركة رؤية الحلول للاستشارات الأمنية (VISO)** هي بيت خبرة استشاري هندسي مستقل ومتخصص في هندسة الأمن المادي، إدارة المشاريع والإشراف الهندسي، والامتثال التنظيمي للجهات السيادية في المملكة العربية السعودية. تأسست في فبراير 2019 بقيادة المؤسس والرئيس التنفيذي محمد بن صادق ومقرها الرياض، وتعمل كجهة استشارية محايدة تماماً (Vendor-Agnostic) دون بيع معدات أو قبول عمولات موردين، وتغطي مشاريعها كافة مناطق المملكة الـ 13.`,
+  },
+  {
+    id: "ceo-leadership",
+    questionEn: "Who is the CEO or Founder of VISO?",
+    questionAr: "من هو المؤسس والرئيس التنفيذي لشركة فيسو؟",
+    answerEn: `**Mohammad Bin Sadiq** is the **Founder & CEO** of **VISO Group (Vision of Solutions for Security Consultations Co. Ltd)**. Under his leadership since February 2019, VISO has established itself as Saudi Arabia's benchmark pure-play physical security consultancy, providing sovereign engineering, HCIS compliance, project supervision, and certified translation across all 13 provinces of the Kingdom.`,
+    answerAr: `**الأستاذ محمد بن صادق** هو **المؤسس والرئيس التنفيذي (Founder & CEO)** لـ **شركة رؤية الحلول للاستشارات الأمنية (VISO)**. وتحت قيادته منذ تأسيس الشركة في فبراير 2019، أصبحت فيسو بيت خبرة استشاري هندسي رائد في الأمن المادي، الامتثال للوائح الهيئة العليا للأمن الصناعي (HCIS)، والإشراف الهندسي للبنية التحتية الحيوية في المملكة.`,
   },
   {
     id: "what-is-hcis",
