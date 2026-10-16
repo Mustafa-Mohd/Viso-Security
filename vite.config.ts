@@ -19,12 +19,7 @@ function visoChatDevPlugin(apiKey: string): Plugin {
           return next();
         }
 
-        let rawBody = "";
-        req.on("data", (chunk) => {
-          rawBody += chunk;
-        });
-
-        req.on("end", async () => {
+        const handlePayload = async (parsed: any) => {
           res.setHeader("Content-Type", "application/json");
 
           if (!apiKey) {
@@ -34,8 +29,7 @@ function visoChatDevPlugin(apiKey: string): Plugin {
           }
 
           try {
-            const parsed = JSON.parse(rawBody || "{}");
-            const { messages, systemPrompt } = parsed;
+            const { messages, systemPrompt } = parsed || {};
 
             if (!messages || !Array.isArray(messages) || messages.length === 0) {
               res.statusCode = 400;
@@ -106,6 +100,33 @@ function visoChatDevPlugin(apiKey: string): Plugin {
           } catch (err: any) {
             res.statusCode = 500;
             res.end(JSON.stringify({ error: err?.message || "Server parse error" }));
+          }
+        };
+
+        if ((req as any).body && typeof (req as any).body === "object") {
+          handlePayload((req as any).body);
+          return;
+        }
+
+        let rawBody = "";
+        req.on("data", (chunk) => {
+          rawBody += chunk;
+        });
+
+        req.on("end", () => {
+          try {
+            const parsed = JSON.parse(rawBody || "{}");
+            handlePayload(parsed);
+          } catch {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ error: "Malformed JSON body." }));
+          }
+        });
+
+        req.on("error", (err) => {
+          if (!res.writableEnded) {
+            res.statusCode = 500;
+            res.end(JSON.stringify({ error: err.message }));
           }
         });
       });

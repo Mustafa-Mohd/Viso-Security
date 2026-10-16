@@ -89,11 +89,16 @@ async function callBackendChatApi(
 
   for (const endpoint of endpoints) {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
+
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages, systemPrompt }),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
 
       if (res.ok) {
         const data = await res.json();
@@ -101,8 +106,8 @@ async function callBackendChatApi(
           return data.answer.trim();
         }
       }
-    } catch (e) {
-      // Try next endpoint
+    } catch {
+      // Endpoint timed out or errored, try next
     }
   }
 
@@ -146,6 +151,9 @@ async function callDirectGeminiApi(
 
   for (const model of models) {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 7000);
+
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
       const res = await fetch(url, {
         method: "POST",
@@ -158,7 +166,9 @@ async function callDirectGeminiApi(
             maxOutputTokens: 1500,
           },
         }),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
 
       if (res.ok) {
         const json = await res.json();
@@ -167,7 +177,7 @@ async function callDirectGeminiApi(
           return text.trim();
         }
       }
-    } catch (err) {
+    } catch {
       // try next model
     }
   }
