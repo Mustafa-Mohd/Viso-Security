@@ -173,70 +173,82 @@ export function ServicesCarousel({ items }: { items: ServiceItem[] }) {
 
       {/* Details Modal */}
       <AnimatePresence>
-        {selectedService && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:p-8"
-            onClick={() => setSelectedService(null)}
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-surface w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
-            >
-              <div className="relative h-48 md:h-64 flex-shrink-0">
-                <img src={selectedService.img} alt={selectedService.title} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                <button
-                  onClick={() => setSelectedService(null)}
-                  className="absolute top-4 right-4 p-2 bg-black/40 hover:bg-black/60 text-white rounded-full transition-colors backdrop-blur-md"
-                >
-                  <X size={20} />
-                </button>
-                <h2 className="absolute bottom-6 left-6 md:left-8 text-3xl md:text-4xl font-display font-bold text-white">
-                  {selectedService.title}
-                </h2>
-              </div>
-              <div className="p-6 md:p-8 font-sans">
-                <p className="text-lg md:text-xl text-foreground/80 mb-6 font-medium leading-relaxed">
-                  {selectedService.desc}
-                </p>
-                {selectedService.moreInfo && (
-                  <div className="prose prose-sm md:prose-base max-w-none text-foreground/70 leading-loose">
-                    {selectedService.moreInfo.split('\n\n').map((paragraph, idx) => (
-                      <p key={idx} className="mb-4">{paragraph}</p>
-                    ))}
-                  </div>
-                )}
-                
-                <div className="mt-8 pt-6 border-t border-foreground/10 flex flex-wrap items-center justify-between gap-3">
-                  <a
-                    href={getServiceWhatsAppUrl(selectedService.title, i18n.language === 'ar')}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-white font-bold text-sm tracking-wide shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300"
-                  >
-                    <WhatsAppIcon className="w-4 h-4 text-white" />
-                    <span>{i18n.language === 'ar' ? "طلب استشارة عبر واتساب" : "Request Consultation via WhatsApp"}</span>
-                  </a>
+        {selectedService && (() => {
+          const isTraining = Boolean(
+            selectedService.url === "/services/training" ||
+            selectedService.title?.toLowerCase().includes("train") ||
+            selectedService.title?.includes("تدريب")
+          );
 
-                  {(selectedService.url === "/translation" || selectedService.url === "/security") && (
-                    <Link 
-                      to={selectedService.url}
-                      className="inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-full font-bold text-sm tracking-wide hover:bg-primary/90 transition-colors"
-                    >
-                      {selectedService.url === "/translation" ? t("nav.translation") : t("nav.security")} <ChevronRight size={16} className="rtl:rotate-180" />
-                    </Link>
-                  )}
+          return (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:p-8"
+              onClick={() => setSelectedService(null)}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-surface w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
+              >
+                <div className={isTraining ? "relative h-36 md:h-44 flex-shrink-0" : "relative h-48 md:h-64 flex-shrink-0"}>
+                  <img src={selectedService.img} alt={selectedService.title} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                  <button
+                    onClick={() => setSelectedService(null)}
+                    className="absolute top-4 right-4 p-2 bg-black/40 hover:bg-black/60 text-white rounded-full transition-colors backdrop-blur-md"
+                  >
+                    <X size={20} />
+                  </button>
+                  <h2 className={isTraining ? "absolute bottom-4 left-6 md:left-8 rtl:left-auto rtl:right-6 rtl:md:right-8 text-2xl md:text-3xl font-display font-bold text-white" : "absolute bottom-6 left-6 md:left-8 text-3xl md:text-4xl font-display font-bold text-white"}>
+                    {selectedService.title}
+                  </h2>
                 </div>
-              </div>
+                <div className={isTraining ? "p-5 md:p-6 font-sans overflow-y-auto flex-1 flex flex-col" : "p-6 md:p-8 font-sans"}>
+                  <p className={isTraining ? "text-base md:text-lg text-foreground/80 mb-3 font-medium leading-snug" : "text-lg md:text-xl text-foreground/80 mb-6 font-medium leading-relaxed"}>
+                    {selectedService.desc}
+                  </p>
+                  {selectedService.moreInfo && (
+                    <div className={isTraining ? "prose prose-sm max-w-none text-foreground/70 leading-normal" : "prose prose-sm md:prose-base max-w-none text-foreground/70 leading-loose"}>
+                      {selectedService.moreInfo.split('\n\n').map((paragraph, idx) => (
+                        <p key={idx} className={isTraining ? "mb-2" : "mb-4"}>{paragraph}</p>
+                      ))}
+                    </div>
+                  )}
+                  
+                  <div className={isTraining ? "mt-4 pt-3 border-t border-foreground/10 flex flex-wrap items-center justify-between gap-2 shrink-0" : "mt-8 pt-6 border-t border-foreground/10 flex flex-wrap items-center justify-between gap-3"}>
+                    <a
+                      href={getServiceWhatsAppUrl(selectedService.title, i18n.language === 'ar')}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={
+                        isTraining
+                          ? "inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-white font-semibold text-xs tracking-wide shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300"
+                          : "inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-white font-bold text-sm tracking-wide shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300"
+                      }
+                    >
+                      <WhatsAppIcon className={isTraining ? "w-3.5 h-3.5 text-white" : "w-4 h-4 text-white"} />
+                      <span>{i18n.language === 'ar' ? "طلب استشارة عبر واتساب" : "Request Consultation via WhatsApp"}</span>
+                    </a>
+
+                    {(selectedService.url === "/translation" || selectedService.url === "/security") && (
+                      <Link 
+                        to={selectedService.url}
+                        className="inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-full font-bold text-sm tracking-wide hover:bg-primary/90 transition-colors"
+                      >
+                        {selectedService.url === "/translation" ? t("nav.translation") : t("nav.security")} <ChevronRight size={16} className="rtl:rotate-180" />
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
+          );
+        })()}
       </AnimatePresence>
     </>
   );
