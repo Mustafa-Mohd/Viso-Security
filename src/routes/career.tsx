@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { TopNav } from "@/components/TopNav";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Briefcase,
@@ -21,8 +21,10 @@ import {
   ExternalLink,
   Mail,
   Link2,
+  Search,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { sendJobApplicationNotification } from "@/lib/emailApi";
 
 export const Route = createFileRoute("/career")({
   head: () => ({
@@ -36,7 +38,33 @@ export const Route = createFileRoute("/career")({
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
-const JOB_IDS = ["doc", "security", "hr"] as const;
+const JOB_IDS = [
+  "doc",
+  "security",
+  "hr",
+  "civil",
+  "planning",
+  "electrical",
+] as const;
+
+const JOB_IMAGES: Record<string, string> = {
+  doc: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790590884/ChatGPT_Image_Sep_28_2026_03_51_15_PM.png",
+  security: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790595554/ChatGPT_Image_Sep_28_2026_05_08_48_PM.png",
+  hr: "https://images.unsplash.com/photo-1573164713988-8665fc963095?w=800&q=80",
+  civil: "https://media.istockphoto.com/id/1334138265/photo/surveyor-equipment-surveyor-u2019s-telescope-at-construction-site-or-surveying-for-making.jpg?s=612x612&w=0&k=20&c=jNHW2l4oYoYhHfN7DWRlOUterkDEEqVF60EV-1zD7Jg=",
+  planning: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80",
+  electrical: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&q=80",
+};
+
+const JOB_BADGES: Record<string, string[]> = {
+  civil: ["HCIS SEC", "Blast Resistance", "Perimeter Infrastructure"],
+  planning: ["Primavera P6", "EPC Milestones", "Critical Path Scheduling"],
+  electrical: ["Low-Current Systems", "CCTV / VSS Matrix", "PIDS Security"],
+  doc: ["DMS Platform", "Revision Tracking", "ISO Standards"],
+  security: ["Physical Security", "Site Defense", "Asset Protection"],
+  hr: ["Talent Acquisition", "ESS Platform", "People Operations"],
+};
+
 const PILLAR_ICONS = [Shield, Sparkles, Users] as const;
 
 export interface CareerJob {
@@ -442,15 +470,45 @@ function OpenRoles({
   highlightedRoleId: string | null;
 }) {
   const { t } = useTranslation();
+  const [selectedDept, setSelectedDept] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+
+  // Unique departments for filter pills
+  const departments = useMemo(() => {
+    const list: string[] = [];
+    roleList.forEach((j) => {
+      if (!list.includes(j.department)) {
+        list.push(j.department);
+      }
+    });
+    return list;
+  }, [roleList]);
+
+  // Filtered roles based on department and search query
+  const filteredRoles = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    return roleList.filter((job) => {
+      const matchDept = selectedDept === "all" || job.department === selectedDept;
+      const matchSearch =
+        !q ||
+        job.title.toLowerCase().includes(q) ||
+        job.department.toLowerCase().includes(q) ||
+        job.location.toLowerCase().includes(q) ||
+        job.description.toLowerCase().includes(q);
+      return matchDept && matchSearch;
+    });
+  }, [roleList, selectedDept, searchQuery]);
+
   return (
     <section id="roles" className="py-16 md:py-24">
       <div className="max-w-[1400px] mx-auto px-6 md:px-12">
+        {/* Section Heading */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, ease }}
-          className="mb-10 md:mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-4"
+          className="mb-8 md:mb-10 flex flex-col md:flex-row md:items-end md:justify-between gap-4"
         >
           <div>
             <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-3">
@@ -461,125 +519,212 @@ function OpenRoles({
               {t("career.roles_title")}
             </h2>
           </div>
-          <p className="text-sm text-foreground/45 font-light max-w-sm md:text-right">
+          <p className="text-sm text-foreground/50 font-light max-w-sm md:text-right">
             {t("career.roles_desc")}
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {roleList.map((job, index) => {
-            const isHighlighted = highlightedRoleId === job.id;
+        {/* Filter and Search Bar */}
+        <div className="mb-10 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 bg-surface/60 backdrop-blur-sm border border-foreground/10 p-3.5 md:p-4 rounded-2xl">
+          {/* Department Pills */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
+            <button
+              type="button"
+              onClick={() => setSelectedDept("all")}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-mono tracking-wider uppercase transition-all shrink-0 cursor-pointer ${
+                selectedDept === "all"
+                  ? "bg-primary text-primary-foreground font-bold shadow-sm"
+                  : "bg-foreground/5 hover:bg-foreground/10 text-foreground/70"
+              }`}
+            >
+              {t("career.all_departments", "All Disciplines")} ({roleList.length})
+            </button>
+            {departments.map((dept) => {
+              const count = roleList.filter((j) => j.department === dept).length;
+              return (
+                <button
+                  key={dept}
+                  type="button"
+                  onClick={() => setSelectedDept(dept)}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-mono tracking-wider uppercase transition-all shrink-0 cursor-pointer ${
+                    selectedDept === dept
+                      ? "bg-primary text-primary-foreground font-bold shadow-sm"
+                      : "bg-foreground/5 hover:bg-foreground/10 text-foreground/70"
+                  }`}
+                >
+                  {dept} ({count})
+                </button>
+              );
+            })}
+          </div>
 
-            return (
-              <motion.article
-                key={job.id}
-                id={`role-${job.id}`}
-                onClick={() => onApply(job.title)}
-                initial={{ opacity: 0, y: 18 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.08, duration: 0.55, ease }}
-                className={`group flex flex-col border bg-surface transition-all duration-400 cursor-pointer overflow-hidden rounded-xl relative ${
-                  isHighlighted
-                    ? "border-primary ring-2 ring-primary ring-offset-4 ring-offset-background shadow-[0_0_35px_rgba(212,175,55,0.35)] scale-[1.01]"
-                    : "border-foreground/10 hover:border-primary/35 hover:shadow-xl"
-                }`}
+          {/* Search Input */}
+          <div className="relative min-w-[260px] md:min-w-[320px]">
+            <Search className="w-4 h-4 text-foreground/40 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t("career.filter_search_placeholder", "Search roles by title, department, or location...")}
+              className="w-full bg-background/80 border border-foreground/15 rounded-xl pl-10 pr-9 py-2 text-xs text-foreground placeholder:text-foreground/40 focus:outline-none focus:border-primary/60 transition-colors"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/40 hover:text-foreground p-0.5"
+                title="Clear search"
               >
-                {/* Active Highlight Badge */}
-                {isHighlighted && (
-                  <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 bg-gradient-to-r from-amber-400 via-primary to-amber-500 text-black px-3.5 py-1 rounded-full font-mono text-[10px] font-extrabold tracking-wider uppercase shadow-lg flex items-center gap-1.5 animate-bounce">
-                    <Sparkles className="w-3.5 h-3.5 fill-black" /> Selected Role
-                  </div>
-                )}
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+        </div>
 
-                {/* Image Section */}
-                <div className="w-full h-48 overflow-hidden bg-foreground/5 relative">
-                  {job.id === "doc" ? (
-                    <img 
-                      src="https://res.cloudinary.com/dppwnds6z/image/upload/v1790590884/ChatGPT_Image_Sep_28_2026_03_51_15_PM.png" 
-                      alt={job.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
-                  ) : job.id === "security" ? (
-                    <img 
-                      src="https://res.cloudinary.com/dppwnds6z/image/upload/v1790595554/ChatGPT_Image_Sep_28_2026_05_08_48_PM.png" 
-                      alt={job.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
-                  ) : (
-                    <img 
-                      src="https://images.unsplash.com/photo-1573164713988-8665fc963095?w=800&q=80" 
-                      alt={job.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
+        {/* Roles Grid */}
+        {filteredRoles.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredRoles.map((job, index) => {
+              const isHighlighted = highlightedRoleId === job.id;
+              const imgUrl =
+                JOB_IMAGES[job.id] ||
+                "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=800&q=80";
+              const badges = JOB_BADGES[job.id] || [];
+
+              return (
+                <motion.article
+                  key={job.id}
+                  id={`role-${job.id}`}
+                  onClick={() => onApply(job.title)}
+                  initial={{ opacity: 0, y: 18 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.06, duration: 0.5, ease }}
+                  className={`group flex flex-col border bg-surface transition-all duration-400 cursor-pointer overflow-hidden rounded-2xl relative ${
+                    isHighlighted
+                      ? "border-primary ring-2 ring-primary ring-offset-4 ring-offset-background shadow-[0_0_35px_rgba(212,175,55,0.35)] scale-[1.01]"
+                      : "border-foreground/10 hover:border-primary/40 hover:shadow-xl hover:-translate-y-1"
+                  }`}
+                >
+                  {/* Active Highlight Badge */}
+                  {isHighlighted && (
+                    <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 bg-gradient-to-r from-amber-400 via-primary to-amber-500 text-black px-3.5 py-1 rounded-full font-mono text-[10px] font-extrabold tracking-wider uppercase shadow-lg flex items-center gap-1.5 animate-bounce">
+                      <Sparkles className="w-3.5 h-3.5 fill-black" /> Selected Role
+                    </div>
                   )}
-                  <div className="absolute top-4 left-4 bg-background/90 backdrop-blur-sm px-3 py-1 rounded-full font-mono text-[10px] tracking-[0.2em] uppercase text-primary">
-                    {job.department}
-                  </div>
 
-                  {/* Top-Right Quick Share Button */}
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onShare(job);
-                    }}
-                    className="absolute top-3.5 right-3.5 z-20 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-background/90 hover:bg-background text-foreground/80 hover:text-primary backdrop-blur-md border border-foreground/15 shadow-sm text-xs font-mono font-medium transition-all group-hover:border-primary/40 cursor-pointer"
-                    title="Share role & copy link"
-                  >
-                    <Share2 className="w-3.5 h-3.5 text-primary" />
-                    <span>Share</span>
-                  </button>
-                </div>
+                  {/* Image Section */}
+                  <div className="w-full h-52 overflow-hidden bg-foreground/5 relative">
+                    <img
+                      src={imgUrl}
+                      alt={job.title}
+                      loading="lazy"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
 
-                {/* Content Section */}
-                <div className="p-6 flex flex-col flex-1">
-                  <h3 className="font-display text-xl md:text-2xl tracking-tight group-hover:text-primary transition-colors mb-4">
-                    {job.title}
-                  </h3>
-                  
-                  <div className="flex flex-col gap-2 text-xs font-mono text-foreground/50 mb-6">
-                    <span className="inline-flex items-center gap-2">
-                      <MapPin className="w-3.5 h-3.5 text-primary" />
-                      {job.location}
-                    </span>
-                    <span className="inline-flex items-center gap-2">
-                      <Clock className="w-3.5 h-3.5 text-primary" />
-                      {job.type}
-                    </span>
-                  </div>
-                  
-                  <p className="text-sm text-foreground/55 font-light leading-relaxed mb-6 line-clamp-3 flex-1">
-                    {job.description}
-                  </p>
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent opacity-80" />
 
-                  <div className="mt-auto pt-4 border-t border-foreground/5 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-bold tracking-[0.18em] text-foreground group-hover:text-primary transition-colors uppercase">
-                        {t("career.apply")}
-                      </span>
-                      <ArrowUpRight className="w-4 h-4 text-primary group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                    {/* Department Badge */}
+                    <div className="absolute top-3.5 left-3.5 bg-background/90 backdrop-blur-md border border-foreground/10 px-3 py-1 rounded-full font-mono text-[10px] tracking-[0.18em] uppercase text-primary font-semibold shadow-sm">
+                      {job.department}
                     </div>
 
-                    {/* Share action button in footer */}
+                    {/* Top-Right Quick Share Button */}
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         onShare(job);
                       }}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-foreground/15 hover:border-primary/50 bg-foreground/[0.02] hover:bg-primary/10 text-foreground/75 hover:text-primary transition-all text-xs font-mono font-medium cursor-pointer"
-                      title="Share link & social media"
+                      className="absolute top-3.5 right-3.5 z-20 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-background/90 hover:bg-background text-foreground/80 hover:text-primary backdrop-blur-md border border-foreground/15 shadow-sm text-xs font-mono font-medium transition-all group-hover:border-primary/40 cursor-pointer"
+                      title="Share role & copy link"
                     >
                       <Share2 className="w-3.5 h-3.5 text-primary" />
                       <span>Share</span>
                     </button>
                   </div>
-                </div>
-              </motion.article>
-            );
-          })}
-        </div>
+
+                  {/* Content Section */}
+                  <div className="p-6 flex flex-col flex-1">
+                    <h3 className="font-display text-xl md:text-2xl font-bold tracking-tight group-hover:text-primary transition-colors mb-3">
+                      {job.title}
+                    </h3>
+
+                    {/* Competency Badges */}
+                    {badges.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mb-4">
+                        {badges.map((b) => (
+                          <span
+                            key={b}
+                            className="text-[9.5px] font-mono px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-primary/90 font-medium"
+                          >
+                            {b}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Metadata */}
+                    <div className="flex flex-wrap gap-y-1.5 gap-x-4 text-xs font-mono text-foreground/50 mb-5">
+                      <span className="inline-flex items-center gap-1.5">
+                        <MapPin className="w-3.5 h-3.5 text-primary" />
+                        {job.location}
+                      </span>
+                      <span className="inline-flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-primary" />
+                        {job.type}
+                      </span>
+                    </div>
+
+                    <p className="text-sm text-foreground/60 font-light leading-relaxed mb-6 line-clamp-3 flex-1">
+                      {job.description}
+                    </p>
+
+                    {/* Action Bar */}
+                    <div className="mt-auto pt-4 border-t border-foreground/10 flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-bold tracking-[0.18em] text-foreground group-hover:text-primary transition-colors uppercase">
+                          {t("career.apply")}
+                        </span>
+                        <ArrowUpRight className="w-4 h-4 text-primary group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onShare(job);
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-foreground/15 hover:border-primary/50 bg-foreground/[0.02] hover:bg-primary/10 text-foreground/75 hover:text-primary transition-all text-xs font-mono font-medium cursor-pointer"
+                        title="Share link & social media"
+                      >
+                        <Share2 className="w-3.5 h-3.5 text-primary" />
+                        <span>Share</span>
+                      </button>
+                    </div>
+                  </div>
+                </motion.article>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-16 bg-surface/40 border border-foreground/10 rounded-2xl p-8">
+            <p className="text-foreground/60 text-sm mb-4">
+              {t("career.no_roles_found", "No open roles match your current search.")}
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedDept("all");
+                setSearchQuery("");
+              }}
+              className="px-4 py-2 bg-primary/15 hover:bg-primary/25 border border-primary/30 text-primary text-xs font-mono tracking-wider uppercase rounded-lg transition-colors cursor-pointer"
+            >
+              {t("career.clear_filters", "Clear Search")}
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );
@@ -1063,6 +1208,24 @@ function ApplicationModal({
       ]);
 
       if (error) throw error;
+
+      // Dispatch Resend emails (HR notification with resume link + candidate acknowledgment)
+      try {
+        const emailRes = await sendJobApplicationNotification({
+          name,
+          email,
+          phone,
+          position: jobTitle,
+          coverLetter: coverLetter || null,
+          resumeUrl: publicUrl || null,
+        });
+        if (!emailRes.success) {
+          console.warn("Job application email dispatch notice:", emailRes.error);
+        }
+      } catch (emailErr) {
+        console.warn("Could not dispatch job application email:", emailErr);
+      }
+
       setSuccess(true);
     } catch (err: any) {
       console.error(err);

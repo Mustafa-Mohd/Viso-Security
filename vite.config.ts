@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import tailwindcss from "@tailwindcss/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
+import { handleEmailDispatch } from "./server/emailService";
 
 const GEMINI_MODELS = ["gemini-3.5-flash", "gemini-3.8-flash", "gemini-3.5-flash-lite"];
 
@@ -134,9 +135,71 @@ function visoChatDevPlugin(apiKey: string): Plugin {
   };
 }
 
+function visoEmailDevPlugin(emailConfig: {
+  apiKey?: string;
+  fromEmail?: string;
+  adminEmail?: string;
+  hrEmail?: string;
+}): Plugin {
+  return {
+    name: "viso-email-dev-api",
+    configureServer(server) {
+      server.middlewares.use("/api/send-email", async (req, res, next) => {
+        if (req.method !== "POST") {
+          return next();
+        }
+
+        const handlePayload = async (payload: any) => {
+          res.setHeader("Content-Type", "application/json");
+
+          try {
+            const result = await handleEmailDispatch(payload, emailConfig);
+            res.statusCode = result.success ? 200 : result.error?.includes("RESEND_API_KEY") ? 503 : 500;
+            res.end(JSON.stringify(result));
+          } catch (err: any) {
+            res.statusCode = 500;
+            res.end(JSON.stringify({ success: false, error: err?.message || "Internal error dispatching email" }));
+          }
+        };
+
+        if ((req as any).body && typeof (req as any).body === "object") {
+          handlePayload((req as any).body);
+          return;
+        }
+
+        let rawBody = "";
+        req.on("data", (chunk) => {
+          rawBody += chunk;
+        });
+
+        req.on("end", () => {
+          try {
+            const parsed = JSON.parse(rawBody || "{}");
+            handlePayload(parsed);
+          } catch {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ error: "Malformed JSON body." }));
+          }
+        });
+
+        req.on("error", (err) => {
+          if (!res.writableEnded) {
+            res.statusCode = 500;
+            res.end(JSON.stringify({ error: err.message }));
+          }
+        });
+      });
+    },
+  };
+}
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const apiKey = env.GEMINI_API_KEY || env.VITE_GEMINI_API_KEY || "";
+  const resendApiKey = env.RESEND_API_KEY || env.VITE_RESEND_API_KEY || "";
+  const resendFromEmail = env.RESEND_FROM_EMAIL || env.VITE_RESEND_FROM_EMAIL || "";
+  const adminEmail = env.ADMIN_NOTIFICATION_EMAIL || env.ADMIN_EMAIL || env.VITE_ADMIN_EMAIL || "";
+  const hrEmail = env.HR_NOTIFICATION_EMAIL || env.HR_EMAIL || env.VITE_HR_EMAIL || "";
 
   return {
     plugins: [
@@ -145,6 +208,12 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       tsconfigPaths(),
       visoChatDevPlugin(apiKey),
+      visoEmailDevPlugin({
+        apiKey: resendApiKey,
+        fromEmail: resendFromEmail,
+        adminEmail,
+        hrEmail,
+      }),
     ],
     resolve: {
       alias: {

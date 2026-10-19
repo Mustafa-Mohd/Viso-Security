@@ -510,6 +510,24 @@
       "p3": { "title": "Leadership", "desc": "Lead by example — building a strong security culture across teams." }
     },
     "jobs": {
+      "civil": {
+        "title": "Civil Engineer",
+        "department": "Engineering & Infrastructure",
+        "location": "Riyadh / Site Operations, KSA",
+        "description": "Lead structural security engineering, perimeter blast-mitigation design, anti-ram barrier specifications, and civil infrastructure compliance aligned with HCIS SEC directives across mission-critical facilities."
+      },
+      "planning": {
+        "title": "Planning Engineer",
+        "department": "Project Controls & Scheduling",
+        "location": "Riyadh, KSA",
+        "description": "Develop and maintain master project schedules using Primavera P6, analyze EPC milestones and critical paths, and coordinate interdisciplinary engineering deliverables for high-security infrastructure programs."
+      },
+      "electrical": {
+        "title": "Electrical Engineer",
+        "department": "Security Systems Engineering",
+        "location": "Dammam / Eastern Province, KSA",
+        "description": "Design and supervise low-current electrical security architecture, video surveillance systems (VSS/CCTV), perimeter intrusion detection (PIDS), and dual-redundant backup power systems adhering to HCIS SEC-03 and SEC-04."
+      },
       "doc": {
         "title": "Document Controller",
         "department": "Projects / Document Control",
@@ -529,6 +547,10 @@
         "description": "Drive employee engagement, handle onboarding, and manage records in our internal ESS platform while supporting growth across the Kingdom."
       }
     },
+    "all_departments": "All Disciplines",
+    "filter_search_placeholder": "Search roles by title, department, or location...",
+    "no_roles_found": "No open roles match your current search.",
+    "clear_filters": "Clear Search",
     "cta_title": "Don't see your role?",
     "cta_desc": "Send a general application — we review every submission carefully.",
     "cta_btn": "GENERAL APPLICATION",
@@ -672,7 +694,7 @@
     "hero_desc": "Integrating high-end design with rigorous security protocols to create visually stunning and exceptionally safe spaces.",
     "explore": "Explore Our Services",
     "est": "Established 2019 · Kingdom of Saudi Arabia",
-    "vision_for": "VISION OF SOLUTIONS FOR ",
+    "vision_for": "VISION OF SOLUTIONS FOR",
     "sec_consult": "SECURITY CONSULTATIONS",
     "trans_services": "TRANSLATION SERVICES",
     "scroll": "Scroll",

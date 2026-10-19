@@ -193,11 +193,21 @@ export function TopNav() {
                 className="h-9 sm:h-11 md:h-13 lg:h-16 w-auto object-contain shrink-0 transition-transform duration-500 group-hover:scale-105"
               />
               <div className="flex flex-col justify-center min-w-0 me-1 sm:me-2 lg:me-3 xl:me-6 border-s border-foreground/20 ps-2.5 sm:ps-3.5 py-0.5 font-brand-condensed">
-                <span className="text-foreground font-brand-condensed font-semibold text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] xl:text-[17px] tracking-[0.08em] uppercase whitespace-nowrap leading-tight">
-                  {t("about_page.vision_for")}
+                <span
+                  className={cn(
+                    "text-foreground font-brand-condensed font-semibold text-[13px] sm:text-[14px] md:text-[15px] lg:text-[15.5px] xl:text-[16.5px] uppercase whitespace-nowrap leading-tight",
+                    isAr ? "tracking-normal" : "tracking-[0.045em] xl:tracking-[0.048em]"
+                  )}
+                >
+                  {t("about_page.vision_for").trim()}
                 </span>
                 <ShiningSwordLine />
-                <span className="text-primary font-brand-condensed font-semibold text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] xl:text-[16px] tracking-[0.06em] uppercase whitespace-nowrap leading-tight">
+                <span
+                  className={cn(
+                    "text-primary font-brand-condensed font-semibold text-[13px] sm:text-[14px] md:text-[15px] lg:text-[15.5px] xl:text-[16.5px] uppercase whitespace-nowrap leading-tight",
+                    isAr ? "tracking-normal" : "tracking-[0.135em] sm:tracking-[0.138em] md:tracking-[0.14em] lg:tracking-[0.142em] xl:tracking-[0.145em]"
+                  )}
+                >
                   <TypewriterText phrases={[t("about_page.sec_consult"), t("about_page.trans_services")]} />
                 </span>
               </div>

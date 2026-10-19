@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import {
+  MessageCircle,
   X,
   Send,
   Loader2,
@@ -159,12 +160,8 @@ export function Chatbot() {
               {/* Header */}
               <div className="bg-neutral-50/95 border-b border-neutral-200/80 p-4 flex justify-between items-center shrink-0">
                 <div className="flex items-center gap-3">
-                  <div className="relative w-10 h-10 rounded-xl bg-white border border-gold/50 p-1 flex items-center justify-center shadow-xs shrink-0 overflow-hidden">
-                    <img
-                      src={VISO_LOGO_URL}
-                      alt="VISO Logo"
-                      className="w-full h-full object-contain filter drop-shadow-[0_1px_2px_rgba(212,175,55,0.4)]"
-                    />
+                  <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-gold/25 to-gold/10 border border-gold/50 flex items-center justify-center shadow-xs shrink-0 overflow-hidden text-amber-800">
+                    <MessageCircle className="w-5 h-5 text-amber-700 fill-amber-500/20" />
                     <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white" />
                   </div>
                   <div>
@@ -214,12 +211,8 @@ export function Chatbot() {
                       className={`flex items-end gap-2 ${isUser ? "justify-end" : "justify-start"}`}
                     >
                       {!isUser && (
-                        <div className="w-7 h-7 rounded-lg bg-white border border-gold/40 p-0.5 shadow-xs shrink-0 flex items-center justify-center mb-0.5">
-                          <img
-                            src={VISO_LOGO_URL}
-                            alt="VISO"
-                            className="w-full h-full object-contain"
-                          />
+                        <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-gold/40 shadow-xs shrink-0 flex items-center justify-center mb-0.5 text-amber-700">
+                          <MessageCircle className="w-4 h-4 fill-amber-500/15" />
                         </div>
                       )}
                       <div
@@ -345,7 +338,7 @@ export function Chatbot() {
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.94 }}
           onClick={() => setIsOpen(!isOpen)}
-          className="relative group w-14 h-14 rounded-full bg-white border-2 border-gold/70 text-neutral-900 shadow-xl flex items-center justify-center cursor-pointer transition-shadow hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]"
+          className="relative group w-14 h-14 rounded-full bg-gradient-to-tr from-[#161b22] to-[#21262d] border-2 border-gold/70 text-gold shadow-2xl flex items-center justify-center cursor-pointer transition-shadow hover:shadow-[0_0_25px_rgba(212,175,55,0.45)]"
           aria-label="Toggle VISO AI Assistant"
         >
           {/* Subtle pulse ring */}
@@ -360,7 +353,7 @@ export function Chatbot() {
                 exit={{ rotate: 90, opacity: 0 }}
                 transition={{ duration: 0.15 }}
               >
-                <X className="w-6 h-6 text-neutral-800" />
+                <X className="w-6 h-6 text-white" />
               </motion.div>
             ) : (
               <motion.div
@@ -369,14 +362,10 @@ export function Chatbot() {
                 animate={{ rotate: 0, opacity: 1 }}
                 exit={{ rotate: 90, opacity: 0 }}
                 transition={{ duration: 0.15 }}
-                className="relative w-8 h-8 flex items-center justify-center"
+                className="relative flex items-center justify-center"
               >
-                <img
-                  src={VISO_LOGO_URL}
-                  alt="VISO Logo"
-                  className="w-full h-full object-contain filter drop-shadow-[0_1px_2px_rgba(212,175,55,0.4)]"
-                />
-                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white" />
+                <MessageCircle className="w-7 h-7 text-gold fill-gold/20" />
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-[#161b22]" />
               </motion.div>
             )}
           </AnimatePresence>

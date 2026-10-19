@@ -1,4 +1,5 @@
 import { supabase, isSupabaseConfigured } from "./supabase";
+import { sendContactNotification } from "./emailApi";
 
 export interface ContactSubmission {
   id: string;
@@ -52,6 +53,21 @@ export async function submitContactInquiry(payload: {
 
   if (error) {
     throw new Error(error.message || "Failed to send message");
+  }
+
+  // Trigger Resend email delivery (Admin lead notification + submitter acknowledgment)
+  try {
+    const emailResult = await sendContactNotification({
+      name: payload.name,
+      email: payload.email,
+      company: payload.company,
+      message: payload.message,
+    });
+    if (!emailResult.success) {
+      console.warn("Contact inquiry email dispatch notice:", emailResult.error);
+    }
+  } catch (emailErr) {
+    console.warn("Could not dispatch contact email:", emailErr);
   }
 }
 
