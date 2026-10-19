@@ -495,7 +495,7 @@ function SupervisionPage() {
                 Project Management & Supervision Overview
               </h2>
 
-              <p className="text-base sm:text-lg text-black/80 leading-relaxed font-sans mb-10 p-6 rounded-2xl bg-black/[0.02] border border-black/5">
+              <p className="text-base sm:text-lg text-black/80 leading-relaxed font-sans mb-10 p-6 rounded-2xl bg-black/[0.02] border border-black/5 text-justify">
                 VISO provides end-to-end project management and supervision services, supporting clients throughout the project lifecycle from planning and mobilization through construction, testing, commissioning, and closeout. Our services include project planning and scheduling, progress and cost monitoring, contractor management, technical and commercial coordination, quality and HSE oversight, risk management, reporting, and stakeholder coordination. We work closely with clients, contractors, and project stakeholders to maintain project progress, manage interfaces, resolve issues, and ensure the works are delivered in accordance with SAIS requirements, specifications, schedule, quality, and HSE standards.
               </p>
 

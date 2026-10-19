@@ -148,7 +148,7 @@ function HomePage() {
                   title: t("home_interactive.services_carousel.train_title"),
                   desc: t("home_interactive.services_carousel.train_desc"),
                   url: "/services/training",
-                  img: "https://media.licdn.com/dms/image/v2/D4D22AQEKtu9ZTi0QTg/feedshare-shrink_1280/B4DZ6208h6IYAM-/0/1781183794364?e=1792022400&v=beta&t=w7-eimTq1kODCoVp9clIrPgj8CGEqIpo0ClQ6yrivVc",
+                  img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1792398542/1781183794364.jpg",
                   color: "group-hover:border-purple-500/50 group-hover:shadow-purple-500/20",
                   moreInfo: t("home_interactive.services_carousel.train_more")
                 },
@@ -1665,7 +1665,7 @@ function About({ data }: { data?: any }) {
         {/* Base blurred layer */}
         <div className="absolute inset-0 opacity-10 hidden md:block">
           <img 
-            src="https://media.licdn.com/dms/image/v2/D4D22AQEKtu9ZTi0QTg/feedshare-shrink_1280/B4DZ6208h6IYAM-/0/1781183794364?e=1792022400&v=beta&t=w7-eimTq1kODCoVp9clIrPgj8CGEqIpo0ClQ6yrivVc"
+            src="https://res.cloudinary.com/dppwnds6z/image/upload/v1792398542/1781183794364.jpg"
             alt=""
             className="w-full h-full object-cover blur-3xl grayscale"
           />
@@ -1677,7 +1677,7 @@ function About({ data }: { data?: any }) {
           style={{ WebkitMaskImage: maskImage, maskImage: maskImage }}
         >
           <img 
-            src="https://media.licdn.com/dms/image/v2/D4D22AQEKtu9ZTi0QTg/feedshare-shrink_1280/B4DZ6208h6IYAM-/0/1781183794364?e=1792022400&v=beta&t=w7-eimTq1kODCoVp9clIrPgj8CGEqIpo0ClQ6yrivVc"
+            src="https://res.cloudinary.com/dppwnds6z/image/upload/v1792398542/1781183794364.jpg"
             alt=""
             className="w-full h-full object-cover opacity-15 group-hover:opacity-70 transition-opacity duration-[4000ms] ease-in-out"
           />
@@ -1686,7 +1686,7 @@ function About({ data }: { data?: any }) {
         {/* Mobile static fallback */}
         <div className="absolute inset-0 md:hidden opacity-5">
           <img 
-            src="https://media.licdn.com/dms/image/v2/D4D22AQEKtu9ZTi0QTg/feedshare-shrink_1280/B4DZ6208h6IYAM-/0/1781183794364?e=1792022400&v=beta&t=w7-eimTq1kODCoVp9clIrPgj8CGEqIpo0ClQ6yrivVc"
+            src="https://res.cloudinary.com/dppwnds6z/image/upload/v1792398542/1781183794364.jpg"
             alt=""
             className="w-full h-full object-cover"
           />
