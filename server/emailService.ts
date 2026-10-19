@@ -23,8 +23,25 @@ export type EmailPayload = ContactEmailPayload | JobEmailPayload;
 export interface EmailServiceConfig {
   apiKey?: string;
   fromEmail?: string;
-  adminEmail?: string;
-  hrEmail?: string;
+  adminEmail?: string | string[];
+  hrEmail?: string | string[];
+}
+
+/**
+ * Parses single string, comma-separated string, or array into a clean list of valid email addresses.
+ */
+export function parseRecipientEmails(input?: string | string[]): string[] {
+  if (!input) return [];
+  if (Array.isArray(input)) {
+    return input
+      .flatMap((item) => (typeof item === "string" ? item.split(/[,;]/) : []))
+      .map((e) => e.trim())
+      .filter((e) => e.length > 0 && e.includes("@"));
+  }
+  return input
+    .split(/[,;]/)
+    .map((e) => e.trim())
+    .filter((e) => e.length > 0 && e.includes("@"));
 }
 
 export interface SendEmailResult {
@@ -440,19 +457,27 @@ export async function handleEmailDispatch(
     process.env.RESEND_FROM_EMAIL ||
     "VISO Group <onboarding@resend.dev>";
 
-  // Admin recipient email
-  const adminEmail =
+  // Admin recipient emails (supports single email or comma/semicolon-separated list)
+  const adminEmails = parseRecipientEmails(
     config.adminEmail ||
     process.env.ADMIN_NOTIFICATION_EMAIL ||
     process.env.ADMIN_EMAIL ||
-    "info@visogroup.com";
+    "info@visogroup.com"
+  );
+  if (adminEmails.length === 0) {
+    adminEmails.push("info@visogroup.com");
+  }
 
-  // HR recipient email (defaults to admin email if not set)
-  const hrEmail =
+  // HR recipient emails (defaults to adminEmails if not set)
+  const hrEmails = parseRecipientEmails(
     config.hrEmail ||
     process.env.HR_NOTIFICATION_EMAIL ||
     process.env.HR_EMAIL ||
-    adminEmail;
+    adminEmails
+  );
+  if (hrEmails.length === 0) {
+    hrEmails.push(...adminEmails);
+  }
 
   const resend = new Resend(apiKey);
 
@@ -460,11 +485,11 @@ export async function handleEmailDispatch(
     const adminEmailData = buildContactAdminEmail(payload);
     const ackEmailData = buildContactAckEmail(payload);
 
-    // Send both in parallel
+    // Send both in parallel: admin notification goes to all admin recipients
     const [adminRes, ackRes] = await Promise.allSettled([
       resend.emails.send({
         from: fromEmail,
-        to: [adminEmail],
+        to: adminEmails,
         replyTo: payload.email,
         subject: adminEmailData.subject,
         html: adminEmailData.html,
@@ -473,7 +498,7 @@ export async function handleEmailDispatch(
       resend.emails.send({
         from: fromEmail,
         to: [payload.email],
-        replyTo: adminEmail,
+        replyTo: adminEmails[0],
         subject: ackEmailData.subject,
         html: ackEmailData.html,
         text: ackEmailData.text,
@@ -506,10 +531,11 @@ export async function handleEmailDispatch(
     const adminEmailData = buildJobAdminEmail(payload);
     const ackEmailData = buildJobAckEmail(payload);
 
+    // Send both in parallel: application goes to all HR/Admin recipients
     const [adminRes, ackRes] = await Promise.allSettled([
       resend.emails.send({
         from: fromEmail,
-        to: [hrEmail],
+        to: hrEmails,
         replyTo: payload.email,
         subject: adminEmailData.subject,
         html: adminEmailData.html,
@@ -518,7 +544,7 @@ export async function handleEmailDispatch(
       resend.emails.send({
         from: fromEmail,
         to: [payload.email],
-        replyTo: hrEmail,
+        replyTo: hrEmails[0],
         subject: ackEmailData.subject,
         html: ackEmailData.html,
         text: ackEmailData.text,
