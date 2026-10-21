@@ -6,7 +6,18 @@ import { useTranslation } from "react-i18next";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
-function renderVisionTitle(title: string) {
+function renderVisionTitle(title: string, isArabic = false) {
+  if (isArabic) {
+    if (title.includes("فيسو")) {
+      const parts = title.split("فيسو");
+      return (
+        <span className="font-arabic">
+          {parts[0]}<span className="text-gold font-light">فيسو</span>{parts.slice(1).join("فيسو")}
+        </span>
+      );
+    }
+    return <span className="font-arabic">{title}</span>;
+  }
   const split = title.match(/^(.+?\s+to)\s+(.+)$/i);
   if (!split) return title;
   return (
@@ -60,9 +71,10 @@ export function AboutInteractive({
   whoWeAreTitle: string;
   whoWeAreDesc: string;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language === "ar";
   return (
-    <div className="relative w-full h-full flex flex-col justify-center">
+    <div className="relative w-full h-full flex flex-col justify-center" dir={isArabic ? "rtl" : "ltr"}>
       {/* Background ambient gold aura */}
       <div className="pointer-events-none absolute top-0 -start-12 w-96 h-96 bg-primary/[0.03] rounded-full blur-[100px]" />
       <div className="pointer-events-none absolute bottom-0 -end-12 w-96 h-96 bg-primary/[0.03] rounded-full blur-[100px]" />
@@ -76,13 +88,21 @@ export function AboutInteractive({
         className="w-full flex justify-center text-center mb-12 md:mb-16 relative z-10"
       >
         <h2 className="font-display text-4xl md:text-5xl lg:text-[3.5rem] font-bold tracking-tight text-foreground uppercase">
-          Welcome to <span className="text-primary">VISO GROUP</span>
+          {isArabic ? (
+            <>
+              مرحباً بكم في <span className="text-primary font-arabic">مجموعة فيسو</span>
+            </>
+          ) : (
+            <>
+              Welcome to <span className="text-primary">VISO GROUP</span>
+            </>
+          )}
         </h2>
       </motion.div>
 
-      <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center mb-12 relative z-10 flex-1">
-        {/* Left Column: Simple About Info */}
-        <div className="lg:col-span-6 flex flex-col justify-center">
+      <div dir="ltr" className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center mb-12 relative z-10 flex-1">
+        {/* Left Column: Simple About Info (Preserved on the Left like English) */}
+        <div dir={isArabic ? "rtl" : "ltr"} className="lg:col-span-6 flex flex-col justify-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -93,7 +113,7 @@ export function AboutInteractive({
 
             {/* Side Heading */}
             <motion.div
-              initial={{ opacity: 0, x: -10 }}
+              initial={{ opacity: 0, x: isArabic ? 10 : -10 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.05, ease }}
@@ -101,7 +121,7 @@ export function AboutInteractive({
             >
               <div className="h-px w-8 bg-primary" />
               <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary">
-                {t("home_interactive.about_viso")}
+                {t("home_interactive.about_viso", isArabic ? "عن فيسو" : "About Viso")}
               </span>
             </motion.div>
 
@@ -113,16 +133,20 @@ export function AboutInteractive({
               transition={{ duration: 1, delay: 0.1, ease }}
               className="font-display text-3xl md:text-4xl lg:text-[2.65rem] leading-[1.12] tracking-tight text-foreground font-bold"
             >
-              {renderVisionTitle(title)}
+              {renderVisionTitle(title, isArabic)}
             </motion.h2>
 
             {/* Subtitle */}
             <motion.p
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: isArabic ? 20 : -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2, ease }}
-              className="mt-6 text-base md:text-lg text-foreground/90 leading-relaxed font-light text-left text-pretty border-l-[3px] border-gold pl-5"
+              className={`mt-6 text-base md:text-lg text-foreground/90 leading-relaxed font-light text-pretty border-gold ${
+                isArabic
+                  ? "border-r-[3px] border-l-0 pr-5 pl-0 text-right font-arabic"
+                  : "border-l-[3px] border-r-0 pl-5 pr-0 text-left"
+              }`}
             >
               {subtitle}
             </motion.p>
@@ -132,7 +156,11 @@ export function AboutInteractive({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2, ease }}
-              className="mt-4 text-sm md:text-base text-foreground/80 leading-relaxed font-light text-justify hyphens-none ml-[3px] pl-5"
+              className={`mt-4 text-sm md:text-base text-foreground/80 leading-relaxed font-light ${
+                isArabic
+                  ? "mr-[3px] ml-0 pr-5 pl-0 text-right font-arabic"
+                  : "ml-[3px] mr-0 pl-5 pr-0 text-left text-justify hyphens-none"
+              }`}
             >
               {whoWeAreDesc}
             </motion.p>

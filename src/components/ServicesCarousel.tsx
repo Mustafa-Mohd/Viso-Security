@@ -194,17 +194,19 @@ export function ServicesCarousel({ items }: { items: ServiceItem[] }) {
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 onClick={(e) => e.stopPropagation()}
                 className="bg-surface w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
+                dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
               >
                 <div className={isTraining ? "relative h-36 md:h-44 flex-shrink-0" : "relative h-48 md:h-64 flex-shrink-0"}>
                   <img src={selectedService.img} alt={selectedService.title} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                   <button
                     onClick={() => setSelectedService(null)}
-                    className="absolute top-4 right-4 p-2 bg-black/40 hover:bg-black/60 text-white rounded-full transition-colors backdrop-blur-md"
+                    className="absolute top-4 right-4 rtl:right-auto rtl:left-4 p-2 bg-black/40 hover:bg-black/60 text-white rounded-full transition-colors backdrop-blur-md cursor-pointer"
+                    aria-label={i18n.language === 'ar' ? "إغلاق" : "Close"}
                   >
                     <X size={20} />
                   </button>
-                  <h2 className={isTraining ? "absolute bottom-4 left-6 md:left-8 rtl:left-auto rtl:right-6 rtl:md:right-8 text-2xl md:text-3xl font-display font-bold text-white" : "absolute bottom-6 left-6 md:left-8 text-3xl md:text-4xl font-display font-bold text-white"}>
+                  <h2 className={isTraining ? "absolute bottom-4 left-6 md:left-8 rtl:left-auto rtl:right-6 rtl:md:right-8 text-2xl md:text-3xl font-display font-bold text-white" : "absolute bottom-6 left-6 md:left-8 rtl:left-auto rtl:right-6 rtl:md:right-8 text-3xl md:text-4xl font-display font-bold text-white"}>
                     {selectedService.title}
                   </h2>
                 </div>

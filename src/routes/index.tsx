@@ -9,7 +9,7 @@ import { TopNav } from "@/components/TopNav";
 import { supabase } from "@/lib/supabase";
 import { LazyMount } from "@/components/LazyMount";
 import { ServicesCarousel } from "@/components/ServicesCarousel";
-import { clientCategoriesData, ClientLogo, useClientCategories } from "@/data/clientsData";
+import { clientCategoriesData, ClientLogo, useClientCategories, CLIENT_SECTORS_AR, CLIENT_NAMES_AR } from "@/data/clientsData";
 import { X, FileText, Briefcase, ShieldCheck, Award, Star, HeartHandshake, Target, Sparkles } from "lucide-react";
 
 import { AboutInteractive } from "@/components/AboutInteractive";
@@ -165,12 +165,18 @@ function HomePage() {
                   moreInfo: t("home_interactive.services_carousel.gap_more")
                 },
                 {
-                  title: t("home_interactive.services_carousel.pm_title", "Project Management"),
-                  desc: t("home_interactive.services_carousel.pm_desc", "Expert oversight and execution of high-end security architecture projects from conception to completion."),
+                  title: i18n.language === 'ar'
+                    ? t("home_interactive.services_carousel.pm_title", "إدارة المشاريع")
+                    : t("home_interactive.services_carousel.pm_title", "Project Management"),
+                  desc: i18n.language === 'ar'
+                    ? t("home_interactive.services_carousel.pm_desc", "إشراف هندسي وتنفيذي خبير على مشاريع هندسة الأمن المادي من الفكرة والتخطيط وحتى التسليم النهائي.")
+                    : t("home_interactive.services_carousel.pm_desc", "Expert oversight and execution of high-end security architecture projects from conception to completion."),
                   url: "/services/project-management",
                   img: "/project_management.jpg",
                   color: "group-hover:border-yellow-500/50 group-hover:shadow-yellow-500/20",
-                  moreInfo: t("home_interactive.services_carousel.pm_more", "Our dedicated project management teams ensure that your security infrastructure is deployed on time, within budget, and to the highest quality standards.")
+                  moreInfo: i18n.language === 'ar'
+                    ? t("home_interactive.services_carousel.pm_more", "تضمن فرق إدارة المشاريع المتخصصة في فيسو تنفيذ وتجهيز بنيتك التحتية الأمنية في الوقت المحدد، وضمن الميزانية المعتمدة، ووفق أعلى معايير الجودة والاشتراطات التنظيمية. نقدم خدمات تمثيل مهندس المالك، والإشراف الفني المستقل على المقاولين، ومراجعة التقديمات الفنية، وتتبع الجداول الزمنية بدقة متناهية لضمان تكامل أمني لا تشوبه شائبة في جميع منشآتكم.")
+                    : t("home_interactive.services_carousel.pm_more", "Our dedicated project management teams ensure that your security infrastructure is deployed on time, within budget, and to the highest quality standards.")
                 }
               ]} />
             </div>
@@ -360,7 +366,7 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
 /* ============================================================
    HERO SECTION — Full-bleed imagery + caption panel
    ============================================================ */
-const servicesList = [
+const servicesListEn = [
   {
     title: "Security Consultancy",
     subtitle: "Comprehensive Physical Security Threat and Risk Assessment.",
@@ -375,13 +381,30 @@ const servicesList = [
   }
 ];
 
+const servicesListAr = [
+  {
+    title: "الاستشارات الأمنية",
+    subtitle: "تقييم شامل لمخاطر وتهديدات الأمن المادي وهندسة الحماية المعتمدة من الهيئة العليا للأمن الصناعي (HCIS).",
+    link: "/security",
+    buttonText: "استكشف الاستشارات الأمنية",
+  },
+  {
+    title: "خدمات الترجمة المعتمدة",
+    subtitle: "خدمات ترجمة معتمدة للوثائق الفنية، والقانونية، والطبية، والرسمية، والأمنية بأعلى دقة وموثوقية.",
+    link: "/translation",
+    buttonText: "استكشف خدمات الترجمة",
+  }
+];
+
 export function HeroSection({ data, isReady = true }: { data?: any; isReady?: boolean }) {
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language === "ar";
   const ref = useRef<HTMLDivElement>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [selectedCert, setSelectedCert] = useState<{ img: string, label: string } | null>(null);
+  const [selectedCert, setSelectedCert] = useState<{ img: string; label: string; labelAr?: string } | null>(null);
 
   // Strictly keep only the 2 core services: Security Consultancy & Translation Services
-  const slides = servicesList;
+  const slides = isArabic ? servicesListAr : servicesListEn;
 
   const MERGED_HERO_VIDEO_URL =
     "https://res.cloudinary.com/dppwnds6z/video/upload/fl_splice,l_video:gemini_generated_video_1c397ea0/gemini_generated_video_4932b2ba.mp4";
@@ -399,7 +422,47 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
     return () => clearInterval(interval);
   }, [isReady, slides.length]);
 
+  const ARABIC_REGULATORY_MAP: Record<string, string> = {
+    moi: "وزارة الداخلية (MOI)",
+    sais: "الهيئة العليا للأمن الصناعي (HCIS / SAIS)",
+    hcis: "الهيئة العليا للأمن الصناعي (HCIS / SAIS)",
+    hcissais: "الهيئة العليا للأمن الصناعي (HCIS / SAIS)",
+    neom: "نيوم (NEOM)",
+    api780: "معايير معهد البترول الأمريكي (API 780)",
+    api: "معايير معهد البترول الأمريكي (API 780)",
+    aramco: "أرامكو السعودية (ARAMCO)",
+    saudiaramco: "أرامكو السعودية (ARAMCO)",
+  };
+
   const slide = slides[currentSlide % slides.length];
+  const currentSlideData = data?.slides?.[currentSlide % slides.length];
+  const slideTitle = isArabic
+    ? (currentSlideData?.title_ar || slide.title)
+    : (currentSlideData?.title || slide.title);
+  const slideSubtitle = isArabic
+    ? (currentSlideData?.subtitle_ar || slide.subtitle)
+    : (currentSlideData?.subtitle || slide.subtitle);
+  const slideButtonText = isArabic
+    ? (currentSlideData?.buttonText_ar || slide.buttonText)
+    : (currentSlideData?.buttonText || slide.buttonText);
+  const slideLink = currentSlideData?.link || slide.link;
+
+  const defaultRegulatoryLogos = [
+    { slug: "moi", label: "MOI", labelAr: "وزارة الداخلية (MOI)", img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png" },
+    { slug: "sais", label: "SAIS", labelAr: "الهيئة العليا للأمن الصناعي (HCIS / SAIS)", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgBwqTj0FNNJJm59mHR1GKznOvHK23QpPB5jwKZQuFaQ&s=10" },
+    { slug: "neom", label: "NEOM", labelAr: "نيوم (NEOM)", img: "https://neom.scene7.com/is/image/neom/logo-neom-en-spaced?fmt=png-alpha&scl=1" },
+    { slug: "api780", label: "API 780", labelAr: "معايير معهد البترول الأمريكي (API 780)", img: "https://theshopmag.com/wp-content/uploads/2023/05/api-logo-stacked.png" },
+    { slug: "aramco", label: "ARAMCO", labelAr: "أرامكو السعودية (ARAMCO)", img: "https://upload.wikimedia.org/wikipedia/en/thumb/8/85/Saudi_Aramco_logo.svg/1200px-Saudi_Aramco_logo.svg.png" },
+  ];
+
+  const regulatoryLogos = data?.regulatoryLogos && data.regulatoryLogos.length > 0 ? data.regulatoryLogos : defaultRegulatoryLogos;
+
+  const certificatesList = [
+    { icon: <FileText size={20} />, img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100377/8aef84d0-fbe6-426d-b485-b4241b30daae.png", label: "CR 2026-2027", labelAr: "السجل التجاري ٢٠٢٦-٢٠٢٧" },
+    { icon: <Briefcase size={20} />, img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100602/3d24f59b-1530-4316-bd0d-27ac9167ccff.png", label: "Business License", labelAr: "رخصة ممارسة النشاط الاستشاري" },
+    { icon: <ShieldCheck size={20} />, img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100668/865e7db3-7be4-4ed4-920e-e0a8b29af7bb.png", label: "SAIS Certificate", labelAr: "شهادة اعتماد الأمن الصناعي SAIS" },
+    { icon: <Award size={20} />, img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1791982868/b88077c8-e8df-4ec4-9c8f-28236a827324.png", label: "CCC Certificate", labelAr: "شهادة الغرفة التجارية" }
+  ];
 
   return (
     <section
@@ -422,35 +485,42 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
       </video>
 
       {/* Gradient Overlays for Readability */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#0d1117]/60 via-[#0d1117]/20 to-transparent pointer-events-none" />
+      <div className={`absolute inset-0 pointer-events-none ${
+        isArabic
+          ? "bg-gradient-to-l from-[#0d1117]/70 via-[#0d1117]/30 to-transparent"
+          : "bg-gradient-to-r from-[#0d1117]/60 via-[#0d1117]/20 to-transparent"
+      }`} />
       <div className="absolute inset-0 bg-gradient-to-t from-[#0d1117]/40 via-transparent to-[#0d1117]/10 pointer-events-none" />
 
       {/* Text Content overlay */}
-      <div className="relative z-10 flex min-h-[inherit] items-center px-6 md:px-12 lg:px-16 py-10 md:py-14">
+      <div
+        className="relative z-10 flex min-h-[inherit] items-center px-6 md:px-12 lg:px-16 py-10 md:py-14"
+        dir={isArabic ? "rtl" : "ltr"}
+      >
         <motion.div
-          className="max-w-xl md:max-w-2xl lg:max-w-3xl w-full"
+          className={`max-w-xl md:max-w-2xl lg:max-w-3xl w-full ${isArabic ? 'text-right' : 'text-left'}`}
         >
           <div className="relative h-64 md:h-56">
             <AnimatePresence mode="wait">
               <motion.div
-                key={currentSlide}
+                key={`${currentSlide}-${isArabic}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
                 className="absolute inset-0"
               >
-                <h1 className="font-display font-black text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.1] tracking-tight text-white uppercase drop-shadow-[0_4px_25px_rgba(0,0,0,0.9)] mb-6">
-                  {slide.title}
+                <h1 className={`font-display font-black text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.1] tracking-tight text-white uppercase drop-shadow-[0_4px_25px_rgba(0,0,0,0.9)] mb-6 ${isArabic ? 'font-arabic tracking-normal' : ''}`}>
+                  {slideTitle}
                 </h1>
-                <p className="font-sans text-lg md:text-xl text-white/80 font-light mb-8 max-w-xl text-pretty drop-shadow-md">
-                  {slide.subtitle}
+                <p className={`font-sans text-lg md:text-xl text-white/80 font-light mb-8 max-w-xl text-pretty drop-shadow-md ${isArabic ? 'font-arabic' : ''}`}>
+                  {slideSubtitle}
                 </p>
                 <Link
-                  to={slide.link}
-                  className="inline-flex items-center gap-2 rounded-sm bg-primary px-8 py-4 font-sans text-xs font-bold tracking-[0.2em] text-white transition-all duration-400 hover:bg-gold hover:scale-[1.03] shadow-[0_4px_20px_rgba(212,175,55,0.3)] uppercase cursor-pointer"
+                  to={slideLink}
+                  className={`inline-flex items-center gap-2 rounded-sm bg-primary px-8 py-4 font-sans text-xs font-bold tracking-[0.2em] text-white transition-all duration-400 hover:bg-gold hover:scale-[1.03] shadow-[0_4px_20px_rgba(212,175,55,0.3)] uppercase cursor-pointer ${isArabic ? 'font-arabic tracking-normal' : ''}`}
                 >
-                  {slide.buttonText}
+                  {slideButtonText}
                 </Link>
               </motion.div>
             </AnimatePresence>
@@ -458,8 +528,8 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
         </motion.div>
       </div>
 
-      {/* VISO Logo to cover Gemini watermark in bottom right */}
-      <div className="absolute bottom-2 right-24 md:bottom-4 md:right-32 z-20 pointer-events-none p-3 backdrop-blur-md bg-black/30 rounded-xl border border-white/10">
+      {/* VISO Logo in bottom corner */}
+      <div className={`absolute bottom-2 ${isArabic ? "left-6 md:bottom-4 md:left-12" : "right-24 md:bottom-4 md:right-32"} z-20 pointer-events-none p-3 backdrop-blur-md bg-black/30 rounded-xl border border-white/10`}>
         <img loading="lazy" decoding="async"
           src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
           alt="VISO Group"
@@ -468,40 +538,47 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
       </div>
 
       {/* Regulatory Bodies / Standards Icons on Top — Transparent Circle with Golden Border, Logo Name Tooltip on Hover */}
-      <div className="absolute top-6 left-6 md:top-8 md:left-12 z-30 flex gap-3 md:gap-4 items-center">
-        {(data?.regulatoryLogos && data.regulatoryLogos.length > 0 ? data.regulatoryLogos : [
-          { slug: "moi", label: "MOI", img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png" },
-          { slug: "sais", label: "SAIS", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgBwqTj0FNNJJm59mHR1GKznOvHK23QpPB5jwKZQuFaQ&s=10" },
-          { slug: "neom", label: "NEOM", img: "https://neom.scene7.com/is/image/neom/logo-neom-en-spaced?fmt=png-alpha&scl=1" },
-          { slug: "api780", label: "API 780", img: "https://theshopmag.com/wp-content/uploads/2023/05/api-logo-stacked.png" },
-          { slug: "aramco", label: "ARAMCO", img: "https://upload.wikimedia.org/wikipedia/en/thumb/8/85/Saudi_Aramco_logo.svg/1200px-Saudi_Aramco_logo.svg.png" },
-        ]).map((body: any, idx: number) => (
-          <div key={idx} className="relative group shrink-0">
-            <div
-              className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-transparent border-2 border-[#D4AF37] hover:border-[#FFD700] flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-[0_0_10px_rgba(212,175,55,0.3)] hover:shadow-[0_0_20px_rgba(212,175,55,0.8)] cursor-default overflow-hidden block"
-              aria-label={body.label}
-            >
-              <img
-                src={body.img}
-                alt={body.label}
-                className="w-full h-full object-cover rounded-full transition-all duration-500 grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105"
-              />
+      <div className={`absolute top-6 ${isArabic ? "right-6 md:right-12" : "left-6 md:left-12"} z-30 flex gap-3 md:gap-4 items-center`} dir={isArabic ? "rtl" : "ltr"}>
+        {regulatoryLogos.map((body: any, idx: number) => {
+          const cleanSlug = (body.slug || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+          const cleanLabel = (body.label || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+          const bodyLabel = isArabic
+            ? (body.labelAr || ARABIC_REGULATORY_MAP[cleanSlug] || ARABIC_REGULATORY_MAP[cleanLabel] || body.label)
+            : body.label;
+          return (
+            <div key={idx} className="relative group shrink-0">
+              <div
+                className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-transparent border-2 border-[#D4AF37] hover:border-[#FFD700] flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-[0_0_10px_rgba(212,175,55,0.3)] hover:shadow-[0_0_20px_rgba(212,175,55,0.8)] cursor-default overflow-hidden block"
+                aria-label={bodyLabel}
+              >
+                <img
+                  src={body.img}
+                  alt={bodyLabel}
+                  className="w-full h-full object-cover rounded-full transition-all duration-500 grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105"
+                />
+              </div>
+              {/* Logo Name Tooltip on Hover */}
+              <span className={`absolute top-[calc(100%+0.6rem)] ${
+                isArabic 
+                  ? "right-0 translate-x-0 text-right" 
+                  : "left-1/2 -translate-x-1/2 text-center"
+              } bg-black/95 backdrop-blur-md border border-[#D4AF37]/80 text-gold text-[10px] md:text-xs font-bold tracking-wide px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none shadow-[0_8px_25px_rgba(0,0,0,0.9)] z-50 ${
+                isArabic ? 'font-arabic' : 'uppercase tracking-widest'
+              }`}>
+                {bodyLabel}
+              </span>
             </div>
-            {/* Logo Name Tooltip on Hover */}
-            <span className="absolute top-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2 bg-black/90 backdrop-blur-md border border-[#D4AF37] text-gold text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none shadow-[0_4px_15px_rgba(0,0,0,0.8)] z-50">
-              {body.label}
-            </span>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Indicators */}
       <div className="absolute bottom-6 md:bottom-8 start-6 md:start-12 z-20 flex gap-2">
-        {servicesList.map((_, i) => (
+        {slides.map((_, i) => (
           <button
             key={i}
             type="button"
-            aria-label={`Slide ${i + 1}`}
+            aria-label={isArabic ? `الشريحة ${i + 1}` : `Slide ${i + 1}`}
             aria-current={i === currentSlide ? "true" : undefined}
             onClick={() => setCurrentSlide(i)}
             className={`h-1.5 rounded-full transition-all duration-300 ${i === currentSlide ? "w-10 bg-gold shadow-[0_0_8px_#D4AF37]" : "w-3 bg-white/45 hover:bg-white/75"
@@ -510,27 +587,25 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
         ))}
       </div>
 
-      {/* Certificate Icons on Top Right */}
-      <div className="absolute top-1/2 -translate-y-1/2 right-6 md:right-12 z-30 flex flex-col gap-4">
-        {[
-          { icon: <FileText size={20} />, img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100377/8aef84d0-fbe6-426d-b485-b4241b30daae.png", label: "CR 2026-2027" },
-          { icon: <Briefcase size={20} />, img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100602/3d24f59b-1530-4316-bd0d-27ac9167ccff.png", label: "Business License" },
-          { icon: <ShieldCheck size={20} />, img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100668/865e7db3-7be4-4ed4-920e-e0a8b29af7bb.png", label: "SAIS Certificate" },
-          { icon: <Award size={20} />, img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1791982868/b88077c8-e8df-4ec4-9c8f-28236a827324.png", label: "CCC Certificate" }
-        ].map((cert, idx) => (
-          <button
-            key={idx}
-            type="button"
-            onClick={() => setSelectedCert(cert)}
-            className="w-12 h-12 rounded-full bg-white/10 hover:bg-gold backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-[0_4px_15px_rgba(0,0,0,0.3)] group relative cursor-pointer"
-            aria-label={cert.label}
-          >
-            {cert.icon}
-            <span className="absolute right-full mr-4 bg-black/80 backdrop-blur-sm border border-white/10 text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-              {cert.label}
-            </span>
-          </button>
-        ))}
+      {/* Certificate Icons on Opposite Side */}
+      <div className={`absolute top-1/2 -translate-y-1/2 ${isArabic ? "left-6 md:left-12" : "right-6 md:right-12"} z-30 flex flex-col gap-4`}>
+        {certificatesList.map((cert, idx) => {
+          const certLabel = isArabic ? cert.labelAr : cert.label;
+          return (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => setSelectedCert(cert)}
+              className="w-12 h-12 rounded-full bg-white/10 hover:bg-gold backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-[0_4px_15px_rgba(0,0,0,0.3)] group relative cursor-pointer"
+              aria-label={certLabel}
+            >
+              {cert.icon}
+              <span className={`absolute ${isArabic ? "left-full ml-4" : "right-full mr-4"} bg-black/80 backdrop-blur-sm border border-white/10 text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none ${isArabic ? 'font-arabic' : ''}`}>
+                {certLabel}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Certificate Modal */}
@@ -553,11 +628,16 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
               <button
                 onClick={() => setSelectedCert(null)}
                 className="absolute -top-12 right-0 text-white hover:text-gold transition-colors"
-                aria-label="Close"
+                aria-label={isArabic ? "إغلاق" : "Close"}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
               </button>
-              <img src={selectedCert.img} alt={selectedCert.label} className="w-auto h-auto max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl" />
+              <img src={selectedCert.img} alt={isArabic ? (selectedCert.labelAr || selectedCert.label) : selectedCert.label} className="w-auto h-auto max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl" />
+              <div className="mt-3 text-center">
+                <span className={`font-display text-xs md:text-sm font-bold text-gold tracking-wider bg-black/80 px-4 py-1.5 rounded-full border border-gold/40 shadow-lg inline-block ${isArabic ? 'font-arabic' : ''}`}>
+                  {isArabic ? (selectedCert.labelAr || selectedCert.label) : selectedCert.label}
+                </span>
+              </div>
             </motion.div>
           </motion.div>
         )}
@@ -754,93 +834,171 @@ function ShowcaseSection({ data }: { data?: any }) {
    CLIENTS SECTION (Teaser)
    ============================================================ */
 function ClientsSection({ data }: { data?: any }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isAr = i18n.language?.startsWith("ar");
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.2 });
   const { categories } = useClientCategories();
 
-  const titleMono = data?.titleMono || "Trusted By";
-  const title1 = data?.title1 || "Industry";
-  const title2 = data?.title2 || "Titans.";
+  const titleMono = isAr 
+    ? (data?.titleMonoAr || "محل ثقة كبرى الهيئات والشركات")
+    : (data?.titleMono || "Trusted By");
+  const title1 = isAr 
+    ? (data?.title1Ar || "رواد")
+    : (data?.title1 || "Industry");
+  const title2 = isAr 
+    ? (data?.title2Ar || "الصناعة والريادة.")
+    : (data?.title2 || "Titans.");
+  const subtitle = isAr
+    ? "شركاء استراتيجيون لأبرز الهيئات الحكومية والمشاريع العملاقة وكبرى الشركات العالمية بالمملكة"
+    : "Strategic partners to sovereign authorities, giga-projects, and enterprise leaders across the Kingdom";
 
-  // Extract clients from dynamic categories managed in CMS
+  // Extract clients from dynamic categories managed in CMS with full Arabic localization
   const clients = useMemo(() => {
-    if (categories && categories.length > 0) {
-      const extracted = categories.flatMap(cat =>
-        (cat.clients || []).map(client => ({
+    const rawCategories = (categories && categories.length > 0) ? categories : clientCategoriesData;
+    let extracted = rawCategories.flatMap(cat => {
+      const sectorName = isAr 
+        ? (cat.titleAr || CLIENT_SECTORS_AR[cat.title] || cat.title)
+        : cat.title;
+
+      return (cat.clients || []).map(client => {
+        const clientName = isAr
+          ? (client.nameAr || CLIENT_NAMES_AR[client.name] || client.name)
+          : client.name;
+
+        return {
           ...client,
-          sector: cat.title
-        }))
-      );
-      if (extracted.length > 0) return extracted;
+          displayName: clientName,
+          displaySector: sectorName,
+        };
+      });
+    });
+
+    if (extracted.length === 0) {
+      extracted = clientCategoriesData.flatMap(cat => {
+        const sectorName = isAr 
+          ? (cat.titleAr || CLIENT_SECTORS_AR[cat.title] || cat.title)
+          : cat.title;
+
+        return cat.clients.map(client => ({
+          ...client,
+          displayName: isAr ? (client.nameAr || CLIENT_NAMES_AR[client.name] || client.name) : client.name,
+          displaySector: sectorName,
+        }));
+      });
     }
-    return clientCategoriesData.flatMap(cat =>
-      cat.clients.map(client => ({
-        ...client,
-        sector: cat.title
-      }))
-    );
-  }, [categories]);
+
+    return extracted;
+  }, [categories, isAr]);
 
   const row1 = clients.slice(0, Math.ceil(clients.length / 2));
   const row2 = clients.slice(Math.ceil(clients.length / 2));
 
   return (
-    <section ref={ref} className="py-20 bg-background relative border-y border-foreground/5">
-      <div className="max-w-[1600px] mx-auto px-8 md:px-16 text-center">
+    <section ref={ref} className="py-24 bg-background relative border-y border-foreground/5 overflow-hidden">
+      <div className="max-w-[1600px] mx-auto px-6 md:px-16 text-center">
         <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8 }}
-          className="font-mono text-xs font-bold tracking-[0.3em] text-primary mb-6 uppercase"
+          initial={{ opacity: 0, y: 20 }} 
+          animate={inView ? { opacity: 1, y: 0 } : {}} 
+          transition={{ duration: 0.8 }}
+          className="font-mono text-xs font-bold tracking-[0.3em] text-primary mb-4 uppercase"
         >
           {titleMono}
         </motion.div>
+        
         <motion.h2
-          initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.1 }}
-          className="font-display text-5xl md:text-7xl leading-tight text-foreground mb-16"
+          initial={{ opacity: 0, y: 30 }} 
+          animate={inView ? { opacity: 1, y: 0 } : {}} 
+          transition={{ duration: 0.8, delay: 0.1 }}
+          className="font-display text-4xl sm:text-5xl md:text-7xl leading-tight text-foreground mb-4"
         >
           {title1} <span className="italic text-primary">{title2}</span>
         </motion.h2>
 
-        <div className="relative overflow-hidden w-full whitespace-nowrap mb-4 py-4">
-          {/* Fading edges */}
-          <div className="absolute top-0 left-0 w-16 md:w-48 h-full bg-gradient-to-r from-background to-transparent z-10 pointer-events-none"></div>
-          <div className="absolute top-0 right-0 w-16 md:w-48 h-full bg-gradient-to-l from-background to-transparent z-10 pointer-events-none"></div>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.15 }}
+          className="font-sans text-sm md:text-base text-muted-foreground max-w-2xl mx-auto mb-16 leading-relaxed"
+        >
+          {subtitle}
+        </motion.p>
 
-          <div className="animate-marquee flex gap-6 w-max">
+        {/* Marquee Row 1 */}
+        <div dir="ltr" className="relative overflow-hidden w-full whitespace-nowrap mb-6 py-2">
+          {/* Subtle fading edges */}
+          <div className="absolute top-0 left-0 w-8 md:w-28 h-full bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+          <div className="absolute top-0 right-0 w-8 md:w-28 h-full bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+
+          <div className="animate-marquee flex gap-5 w-max">
             {[...row1, ...row1].map((client: any, i: number) => (
-              <div key={i} className="inline-block w-48 md:w-56 flex-shrink-0 px-4">
-                <div className="flex flex-col items-center justify-center text-center transition-all duration-300 h-full w-full whitespace-normal hover:-translate-y-1">
-                  <div className="text-5xl mb-4 h-16 flex items-center justify-center transition-all duration-500">
-                    <ClientLogo src={client.icon} name={client.name} />
+              <div key={i} className="inline-block w-52 md:w-64 flex-shrink-0">
+                <div 
+                  className="group flex flex-col items-center justify-between bg-card hover:bg-card/90 border border-border/80 hover:border-primary/50 rounded-2xl p-4 transition-all duration-300 h-38 shadow-2xs hover:shadow-lg hover:-translate-y-1"
+                  dir={isAr ? "rtl" : "ltr"}
+                >
+                  {/* High-contrast crisp logo container: pure white stage ensures both dark and light logos are 100% visible */}
+                  <div className="w-full h-20 rounded-xl bg-white dark:bg-white/95 p-2.5 flex items-center justify-center border border-neutral-100 dark:border-neutral-200/50 shadow-2xs group-hover:scale-102 transition-transform duration-300">
+                    <ClientLogo src={client.icon} name={client.displayName} />
                   </div>
-                  <h3 className="font-sans font-bold text-foreground text-sm tracking-wide">{client.name}</h3>
-                  <p className="font-mono text-[10px] text-foreground/50 mt-1 uppercase tracking-wider">{client.sector}</p>
+                  <div className="w-full text-center mt-2">
+                    <h3 className="font-sans font-bold text-foreground text-xs md:text-sm tracking-wide truncate group-hover:text-primary transition-colors">
+                      {client.displayName}
+                    </h3>
+                    <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider truncate mt-0.5">
+                      {client.displaySector}
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="relative overflow-hidden w-full whitespace-nowrap mb-12 py-4">
-          <div className="absolute top-0 left-0 w-16 md:w-48 h-full bg-gradient-to-r from-background to-transparent z-10 pointer-events-none"></div>
-          <div className="absolute top-0 right-0 w-16 md:w-48 h-full bg-gradient-to-l from-background to-transparent z-10 pointer-events-none"></div>
+        {/* Marquee Row 2 */}
+        <div dir="ltr" className="relative overflow-hidden w-full whitespace-nowrap mb-12 py-2">
+          <div className="absolute top-0 left-0 w-8 md:w-28 h-full bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+          <div className="absolute top-0 right-0 w-8 md:w-28 h-full bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
 
-          <div className="animate-marquee-reverse flex gap-6 w-max">
+          <div className="animate-marquee-reverse flex gap-5 w-max">
             {[...row2, ...row2].map((client: any, i: number) => (
-              <div key={i} className="inline-block w-48 md:w-56 flex-shrink-0 px-4">
-                <div className="flex flex-col items-center justify-center text-center transition-all duration-300 h-full w-full whitespace-normal hover:-translate-y-1">
-                  <div className="text-5xl mb-4 h-16 flex items-center justify-center transition-all duration-500">
-                    <ClientLogo src={client.icon} name={client.name} />
+              <div key={i} className="inline-block w-52 md:w-64 flex-shrink-0">
+                <div 
+                  className="group flex flex-col items-center justify-between bg-card hover:bg-card/90 border border-border/80 hover:border-primary/50 rounded-2xl p-4 transition-all duration-300 h-38 shadow-2xs hover:shadow-lg hover:-translate-y-1"
+                  dir={isAr ? "rtl" : "ltr"}
+                >
+                  <div className="w-full h-20 rounded-xl bg-white dark:bg-white/95 p-2.5 flex items-center justify-center border border-neutral-100 dark:border-neutral-200/50 shadow-2xs group-hover:scale-102 transition-transform duration-300">
+                    <ClientLogo src={client.icon} name={client.displayName} />
                   </div>
-                  <h3 className="font-sans font-bold text-foreground text-sm tracking-wide">{client.name}</h3>
-                  <p className="font-mono text-[10px] text-foreground/50 mt-1 uppercase tracking-wider">{client.sector}</p>
+                  <div className="w-full text-center mt-2">
+                    <h3 className="font-sans font-bold text-foreground text-xs md:text-sm tracking-wide truncate group-hover:text-primary transition-colors">
+                      {client.displayName}
+                    </h3>
+                    <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider truncate mt-0.5">
+                      {client.displaySector}
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-
+        {/* CTA to explore all clients */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.25 }}
+          className="flex justify-center"
+        >
+          <Link
+            to="/clients"
+            className="inline-flex items-center gap-2.5 px-7 py-3 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-primary/10 hover:bg-primary text-primary hover:text-black border border-primary/30 transition-all duration-300 shadow-xs hover:shadow-md hover:scale-105"
+          >
+            <span>{isAr ? "استعرض كافة الشركاء والعملاء" : "View All Clients & Partners"}</span>
+            <span className={isAr ? "rotate-180" : ""}>→</span>
+          </Link>
+        </motion.div>
       </div>
     </section>
   );
@@ -1639,9 +1797,9 @@ function SectionLabel({ n, label }: { n: string; label: string }) {
   );
 }
 
-/* ---------- About ---------- */
 function About({ data }: { data?: any }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language === "ar";
   const sectionRef = useRef<HTMLElement>(null);
   const watermarkRef = useRef<HTMLDivElement>(null);
 
@@ -1660,14 +1818,20 @@ function About({ data }: { data?: any }) {
     mouseY.set(e.clientY - rect.top);
   };
 
-  const title = data?.title || "About VISO";
-  const subtitle =
-    data?.subtitle ||
-    "A structured presentation of VISO's identity, security consultancy lifecycle, capabilities, sectors, credentials and integrated digital services.";
-  const whoWeAreTitle = data?.whoWeAreTitle || "VISO Security Consultancy";
-  const whoWeAreDesc =
-    data?.whoWeAreDesc ||
-    "VISO provides security consultancy services across the lifecycle of security risk assessment, concept and detailed design, construction supervision, testing, commissioning and operational readiness.";
+  const title = isArabic
+    ? (data?.title_ar || "عن فيسو")
+    : (data?.title || "About VISO");
+  const subtitle = isArabic
+    ? (data?.subtitle_ar || "عرض تعريفي شامل لهوية فيسو، ودورة استشارات الأمن المادي، وإمكاناتنا، والقطاعات التي نخدمها، واعتماداتنا وخدماتنا المتكاملة.")
+    : (data?.subtitle ||
+      "A structured presentation of VISO's identity, security consultancy lifecycle, capabilities, sectors, credentials and integrated digital services.");
+  const whoWeAreTitle = isArabic
+    ? (data?.whoWeAreTitle_ar || "فيسو للاستشارات الأمنية")
+    : (data?.whoWeAreTitle || "VISO Security Consultancy");
+  const whoWeAreDesc = isArabic
+    ? (data?.whoWeAreDesc_ar || "تقدم فيسو خدمات استشارية متخصصة في الأمن المادي عبر كافة مراحل دورة المشروع: من دراسات تقييم المخاطر الأمنية (SRA)، والتصاميم المبدئية والتفصيلية (CDS/DDS)، والإشراف الهندسي على التنفيذ، وصولاً إلى الاختبارات والتشغيل والجاهزية التشغيلية التامة.")
+    : (data?.whoWeAreDesc ||
+      "VISO provides security consultancy services across the lifecycle of security risk assessment, concept and detailed design, construction supervision, testing, commissioning and operational readiness.");
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -1770,11 +1934,13 @@ function About({ data }: { data?: any }) {
           transition={{ duration: 0.7 }}
           className="mt-8 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center text-xs text-muted-foreground tracking-wide font-mono uppercase"
         >
-          <span>{t("about.stats.established")} 2019</span>
+          <span>{isArabic ? "تأسست عام ٢٠١٩" : `${t("about.stats.established")} 2019`}</span>
           <span className="text-gold">·</span>
-          <span>{t("about.stats.offices")}: 4 Hubs</span>
+          <span>{isArabic ? "٤ مراكز إقليمية" : `${t("about.stats.offices")}: 4 Hubs`}</span>
           <span className="text-gold">·</span>
-          <span className="text-foreground/80 font-medium">Riyadh · Khobar · Jubail · Jeddah · Yanbu</span>
+          <span className="text-foreground/80 font-medium">
+            {isArabic ? "الرياض · الخُبر · الجبيل · جدة · ينبع" : "Riyadh · Khobar · Jubail · Jeddah · Yanbu"}
+          </span>
         </motion.div>
       </div>
     </section>
@@ -1795,10 +1961,12 @@ function WallFrameStageCard({
   stage,
   index,
   moreInfoLabel,
+  isArabic = false,
 }: {
-  stage: { num: string; title: string; desc: string; imageUrl: string; videoUrl?: string };
+  stage: { num: string; numAr?: string; title: string; desc: string; imageUrl: string; videoUrl?: string };
   index: number;
   moreInfoLabel: string;
+  isArabic?: boolean;
 }) {
   const tilt = FRAME_TILT[index % FRAME_TILT.length];
 
@@ -1806,6 +1974,7 @@ function WallFrameStageCard({
     <Link
       to="/security"
       className="group block h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4 rounded-sm"
+      dir={isArabic ? "rtl" : "ltr"}
     >
       <motion.div
         className="relative h-full transition-transform duration-500 ease-out group-hover:-translate-y-2 group-hover:scale-[1.01]"
@@ -1859,24 +2028,24 @@ function WallFrameStageCard({
               <div className="mt-3.5 text-center px-1">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <div className="h-[1px] w-4 bg-primary/40" />
-                  <p className="font-sans text-sm font-bold tracking-[0.2em] text-primary uppercase">
-                    Stage {stage.num}
+                  <p className={`font-sans text-sm font-bold tracking-[0.2em] text-primary uppercase ${isArabic ? 'font-arabic tracking-normal' : ''}`}>
+                    {isArabic ? `المرحلة ${stage.numAr || stage.num}` : `Stage ${stage.num}`}
                   </p>
                   <div className="h-[1px] w-4 bg-primary/40" />
                 </div>
-                <h3 className="font-display text-base md:text-lg leading-snug text-foreground tracking-tight font-bold">
+                <h3 className={`font-display text-base md:text-lg leading-snug text-foreground tracking-tight font-bold ${isArabic ? 'font-arabic' : ''}`}>
                   {stage.title}
                 </h3>
-                <p className="mt-2 text-[12px] text-foreground/75 leading-relaxed line-clamp-2">
+                <p className={`mt-2 text-[12px] text-foreground/75 leading-relaxed line-clamp-2 ${isArabic ? 'font-arabic' : ''}`}>
                   {teaserText(stage.desc, 100)}
                 </p>
               </div>
 
               <div className="mt-2.5 flex justify-center">
                 <span
-                  className="inline-flex items-center gap-1.5 rounded-sm border border-primary/25 bg-primary/8 px-3 py-1.5 font-sans text-[9px] font-bold tracking-[0.16em] uppercase text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary"
+                  className={`inline-flex items-center gap-1.5 rounded-sm border border-primary/25 bg-primary/8 px-3 py-1.5 font-sans text-[9px] font-bold tracking-[0.16em] uppercase text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary ${isArabic ? 'font-arabic tracking-normal' : ''}`}
                 >
-                  {moreInfoLabel}
+                  {isArabic ? "اعرف المزيد" : moreInfoLabel}
                   <span className="text-sm rtl:rotate-180 transition-transform duration-300 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5">
                     →
                   </span>
@@ -1897,8 +2066,10 @@ function WallFrameStageCard({
 }
 
 function ServiceLifecycle({ data }: { data?: any }) {
-  const { t } = useTranslation();
-  const defaultStages = [
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language === "ar";
+
+  const defaultStagesEn = [
     {
       num: "01",
       title: "Security Risk Assessment",
@@ -1925,17 +2096,58 @@ function ServiceLifecycle({ data }: { data?: any }) {
     },
   ];
 
-  const stages = (data?.items?.length > 0 ? data.items : defaultStages).map(
-    (stage: any, i: number) => ({
-      num: stage.num ?? defaultStages[i]?.num ?? String(i + 1).padStart(2, "0"),
-      title: stage.title ?? defaultStages[i]?.title ?? "",
-      desc: stage.desc ?? defaultStages[i]?.desc ?? "",
-      imageUrl: stage.imageUrl || defaultStages[i]?.imageUrl || "",
-      videoUrl: stage.videoUrl || (defaultStages[i] as any)?.videoUrl || "",
-    }),
-  );
+  const defaultStagesAr = [
+    {
+      num: "01",
+      numAr: "٠١",
+      title: "تقييم المخاطر الأمنية (SRA)",
+      desc: "تحديد التهديدات ونقاط الضعف، ومراجعة المحيط الأمني، وحصر الأصول الحيوية، ووضع المفهوم المبدئي لحماية المنشأة.",
+      imageUrl: "/images/explore/risk-assessment-hero.jpg",
+    },
+    {
+      num: "02",
+      numAr: "٠٢",
+      title: "التصميم المفاهيمي والمبدئي (CDS)",
+      desc: "فلسفة الحماية، وتوزيع المناطق الأمنية، ومفاهيم الأنظمة، والمخططات الأولية المتوافقة مع متطلبات الهيئة العليا للأمن الصناعي.",
+      imageUrl: "/images/explore/preliminary-design-hero.jpg",
+    },
+    {
+      num: "03",
+      numAr: "٠٣",
+      title: "التصميم الهندسي التفصيلي (DDS)",
+      desc: "المخططات الهندسية، والمواصفات الفنية المعتمدة، وجداول الكميات، وحزم التكامل التقني الجاهزة للطرح والتنفيذ.",
+      imageUrl: "/images/explore/detailed-design-hero.jpg",
+    },
+    {
+      num: "04",
+      numAr: "٠٤",
+      title: "الإشراف والجاهزية التشغيلية",
+      desc: "الإشراف الميداني، واختبارات التشغيل والقبول (FAT/SAT)، وتأكيد الجاهزية التشغيلية التامة والتسليم النهائي المعتمد.",
+      imageUrl: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790759493/4.png",
+    },
+  ];
 
-  const sectionLabel = data?.title || "Security Framework";
+  const defaultStages = isArabic ? defaultStagesAr : defaultStagesEn;
+
+  const stages = defaultStages.map((fallback, i) => {
+    const raw = data?.items?.[i];
+    return {
+      num: fallback.num,
+      numAr: isArabic ? defaultStagesAr[i].numAr : undefined,
+      title: isArabic
+        ? (raw?.title_ar || fallback.title)
+        : (raw?.title || fallback.title),
+      desc: isArabic
+        ? (raw?.desc_ar || fallback.desc)
+        : (raw?.desc || fallback.desc),
+      imageUrl: raw?.imageUrl || fallback.imageUrl,
+      videoUrl: raw?.videoUrl || (fallback as any)?.videoUrl || "",
+    };
+  });
+
+  const sectionLabel = isArabic
+    ? (data?.title_ar || "إطار العمل الأمني")
+    : (data?.title || "Security Framework");
 
   return (
     <section
@@ -1946,34 +2158,47 @@ function ServiceLifecycle({ data }: { data?: any }) {
           "radial-gradient(circle at 1px 1px, rgba(0,0,0,0.045) 1px, transparent 0)",
         backgroundSize: "22px 22px",
       }}
+      dir={isArabic ? "rtl" : "ltr"}
     >
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background/30" />
 
       <div className="relative mx-auto max-w-[1400px]">
         <div className="text-center mb-6 md:mb-8 max-w-3xl mx-auto flex flex-col items-center">
           <Reveal>
-            <SectionLabel n="02" label={sectionLabel} />
+            <SectionLabel n={isArabic ? "٠٢" : "02"} label={sectionLabel} />
           </Reveal>
           <Reveal delay={0.1}>
-            <h2 className="mt-3 font-display text-3xl leading-[1.08] md:text-4xl lg:text-5xl tracking-tight text-foreground">
-              From Risk to{" "}
-              <span className="text-primary font-normal">Readiness</span>
+            <h2 className={`mt-3 font-display text-3xl leading-[1.08] md:text-4xl lg:text-5xl tracking-tight text-foreground ${isArabic ? 'font-arabic' : ''}`}>
+              {isArabic ? (
+                <>
+                  من تقييم المخاطر إلى{" "}
+                  <span className="text-primary font-normal">الجاهزية التامة</span>
+                </>
+              ) : (
+                <>
+                  From Risk to{" "}
+                  <span className="text-primary font-normal">Readiness</span>
+                </>
+              )}
             </h2>
           </Reveal>
           <Reveal delay={0.16}>
-            <p className="mt-2.5 text-sm md:text-base text-foreground/80 font-light max-w-xl leading-relaxed">
-              End-to-End SAIS Security Consultancy Across Every Stage
+            <p className={`mt-2.5 text-sm md:text-base text-foreground/80 font-light max-w-xl leading-relaxed ${isArabic ? 'font-arabic' : ''}`}>
+              {isArabic
+                ? (data?.subtitle_ar || "استشارات أمنية شاملة ومتوافقة مع متطلبات الهيئة العليا للأمن الصناعي (HCIS / SAIS) عبر كافة المراحل")
+                : (data?.subtitle || "End-to-End SAIS Security Consultancy Across Every Stage")}
             </p>
           </Reveal>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 md:gap-5 xl:gap-4 items-stretch">
-          {stages.map((stage: (typeof defaultStages)[0], i: number) => (
+          {stages.map((stage, i: number) => (
             <Reveal key={stage.num} delay={0.12 + i * 0.08} className="h-full">
               <WallFrameStageCard
                 stage={stage}
                 index={i}
                 moreInfoLabel={t("home.more_info")}
+                isArabic={isArabic}
               />
             </Reveal>
           ))}

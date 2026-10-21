@@ -16,7 +16,8 @@ export const Route = createFileRoute("/security")({
 });
 
 function SecurityAnalysisPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language === "ar";
   
   const stages = [
     {
@@ -92,7 +93,11 @@ function SecurityAnalysisPage() {
               transition={{ duration: 0.8 }}
             >
               <h1 className="font-display text-4xl md:text-6xl font-bold text-white tracking-tight leading-tight mb-6 drop-shadow-lg">
-                Our Core <span className="text-primary">Services</span>
+                {isArabic ? (
+                  <>خدماتنا <span className="text-primary">الجوهرية</span></>
+                ) : (
+                  <>Our Core <span className="text-primary">Services</span></>
+                )}
               </h1>
             </motion.div>
             
@@ -103,10 +108,14 @@ function SecurityAnalysisPage() {
               className="max-w-3xl"
             >
               <h2 className="font-display text-xl font-bold text-white/90 mb-3 drop-shadow-md">
-                Supporting Every Stage of the HCIS / SAIS Security Project Lifecycle
+                {isArabic
+                  ? "دعم متكامل لكافة مراحل دورة مشروع الأمن وفق متطلبات الهيئة العليا للأمن الصناعي (HCIS / SAIS)"
+                  : "Supporting Every Stage of the HCIS / SAIS Security Project Lifecycle"}
               </h2>
               <p className="font-sans text-base text-white/80 leading-relaxed drop-shadow-md">
-                Whether developing a new facility or upgrading an existing asset, security requirements evolve throughout the project lifecycle. VISO provides specialist security engineering consultancy from project initiation through operational readiness, ensuring security objectives, engineering deliverables, and regulatory requirements remain aligned at every stage.
+                {isArabic
+                  ? "سواء كنت بصدد تطوير منشأة جديدة أو ترقية أصول قائمة، فإن المتطلبات الأمنية تتطور عبر مراحل المشروع المختلفة. تقدم فيسو استشارات هندسية أمنية متخصصة تبدأ من انطلاق المشروع وحتى الجاهزية التشغيلية التامة، مما يضمن توافق الأهداف الأمنية، والمخرجات الهندسية، والاشتراطات التنظيمية في كل مرحلة."
+                  : "Whether developing a new facility or upgrading an existing asset, security requirements evolve throughout the project lifecycle. VISO provides specialist security engineering consultancy from project initiation through operational readiness, ensuring security objectives, engineering deliverables, and regulatory requirements remain aligned at every stage."}
               </p>
             </motion.div>
           </div>

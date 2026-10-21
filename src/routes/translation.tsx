@@ -429,7 +429,11 @@ function TranslationPage() {
               transition={{ duration: 0.8 }}
             >
               <h1 className="font-display text-4xl md:text-6xl font-bold text-white tracking-tight leading-tight mb-4 drop-shadow-lg uppercase">
-                CERTIFIED TRANSLATION <span className="text-primary block sm:inline">SERVICES</span>
+                {isAr ? (
+                  <>خدمات الترجمة <span className="text-primary block sm:inline">المعتمدة</span></>
+                ) : (
+                  <>CERTIFIED TRANSLATION <span className="text-primary block sm:inline">SERVICES</span></>
+                )}
               </h1>
             </motion.div>
             
@@ -440,7 +444,9 @@ function TranslationPage() {
               className="max-w-3xl flex flex-col items-center"
             >
               <h2 className="font-display text-xl sm:text-2xl font-bold text-white/90 mb-10 drop-shadow-md">
-                Officially Accredited Translation Services
+                {isAr
+                  ? "خدمات ترجمة معتمدة وموثقة رسمياً لدى كافة الجهات والوزارات والسفارات"
+                  : "Officially Accredited Translation Services"}
               </h2>
               
               <button 
@@ -451,9 +457,9 @@ function TranslationPage() {
                     window.scrollTo({ top: y, behavior: 'smooth' });
                   }
                 }}
-                className="px-8 py-4 rounded-full bg-primary text-black font-bold uppercase tracking-widest text-sm hover:scale-105 transition-all shadow-[0_10px_20px_-10px_rgba(212,175,55,0.5)] border border-primary/50 flex items-center gap-2"
+                className="px-8 py-4 rounded-full bg-primary text-black font-bold uppercase tracking-widest text-sm hover:scale-105 transition-all shadow-[0_10px_20px_-10px_rgba(212,175,55,0.5)] border border-primary/50 flex items-center gap-2 cursor-pointer"
               >
-                <span>Certificate Search</span>
+                <span>{isAr ? "البحث في الشهادات المعتمدة" : "Certificate Search"}</span>
                 <Search className="w-4 h-4 stroke-[2.5]" />
               </button>
             </motion.div>

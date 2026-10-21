@@ -76,7 +76,8 @@ const defaultProfile = [
 ];
 
 function AboutPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language === "ar";
   const [cms, setCms] = useState<any>(null);
   const [complianceData, setComplianceData] = useState<StandardsComplianceData>(defaultStandardsComplianceData);
   const [showIntro, setShowIntro] = useState(true);
@@ -113,8 +114,10 @@ function AboutPage() {
   }, []);
 
   const whoTitle =
-    cms?.whoWeAreTitle || t("about.title") + " " + t("about.title_italic");
-  const whoDesc = cms?.whoWeAreDesc || t("about.desc1");
+    (isArabic ? cms?.whoWeAreTitle_ar : cms?.whoWeAreTitle) ||
+    t("about.title") + " " + t("about.title_italic");
+  const whoDesc =
+    (isArabic ? cms?.whoWeAreDesc_ar : cms?.whoWeAreDesc) || t("about.desc1");
 
   const profile =
     cms?.profileContents?.length > 0 ? cms.profileContents : defaultProfile;
@@ -138,7 +141,15 @@ function AboutPage() {
               className="text-center"
             >
               <h1 className="text-4xl md:text-5xl lg:text-7xl font-display font-bold text-foreground tracking-tight mb-6">
-                Welcome to the <span className="text-primary">VISO Group</span>
+                {isArabic ? (
+                  <>
+                    مرحباً بكم في <span className="text-primary font-arabic">مجموعة فيسو</span>
+                  </>
+                ) : (
+                  <>
+                    Welcome to the <span className="text-primary">VISO Group</span>
+                  </>
+                )}
               </h1>
               <motion.div 
                 initial={{ width: 0 }}

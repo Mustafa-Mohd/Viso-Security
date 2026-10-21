@@ -3,15 +3,15 @@ import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { TopNav } from "@/components/TopNav";
 import { SmoothScroll } from "@/components/SmoothScroll";
-import { useClientCategories, ClientLogo } from "@/data/clientsData";
+import { useClientCategories, ClientLogo, CLIENT_SECTORS_AR, CLIENT_NAMES_AR } from "@/data/clientsData";
 import { TiltCard } from "@/components/TiltCard";
 
 export const Route = createFileRoute("/clients")({
   component: ClientsPage,
   head: () => ({
     meta: [
-      { title: "VISO | Our Clients" },
-      { name: "description", content: "Trusted by industry leaders across the Kingdom." },
+      { title: "VISO | Our Clients & Partners" },
+      { name: "description", content: "Trusted by industry leaders and strategic entities across the Kingdom." },
     ],
   }),
 });
@@ -43,57 +43,95 @@ function ClientsPage() {
               transition={{ duration: 0.8 }}
             >
               <h1 className="font-display text-4xl md:text-6xl font-extrabold text-white tracking-tight leading-tight mb-4 drop-shadow-[0_4px_16px_rgba(0,0,0,0.85)] uppercase">
-                OUR <span className="text-primary block sm:inline drop-shadow-[0_4px_16px_rgba(0,0,0,0.85)]">CLIENTS</span>
+                {isAr ? (
+                  <>
+                    عملاؤنا <span className="text-primary block sm:inline drop-shadow-[0_4px_16px_rgba(0,0,0,0.85)]">وشركاؤنا</span>
+                  </>
+                ) : (
+                  <>
+                    OUR <span className="text-primary block sm:inline drop-shadow-[0_4px_16px_rgba(0,0,0,0.85)]">CLIENTS</span>
+                  </>
+                )}
               </h1>
             </motion.div>
           </div>
         </div>
 
         <div className="max-w-[1400px] mx-auto px-4 md:px-8 relative z-10 w-full">
-          <div className="text-center mb-16">
-            <h3 className="text-3xl font-display font-bold text-neutral-800 mb-4">Trusted by Industry Leaders</h3>
-            <p className="text-sm text-neutral-500 max-w-2xl mx-auto">Providing certified, high-precision translation and security engineering solutions for the most demanding organizations across the Kingdom.</p>
+          <div className="text-center mb-16 max-w-3xl mx-auto px-4">
+            <span className="font-mono text-xs font-bold tracking-[0.25em] text-primary uppercase mb-3 inline-block">
+              {isAr ? "شركاء النجاح والريادة" : "STRATEGIC PARTNERSHIPS"}
+            </span>
+            <h2 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-4">
+              {isAr ? "محل ثقة كبرى الهيئات والشركات الرائدة" : "Trusted by Industry Leaders"}
+            </h2>
+            <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+              {isAr
+                ? "نعتز بشراكتنا الراسخة مع كبرى الهيئات والجهات الحكومية والشركات العالمية والمشاريع الاستراتيجية الكبرى في المملكة العربية السعودية، حيث نقدم استشارات وحلول هندسية أمنية عالية الدقة تلبي أرفع المعايير."
+                : "Providing certified, high-precision translation and security engineering solutions for the most demanding organizations across the Kingdom."}
+            </p>
           </div>
           
           <div className="space-y-16">
-            {categories.map((category) => (
-              <div key={category.title}>
-                <motion.h4
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5 }}
-                  className="font-display text-lg md:text-xl text-left text-neutral-800 mb-6 border-b border-neutral-200 pb-3"
-                >
-                  {category.title}
-                </motion.h4>
+            {categories.map((category) => {
+              const categoryTitle = isAr
+                ? (category.titleAr || CLIENT_SECTORS_AR[category.title] || category.title)
+                : category.title;
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-3 md:gap-4 text-center">
-                  {category.clients.map((client, i) => (
-                    <TiltCard key={client.name} className="h-full">
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.4, delay: i * 0.03 }}
-                        className="group flex flex-col justify-between items-center bg-white border border-neutral-200 p-4 rounded-xl hover:border-primary/40 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 h-full relative overflow-hidden w-full"
-                      >
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              return (
+                <div key={category.title} className="relative">
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5 }}
+                    className={`mb-6 border-b border-border/70 pb-3 flex items-center justify-between gap-4 ${
+                      isAr ? "flex-row-reverse text-right" : "flex-row text-left"
+                    }`}
+                  >
+                    <h3 className="font-display text-lg md:text-xl font-bold text-foreground flex items-center gap-3">
+                      <span className="w-2.5 h-2.5 rounded-full bg-primary inline-block flex-shrink-0" />
+                      <span>{categoryTitle}</span>
+                    </h3>
+                    <span className="font-mono text-xs text-muted-foreground tracking-wider font-medium flex-shrink-0">
+                      {category.clients.length} {isAr ? "شريك" : "ENTITIES"}
+                    </span>
+                  </motion.div>
 
-                        <div className="w-full flex flex-col items-center">
-                          <div className="h-20 md:h-24 w-full mb-3 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                            <ClientLogo src={client.icon} name={client.name} />
-                          </div>
-                          <h3 className="font-sans font-semibold text-xs md:text-sm text-neutral-800 mb-1 group-hover:text-primary transition-colors line-clamp-2">{client.name}</h3>
-                        </div>
-                        
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-3 md:gap-4 text-center">
+                    {category.clients.map((client, i) => {
+                      const clientName = isAr
+                        ? (client.nameAr || CLIENT_NAMES_AR[client.name] || client.name)
+                        : client.name;
 
-                      </motion.div>
-                    </TiltCard>
-                  ))}
+                      return (
+                        <TiltCard key={client.name + i} className="h-full">
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.4, delay: (i % 6) * 0.04 }}
+                            className="group flex flex-col justify-between items-center bg-card hover:bg-card/80 border border-border/70 hover:border-primary/50 p-3.5 md:p-4 rounded-2xl hover:-translate-y-1 hover:shadow-lg transition-all duration-300 h-full relative overflow-hidden w-full backdrop-blur-xs"
+                          >
+                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                            <div className="w-full flex flex-col items-center">
+                              {/* Dedicated high-contrast logo stage - ensures 100% visibility for both dark & light logos */}
+                              <div className="h-20 md:h-24 w-full mb-3 rounded-xl bg-white dark:bg-white/95 p-3 flex items-center justify-center border border-neutral-100 dark:border-neutral-200/50 shadow-2xs group-hover:scale-103 transition-transform duration-300">
+                                <ClientLogo src={client.icon} name={clientName} />
+                              </div>
+                              <h4 className="font-sans font-semibold text-xs md:text-sm text-foreground mb-1 group-hover:text-primary transition-colors line-clamp-2 text-center">
+                                {clientName}
+                              </h4>
+                            </div>
+                          </motion.div>
+                        </TiltCard>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </main>
