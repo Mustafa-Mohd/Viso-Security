@@ -5,23 +5,30 @@
 
 const GEMINI_MODELS = ["gemini-3.5-flash", "gemini-3.8-flash", "gemini-3.5-flash-lite"];
 
-export default async function handler(req: Request): Promise<Response> {
-  if (req.method === "OPTIONS") {
-    return new Response(null, {
-      status: 204,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
-      },
-    });
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Content-Type": "application/json",
+};
+
+export async function handler(reqOrEvent: any, context?: any) {
+  const isWebReq = reqOrEvent && typeof reqOrEvent.json === "function";
+  const httpMethod = isWebReq ? reqOrEvent.method : reqOrEvent?.httpMethod;
+
+  if (httpMethod === "OPTIONS") {
+    if (isWebReq) {
+      return new Response(null, { status: 204, headers: corsHeaders });
+    }
+    return { statusCode: 204, headers: corsHeaders, body: "" };
   }
 
-  if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Method Not Allowed" }), {
-      status: 405,
-      headers: { "Content-Type": "application/json" },
-    });
+  if (httpMethod !== "POST") {
+    const errorBody = JSON.stringify({ error: "Method Not Allowed" });
+    if (isWebReq) {
+      return new Response(errorBody, { status: 405, headers: corsHeaders });
+    }
+    return { statusCode: 405, headers: corsHeaders, body: errorBody };
   }
 
   const apiKey =
@@ -30,23 +37,36 @@ export default async function handler(req: Request): Promise<Response> {
     "";
 
   if (!apiKey) {
-    return new Response(
-      JSON.stringify({ error: "Gemini API key is not configured on the server." }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
+    const errorBody = JSON.stringify({ error: "Gemini API key is not configured on the server." });
+    if (isWebReq) {
+      return new Response(errorBody, { status: 500, headers: corsHeaders });
+    }
+    return { statusCode: 500, headers: corsHeaders, body: errorBody };
   }
 
   try {
-    const { messages, systemPrompt } = (await req.json()) as {
+    let bodyData: any;
+    if (isWebReq) {
+      bodyData = await reqOrEvent.json();
+    } else {
+      bodyData = typeof reqOrEvent?.body === "string" ? JSON.parse(reqOrEvent.body || "{}") : reqOrEvent?.body;
+    }
+
+    const { messages, systemPrompt } = (bodyData || {}) as {
       messages: { role: string; content: string }[];
       systemPrompt: string;
     };
 
+    const sendRes = (status: number, data: any) => {
+      const bodyStr = JSON.stringify(data);
+      if (isWebReq) {
+        return new Response(bodyStr, { status, headers: corsHeaders });
+      }
+      return { statusCode: status, headers: corsHeaders, body: bodyStr };
+    };
+
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      return new Response(
-        JSON.stringify({ error: "Invalid messages payload." }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
+      return sendRes(400, { error: "No messages payload provided." });
     }
 
     // Prepare contents in Gemini format
@@ -70,10 +90,7 @@ export default async function handler(req: Request): Promise<Response> {
     }
 
     if (contents.length === 0) {
-      return new Response(
-        JSON.stringify({ error: "No user message found in conversation." }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
+      return sendRes(400, { error: "No user message found in conversation." });
     }
 
     let lastError = "";
@@ -97,16 +114,7 @@ export default async function handler(req: Request): Promise<Response> {
           const data = await geminiRes.json();
           const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
           if (text && text.trim().length > 0) {
-            return new Response(
-              JSON.stringify({ success: true, answer: text.trim(), model }),
-              {
-                status: 200,
-                headers: {
-                  "Content-Type": "application/json",
-                  "Access-Control-Allow-Origin": "*",
-                },
-              }
-            );
+            return sendRes(200, { success: true, answer: text.trim(), model });
           }
         } else {
           const errData = await geminiRes.json().catch(() => ({}));
@@ -117,14 +125,15 @@ export default async function handler(req: Request): Promise<Response> {
       }
     }
 
-    return new Response(
-      JSON.stringify({ error: `All Gemini models failed. Last error: ${lastError}` }),
-      { status: 502, headers: { "Content-Type": "application/json" } }
-    );
+    return sendRes(502, { error: `All Gemini models failed. Last error: ${lastError}` });
   } catch (err: any) {
-    return new Response(
-      JSON.stringify({ error: err?.message || "Internal server error" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
+    const errorBody = { error: err?.message || "Internal server error" };
+    if (isWebReq) {
+      return new Response(JSON.stringify(errorBody), { status: 500, headers: corsHeaders });
+    }
+    return { statusCode: 500, headers: corsHeaders, body: JSON.stringify(errorBody) };
   }
 }
+
+export default handler;
+

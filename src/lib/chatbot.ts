@@ -58,21 +58,33 @@ GENERAL TRANSLATION & TEXT CAPABILITIES
 - If requested to explain in addition to translation, provide both.
 - Note on Certified Translation: Clarify when relevant that your conversational translations are for immediate convenience, whereas VISO's accredited translation office provides legally certified translations with official stamps and digital QR verification.
 
-SCOPE & OFF-TOPIC REDIRECTION
+SCOPE & HANDLING IRRELEVANT / OFF-TOPIC QUESTIONS
 - Primary Focus: VISO, 4-Stage Security Engineering Lifecycle, HCIS & SAIS compliance, physical security systems (CCTV, ACS, PIDS, UVIS, SOC), Project Management & Supervision, official licenses, office locations, and translation.
 - Permitted General Tasks: General translations, rewriting, grammar correction, and general explanations of relevant technical/security concepts (such as explaining what HCIS is, even if phrased generally).
-- Off-Topic Factual Questions (e.g., "Who won yesterday's cricket match?", "Who is the IPL captain?", "Write a Python snake game", "Recipe for pizza"): Politely explain that you specialize in VISO's consultancy and professional services, and ask how you can help them with VISO, security engineering, or translation. Do not pretend to have live information about unrelated external topics.
+- CRITICAL USER-FACING LANGUAGE REQUIREMENT:
+  * NEVER say or write "it is not in my knowledge base", "not available in my knowledge base", "not in our knowledge base", "not in our records", or "I do not have access to that in my database".
+  * DO NOT use the word or phrase "knowledge base" in your responses to users under any circumstances, as it looks robotic, mechanical, and creates a poor impression for visitors.
+  * If a visitor asks an irrelevant question, an off-topic question, or an inquiry regarding unconfirmed/unlisted details (such as private salaries, revenue, custom pricing, or unrelated topics):
+    Politely direct them to contact VISO's team directly via official email and phone/WhatsApp:
+    - Email: info@visogroup.com
+    - Phone / WhatsApp: +966 11 450 3289
+    Example English response:
+    "For this inquiry or to get confirmed details regarding your request, please contact our team directly via email at info@visogroup.com or by phone/WhatsApp at +966 11 450 3289. How may I assist you with VISO's services today?"
+    Example Arabic response:
+    "للحصول على تفاصيل ومعلومات مؤكدة بخصوص هذا الاستفسار، يسعد فريقنا تواصلك معنا مباشرة عبر البريد الإلكتروني: info@visogroup.com أو الهاتف / واتساب: +966 11 450 3289. كيف يمكنني مساعدتك في خدمات فيسو اليوم؟"
+    Example Urdu / Hindi response:
+    "Is inquiry ke baare mein confirmed details ke liye, aap hamari team se direct contact kar sakte hain via email: info@visogroup.com ya phone/WhatsApp: +966 11 450 3289. VISO ke services ke baare mein aapko kya janna hai?"
+  * Maintain a polite, warm, and professional executive tone.
 
 ACCURACY & SOURCE OF TRUTH
-- Use the approved VISO Knowledge Base below as your source of truth for all company facts, projects, licenses, and office locations.
+- Use the approved VISO reference information below as your source of truth for all company facts, projects, licenses, and office locations.
 - Full form of HCIS: **High Commission for Industrial Security** (Arabic: **الهيئة العليا للأمن الصناعي**). It operates under the Saudi Ministry of Interior (MOI).
 - Do not invent licenses, certifications, project details, prices, or policies.
-- If a specific VISO-related detail is not covered in the knowledge base, honestly state that the verified records do not contain that specific detail and invite the visitor to contact VISO.
-- Do NOT dump contact phone numbers or email addresses unless the visitor explicitly asks how to contact VISO, asks for a proposal/quote, or contact info is genuinely necessary.
+- For normal inquiries that are directly answered by the reference data below, provide direct answers without unnecessarily dumping contact information unless the user asks for it or the inquiry is unconfirmed/off-topic.
 
-=== APPROVED VISO KNOWLEDGE BASE (SOURCE OF TRUTH) ===
+=== APPROVED VISO REFERENCE INFORMATION ===
 ${brainKnowledge}
-=====================================================
+==========================================
 `;
 };
 
@@ -438,23 +450,26 @@ It is the sovereign regulatory authority in Saudi Arabia operating under the **M
     )
   ) {
     if (isArabic) {
-      return "أنا المساعد الذكي لشركة **رؤية الحلول للاستشارات الأمنية (VISO)**، ومهمتي متخصصة في استشارات وهندسة الأمن المادي، معايير HCIS، إدارة المشاريع، وخدمات الترجمة المعتمدة. كيف يمكنني مساعدتك في خدمات فيسو أو مشاريعك في المملكة؟";
+      return "أنا المساعد الذكي لشركة **رؤية الحلول للاستشارات الأمنية (VISO)**، ومهمتي متخصصة في استشارات وهندسة الأمن المادي، معايير HCIS، إدارة المشاريع، وخدمات الترجمة المعتمدة. للاستفسارات يسعدنا تواصلكم معنا عبر البريد الإلكتروني: info@visogroup.com أو الهاتف/واتساب: +966 11 450 3289. كيف يمكنني مساعدتك في خدمات فيسو أو مشاريعك في المملكة؟";
     }
     if (isHindiOrUrdu) {
-      return "Main VISO Group Consultancy ka official assistant hoon aur mera focus VISO ki physical security consultancy, HCIS compliance, engineering supervision, aur translation services par hai. VISO ke services ke baare mein aapko kya janna hai?";
+      return "Main VISO Group Consultancy ka official assistant hoon aur mera focus VISO ki physical security consultancy, HCIS compliance, engineering supervision, aur translation services par hai. Kisi bhi inquiry ke liye aap hamari team se direct contact kar sakte hain via email: info@visogroup.com ya phone/WhatsApp: +966 11 450 3289. VISO ke services ke baare mein aapko kya janna hai?";
     }
-    return "I am the official AI assistant for **VISO Group Consultancy**. I specialize in VISO's physical security engineering, HCIS sovereign compliance, engineering supervision, and translation services. How may I assist you with VISO's services or project requirements today?";
+    return "I am the official AI assistant for **VISO Group Consultancy**. I specialize in VISO's physical security engineering, HCIS sovereign compliance, engineering supervision, and translation services. For inquiries or further assistance, our team is available at info@visogroup.com or phone/WhatsApp at +966 11 450 3289. How may I assist you with VISO's services or project requirements today?";
   }
 
-  // 14. Unknown specific financial / private detail (salary, revenue, profit, fee)
+  // 15. Unknown specific financial / private detail or unlisted query (salary, revenue, profit, fee)
   if (/\b(salary|fee|pricing|cost|price|revenue|net worth|net profit|turnover)\b/i.test(query)) {
     if (isArabic) {
-      return "هذه المعلومة المحددة غير متوفرة حالياً في سجلات المعرفة المعتمدة للشركة. يسعد فريقنا الهندسي والإداري تزويدك بكافة التفاصيل المطلوبة مباشرة عند التواصل معنا عبر البريد الإلكتروني الرسمي: info@visogroup.com.";
+      return "للحصول على تفاصيل ومعلومات مؤكدة بخصوص هذا الاستفسار، يسعد فريقنا تواصلك معنا مباشرة عبر البريد الإلكتروني: info@visogroup.com أو الهاتف / واتساب: +966 11 450 3289.";
     }
-    return "This specific detail is not available in our verified company knowledge base. To get confirmed information regarding your specific inquiry, our engineering team is available via our official communication channels at info@visogroup.com.";
+    if (isHindiOrUrdu) {
+      return "Is inquiry ke baare mein confirmed details ke liye, aap hamari team se direct contact kar sakte hain via email: info@visogroup.com ya phone/WhatsApp: +966 11 450 3289.";
+    }
+    return "To get confirmed information regarding your inquiry, our team is available via official communication channels at info@visogroup.com or by phone/WhatsApp at +966 11 450 3289.";
   }
 
-  // 15. Leadership / CEO / Founder
+  // 16. Leadership / CEO / Founder
   if (
     /\b(ceo|founder|mohammad bin sadiq)\b/i.test(query) ||
     /(محمد\s*بن\s*صادق|الرئيس\s*التنفيذي|المؤسس|رئيس\s*مجلس|مدير\s*عام|ceo\s*kaun)/i.test(
@@ -472,14 +487,14 @@ It is the sovereign regulatory authority in Saudi Arabia operating under the **M
     return `**Mohammad Bin Sadiq** is the **Founder & CEO** of **VISO Group (Vision of Solutions for Security Consultations Co. Ltd)**. He founded VISO in February 2019 in Riyadh, guiding the firm to become Saudi Arabia's benchmark pure-play physical security and sovereign compliance consultancy.`;
   }
 
-  // 16. Helpful default
+  // 17. Helpful default
   if (isArabic) {
-    return "أنا هنا لمساعدتك في كل ما يتعلق بشركة رؤية الحلول (VISO): خدمات الأمن المادي، مراحل العمل الأربع (SRA، التصميم، الاعتماد، التشغيل)، معايير الهيئة العليا للأمن الصناعي (HCIS)، إدارة المشاريع، أو الترجمة المعتمدة. كيف يمكنني خدمتك اليوم؟";
+    return "أنا هنا لمساعدتك في كل ما يتعلق بشركة رؤية الحلول (VISO): خدمات الأمن المادي، مراحل العمل الأربع (SRA، التصميم، الاعتماد، التشغيل)، معايير الهيئة العليا للأمن الصناعي (HCIS)، إدارة المشاريع، أو الترجمة المعتمدة. كما يسعدنا تواصلك معنا مباشرة عبر البريد الإلكتروني: info@visogroup.com أو الهاتف/واتساب: +966 11 450 3289. كيف يمكنني خدمتك اليوم؟";
   }
   if (isHindiOrUrdu) {
-    return "Main VISO ki security consultancy, 4-stage engineering framework, HCIS approvals, project supervision, aur translation services ke baare mein aapke har sawaal ka jawab dene ke liye taiyar hoon. Aap kya janna chahte hain?";
+    return "Main VISO ki security consultancy, 4-stage engineering framework, HCIS approvals, project supervision, aur translation services ke baare mein aapke har sawaal ka jawab dene ke liye taiyar hoon. Aap hamari team se info@visogroup.com ya +966 11 450 3289 par bhi direct contact kar sakte hain. Aap kya janna chahte hain?";
   }
-  return "I am here to assist you with all inquiries regarding VISO: our physical security consultancy, 4-stage engineering lifecycle (SRA, Design, Approvals, Handover), HCIS regulatory compliance, project supervision, and certified translation. How may I help you?";
+  return "I am here to assist you with all inquiries regarding VISO: our physical security consultancy, 4-stage engineering lifecycle (SRA, Design, Approvals, Handover), HCIS regulatory compliance, project supervision, and certified translation. You can also reach our team directly at info@visogroup.com or +966 11 450 3289. How may I help you?";
 }
 
 /**

@@ -132,7 +132,7 @@ assert(
 );
 assert(
   res4.includes("VISO") &&
-    (res4.includes("Lifecycle") || res4.includes("Stage") || res4.includes("Services")),
+  (res4.includes("Lifecycle") || res4.includes("Stage") || res4.includes("Services")),
   "Case 4: Answers VISO services part",
 );
 assert(
@@ -144,9 +144,9 @@ assert(
 const res5 = getNaturalFallback("What are VISO's licenses?", "en");
 assert(
   res5.includes("CR") ||
-    res5.includes("Commercial Registration") ||
-    res5.includes("ISO 9001") ||
-    res5.includes("SAIS"),
+  res5.includes("Commercial Registration") ||
+  res5.includes("ISO 9001") ||
+  res5.includes("SAIS"),
   "Case 5: 'What are VISO's licenses?' provides verified credentials",
 );
 
@@ -226,14 +226,18 @@ assert(
   "Case 15: Explicit contact query properly returns contact info",
 );
 
-// Case 16: Question about a fact not present in knowledge brain
+// Case 16: Question about a fact not present in knowledge brain (e.g. private salary)
 const res16 = getNaturalFallback(
   "What is the private salary and personal car of the VISO founder?",
   "en",
 );
 assert(
-  res16.includes("not available in our verified") || res16.includes("not available"),
-  "Case 16: Unknown fact honestly states lack of confirmed data without hallucinating",
+  !res16.toLowerCase().includes("knowledge base"),
+  "Case 16: Does NOT say 'knowledge base' to user",
+);
+assert(
+  res16.includes("info@visogroup.com") && res16.includes("+966 11 450 3289"),
+  "Case 16: Provides official contact email and phone number instead",
 );
 
 // Case 17: Question containing two or more separate requests

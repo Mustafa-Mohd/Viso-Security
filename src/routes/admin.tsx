@@ -733,7 +733,7 @@ const DEFAULT_HERO_SLIDES = [
     images?: string[];
     regulatoryLogos?: { slug: string; label: string; img: string }[];
   }>({ 
-    videoUrl: "https://res.cloudinary.com/dppwnds6z/video/upload/v1790273816/gemini_generated_video_8399bb9c.mp4",
+    videoUrl: "https://res.cloudinary.com/dppwnds6z/video/upload/fl_splice,l_video:gemini_generated_video_1c397ea0/gemini_generated_video_4932b2ba.mp4",
     slides: [...DEFAULT_HERO_SLIDES],
     title1: "Designing", 
     title2: "The Future", 
@@ -2607,7 +2607,7 @@ const DEFAULT_HERO_SLIDES = [
                           const newCard = {
                             title: "NEW FRAMEWORK",
                             desc: "Regulatory and compliance framework overview and guidelines.",
-                            url: "/regulatory",
+                            url: "/security",
                             logo: "https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png",
                             color: "from-emerald-100 to-emerald-50 border-emerald-200 hover:border-emerald-300 shadow-sm",
                             logoBg: "bg-white",

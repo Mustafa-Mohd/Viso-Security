@@ -151,9 +151,6 @@ export function TopNav() {
 
   const isActivePath = (to: string) => {
     if (to === "/") return pathname === "/";
-    if (to === "/regulatory") {
-      return pathname === "/regulatory" || pathname === "/regulatory/";
-    }
     return pathname === to || pathname.startsWith(`${to}/`);
   };
 

@@ -64,7 +64,7 @@ export const defaultStandardsComplianceData: StandardsComplianceData = {
     {
       title: "SAIS",
       desc: "Supreme Authority for Industrial Security Standards.",
-      url: "/regulatory/sais",
+      url: "/security",
       logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgBwqTj0FNNJJm59mHR1GKznOvHK23QpPB5jwKZQuFaQ&s=10",
       color: "from-emerald-100 to-emerald-50 border-emerald-200 hover:border-emerald-300 shadow-sm",
       logoBg: "bg-white",
@@ -72,7 +72,7 @@ export const defaultStandardsComplianceData: StandardsComplianceData = {
     {
       title: "ARAMCO",
       desc: "Saudi Aramco Security Standards (SAES).",
-      url: "/regulatory/aramco",
+      url: "/security",
       logo: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790621083/aramco.jpg",
       color: "from-cyan-100 to-cyan-50 border-cyan-200 hover:border-cyan-300 shadow-sm",
       logoBg: "bg-white",
@@ -80,7 +80,7 @@ export const defaultStandardsComplianceData: StandardsComplianceData = {
     {
       title: "NEOM",
       desc: "NEOM Public Safety & Security Consultancy Services.",
-      url: "/regulatory/neom",
+      url: "/security",
       logo: "https://neom.scene7.com/is/image/neom/logo-neom-en-spaced?fmt=png-alpha&scl=1",
       color: "from-purple-100 to-purple-50 border-purple-200 hover:border-purple-300 shadow-sm",
       logoBg: "bg-white",
@@ -88,7 +88,7 @@ export const defaultStandardsComplianceData: StandardsComplianceData = {
     {
       title: "API",
       desc: "Security Risk Assessment for Petroleum & Petrochemical Industries.",
-      url: "/regulatory/api780",
+      url: "/security",
       logo: "https://theshopmag.com/wp-content/uploads/2023/05/api-logo-stacked.png",
       color: "from-sky-100 to-sky-50 border-sky-200 hover:border-sky-300 shadow-sm",
       logoBg: "bg-white",
@@ -96,7 +96,7 @@ export const defaultStandardsComplianceData: StandardsComplianceData = {
     {
       title: "MOI",
       desc: "Ministry of Interior Regulatory Frameworks.",
-      url: "/regulatory/moi",
+      url: "/security",
       logo: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png",
       color: "from-blue-100 to-blue-50 border-blue-200 hover:border-blue-300 shadow-sm",
       logoBg: "bg-white",

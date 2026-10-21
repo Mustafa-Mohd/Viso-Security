@@ -545,6 +545,12 @@
         "department": "Human Resources",
         "location": "Riyadh, KSA",
         "description": "Drive employee engagement, handle onboarding, and manage records in our internal ESS platform while supporting growth across the Kingdom."
+      },
+      "security_engineer": {
+        "title": "Security Engineer",
+        "department": "Security Systems Engineering",
+        "location": "Riyadh / Eastern Province, KSA",
+        "description": "Design and supervise integrated physical security architectures, HCIS compliance directives, threat risk assessments (SRA), CCTV/VSS, access control, and perimeter protection for mission-critical facilities."
       }
     },
     "all_departments": "All Disciplines",

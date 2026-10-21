@@ -42,6 +42,7 @@ const JOB_IDS = [
   "doc",
   "security",
   "hr",
+  "security_engineer",
   "civil",
   "planning",
   "electrical",
@@ -51,6 +52,7 @@ const JOB_IMAGES: Record<string, string> = {
   doc: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790590884/ChatGPT_Image_Sep_28_2026_03_51_15_PM.png",
   security: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790595554/ChatGPT_Image_Sep_28_2026_05_08_48_PM.png",
   hr: "https://images.unsplash.com/photo-1573164713988-8665fc963095?w=800&q=80",
+  security_engineer: "https://ingenieure-international.de/wp-content/uploads/2024/04/iStock-1462139281.jpg",
   civil: "https://media.istockphoto.com/id/1334138265/photo/surveyor-equipment-surveyor-u2019s-telescope-at-construction-site-or-surveying-for-making.jpg?s=612x612&w=0&k=20&c=jNHW2l4oYoYhHfN7DWRlOUterkDEEqVF60EV-1zD7Jg=",
   planning: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80",
   electrical: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&q=80",
@@ -63,6 +65,7 @@ const JOB_BADGES: Record<string, string[]> = {
   doc: ["DMS Platform", "Revision Tracking", "ISO Standards"],
   security: ["Physical Security", "Site Defense", "Asset Protection"],
   hr: ["Talent Acquisition", "ESS Platform", "People Operations"],
+  security_engineer: ["HCIS Directives", "SRA Assessment", "Systems Architecture"],
 };
 
 const PILLAR_ICONS = [Shield, Sparkles, Users] as const;
@@ -583,7 +586,7 @@ function OpenRoles({
 
         {/* Roles Grid */}
         {filteredRoles.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredRoles.map((job, index) => {
               const isHighlighted = highlightedRoleId === job.id;
               const imgUrl =
@@ -621,9 +624,6 @@ function OpenRoles({
                       loading="lazy"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
-
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent opacity-80" />
 
                     {/* Department Badge */}
                     <div className="absolute top-3.5 left-3.5 bg-background/90 backdrop-blur-md border border-foreground/10 px-3 py-1 rounded-full font-mono text-[10px] tracking-[0.18em] uppercase text-primary font-semibold shadow-sm">

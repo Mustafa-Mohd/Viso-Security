@@ -64,23 +64,23 @@ LEADERSHIP & EXECUTIVE MANAGEMENT:
 
 REGULATORY AUTHORITIES & GOVERNANCE:
 ${lic.regulatoryBodies
-  .map(
-    (r) => `- ${r.shortName} (${r.fullName}):
+      .map(
+        (r) => `- ${r.shortName} (${r.fullName}):
     Role & Authority: ${r.role}`,
-  )
-  .join("\n")}
+      )
+      .join("\n")}
 
 OFFICIAL LICENSES & ACCREDITATIONS:
 ${lic.credentials.map((c) => `- ${c.title} [${c.validity}]: ${c.details}`).join("\n")}
 
 THE 4-STAGE PHYSICAL SECURITY ENGINEERING LIFECYCLE:
 ${srv.the4Stages
-  .map(
-    (s) => `[${s.stage}] ${s.nameEn} (${s.nameAr}):
+      .map(
+        (s) => `[${s.stage}] ${s.nameEn} (${s.nameAr}):
   * Summary: ${s.summary}
   * Key Deliverables: ${s.deliverables.join("; ")}`,
-  )
-  .join("\n\n")}
+      )
+      .join("\n\n")}
 
 TECHNICAL ENGINEERING SYSTEMS:
 ${srv.technicalSystems.map((sys) => `- ${sys.name}: ${sys.description}`).join("\n")}

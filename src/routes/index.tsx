@@ -12,12 +12,8 @@ import { ServicesCarousel } from "@/components/ServicesCarousel";
 import { clientCategoriesData, ClientLogo, useClientCategories } from "@/data/clientsData";
 import { X, FileText, Briefcase, ShieldCheck, Award, Star, HeartHandshake, Target, Sparkles } from "lucide-react";
 
-const AboutInteractive = lazy(() =>
-  import("@/components/AboutInteractive").then((m) => ({ default: m.AboutInteractive }))
-);
-const LocationsSection = lazy(() =>
-  import("@/components/LocationsSection").then((m) => ({ default: m.LocationsSection }))
-);
+import { AboutInteractive } from "@/components/AboutInteractive";
+import { LocationsSection } from "@/components/LocationsSection";
 
 function SectionFallback({ h = 320 }: { h?: number }) {
   return (
@@ -304,13 +300,13 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
               style={{ perspective: 1000 }}
             >
               {/* Animated Logo */}
-              <motion.img 
+              <motion.img
                 src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
                 alt="Viso Group Logo"
                 initial={{ opacity: 0, scale: 0.5, y: -20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ 
-                  duration: 0.8, 
+                transition={{
+                  duration: 0.8,
                   ease: [0.16, 1, 0.3, 1],
                 }}
                 className="w-32 h-auto sm:w-40 md:w-64 mb-8 md:mb-10 drop-shadow-[0_10px_30px_rgba(212,175,55,0.5)] object-contain"
@@ -323,8 +319,8 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
                     key={i}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ 
-                      duration: 0.28, 
+                    transition={{
+                      duration: 0.28,
                       delay: i * 0.08 + 0.35,
                       ease: "easeOut"
                     }}
@@ -379,7 +375,13 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
   // Strictly keep only the 2 core services: Security Consultancy & Translation Services
   const slides = servicesList;
 
-  const videoUrl = data?.videoUrl || "https://res.cloudinary.com/dppwnds6z/video/upload/v1790273816/gemini_generated_video_8399bb9c.mp4";
+  const MERGED_HERO_VIDEO_URL =
+    "https://res.cloudinary.com/dppwnds6z/video/upload/fl_splice,l_video:gemini_generated_video_1c397ea0/gemini_generated_video_4932b2ba.mp4";
+
+  const videoUrl =
+    data?.videoUrl && !data.videoUrl.includes("8399bb9c")
+      ? data.videoUrl
+      : MERGED_HERO_VIDEO_URL;
 
   useEffect(() => {
     if (!isReady) return;
@@ -405,6 +407,10 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
         className="absolute inset-0 w-full h-full object-cover"
       >
         <source src={videoUrl} type="video/mp4" />
+        <source
+          src="https://res.cloudinary.com/dppwnds6z/video/upload/v1792423642/gemini_generated_video_4932b2ba.mp4"
+          type="video/mp4"
+        />
       </video>
 
       {/* Gradient Overlays for Readability */}
@@ -463,18 +469,16 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
           { slug: "aramco", label: "ARAMCO", img: "https://upload.wikimedia.org/wikipedia/en/thumb/8/85/Saudi_Aramco_logo.svg/1200px-Saudi_Aramco_logo.svg.png" },
         ]).map((body: any, idx: number) => (
           <div key={idx} className="relative group shrink-0">
-            <Link
-              to="/regulatory/$slug"
-              params={{ slug: body.slug }}
-              className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-transparent border-2 border-[#D4AF37] hover:border-[#FFD700] flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-[0_0_10px_rgba(212,175,55,0.3)] hover:shadow-[0_0_20px_rgba(212,175,55,0.8)] cursor-pointer overflow-hidden block"
+            <div
+              className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-transparent border-2 border-[#D4AF37] hover:border-[#FFD700] flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-[0_0_10px_rgba(212,175,55,0.3)] hover:shadow-[0_0_20px_rgba(212,175,55,0.8)] cursor-default overflow-hidden block"
               aria-label={body.label}
             >
-              <img 
+              <img
                 src={body.img}
                 alt={body.label}
                 className="w-full h-full object-cover rounded-full transition-all duration-500 grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105"
               />
-            </Link>
+            </div>
             {/* Logo Name Tooltip on Hover */}
             <span className="absolute top-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2 bg-black/90 backdrop-blur-md border border-[#D4AF37] text-gold text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none shadow-[0_4px_15px_rgba(0,0,0,0.8)] z-50">
               {body.label}
@@ -492,9 +496,8 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
             aria-label={`Slide ${i + 1}`}
             aria-current={i === currentSlide ? "true" : undefined}
             onClick={() => setCurrentSlide(i)}
-            className={`h-1.5 rounded-full transition-all duration-300 ${
-              i === currentSlide ? "w-10 bg-gold shadow-[0_0_8px_#D4AF37]" : "w-3 bg-white/45 hover:bg-white/75"
-            }`}
+            className={`h-1.5 rounded-full transition-all duration-300 ${i === currentSlide ? "w-10 bg-gold shadow-[0_0_8px_#D4AF37]" : "w-3 bg-white/45 hover:bg-white/75"
+              }`}
           />
         ))}
       </div>
@@ -507,7 +510,7 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
           { icon: <ShieldCheck size={20} />, img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790100668/865e7db3-7be4-4ed4-920e-e0a8b29af7bb.png", label: "SAIS Certificate" },
           { icon: <Award size={20} />, img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1791982868/b88077c8-e8df-4ec4-9c8f-28236a827324.png", label: "CCC Certificate" }
         ].map((cert, idx) => (
-          <button 
+          <button
             key={idx}
             type="button"
             onClick={() => setSelectedCert(cert)}
@@ -652,7 +655,7 @@ function FrameworkSection({ data }: { data?: any }) {
           <span className="text-primary">{title2}</span>
         </motion.h2>
 
-        <motion.p 
+        <motion.p
           initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.2 }}
           className="font-sans text-lg text-black max-w-3xl mx-auto mt-8 leading-relaxed mb-16 whitespace-pre-wrap"
         >
@@ -670,7 +673,7 @@ function FrameworkSection({ data }: { data?: any }) {
               >
                 {/* Top Accent Line */}
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                
+
                 {/* Faded Background Number */}
                 <div className="absolute -bottom-4 -right-2 font-display text-[120px] font-bold text-foreground/[0.02] group-hover:text-gold/[0.05] transition-colors duration-500 pointer-events-none select-none z-0 leading-none">
                   {stage.num}
@@ -683,13 +686,13 @@ function FrameworkSection({ data }: { data?: any }) {
                   </div>
                   <h3 className="font-display text-2xl leading-snug mb-3 text-foreground group-hover:text-primary transition-colors duration-300">{stage.title}</h3>
                   <p className="font-sans text-sm text-black mb-8 max-w-[90%]">{stage.subtitle}</p>
-                  
+
                   {stage.img && (
                     <div className="mt-2 mb-6 overflow-visible rounded-lg border border-foreground/10 opacity-80 group-hover:opacity-100 transition-opacity bg-background/50 flex items-center justify-center p-2">
                       <img src={stage.img} alt="" className="max-w-full h-auto object-contain group-hover:scale-105 transition-transform duration-500" style={{ maxHeight: '180px' }} />
                     </div>
                   )}
-                  
+
                   <div className="mt-auto pt-8 border-t border-foreground/5 group-hover:border-gold/20 transition-colors duration-500">
                     <Link to="/security" className="inline-flex items-center gap-2 text-xs font-bold tracking-widest text-primary group-hover:text-gold uppercase transition-colors">
                       {t("home.learn_more")}
@@ -751,11 +754,11 @@ function ClientsSection({ data }: { data?: any }) {
   const titleMono = data?.titleMono || "Trusted By";
   const title1 = data?.title1 || "Industry";
   const title2 = data?.title2 || "Titans.";
-  
+
   // Extract clients from dynamic categories managed in CMS
   const clients = useMemo(() => {
     if (categories && categories.length > 0) {
-      const extracted = categories.flatMap(cat => 
+      const extracted = categories.flatMap(cat =>
         (cat.clients || []).map(client => ({
           ...client,
           sector: cat.title
@@ -763,7 +766,7 @@ function ClientsSection({ data }: { data?: any }) {
       );
       if (extracted.length > 0) return extracted;
     }
-    return clientCategoriesData.flatMap(cat => 
+    return clientCategoriesData.flatMap(cat =>
       cat.clients.map(client => ({
         ...client,
         sector: cat.title
@@ -794,7 +797,7 @@ function ClientsSection({ data }: { data?: any }) {
           {/* Fading edges */}
           <div className="absolute top-0 left-0 w-16 md:w-48 h-full bg-gradient-to-r from-background to-transparent z-10 pointer-events-none"></div>
           <div className="absolute top-0 right-0 w-16 md:w-48 h-full bg-gradient-to-l from-background to-transparent z-10 pointer-events-none"></div>
-          
+
           <div className="animate-marquee flex gap-6 w-max">
             {[...row1, ...row1].map((client: any, i: number) => (
               <div key={i} className="inline-block w-48 md:w-56 flex-shrink-0 px-4">
@@ -813,7 +816,7 @@ function ClientsSection({ data }: { data?: any }) {
         <div className="relative overflow-hidden w-full whitespace-nowrap mb-12 py-4">
           <div className="absolute top-0 left-0 w-16 md:w-48 h-full bg-gradient-to-r from-background to-transparent z-10 pointer-events-none"></div>
           <div className="absolute top-0 right-0 w-16 md:w-48 h-full bg-gradient-to-l from-background to-transparent z-10 pointer-events-none"></div>
-          
+
           <div className="animate-marquee-reverse flex gap-6 w-max">
             {[...row2, ...row2].map((client: any, i: number) => (
               <div key={i} className="inline-block w-48 md:w-56 flex-shrink-0 px-4">
@@ -853,7 +856,7 @@ function GallerySection() {
           .from("gallery_images")
           .select("image_url")
           .order("created_at", { ascending: false });
-        
+
         if (!error && data) {
           setGalleryImages(data.map(item => item.image_url));
         }
@@ -915,7 +918,7 @@ function AnimatedCounter({ from = 0, to, prefix = "", suffix = "", duration = 2.
 
   useEffect(() => {
     if (!inView) return;
-    
+
     const node = nodeRef.current;
     if (!node) return;
 
@@ -1019,22 +1022,22 @@ function CTASection({ data }: { data?: any }) {
             <img src={imageUrl} alt="Call to Action" loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
           ) : (
             <>
-              <a 
-                href="https://maps.app.goo.gl/fJBkhFTExcBrhJnG9?g_st=ipc" 
-                target="_blank" 
+              <a
+                href="https://maps.app.goo.gl/fJBkhFTExcBrhJnG9?g_st=ipc"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="absolute inset-0 z-20 cursor-pointer group-hover:bg-primary/5 transition-colors duration-300"
                 title="Open exact Riyadh HQ location in Google Maps"
               >
                 <span className="sr-only">Open exact Riyadh location on Google Maps</span>
               </a>
-              <iframe 
-                src="https://maps.google.com/maps?q=Building+No.+7423,+Abi+Bakr+As+Siddiq,+Al-Taawun,+Riyadh&t=&z=15&ie=UTF8&iwloc=&output=embed" 
-                width="100%" 
-                height="100%" 
-                style={{ border: 0, filter: "contrast(1.1) grayscale(0.2)" }} 
-                allowFullScreen={false} 
-                loading="lazy" 
+              <iframe
+                src="https://maps.google.com/maps?q=Building+No.+7423,+Abi+Bakr+As+Siddiq,+Al-Taawun,+Riyadh&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                width="100%"
+                height="100%"
+                style={{ border: 0, filter: "contrast(1.1) grayscale(0.2)" }}
+                allowFullScreen={false}
+                loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 title="VISO Group Location"
                 className="absolute inset-0 z-0 pointer-events-none"
@@ -1048,7 +1051,7 @@ function CTASection({ data }: { data?: any }) {
 }
 function StatCard({ title, value, subtitle, svg, delay }: { title: string, value: string, subtitle?: string, svg: React.ReactNode, delay: number }) {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
@@ -1075,22 +1078,22 @@ function CalendarSVG() {
         animate={{ pathLength: 1 }}
         transition={{ duration: 2, ease: "easeInOut" }}
       />
-      <motion.line x1="16" y1="2" x2="16" y2="6" 
+      <motion.line x1="16" y1="2" x2="16" y2="6"
         initial={{ y: -5, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 1 }}
       />
-      <motion.line x1="8" y1="2" x2="8" y2="6" 
+      <motion.line x1="8" y1="2" x2="8" y2="6"
         initial={{ y: -5, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 1.2 }}
       />
-      <motion.line x1="3" y1="10" x2="21" y2="10" 
+      <motion.line x1="3" y1="10" x2="21" y2="10"
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
         transition={{ delay: 0.5, duration: 1 }}
       />
-      <motion.circle cx="12" cy="15" r="1.5" fill="currentColor" 
+      <motion.circle cx="12" cy="15" r="1.5" fill="currentColor"
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 1.5, type: "spring" }}
@@ -1102,22 +1105,22 @@ function CalendarSVG() {
 function MapSVG() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full relative">
-      <motion.polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" 
+      <motion.polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
         transition={{ duration: 2, ease: "easeInOut" }}
       />
-      <motion.line x1="9" y1="3" x2="9" y2="18" 
+      <motion.line x1="9" y1="3" x2="9" y2="18"
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
         transition={{ delay: 0.5, duration: 1 }}
       />
-      <motion.line x1="15" y1="6" x2="15" y2="21" 
+      <motion.line x1="15" y1="6" x2="15" y2="21"
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
         transition={{ delay: 0.8, duration: 1 }}
       />
-      
+
       {/* 5 Points for 5 locations */}
       {[
         { cx: 7, cy: 10, d: 1.0 },
@@ -1139,12 +1142,12 @@ function MapSVG() {
 function ShieldSVG() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-      <motion.path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" 
+      <motion.path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
         transition={{ duration: 2, ease: "easeInOut" }}
       />
-      <motion.path d="M9 12l2 2 4-4" 
+      <motion.path d="M9 12l2 2 4-4"
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
         transition={{ delay: 1, duration: 1 }}
@@ -1156,12 +1159,12 @@ function ShieldSVG() {
 function ChartSVG() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-      <motion.path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
+      <motion.path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
         initial={{ pathLength: 0, opacity: 0.2 }}
         animate={{ pathLength: 1, opacity: 0.2 }}
         transition={{ duration: 0.1 }}
       />
-      <motion.path d="M21 12a9 9 0 01-9 9M12 3a9 9 0 019 9" 
+      <motion.path d="M21 12a9 9 0 01-9 9M12 3a9 9 0 019 9"
         stroke="#DF9B2A"
         strokeWidth="1.5"
         initial={{ pathLength: 0 }}
@@ -1194,10 +1197,10 @@ function ExpandingValueCards({ items }: { items: any[] }) {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ 
-              duration: 0.8, 
-              delay: 0.1 + i * 0.1, 
-              layout: { type: "spring", stiffness: 200, damping: 25 } 
+            transition={{
+              duration: 0.8,
+              delay: 0.1 + i * 0.1,
+              layout: { type: "spring", stiffness: 200, damping: 25 }
             }}
             onMouseEnter={() => setActiveIdx(i)}
             onClick={() => setActiveIdx(i)}
@@ -1214,12 +1217,12 @@ function ExpandingValueCards({ items }: { items: any[] }) {
 
               if (bgColor) {
                 return (
-                  <motion.div 
+                  <motion.div
                     className="absolute inset-0 w-full h-full z-0"
                     style={{ backgroundColor: bgColor }}
-                    animate={{ 
+                    animate={{
                       scale: isActive ? 1.05 : 1,
-                      filter: isActive ? "brightness(0.8)" : "brightness(0.7)" 
+                      filter: isActive ? "brightness(0.8)" : "brightness(0.7)"
                     }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
                   />
@@ -1227,19 +1230,19 @@ function ExpandingValueCards({ items }: { items: any[] }) {
               }
 
               return (
-                <motion.img 
-                  src={cv.imageUrl} 
-                  alt={cv.title} 
+                <motion.img
+                  src={cv.imageUrl}
+                  alt={cv.title}
                   className="absolute inset-0 w-full h-full object-cover origin-center z-0"
-                  animate={{ 
+                  animate={{
                     scale: isActive ? 1.05 : 1,
-                    filter: isActive ? "brightness(0.8) contrast(1.1)" : "brightness(0.7) contrast(1.1)" 
+                    filter: isActive ? "brightness(0.8) contrast(1.1)" : "brightness(0.7) contrast(1.1)"
                   }}
                   transition={{ duration: 0.8, ease: "easeOut" }}
                 />
               );
             })()}
-            
+
             {/* Gradient Overlays */}
             <div className="absolute inset-0 bg-black/20 z-10" />
             <div className={`absolute inset-0 transition-opacity duration-700 z-10 ${isActive ? 'bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-100' : 'opacity-0'}`} />
@@ -1257,7 +1260,7 @@ function ExpandingValueCards({ items }: { items: any[] }) {
                     transition={{ duration: 0.3 }}
                     className="absolute inset-0 flex items-center justify-center p-6"
                   >
-                    <h3 
+                    <h3
                       className="font-display font-bold text-3xl md:text-4xl text-white tracking-widest drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] opacity-90 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap"
                       style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
                     >
@@ -1303,7 +1306,7 @@ function ExpandingValueCards({ items }: { items: any[] }) {
                       Core Value {String(i + 1).padStart(2, '0')}
                     </motion.div>
 
-                    <motion.h3 
+                    <motion.h3
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.5, delay: 0.15 }}
@@ -1311,9 +1314,9 @@ function ExpandingValueCards({ items }: { items: any[] }) {
                     >
                       {cv.title}
                     </motion.h3>
-                    
+
                     <div className="flex flex-col lg:flex-row gap-4 lg:gap-12 items-start">
-                      <motion.p 
+                      <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.25 }}
@@ -1321,8 +1324,8 @@ function ExpandingValueCards({ items }: { items: any[] }) {
                       >
                         {cv.desc}
                       </motion.p>
-                      
-                      <motion.ul 
+
+                      <motion.ul
                         initial="hidden"
                         animate="visible"
                         variants={{
@@ -1331,7 +1334,7 @@ function ExpandingValueCards({ items }: { items: any[] }) {
                         className="space-y-2 lg:space-y-3 min-w-[200px]"
                       >
                         {cv.points?.map((pt: string, idx: number) => (
-                          <motion.li 
+                          <motion.li
                             key={idx}
                             variants={{
                               hidden: { opacity: 0, x: -10 },
@@ -1345,7 +1348,7 @@ function ExpandingValueCards({ items }: { items: any[] }) {
                         ))}
                       </motion.ul>
                     </div>
-                    
+
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -1369,7 +1372,7 @@ function ExpandingValueCards({ items }: { items: any[] }) {
 
 function ValueCard({ title, desc, points, imageUrl, delay }: { title: string, desc: string, points: string[], imageUrl: string, delay: number }) {
   return (
-    <motion.div 
+    <motion.div
       layout
       initial={{ opacity: 0, y: 30, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -1387,7 +1390,7 @@ function ValueCard({ title, desc, points, imageUrl, delay }: { title: string, de
           {desc}
         </p>
       </div>
-      
+
       {/* Hover State (Points) */}
       <div className="absolute inset-0 p-8 flex flex-col items-center justify-center translate-y-full opacity-0 transition-all duration-700 ease-out group-hover:translate-y-0 group-hover:opacity-100 bg-surface">
         <div className="h-20 w-20 mb-4 rounded-xl overflow-hidden border-2 border-gold shadow-lg shadow-gold/20">
@@ -1470,7 +1473,7 @@ function AreaCard({ title, desc, svg, imageUrl, delay }: { title?: string, desc?
   }
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -1664,28 +1667,28 @@ function About({ data }: { data?: any }) {
       <div className="absolute inset-0 z-0 pointer-events-none">
         {/* Base blurred layer */}
         <div className="absolute inset-0 opacity-10 hidden md:block">
-          <img 
+          <img
             src="https://res.cloudinary.com/dppwnds6z/image/upload/v1792398542/1781183794364.jpg"
             alt=""
             className="w-full h-full object-cover blur-3xl grayscale"
           />
         </div>
-        
+
         {/* Spotlight reveal layer */}
         <motion.div
           className="absolute inset-0 hidden md:block opacity-0 group-hover:opacity-100 transition-opacity duration-1000"
           style={{ WebkitMaskImage: maskImage, maskImage: maskImage }}
         >
-          <img 
+          <img
             src="https://res.cloudinary.com/dppwnds6z/image/upload/v1792398542/1781183794364.jpg"
             alt=""
             className="w-full h-full object-cover opacity-15 group-hover:opacity-70 transition-opacity duration-[4000ms] ease-in-out"
           />
         </motion.div>
-        
+
         {/* Mobile static fallback */}
         <div className="absolute inset-0 md:hidden opacity-5">
-          <img 
+          <img
             src="https://res.cloudinary.com/dppwnds6z/image/upload/v1792398542/1781183794364.jpg"
             alt=""
             className="w-full h-full object-cover"
@@ -1960,7 +1963,7 @@ function LinkedInPosts() {
           <h2 className="text-4xl md:text-5xl font-light mb-4 text-foreground">Latest Updates</h2>
           <p className="text-lg text-foreground/60 max-w-2xl mx-auto">Follow our recent activities and announcements on LinkedIn.</p>
         </motion.div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
           <div className="w-full max-w-[504px] rounded-xl overflow-hidden shadow-sm border border-foreground/10 bg-white">
             <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7508147208584785920?collapsed=1" height="669" width="100%" frameBorder="0" allowFullScreen title="Embedded post" className="w-full" style={{ display: 'block' }}></iframe>
@@ -1988,26 +1991,26 @@ function Footer({ data }: { data?: any }) {
 
       {/* Grounded Cityscape Background Illustration */}
       <div className="absolute bottom-0 left-0 w-full h-full pointer-events-none z-0 flex items-end">
-        <img 
-          src={data?.imageUrl || "https://res.cloudinary.com/dppwnds6z/image/upload/v1790680329/ChatGPT_Image_Sep_29_2026_04_41_56_PM.png"} 
+        <img
+          src={data?.imageUrl || "https://res.cloudinary.com/dppwnds6z/image/upload/v1790680329/ChatGPT_Image_Sep_29_2026_04_41_56_PM.png"}
           alt="Saudi Landmarks"
           loading="lazy"
           decoding="async"
-          className="w-full h-auto min-w-full object-cover object-bottom opacity-80" 
+          className="w-full h-auto min-w-full object-cover object-bottom opacity-80"
         />
       </div>
-      
+
       <div className="max-w-[1600px] w-full mx-auto px-8 md:px-16 pt-16 pb-12 relative z-10 flex-grow">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-0">
-          
+
           {/* Brand Col */}
           <div className="space-y-6">
-            <img 
-              src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png" 
+            <img
+              src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
               alt="VISO Logo"
               loading="lazy"
               decoding="async"
-              className="h-16 w-auto object-contain" 
+              className="h-16 w-auto object-contain"
             />
             <p className="font-sans text-black/70 text-sm leading-relaxed max-w-xs text-justify">
               Pioneering high-end security architecture, consulting, and seamless defensive integration for mega-projects worldwide.

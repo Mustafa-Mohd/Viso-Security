@@ -990,19 +990,19 @@ export function SecurityHologramNexus() {
             <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <Link
-                  to="/regulatory/hcis"
+                  to="/security"
                   className="px-3 py-1 rounded-md bg-gold/15 hover:bg-gold text-gold hover:text-black font-mono text-[10px] font-bold tracking-wider uppercase transition-all"
                 >
                   HCIS Directives →
                 </Link>
                 <Link
-                  to="/regulatory/moi"
+                  to="/security"
                   className="px-3 py-1 rounded-md bg-white/5 hover:bg-white/15 text-white/80 font-mono text-[10px] tracking-wider uppercase transition-all border border-white/10"
                 >
                   MOI Governance →
                 </Link>
                 <Link
-                  to="/regulatory/sais"
+                  to="/security"
                   className="px-3 py-1 rounded-md bg-white/5 hover:bg-white/15 text-white/80 font-mono text-[10px] tracking-wider uppercase transition-all border border-white/10"
                 >
                   SAIS Standards →

@@ -48,24 +48,29 @@ async function postEmailPayload(payload: any): Promise<EmailApiResponse> {
         body: JSON.stringify(payload),
       });
 
-      // If method not allowed or 404, try next candidate endpoint
-      if (res.status === 404 || res.status === 405) {
+      const contentType = res.headers.get("content-type") || "";
+
+      // If method not allowed, 404, or hit SPA HTML catch-all, try next endpoint
+      if (res.status === 404 || res.status === 405 || contentType.includes("text/html")) {
         continue;
       }
 
       const data = (await res.json().catch(() => ({}))) as EmailApiResponse;
 
       if (!res.ok) {
-        // Return structured error
+        const errorMsg = data?.error || `HTTP ${res.status}: Failed to send email`;
+        console.error(`[emailApi] Endpoint ${endpoint} failed:`, errorMsg, data);
         return {
           success: false,
-          error: data?.error || `HTTP ${res.status}: Failed to send email`,
+          error: errorMsg,
+          details: data?.details,
         };
       }
 
       return data;
     } catch (err: any) {
       lastError = err;
+      console.warn(`[emailApi] Candidate endpoint ${endpoint} threw:`, err?.message);
     }
   }
 

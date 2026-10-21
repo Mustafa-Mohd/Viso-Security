@@ -118,8 +118,8 @@ export function Chatbot() {
     } catch (error: unknown) {
       console.error("[VISO AI] Chatbot processing error:", error);
       const fallbackText = isArabic
-        ? "عذراً، حدث تأخر أثناء معالجة استفسارك. يرجى المحاولة مرة أخرى أو التواصل مع فريقنا مباشرة عبر info@visogroup.com."
-        : "I apologize, there was a temporary delay in processing your request. Please try again or reach out to us at info@visogroup.com.";
+        ? "عذراً، حدث تأخر أثناء معالجة استفسارك. يرجى المحاولة مرة أخرى أو التواصل مع فريقنا مباشرة عبر البريد الإلكتروني: info@visogroup.com أو الهاتف/واتساب: +966 11 450 3289."
+        : "I apologize, there was a temporary delay in processing your request. Please try again or reach out to us at info@visogroup.com or phone/WhatsApp at +966 11 450 3289.";
       setLastError(trimmed);
       setMessages((prev) => [
         ...prev,

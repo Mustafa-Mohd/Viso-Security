@@ -226,22 +226,22 @@ function Hero() {
 
         <Reveal delay={0.7}>
           <div className="mx-auto mt-12 flex items-center justify-center gap-5">
-             <div className="relative w-12 h-12 rounded-full border border-gold/20 flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.1)]">
-               <motion.div 
-                 animate={{ rotate: 360 }} 
-                 transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                 className="absolute inset-0 rounded-full border-t border-gold opacity-70" 
-               />
-               <motion.div 
-                 animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }} 
-                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                 className="w-1.5 h-1.5 bg-gold rounded-full" 
-               />
-             </div>
-             <div className="text-left font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground leading-relaxed">
-               System Status <br/>
-               <span className="text-gold">Operational Readiness</span>
-             </div>
+            <div className="relative w-12 h-12 rounded-full border border-gold/20 flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.1)]">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                className="absolute inset-0 rounded-full border-t border-gold opacity-70"
+              />
+              <motion.div
+                animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                className="w-1.5 h-1.5 bg-gold rounded-full"
+              />
+            </div>
+            <div className="text-left font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground leading-relaxed">
+              System Status <br />
+              <span className="text-gold">Operational Readiness</span>
+            </div>
           </div>
         </Reveal>
 
@@ -505,14 +505,14 @@ function Functions() {
         </div>
 
         <div className="mt-8 md:mt-16 w-full flex justify-center">
-          <img loading="lazy" decoding="async" 
-            src="https://res.cloudinary.com/dcefror3c/image/upload/v1781685830/ChatGPT_Image_Jun_17_2026_02_12_15_PM_awfljd.png" 
-            alt="Defence in depth (Desktop)" 
+          <img loading="lazy" decoding="async"
+            src="https://res.cloudinary.com/dcefror3c/image/upload/v1781685830/ChatGPT_Image_Jun_17_2026_02_12_15_PM_awfljd.png"
+            alt="Defence in depth (Desktop)"
             className="hidden md:block w-full h-auto rounded-xl border border-border/50 bg-surface shadow-sm object-cover"
           />
-          <img loading="lazy" decoding="async" 
-            src="https://res.cloudinary.com/dcefror3c/image/upload/v1781690193/ChatGPT_Image_Jun_17_2026_03_26_15_PM_p1zb7z.png" 
-            alt="Defence in depth (Mobile)" 
+          <img loading="lazy" decoding="async"
+            src="https://res.cloudinary.com/dcefror3c/image/upload/v1781690193/ChatGPT_Image_Jun_17_2026_03_26_15_PM_p1zb7z.png"
+            alt="Defence in depth (Mobile)"
             className="block md:hidden w-full h-auto rounded-xl border border-border/50 bg-surface shadow-sm object-cover"
           />
         </div>
@@ -1009,14 +1009,12 @@ function Portfolio() {
               </span>
               <span className="col-span-1 text-right">
                 <span
-                  className={`inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.15em] ${
-                    row[3] === "Completed" ? "text-gold" : "text-accent"
-                  }`}
+                  className={`inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.15em] ${row[3] === "Completed" ? "text-gold" : "text-accent"
+                    }`}
                 >
                   <span
-                    className={`h-1.5 w-1.5 rounded-full ${
-                      row[3] === "Completed" ? "bg-gold" : "bg-accent"
-                    }`}
+                    className={`h-1.5 w-1.5 rounded-full ${row[3] === "Completed" ? "bg-gold" : "bg-accent"
+                      }`}
                   />
                   {row[3]}
                 </span>

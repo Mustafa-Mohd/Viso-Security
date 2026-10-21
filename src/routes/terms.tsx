@@ -22,12 +22,12 @@ function TermsPage() {
         {/* Ambient Backgrounds */}
         <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-gold/30 to-transparent pointer-events-none" />
         <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-3/4 h-[500px] bg-gold/[0.03] rounded-full blur-[120px] pointer-events-none" />
-        
+
         {/* Cyber Grid */}
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:32px_32px] opacity-[0.02]" />
 
         <div className="max-w-[1200px] mx-auto px-6 md:px-12 pt-40 pb-32 relative z-10 flex flex-col lg:flex-row gap-16">
-          
+
           {/* Header & Content */}
           <div className="flex-1">
             <motion.div
@@ -53,7 +53,7 @@ function TermsPage() {
 
 
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
@@ -173,7 +173,7 @@ function TermsPage() {
                 <p className="mb-6">For questions regarding these Terms of Service, please contact:</p>
                 <div className="space-y-3 font-mono text-sm">
                   <p className="flex items-center gap-3">
-                    <span className="text-gold w-5">🏢</span> 
+                    <span className="text-gold w-5">🏢</span>
                     <strong>Vision of Solutions Company (VISO)</strong>
                   </p>
                   <p className="flex items-center gap-3">
@@ -181,22 +181,22 @@ function TermsPage() {
                     Riyadh, Kingdom of Saudi Arabia
                   </p>
                   <p className="flex items-center gap-3">
-                    <span className="text-gold w-5">✉️</span> 
+                    <span className="text-gold w-5">✉️</span>
                     info@visogroup.com
                   </p>
                   <p className="flex items-center gap-3">
-                    <span className="text-gold w-5">📞</span> 
+                    <span className="text-gold w-5">📞</span>
                     +966 11 450 3289
                   </p>
                   <p className="flex items-center gap-3">
-                    <span className="text-gold w-5">🗺️</span> 
+                    <span className="text-gold w-5">🗺️</span>
                     Riyadh, Saudi Arabia
                   </p>
                 </div>
               </div>
             </motion.div>
           </div>
-          
+
         </div>
       </main>
     </>
