@@ -15,7 +15,7 @@ import { TopNav } from "@/components/TopNav";
 import { TypewriterText } from "@/components/TypewriterText";
 import { supabase } from "@/lib/supabase";
 import { Eye, Target, Sparkles } from "lucide-react";
-import { defaultStandardsComplianceData, type StandardsComplianceData } from "@/data/standardsComplianceData";
+import { defaultStandardsComplianceData, type StandardsComplianceData, COMPLIANCE_TRANSLATIONS_AR } from "@/data/standardsComplianceData";
 
 export const Route = createFileRoute("/about")({
   component: AboutPage,
@@ -1074,20 +1074,29 @@ function AboutFooter() {
 
 /* ---------- Regulatory Cards ---------- */
 function RegulatoryCards({ data }: { data?: StandardsComplianceData }) {
-  const badge = data?.badge || "Governance";
-  const title = data?.title || "Standards and Compliance";
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language?.startsWith("ar");
+
+  const badge = isArabic 
+    ? (data?.badgeAr || "الحوكمة والامتثال")
+    : (data?.badge || "Governance");
+
+  const title = isArabic
+    ? (data?.titleAr || "المعايير والامتثال التنظيمي")
+    : (data?.title || "Standards and Compliance");
+
   const cards = data?.cards && data.cards.length > 0 ? data.cards : defaultStandardsComplianceData.cards;
 
   return (
-    <section className="py-24 bg-background relative z-10 border-t border-foreground/10">
+    <section className="py-24 bg-background relative z-10 border-t border-foreground/10" dir={isArabic ? "rtl" : "ltr"}>
       <div className="mx-auto max-w-[1600px] px-8 md:px-16">
         <div className="mb-16 md:mb-20">
           <motion.div
-            initial={{ opacity: 0, x: -10 }}
+            initial={{ opacity: 0, x: isArabic ? 10 : -10 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="flex items-center gap-4 mb-4"
+            className={`flex items-center gap-4 mb-4 ${isArabic ? "flex-row-reverse justify-end" : ""}`}
           >
             <div className="h-px w-8 bg-primary" />
             <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary">
@@ -1099,37 +1108,60 @@ function RegulatoryCards({ data }: { data?: StandardsComplianceData }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="font-display text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground"
+            className={`font-display text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground ${
+              isArabic ? "font-arabic text-right" : "text-left"
+            }`}
           >
             {title}
           </motion.h2>
         </div>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          {cards.map((card, i) => (
-            <Link key={card.id || i} to={card.url || "#"} className="block group">
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className={`relative h-full flex flex-col p-6 md:p-8 rounded-[2rem] border bg-gradient-to-br ${card.color || "from-emerald-100 to-emerald-50 border-emerald-200 hover:border-emerald-300 shadow-sm"} transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl overflow-hidden`}
-              >
-                {/* Decorative background element */}
-                <div className="absolute -top-12 -right-12 w-48 h-48 bg-foreground/5 rounded-full blur-2xl group-hover:bg-foreground/10 transition-colors duration-500 pointer-events-none" />
+          {cards.map((card, i) => {
+            const cleanKey = (card.title || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+            const fallback = COMPLIANCE_TRANSLATIONS_AR[cleanKey] || COMPLIANCE_TRANSLATIONS_AR[card.title];
 
-                <div className={`mb-8 w-28 h-28 md:w-32 md:h-32 ${card.logoBg || "bg-white"} rounded-2xl p-4 flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-foreground/5 group-hover:scale-110 transition-transform duration-500 relative z-10`}>
-                  <img src={card.logo} alt={card.title} className="max-h-full max-w-full object-contain" />
-                </div>
+            const cardTitle = isArabic
+              ? (card.titleAr || fallback?.title || card.title)
+              : card.title;
 
-                <h3 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-3 relative z-10 group-hover:text-primary transition-colors">{card.title}</h3>
-                <p className="text-foreground/75 font-sans text-sm md:text-base leading-relaxed mb-8 flex-grow relative z-10 max-w-sm">{card.desc}</p>
-                <div className="mt-auto flex items-center gap-3 text-xs font-bold tracking-widest uppercase text-foreground/50 group-hover:text-primary transition-colors relative z-10">
-                  <span>Explore Framework</span>
-                  <span className="transform transition-transform group-hover:translate-x-2">→</span>
-                </div>
-              </motion.div>
-            </Link>
-          ))}
+            const cardDesc = isArabic
+              ? (card.descAr || fallback?.desc || card.desc)
+              : card.desc;
+
+            return (
+              <Link key={card.id || i} to={card.url || "#"} className="block group">
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  className={`relative h-full flex flex-col p-6 md:p-8 rounded-[2rem] border bg-gradient-to-br ${card.color || "from-emerald-100 to-emerald-50 border-emerald-200 hover:border-emerald-300 shadow-sm"} transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl overflow-hidden`}
+                >
+                  {/* Decorative background element */}
+                  <div className="absolute -top-12 -right-12 w-48 h-48 bg-foreground/5 rounded-full blur-2xl group-hover:bg-foreground/10 transition-colors duration-500 pointer-events-none" />
+
+                  <div className={`mb-8 w-28 h-28 md:w-32 md:h-32 ${card.logoBg || "bg-white"} rounded-2xl p-4 flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-foreground/5 group-hover:scale-110 transition-transform duration-500 relative z-10`}>
+                    <img src={card.logo} alt={cardTitle} className="max-h-full max-w-full object-contain" />
+                  </div>
+
+                  <h3 className={`text-2xl md:text-3xl font-display font-bold text-foreground mb-3 relative z-10 group-hover:text-primary transition-colors ${
+                    isArabic ? "font-arabic text-right" : "text-left"
+                  }`}>
+                    {cardTitle}
+                  </h3>
+                  <p className={`text-foreground/75 font-sans text-sm md:text-base leading-relaxed mb-8 flex-grow relative z-10 max-w-sm ${
+                    isArabic ? "font-arabic text-right" : "text-left"
+                  }`}>
+                    {cardDesc}
+                  </p>
+                  <div className="mt-auto flex items-center gap-3 text-xs font-bold tracking-widest uppercase text-foreground/50 group-hover:text-primary transition-colors relative z-10">
+                    <span>{isArabic ? "استكشف إطار المعايير" : "Explore Framework"}</span>
+                    <span className={`transform transition-transform ${isArabic ? "group-hover:-translate-x-2 rotate-180" : "group-hover:translate-x-2"}`}>→</span>
+                  </div>
+                </motion.div>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -1246,78 +1278,99 @@ const certificatesData = [
   }
 ];
 
+const CERTIFICATE_NAMES_AR: Record<string, { org: string; certs: string[] }> = {
+  "CR 2026-2027": { org: "السجل التجاري ٢٠٢٦-٢٠٢٧", certs: ["سجل تجاري معتمد لدى وزارة التجارة"] },
+  "Business License": { org: "رخصة النشاط الاستشاري", certs: ["ترخيص رسمي لمزاولة الاستشارات الأمنية"] },
+  "SAIS Certificate": { org: "شهادة اعتماد الأمن الصناعي (SAIS)", certs: ["شهادة اعتماد رسمي صادرة من الهيئة العليا للأمن الصناعي"] },
+  "CCC Certificate": { org: "شهادة الامتثال للأمن السيبراني (CCC)", certs: ["شهادة التوافق والامتثال السيبراني المعتمدة"] },
+  "Balady": { org: "رخصة منصة بلدي", certs: ["رخصة بلدية نظامية معتمدة"] },
+  "ISO 9001:2015": { org: "شهادة آيزو 9001:2015", certs: ["نظام إدارة الجودة العالمية", "تقييم المخاطر والتصاميم الهندسية والجاهزية التشغيلية"] },
+  "ISO 45001:2018": { org: "شهادة آيزو 45001:2018", certs: ["نظام إدارة الصحة والسلامة المهنية", "تطوير الأنظمة الأمنية وإدارة الجاهزية التشغيلية"] },
+};
+
 function LicensesAndCertifications() {
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language?.startsWith("ar");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  const badge = isArabic ? "الاعتمادات والتراخيص" : "Accreditations";
+  const title = isArabic ? "التراخيص والشهادات الرسمية" : "Licenses & Certifications";
+  const desc = isArabic 
+    ? "تراخيصنا الرسمية واعتماداتنا وشهاداتنا الدولية التي تؤكد التزامنا التام بالمعايير والتميز الهندسي."
+    : "Our official licenses, credentials, and international certifications underscoring our commitment to compliance and excellence.";
 
   return (
     <>
-      <section id="licenses" className="relative z-20 bg-background py-24 border-t border-foreground/10">
+      <section id="licenses" className="relative z-20 bg-background py-24 border-t border-foreground/10" dir={isArabic ? "rtl" : "ltr"}>
         <div className="mx-auto max-w-[1600px] px-8 md:px-16">
           <div className="mb-16 text-center">
             <motion.div
               initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
               className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-primary"
             >
-              Accreditations
+              {badge}
             </motion.div>
             <motion.h2
               initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
-              className="font-display text-4xl md:text-5xl font-bold tracking-tight text-foreground"
+              className={`font-display text-4xl md:text-5xl font-bold tracking-tight text-foreground ${isArabic ? "font-arabic" : ""}`}
             >
-              Licenses &amp; Certifications
+              {title}
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
-              className="mt-4 max-w-2xl mx-auto text-foreground/60 text-lg"
+              className={`mt-4 max-w-2xl mx-auto text-foreground/60 text-lg leading-relaxed ${isArabic ? "font-arabic" : ""}`}
             >
-              Our official licenses, credentials, and international certifications underscoring our commitment to compliance and excellence.
+              {desc}
             </motion.p>
           </div>
           <div className="flex flex-wrap justify-center gap-6 xl:gap-8">
-            {certificatesData.map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ delay: (i % 4) * 0.08, duration: 0.6 }}
-                className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-foreground/15 bg-surface shadow-sm hover:shadow-2xl transition-all duration-500 hover:border-black dark:hover:border-neutral-200 cursor-pointer w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.2rem)] xl:w-[calc(25%-1.55rem)]"
-              >
-                {/* Shining Sheen Light Effect on Hover */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 dark:via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none z-20" />
-
-                <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10" />
-
-                {/* Clickable Image Container */}
-                <div
-                  className="w-full bg-white flex items-center justify-center border-b border-foreground/10 overflow-hidden relative h-64 md:h-72 cursor-pointer"
-                  onClick={() => setSelectedImage(item.img)}
+            {certificatesData.map((item, i) => {
+              const localized = isArabic ? (CERTIFICATE_NAMES_AR[item.org] || item) : item;
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{ delay: (i % 4) * 0.08, duration: 0.6 }}
+                  className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-foreground/15 bg-surface shadow-sm hover:shadow-2xl transition-all duration-500 hover:border-black dark:hover:border-neutral-200 cursor-pointer w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.2rem)] xl:w-[calc(25%-1.55rem)]"
                 >
-                  <img
-                    loading="lazy"
-                    decoding="async"
-                    src={item.img}
-                    alt={item.org}
-                    className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-700 mix-blend-multiply"
-                  />
-                </div>
+                  {/* Shining Sheen Light Effect on Hover */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 dark:via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none z-20" />
 
-                {/* Card Information */}
-                <div className="p-6 xl:p-8 flex flex-col flex-1 bg-surface relative z-10">
-                  <h3 className="text-xl font-display font-bold text-foreground mb-4 leading-snug group-hover:text-primary transition-colors duration-300">
-                    {item.org}
-                  </h3>
-                  <ul className="space-y-3 mt-auto">
-                    {item.certs.map((c, j) => (
-                      <li key={j} className="flex items-start gap-3 text-sm md:text-base text-foreground/75 leading-relaxed font-light">
-                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/70" />
-                        <span>{c}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </motion.div>
-            ))}
+                  <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10" />
+
+                  {/* Clickable Image Container */}
+                  <div
+                    className="w-full bg-white flex items-center justify-center border-b border-foreground/10 overflow-hidden relative h-64 md:h-72 cursor-pointer"
+                    onClick={() => setSelectedImage(item.img)}
+                  >
+                    <img
+                      loading="lazy"
+                      decoding="async"
+                      src={item.img}
+                      alt={localized.org}
+                      className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-700 mix-blend-multiply"
+                    />
+                  </div>
+
+                  {/* Card Information */}
+                  <div className="p-6 xl:p-8 flex flex-col flex-1 bg-surface relative z-10">
+                    <h3 className={`text-xl font-display font-bold text-foreground mb-4 leading-snug group-hover:text-primary transition-colors duration-300 ${isArabic ? "font-arabic text-right" : "text-left"}`}>
+                      {localized.org}
+                    </h3>
+                    <ul className="space-y-3 mt-auto">
+                      {localized.certs.map((c, j) => (
+                        <li key={j} className={`flex items-start gap-3 text-sm md:text-base text-foreground/75 leading-relaxed font-light ${isArabic ? "flex-row-reverse text-right font-arabic" : "text-left"}`}>
+                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/70" />
+                          <span>{c}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
