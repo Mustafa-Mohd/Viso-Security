@@ -27,6 +27,12 @@ export const COMPANY_KNOWLEDGE = {
     "Technical Excellence: Rigorous engineering from threat profiling to operational site handover.",
     "Confidentiality & Discretion: Absolute safeguarding of sensitive blueprints and proprietary infrastructure.",
   ],
+  coreValuesAr: [
+    "النزاهة والمصداقية (Honesty & Integrity): الشفافية والاحترافية المطلقة، والاستقلالية التامة دون بيع معدات أو تقاضي عمولات تجارية.",
+    "التميز في خدمة العملاء (Customer Excellence): الفهم الدقيق لمتطلبات المنشآت الحيوية وتقديم حلول هندسية متخصصة تفوق التوقعات.",
+    "الريادة والحصافة (Leadership & Prudence): ترسيخ ثقافة أمنية متكاملة، والاستخدام الأمثل للموارد وتقديم نموذج قيادي في معايير الهيئة العليا للأمن الصناعي (HCIS).",
+    "الابتكار والتطوير المستمر (Innovation & Change): التكيف السريع مع التهديدات الأمنية الحديثة ومواكبة أحدث التقنيات والحلول الهندسية العالمية.",
+  ],
   trackRecord:
     "Over 100+ critical infrastructure, industrial, commercial, and government projects executed across all 13 provinces of Saudi Arabia.",
   overview: `

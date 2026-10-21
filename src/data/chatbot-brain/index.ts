@@ -55,8 +55,10 @@ COMPANY PURPOSE & VALUES:
 - Mission: ${comp.mission}
 - Vision: ${comp.vision}
 - Track Record: ${comp.trackRecord}
-- Core Values:
+- Core Values (English):
 ${comp.coreValues.map((v) => `  * ${v}`).join("\n")}
+- القيم الجوهرية الأساسية (Arabic):
+${comp.coreValuesAr.map((v) => `  * ${v}`).join("\n")}
 
 LEADERSHIP & EXECUTIVE MANAGEMENT:
 - Founder & CEO: ${comp.leadership.ceo.nameEn} (${comp.leadership.ceo.nameAr}) - ${comp.leadership.ceo.titleEn} (${comp.leadership.ceo.titleAr})

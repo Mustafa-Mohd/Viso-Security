@@ -14,6 +14,8 @@ import ReactMarkdown from "react-markdown";
 import { sendChatMessage } from "@/lib/chatbot";
 import { getFastTrackAnswer } from "@/data/chatbotBrain";
 
+const CHATBOT_AVATAR_URL =
+  "https://res.cloudinary.com/dppwnds6z/image/upload/v1792585384/roxvz1qwwkcilnhw1azg.png";
 const VISO_LOGO_URL =
   "https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png";
 
@@ -160,8 +162,12 @@ export function Chatbot() {
               {/* Header */}
               <div className="bg-neutral-50/95 border-b border-neutral-200/80 p-4 flex justify-between items-center shrink-0">
                 <div className="flex items-center gap-3">
-                  <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-gold/25 to-gold/10 border border-gold/50 flex items-center justify-center shadow-xs shrink-0 overflow-hidden text-amber-800">
-                    <MessageCircle className="w-5 h-5 text-amber-700 fill-amber-500/20" />
+                  <div className="relative w-10 h-10 rounded-xl bg-white border border-gold/50 flex items-center justify-center shadow-xs shrink-0 overflow-hidden p-1">
+                    <img
+                      src={CHATBOT_AVATAR_URL}
+                      alt="VISO AI"
+                      className="w-full h-full object-contain"
+                    />
                     <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white" />
                   </div>
                   <div>
@@ -202,6 +208,26 @@ export function Chatbot() {
 
               {/* Messages Body */}
               <div className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-neutral-50/50 scrollbar-thin scrollbar-thumb-neutral-300">
+                {messages.length === 1 && (
+                  <div className="text-center py-2 px-3 mb-1">
+                    <div className="w-14 h-14 mx-auto mb-2 rounded-2xl bg-white border border-gold/50 p-1.5 shadow-sm flex items-center justify-center">
+                      <img
+                        src={CHATBOT_AVATAR_URL}
+                        alt="VISO AI Assistant"
+                        className="w-full h-full object-contain drop-shadow"
+                      />
+                    </div>
+                    <p className="text-xs font-semibold text-neutral-800">
+                      {isArabic ? "مساعد فيسو الاستشاري الذكي" : "VISO Advisory AI Assistant"}
+                    </p>
+                    <p className="text-[11px] text-neutral-500 mt-0.5">
+                      {isArabic
+                        ? "مدرّب على معايير الهيئة العليا للأمن الصناعي ولوائح وزارة الداخلية"
+                        : "Trained on HCIS directives, MoI standards & physical security"}
+                    </p>
+                  </div>
+                )}
+
                 {messages.map((msg) => {
                   const msgIsArabic = isArabicText(msg.content);
                   const isUser = msg.role === "user";
@@ -211,8 +237,12 @@ export function Chatbot() {
                       className={`flex items-end gap-2 ${isUser ? "justify-end" : "justify-start"}`}
                     >
                       {!isUser && (
-                        <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-gold/40 shadow-xs shrink-0 flex items-center justify-center mb-0.5 text-amber-700">
-                          <MessageCircle className="w-4 h-4 fill-amber-500/15" />
+                        <div className="w-7 h-7 rounded-lg bg-white border border-gold/40 shadow-xs shrink-0 flex items-center justify-center mb-0.5 p-0.5 overflow-hidden">
+                          <img
+                            src={CHATBOT_AVATAR_URL}
+                            alt="VISO AI"
+                            className="w-full h-full object-contain"
+                          />
                         </div>
                       )}
                       <div
@@ -242,10 +272,10 @@ export function Chatbot() {
 
                 {isLoading && (
                   <div className="flex items-end gap-2 justify-start">
-                    <div className="w-7 h-7 rounded-lg bg-white border border-gold/40 p-0.5 shadow-xs shrink-0 flex items-center justify-center mb-0.5">
+                    <div className="w-7 h-7 rounded-lg bg-white border border-gold/40 p-0.5 shadow-xs shrink-0 flex items-center justify-center mb-0.5 overflow-hidden">
                       <img
-                        src={VISO_LOGO_URL}
-                        alt="VISO"
+                        src={CHATBOT_AVATAR_URL}
+                        alt="VISO AI"
                         className="w-full h-full object-contain animate-pulse"
                       />
                     </div>
@@ -338,7 +368,7 @@ export function Chatbot() {
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.94 }}
           onClick={() => setIsOpen(!isOpen)}
-          className="relative group w-14 h-14 rounded-full bg-gradient-to-tr from-[#161b22] to-[#21262d] border-2 border-gold/70 text-gold shadow-2xl flex items-center justify-center cursor-pointer transition-shadow hover:shadow-[0_0_25px_rgba(212,175,55,0.45)]"
+          className="relative group w-14 h-14 rounded-full bg-white border-2 border-gold/80 text-neutral-800 shadow-2xl flex items-center justify-center cursor-pointer transition-shadow hover:shadow-[0_0_25px_rgba(212,175,55,0.45)]"
           aria-label="Toggle VISO AI Assistant"
         >
           {/* Subtle pulse ring */}
@@ -353,7 +383,7 @@ export function Chatbot() {
                 exit={{ rotate: 90, opacity: 0 }}
                 transition={{ duration: 0.15 }}
               >
-                <X className="w-6 h-6 text-white" />
+                <X className="w-6 h-6 text-neutral-800" />
               </motion.div>
             ) : (
               <motion.div
@@ -362,10 +392,14 @@ export function Chatbot() {
                 animate={{ rotate: 0, opacity: 1 }}
                 exit={{ rotate: 90, opacity: 0 }}
                 transition={{ duration: 0.15 }}
-                className="relative flex items-center justify-center"
+                className="relative flex items-center justify-center w-full h-full p-2"
               >
-                <MessageCircle className="w-7 h-7 text-gold fill-gold/20" />
-                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-[#161b22]" />
+                <img
+                  src={CHATBOT_AVATAR_URL}
+                  alt="VISO AI Assistant"
+                  className="w-full h-full object-contain drop-shadow-[0_2px_8px_rgba(212,175,55,0.4)]"
+                />
+                <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white" />
               </motion.div>
             )}
           </AnimatePresence>

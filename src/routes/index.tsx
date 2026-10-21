@@ -190,8 +190,16 @@ function HomePage() {
                   transition={{ duration: 1 }}
                   className="text-center mb-5"
                 >
-                  <h2 className="text-3xl md:text-5xl font-light mb-2 text-foreground">{cmsData.core_values.title}</h2>
-                  <p className="text-base md:text-lg text-black">{cmsData.core_values.subtitle}</p>
+                  <h2 className="text-3xl md:text-5xl font-light mb-2 text-foreground font-display">
+                    {i18n.language === 'ar'
+                      ? (cmsData.core_values.title_ar || t("about.values.title", "قيمنا الجوهرية"))
+                      : (cmsData.core_values.title || t("about.values.title", "Our Core Values"))}
+                  </h2>
+                  <p className="text-base md:text-lg text-black">
+                    {i18n.language === 'ar'
+                      ? (cmsData.core_values.subtitle_ar || t("about.values.subtitle", "المبادئ التوجيهية الراسخة التي تقود مسيرة تميزنا وريادتنا الاستشارية."))
+                      : (cmsData.core_values.subtitle || t("about.values.subtitle", "Guiding principles that drive our excellence."))}
+                  </p>
                 </motion.div>
 
                 <div>
@@ -1184,11 +1192,36 @@ function ChartSVG() {
 
 function ExpandingValueCards({ items }: { items: any[] }) {
   const [activeIdx, setActiveIdx] = useState(0);
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language === "ar";
 
   return (
-    <div className="flex flex-col lg:flex-row h-[750px] lg:h-[540px] w-full gap-[2px] rounded-3xl overflow-hidden bg-white/20 shadow-xl border border-white/10">
+    <div
+      className="flex flex-col lg:flex-row h-[750px] lg:h-[540px] w-full gap-[2px] rounded-3xl overflow-hidden bg-white/20 shadow-xl border border-white/10"
+      dir={isArabic ? "rtl" : "ltr"}
+    >
       {items.map((cv, i) => {
         const isActive = activeIdx === i;
+        const itemKey = `v${i + 1}`;
+        const itemTitle = isArabic
+          ? (cv.title_ar || t(`about.values.items.${itemKey}.title`, cv.title))
+          : cv.title;
+        const itemDesc = isArabic
+          ? (cv.desc_ar || t(`about.values.items.${itemKey}.desc`, cv.desc))
+          : cv.desc;
+
+        let itemPoints: string[] = cv.points || [];
+        if (isArabic) {
+          if (cv.points_ar && Array.isArray(cv.points_ar) && cv.points_ar.length > 0) {
+            itemPoints = cv.points_ar;
+          } else {
+            const localePoints = t(`about.values.items.${itemKey}.points`, { returnObjects: true });
+            if (Array.isArray(localePoints) && localePoints.length > 0) {
+              itemPoints = localePoints as string[];
+            }
+          }
+        }
+
         return (
           <motion.div
             key={cv.id || i}
@@ -1232,7 +1265,7 @@ function ExpandingValueCards({ items }: { items: any[] }) {
               return (
                 <motion.img
                   src={cv.imageUrl}
-                  alt={cv.title}
+                  alt={itemTitle}
                   className="absolute inset-0 w-full h-full object-cover origin-center z-0"
                   animate={{
                     scale: isActive ? 1.05 : 1,
@@ -1261,10 +1294,14 @@ function ExpandingValueCards({ items }: { items: any[] }) {
                     className="absolute inset-0 flex items-center justify-center p-6"
                   >
                     <h3
-                      className="font-display font-bold text-3xl md:text-4xl text-white tracking-widest drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] opacity-90 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap"
-                      style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
+                      className={`font-display font-bold text-3xl md:text-4xl text-white tracking-widest drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] opacity-90 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap ${isArabic ? 'font-arabic tracking-normal' : ''}`}
+                      style={
+                        isArabic
+                          ? { transform: "rotate(-90deg)" }
+                          : { writingMode: "vertical-rl", transform: "rotate(180deg)" }
+                      }
                     >
-                      {cv.title}
+                      {itemTitle}
                     </h3>
                   </motion.div>
                 ) : (
@@ -1282,7 +1319,7 @@ function ExpandingValueCards({ items }: { items: any[] }) {
                       initial={{ opacity: 0, scale: 0.3, rotate: -30 }}
                       animate={{ opacity: 0.25, scale: 1, rotate: 0 }}
                       transition={{ duration: 1.2, ease: "easeOut", delay: 0.3 }}
-                      className="absolute top-8 right-8 md:top-12 md:right-12 w-28 h-28 md:w-48 md:h-48 pointer-events-none z-0"
+                      className={`absolute top-8 ${isArabic ? 'left-8 md:top-12 md:left-12' : 'right-8 md:top-12 md:right-12'} w-28 h-28 md:w-48 md:h-48 pointer-events-none z-0`}
                     >
                       <motion.div
                         animate={{ y: [0, -15, 0] }}
@@ -1297,22 +1334,22 @@ function ExpandingValueCards({ items }: { items: any[] }) {
                     </motion.div>
 
                     <motion.div
-                      initial={{ opacity: 0, x: -20 }}
+                      initial={{ opacity: 0, x: isArabic ? 20 : -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.5, delay: 0.1 }}
                       className="font-mono text-xs tracking-[0.2em] text-primary uppercase mb-2 flex items-center gap-3"
                     >
                       <span className="w-8 h-px bg-primary" />
-                      Core Value {String(i + 1).padStart(2, '0')}
+                      {isArabic ? `القيمة الجوهرية ٠${i + 1}` : `Core Value ${String(i + 1).padStart(2, '0')}`}
                     </motion.div>
 
                     <motion.h3
-                      initial={{ opacity: 0, x: -20 }}
+                      initial={{ opacity: 0, x: isArabic ? 20 : -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.5, delay: 0.15 }}
-                      className="font-display text-3xl md:text-5xl text-white tracking-tight mb-3 md:mb-4 drop-shadow-md whitespace-nowrap"
+                      className={`font-display text-3xl md:text-5xl text-white tracking-tight mb-3 md:mb-4 drop-shadow-md whitespace-nowrap ${isArabic ? 'font-arabic' : ''}`}
                     >
-                      {cv.title}
+                      {itemTitle}
                     </motion.h3>
 
                     <div className="flex flex-col lg:flex-row gap-4 lg:gap-12 items-start">
@@ -1320,9 +1357,9 @@ function ExpandingValueCards({ items }: { items: any[] }) {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.25 }}
-                        className="font-sans text-sm md:text-base text-white/90 max-w-md leading-relaxed hidden sm:block"
+                        className={`font-sans text-sm md:text-base text-white/90 max-w-md leading-relaxed hidden sm:block ${isArabic ? 'font-arabic' : ''}`}
                       >
-                        {cv.desc}
+                        {itemDesc}
                       </motion.p>
 
                       <motion.ul
@@ -1333,14 +1370,14 @@ function ExpandingValueCards({ items }: { items: any[] }) {
                         }}
                         className="space-y-2 lg:space-y-3 min-w-[200px]"
                       >
-                        {cv.points?.map((pt: string, idx: number) => (
+                        {itemPoints.map((pt: string, idx: number) => (
                           <motion.li
                             key={idx}
                             variants={{
-                              hidden: { opacity: 0, x: -10 },
+                              hidden: { opacity: 0, x: isArabic ? 10 : -10 },
                               visible: { opacity: 1, x: 0 }
                             }}
-                            className="flex items-start gap-3 text-white/80 font-sans text-xs md:text-sm"
+                            className={`flex items-start gap-3 text-white/80 font-sans text-xs md:text-sm ${isArabic ? 'font-arabic' : ''}`}
                           >
                             <span className="w-1.5 h-1.5 bg-gold rounded-full mt-1.5 shrink-0 shadow-[0_0_8px_#D4AF37]" />
                             <span>{pt}</span>
@@ -1356,7 +1393,7 @@ function ExpandingValueCards({ items }: { items: any[] }) {
                       className="mt-4 md:mt-6"
                     >
                       <Link to="/about" className="inline-block text-[10px] md:text-xs font-bold font-mono tracking-[0.2em] text-black bg-gold hover:bg-white px-6 py-3 rounded-sm uppercase transition-colors shadow-[0_4px_15px_rgba(212,175,55,0.3)]">
-                        Learn More
+                        {isArabic ? "اعرف المزيد" : "Learn More"}
                       </Link>
                     </motion.div>
                   </motion.div>

@@ -595,35 +595,36 @@ function CEOMessage() {
 
 /* ---------- Vision & Mission ---------- */
 function VisionMission({ cms }: { cms?: any }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language === "ar";
 
   const items = [
     {
       num: "01",
-      badge: "FUTURE DIRECTION",
-      title: cms?.visionTitle || t("about_page.vision_h3"),
-      subtitle: cms?.visionSub || t("about_page.vision_sub"),
-      desc: cms?.visionP || t("about_page.vision_p"),
+      badge: isArabic ? "التوجه المستقبلي" : "FUTURE DIRECTION",
+      title: (isArabic ? null : cms?.visionTitle) || t("about_page.vision_h3"),
+      subtitle: (isArabic ? null : cms?.visionSub) || t("about_page.vision_sub"),
+      desc: (isArabic ? null : cms?.visionP) || t("about_page.vision_p"),
       icon: <Eye className="w-6 h-6 text-primary group-hover:scale-110 transition-transform duration-500" />,
       delay: 0.15,
       gradient: "from-amber-500/20 via-primary/10 to-transparent",
     },
     {
       num: "02",
-      badge: "OPERATIONAL PURPOSE",
-      title: cms?.missionTitle || t("about_page.mission_h3"),
-      subtitle: cms?.missionSub || t("about_page.mission_sub"),
-      desc: cms?.missionP || t("about_page.mission_p"),
+      badge: isArabic ? "الغاية التشغيلية" : "OPERATIONAL PURPOSE",
+      title: (isArabic ? null : cms?.missionTitle) || t("about_page.mission_h3"),
+      subtitle: (isArabic ? null : cms?.missionSub) || t("about_page.mission_sub"),
+      desc: (isArabic ? null : cms?.missionP) || t("about_page.mission_p"),
       icon: <Target className="w-6 h-6 text-primary group-hover:scale-110 group-hover:rotate-45 transition-transform duration-500" />,
       delay: 0.25,
       gradient: "from-primary/20 via-amber-500/10 to-transparent",
     },
     {
       num: "03",
-      badge: "CORE PHILOSOPHY",
-      title: cms?.valuesTitle || t("about_page.values_h3"),
-      subtitle: cms?.valuesSub || t("about_page.values_sub"),
-      desc: cms?.valuesP || t("about_page.values_p"),
+      badge: isArabic ? "قيمنا الجوهرية" : "CORE PHILOSOPHY",
+      title: (isArabic ? null : cms?.valuesTitle) || t("about_page.values_h3"),
+      subtitle: (isArabic ? null : cms?.valuesSub) || t("about_page.values_sub"),
+      desc: (isArabic ? null : cms?.valuesP) || t("about_page.values_p"),
       icon: <Sparkles className="w-6 h-6 text-primary group-hover:scale-110 group-hover:rotate-12 transition-transform duration-500" />,
       delay: 0.35,
       gradient: "from-gold/20 via-primary/10 to-transparent",
@@ -639,7 +640,7 @@ function VisionMission({ cms }: { cms?: any }) {
         <Reveal delay={0.1}>
           <div className="text-center mb-16 md:mb-24">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.25em] text-primary mb-4 shadow-sm">
-              <Sparkles className="w-3.5 h-3.5" /> Core Principles
+              <Sparkles className="w-3.5 h-3.5" /> {isArabic ? "المبادئ الأساسية" : "Core Principles"}
             </div>
             <h2 className="font-sans text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] mb-6 text-foreground">
               {t("about_page.vm_title")}
