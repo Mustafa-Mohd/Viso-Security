@@ -52,26 +52,79 @@ const defaultServices = [
   },
 ];
 
-const defaultProfile = [
+export interface ProfileItem {
+  num: string;
+  title: string;
+  desc: string;
+  titleAr?: string;
+  descAr?: string;
+  title_ar?: string;
+  desc_ar?: string;
+}
+
+export const PROFILE_TRANSLATIONS_AR: Record<string, { title: string; desc: string }> = {
+  "01": {
+    title: "الهوية والمكانة الريادية",
+    desc: "مقدمة تعريفية شاملة عن هوية الشركة، وقيمتها المضافة، ومكانة خدماتنا المتخصصة.",
+  },
+  "02": {
+    title: "القدرات ودورة حياة المشروع",
+    desc: "أربع مراحل استشارية أمنية متكاملة تبدأ من دراسة الفكرة والتصميم وحتى التسليم والجاهزية التامة.",
+  },
+  "03": {
+    title: "القطاعات والعملاء الشركاء",
+    desc: "شركاء النجاح وأبرز القطاعات والبيئات التشغيلية والمشاريع الكبرى في أنحاء المملكة.",
+  },
+  "04": {
+    title: "الاعتمادات والتحقق الرسمي",
+    desc: "التراخيص النظامية، والمؤهلات الهندسية المعتمدة، وروابط التحقق والاعتماد الرسمية.",
+  },
+  "IDENTITY & POSITIONING": {
+    title: "الهوية والمكانة الريادية",
+    desc: "مقدمة تعريفية شاملة عن هوية الشركة، وقيمتها المضافة، ومكانة خدماتنا المتخصصة.",
+  },
+  "CAPABILITIES & LIFECYCLE": {
+    title: "القدرات ودورة حياة المشروع",
+    desc: "أربع مراحل استشارية أمنية متكاملة تبدأ من دراسة الفكرة والتصميم وحتى التسليم والجاهزية التامة.",
+  },
+  "SECTORS & CLIENTS": {
+    title: "القطاعات والعملاء الشركاء",
+    desc: "شركاء النجاح وأبرز القطاعات والبيئات التشغيلية والمشاريع الكبرى في أنحاء المملكة.",
+  },
+  "CREDENTIALS & VERIFICATION": {
+    title: "الاعتمادات والتحقق الرسمي",
+    desc: "التراخيص النظامية، والمؤهلات الهندسية المعتمدة، وروابط التحقق والاعتماد الرسمية.",
+  },
+};
+
+const defaultProfile: ProfileItem[] = [
   {
     num: "01",
     title: "Identity & Positioning",
     desc: "Clear corporate introduction, value proposition and service positioning.",
+    titleAr: "الهوية والمكانة الريادية",
+    descAr: "مقدمة تعريفية شاملة عن هوية الشركة، وقيمتها المضافة، ومكانة خدماتنا المتخصصة.",
   },
   {
     num: "02",
     title: "Capabilities & Lifecycle",
     desc: "Four connected security consultancy stages from concept to handover.",
+    titleAr: "القدرات ودورة حياة المشروع",
+    descAr: "أربع مراحل استشارية أمنية متكاملة تبدأ من دراسة الفكرة والتصميم وحتى التسليم والجاهزية التامة.",
   },
   {
     num: "03",
     title: "Sectors & Clients",
     desc: "Approved client logos, sectors and project environments across the Kingdom.",
+    titleAr: "القطاعات والعملاء الشركاء",
+    descAr: "شركاء النجاح وأبرز القطاعات والبيئات التشغيلية والمشاريع الكبرى في أنحاء المملكة.",
   },
   {
     num: "04",
     title: "Credentials & Verification",
     desc: "Licensing, qualification and official verification links.",
+    titleAr: "الاعتمادات والتحقق الرسمي",
+    descAr: "التراخيص النظامية، والمؤهلات الهندسية المعتمدة، وروابط التحقق والاعتماد الرسمية.",
   },
 ];
 
@@ -942,56 +995,89 @@ function AnimateCapabilityVisual({ index }: { index: number }) {
 function ProfileJourney({
   items,
 }: {
-  items: { num: string; title: string; desc: string }[];
+  items: ProfileItem[];
 }) {
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language?.startsWith("ar");
+
   return (
-    <section className="relative px-8 md:px-16 py-24 md:py-32 bg-surface-2/50 overflow-hidden">
+    <section 
+      className="relative px-8 md:px-16 py-24 md:py-32 bg-surface-2/50 overflow-hidden" 
+      dir={isArabic ? "rtl" : "ltr"}
+    >
       <div className="max-w-[1600px] mx-auto">
 
         <Reveal delay={0.1}>
-          <h2 className="font-display text-3xl md:text-5xl tracking-tight mb-16 md:mb-20 max-w-xl">
-            How we present{" "}
-            <em className="text-primary not-italic font-light">VISO</em>
+          <h2 className={`font-display text-3xl md:text-5xl tracking-tight mb-16 md:mb-20 max-w-xl ${isArabic ? "font-arabic text-right" : "text-left"}`}>
+            {isArabic ? (
+              <>
+                {t("about_page.present_title", "كيف نقدم")}{" "}
+                <em className="text-primary not-italic font-arabic font-normal">
+                  {t("about_page.present_brand", "فيسو")}
+                </em>
+              </>
+            ) : (
+              <>
+                {t("about_page.present_title", "How we present")}{" "}
+                <em className="text-primary not-italic font-light">
+                  {t("about_page.present_brand", "VISO")}
+                </em>
+              </>
+            )}
           </h2>
         </Reveal>
 
         <div className="relative">
           {/* Progress line */}
-          <div className="absolute left-0 top-0 bottom-0 w-px bg-foreground/10 hidden md:block" />
+          <div className={`absolute ${isArabic ? "right-0" : "left-0"} top-0 bottom-0 w-px bg-foreground/10 hidden md:block`} />
           <motion.div
             initial={{ scaleY: 0 }}
             whileInView={{ scaleY: 1 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 1.4, ease }}
-            className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-primary via-primary/60 to-transparent origin-top hidden md:block"
+            className={`absolute ${isArabic ? "right-0" : "left-0"} top-0 bottom-0 w-px bg-gradient-to-b from-primary via-primary/60 to-transparent origin-top hidden md:block`}
           />
 
           <div className="space-y-0">
-            {items.map((item, i) => (
-              <Reveal key={item.num} delay={0.08 * i}>
-                <div className="group relative md:pl-14 py-8 md:py-10 border-b border-foreground/8 last:border-0">
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-background border-2 border-primary opacity-0 md:opacity-100 group-hover:scale-125 transition-transform duration-500 hidden md:block" />
+            {items.map((item, i) => {
+              const numKey = (item.num || "").trim();
+              const titleKey = (item.title || "").trim().toUpperCase();
+              const fallback = PROFILE_TRANSLATIONS_AR[numKey] || PROFILE_TRANSLATIONS_AR[titleKey];
 
-                  <div className="grid md:grid-cols-12 gap-4 md:gap-8 items-baseline">
-                    <div className="md:col-span-2">
-                      <span className="font-display text-4xl md:text-5xl text-primary/80 tracking-tight group-hover:text-primary transition-colors duration-500">
-                        {item.num}
-                      </span>
-                    </div>
-                    <div className="md:col-span-4">
-                      <h3 className="font-display text-xl md:text-2xl tracking-tight text-foreground">
-                        {item.title}
-                      </h3>
-                    </div>
-                    <div className="md:col-span-6">
-                      <p className="text-sm md:text-base text-foreground/50 font-light leading-relaxed">
-                        {item.desc}
-                      </p>
+              const title = isArabic
+                ? (item.titleAr || item.title_ar || fallback?.title || item.title)
+                : item.title;
+
+              const desc = isArabic
+                ? (item.descAr || item.desc_ar || fallback?.desc || item.desc)
+                : item.desc;
+
+              return (
+                <Reveal key={item.num || i} delay={0.08 * i}>
+                  <div className={`group relative ${isArabic ? "md:pr-14 md:pl-0" : "md:pl-14"} py-8 md:py-10 border-b border-foreground/8 last:border-0`}>
+                    <div className={`absolute ${isArabic ? "right-0 translate-x-1/2" : "left-0 -translate-x-1/2"} top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-background border-2 border-primary opacity-0 md:opacity-100 group-hover:scale-125 transition-transform duration-500 hidden md:block`} />
+
+                    <div className="grid md:grid-cols-12 gap-4 md:gap-8 items-baseline">
+                      <div className="md:col-span-2">
+                        <span className="font-display text-4xl md:text-5xl text-primary/80 tracking-tight group-hover:text-primary transition-colors duration-500">
+                          {item.num}
+                        </span>
+                      </div>
+                      <div className="md:col-span-4">
+                        <h3 className={`font-display text-xl md:text-2xl tracking-tight text-foreground ${isArabic ? "font-arabic text-right font-bold" : "text-left"}`}>
+                          {title}
+                        </h3>
+                      </div>
+                      <div className="md:col-span-6">
+                        <p className={`text-sm md:text-base text-foreground/60 dark:text-foreground/50 leading-relaxed ${isArabic ? "font-arabic text-right font-normal" : "text-left font-light"}`}>
+                          {desc}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Reveal>
-            ))}
+                </Reveal>
+              );
+            })}
           </div>
         </div>
       </div>
