@@ -731,7 +731,7 @@ const DEFAULT_HERO_SLIDES = [
     subtitle?: string;
     desc?: string;
     images?: string[];
-    regulatoryLogos?: { slug: string; label: string; img: string }[];
+    regulatoryLogos?: { slug: string; label: string; img: string; url?: string }[];
   }>({ 
     videoUrl: "https://res.cloudinary.com/dppwnds6z/video/upload/fl_splice,l_video:gemini_generated_video_1c397ea0/gemini_generated_video_4932b2ba.mp4",
     slides: [...DEFAULT_HERO_SLIDES],
@@ -741,11 +741,11 @@ const DEFAULT_HERO_SLIDES = [
     desc: "We merge high-end architectural design with rigorous security protocols to create spaces that are both exceptionally safe and visually stunning. Inspired by global innovation leaders.", 
     images: [],
     regulatoryLogos: [
-      { slug: "moi", label: "MOI", img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png" },
-      { slug: "sais", label: "SAIS", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgBwqTj0FNNJJm59mHR1GKznOvHK23QpPB5jwKZQuFaQ&s=10" },
-      { slug: "neom", label: "NEOM", img: "https://neom.scene7.com/is/image/neom/logo-neom-en-spaced?fmt=png-alpha&scl=1" },
-      { slug: "api780", label: "API 780", img: "https://theshopmag.com/wp-content/uploads/2023/05/api-logo-stacked.png" },
-      { slug: "aramco", label: "ARAMCO", img: "https://upload.wikimedia.org/wikipedia/en/thumb/8/85/Saudi_Aramco_logo.svg/1200px-Saudi_Aramco_logo.svg.png" },
+      { slug: "moi", label: "MOI", img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png", url: "/regulatory/moi" },
+      { slug: "sais", label: "SAIS", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgBwqTj0FNNJJm59mHR1GKznOvHK23QpPB5jwKZQuFaQ&s=10", url: "/regulatory/sais" },
+      { slug: "neom", label: "NEOM", img: "https://neom.scene7.com/is/image/neom/logo-neom-en-spaced?fmt=png-alpha&scl=1", url: "/regulatory/neom" },
+      { slug: "api780", label: "API 780", img: "https://theshopmag.com/wp-content/uploads/2023/05/api-logo-stacked.png", url: "/regulatory/api780" },
+      { slug: "aramco", label: "ARAMCO", img: "https://upload.wikimedia.org/wikipedia/en/thumb/8/85/Saudi_Aramco_logo.svg/1200px-Saudi_Aramco_logo.svg.png", url: "/regulatory/aramco" },
     ]
   });
   const [uploadingSlideIdx, setUploadingSlideIdx] = useState<number | null>(null);
@@ -1114,11 +1114,11 @@ const DEFAULT_HERO_SLIDES = [
           }
           if (!content.regulatoryLogos || content.regulatoryLogos.length === 0) {
             content.regulatoryLogos = [
-              { slug: "moi", label: "MOI", img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png" },
-              { slug: "sais", label: "SAIS", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgBwqTj0FNNJJm59mHR1GKznOvHK23QpPB5jwKZQuFaQ&s=10" },
-              { slug: "neom", label: "NEOM", img: "https://neom.scene7.com/is/image/neom/logo-neom-en-spaced?fmt=png-alpha&scl=1" },
-              { slug: "api780", label: "API 780", img: "https://theshopmag.com/wp-content/uploads/2023/05/api-logo-stacked.png" },
-              { slug: "aramco", label: "ARAMCO", img: "https://upload.wikimedia.org/wikipedia/en/thumb/8/85/Saudi_Aramco_logo.svg/1200px-Saudi_Aramco_logo.svg.png" },
+              { slug: "moi", label: "MOI", img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png", url: "/regulatory/moi" },
+              { slug: "sais", label: "SAIS", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgBwqTj0FNNJJm59mHR1GKznOvHK23QpPB5jwKZQuFaQ&s=10", url: "/regulatory/sais" },
+              { slug: "neom", label: "NEOM", img: "https://neom.scene7.com/is/image/neom/logo-neom-en-spaced?fmt=png-alpha&scl=1", url: "/regulatory/neom" },
+              { slug: "api780", label: "API 780", img: "https://theshopmag.com/wp-content/uploads/2023/05/api-logo-stacked.png", url: "/regulatory/api780" },
+              { slug: "aramco", label: "ARAMCO", img: "https://upload.wikimedia.org/wikipedia/en/thumb/8/85/Saudi_Aramco_logo.svg/1200px-Saudi_Aramco_logo.svg.png", url: "/regulatory/aramco" },
             ];
           }
           setHeroData(content);
@@ -1190,11 +1190,11 @@ const DEFAULT_HERO_SLIDES = [
           }
           if (!content.regulatoryLogos || content.regulatoryLogos.length === 0) {
             content.regulatoryLogos = [
-              { slug: "moi", label: "MOI", img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png" },
-              { slug: "sais", label: "SAIS", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgBwqTj0FNNJJm59mHR1GKznOvHK23QpPB5jwKZQuFaQ&s=10" },
-              { slug: "neom", label: "NEOM", img: "https://neom.scene7.com/is/image/neom/logo-neom-en-spaced?fmt=png-alpha&scl=1" },
-              { slug: "api780", label: "API 780", img: "https://theshopmag.com/wp-content/uploads/2023/05/api-logo-stacked.png" },
-              { slug: "aramco", label: "ARAMCO", img: "https://upload.wikimedia.org/wikipedia/en/thumb/8/85/Saudi_Aramco_logo.svg/1200px-Saudi_Aramco_logo.svg.png" },
+              { slug: "moi", label: "MOI", img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png", url: "/regulatory/moi" },
+              { slug: "sais", label: "SAIS", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgBwqTj0FNNJJm59mHR1GKznOvHK23QpPB5jwKZQuFaQ&s=10", url: "/regulatory/sais" },
+              { slug: "neom", label: "NEOM", img: "https://neom.scene7.com/is/image/neom/logo-neom-en-spaced?fmt=png-alpha&scl=1", url: "/regulatory/neom" },
+              { slug: "api780", label: "API 780", img: "https://theshopmag.com/wp-content/uploads/2023/05/api-logo-stacked.png", url: "/regulatory/api780" },
+              { slug: "aramco", label: "ARAMCO", img: "https://upload.wikimedia.org/wikipedia/en/thumb/8/85/Saudi_Aramco_logo.svg/1200px-Saudi_Aramco_logo.svg.png", url: "/regulatory/aramco" },
             ];
           }
           setHeroData(content);
@@ -2305,7 +2305,7 @@ const DEFAULT_HERO_SLIDES = [
                         </div>
 
                         {/* Inputs */}
-                        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2">
+                        <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-2">
                           <input
                             type="text"
                             placeholder="Label (e.g. SAIS)"
@@ -2335,6 +2335,17 @@ const DEFAULT_HERO_SLIDES = [
                             onChange={(e) => {
                               const updated = [...(heroData.regulatoryLogos || [])];
                               updated[idx] = { ...updated[idx], img: e.target.value };
+                              setHeroData({ ...heroData, regulatoryLogos: updated });
+                            }}
+                            className="w-full px-2.5 py-1.5 rounded-md bg-surface border border-foreground/15 text-xs text-foreground font-mono placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Redirect URL (e.g. /about#standards-sais)"
+                            value={logo.url || ""}
+                            onChange={(e) => {
+                              const updated = [...(heroData.regulatoryLogos || [])];
+                              updated[idx] = { ...updated[idx], url: e.target.value };
                               setHeroData({ ...heroData, regulatoryLogos: updated });
                             }}
                             className="w-full px-2.5 py-1.5 rounded-md bg-surface border border-foreground/15 text-xs text-foreground font-mono placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none"

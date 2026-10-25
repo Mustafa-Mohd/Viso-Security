@@ -133,11 +133,91 @@ function AboutPage() {
   const isArabic = i18n.language === "ar";
   const [cms, setCms] = useState<any>(null);
   const [complianceData, setComplianceData] = useState<StandardsComplianceData>(defaultStandardsComplianceData);
-  const [showIntro, setShowIntro] = useState(true);
+  const [showIntro, setShowIntro] = useState(() => {
+    if (typeof window !== "undefined") {
+      const hash = window.location.hash.toLowerCase();
+      const search = window.location.search.toLowerCase();
+      if (
+        hash.includes("standard") ||
+        hash.includes("compliance") ||
+        hash.includes("sais") ||
+        hash.includes("aramco") ||
+        hash.includes("neom") ||
+        hash.includes("moi") ||
+        hash.includes("api") ||
+        search.includes("standard") ||
+        search.includes("compliance")
+      ) {
+        return false;
+      }
+    }
+    return true;
+  });
+  const [highlightedCard, setHighlightedCard] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!showIntro) return;
     const timer = setTimeout(() => setShowIntro(false), 2500);
     return () => clearTimeout(timer);
+  }, [showIntro]);
+
+  // Handle direct scroll and visual focus for Standards & Compliance
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleScrollTarget = () => {
+      const hash = window.location.hash.replace("#", "").toLowerCase();
+      const urlParams = new URLSearchParams(window.location.search);
+      const section = (urlParams.get("section") || "").toLowerCase();
+      const focus = (urlParams.get("focus") || "").toLowerCase();
+      const target = hash || focus || section;
+
+      if (!target) return;
+
+      const isStandardsTarget =
+        target.includes("standard") ||
+        target.includes("compliance") ||
+        ["sais", "aramco", "neom", "moi", "api", "api780"].some((k) => target.includes(k));
+
+      if (isStandardsTarget) {
+        setShowIntro(false);
+
+        const framework = ["sais", "aramco", "neom", "moi", "api780", "api"].find((k) =>
+          target.includes(k)
+        );
+        if (framework) {
+          setHighlightedCard(framework.startsWith("api") ? "api" : framework);
+        }
+
+        const tryScroll = (attempts = 0) => {
+          const cardEl = framework
+            ? document.getElementById(`standards-${framework}`) ||
+              document.getElementById(framework) ||
+              (framework.startsWith("api") ? document.getElementById("standards-api") : null)
+            : null;
+          const sectionEl =
+            document.getElementById("standards-compliance") || document.getElementById("standards");
+          const el = cardEl || sectionEl;
+
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: cardEl ? "center" : "start" });
+          } else if (attempts < 10) {
+            setTimeout(() => tryScroll(attempts + 1), 150);
+          }
+        };
+
+        setTimeout(() => tryScroll(0), 100);
+
+        const fadeTimer = setTimeout(() => {
+          setHighlightedCard(null);
+        }, 6000);
+        return () => clearTimeout(fadeTimer);
+      }
+    };
+
+    handleScrollTarget();
+    window.addEventListener("hashchange", handleScrollTarget);
+    return () => window.removeEventListener("hashchange", handleScrollTarget);
   }, []);
 
   useEffect(() => {
@@ -221,7 +301,7 @@ function AboutPage() {
       <WhoWeAre title={whoTitle} desc={whoDesc} secondary={t("about.desc2")} />
       <VisionMission cms={cms} />
       <StatsBand />
-      <RegulatoryCards data={complianceData} />
+      <RegulatoryCards data={complianceData} highlightedCard={highlightedCard} />
       <ProfileJourney items={profile} />
       <LicensesAndCertifications />
       <AboutCta />
@@ -1135,8 +1215,14 @@ function AboutCta() {
 }
 
 function AboutFooter() {
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language?.startsWith("ar");
+
   return (
-    <footer className="bg-white text-black py-12 border-t border-black/10">
+    <footer 
+      dir={isArabic ? "rtl" : "ltr"}
+      className="bg-white text-black py-12 border-t border-black/10"
+    >
       <div className="max-w-[1600px] mx-auto px-8 md:px-16 flex flex-col md:flex-row items-center justify-between gap-6">
         <img
           src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
@@ -1146,12 +1232,22 @@ function AboutFooter() {
           className="h-10 w-auto object-contain"
         />
         <p className="font-sans text-xs text-black/50 tracking-wide">
-          © {new Date().getFullYear()} VISO Group. All rights reserved.
+          {isArabic ? (
+            <span>جميع الحقوق محفوظة &copy; {new Date().getFullYear()} مجموعة فيزو (VISO Group).</span>
+          ) : (
+            <span>&copy; {new Date().getFullYear()} VISO Group. All rights reserved.</span>
+          )}
         </p>
         <div className="flex flex-wrap justify-center md:justify-end gap-x-6 gap-y-2 font-sans text-xs text-black/60">
-          <Link to="/privacy" className="hover:text-gold transition-colors">Privacy Policy</Link>
-          <Link to="/terms" className="hover:text-gold transition-colors">Terms of Service</Link>
-          <Link to="/contact" className="hover:text-gold transition-colors">Contact Us</Link>
+          <Link to="/privacy" className="hover:text-gold transition-colors">
+            {t("footer.privacy", "Privacy Policy")}
+          </Link>
+          <Link to="/terms" className="hover:text-gold transition-colors">
+            {t("footer.terms", "Terms of Service")}
+          </Link>
+          <Link to="/contact" className="hover:text-gold transition-colors">
+            {t("footer.contact", "Contact Us")}
+          </Link>
         </div>
       </div>
     </footer>
@@ -1159,7 +1255,13 @@ function AboutFooter() {
 }
 
 /* ---------- Regulatory Cards ---------- */
-function RegulatoryCards({ data }: { data?: StandardsComplianceData }) {
+function RegulatoryCards({
+  data,
+  highlightedCard,
+}: {
+  data?: StandardsComplianceData;
+  highlightedCard?: string | null;
+}) {
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language?.startsWith("ar");
 
@@ -1174,7 +1276,11 @@ function RegulatoryCards({ data }: { data?: StandardsComplianceData }) {
   const cards = data?.cards && data.cards.length > 0 ? data.cards : defaultStandardsComplianceData.cards;
 
   return (
-    <section className="py-24 bg-background relative z-10 border-t border-foreground/10" dir={isArabic ? "rtl" : "ltr"}>
+    <section
+      id="standards-compliance"
+      className="py-24 bg-background relative z-10 border-t border-foreground/10 scroll-mt-20"
+      dir={isArabic ? "rtl" : "ltr"}
+    >
       <div className="mx-auto max-w-[1600px] px-8 md:px-16">
         <div className="mb-16 md:mb-20">
           <motion.div
@@ -1214,38 +1320,59 @@ function RegulatoryCards({ data }: { data?: StandardsComplianceData }) {
               ? (card.descAr || fallback?.desc || card.desc)
               : card.desc;
 
+            const cardSlug = (card.title || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+            const isHighlighted = Boolean(
+              highlightedCard &&
+                (highlightedCard === cardSlug ||
+                  (cardSlug.startsWith("api") && highlightedCard.startsWith("api")))
+            );
+
+            const destinationUrl = card.url || `/regulatory/${cardSlug || "sais"}`;
+
             return (
-              <Link key={card.id || i} to={card.url || "#"} className="block group">
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className={`relative h-full flex flex-col p-6 md:p-8 rounded-[2rem] border bg-gradient-to-br ${card.color || "from-emerald-100 to-emerald-50 border-emerald-200 hover:border-emerald-300 shadow-sm"} transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl overflow-hidden`}
-                >
-                  {/* Decorative background element */}
-                  <div className="absolute -top-12 -right-12 w-48 h-48 bg-foreground/5 rounded-full blur-2xl group-hover:bg-foreground/10 transition-colors duration-500 pointer-events-none" />
+              <div
+                key={card.id || i}
+                id={`standards-${cardSlug}`}
+                className="scroll-mt-28"
+              >
+                <Link to={destinationUrl} className="block group h-full">
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: i * 0.1 }}
+                    className={`relative h-full flex flex-col p-6 md:p-8 rounded-[2rem] border bg-gradient-to-br ${
+                      card.color || "from-emerald-100 to-emerald-50 border-emerald-200 hover:border-emerald-300 shadow-sm"
+                    } transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl overflow-hidden ${
+                      isHighlighted
+                        ? "ring-4 ring-gold shadow-[0_0_35px_rgba(212,175,55,0.7)] scale-[1.03]"
+                        : ""
+                    }`}
+                  >
+                    {/* Decorative background element */}
+                    <div className="absolute -top-12 -right-12 w-48 h-48 bg-foreground/5 rounded-full blur-2xl group-hover:bg-foreground/10 transition-colors duration-500 pointer-events-none" />
 
-                  <div className={`mb-8 w-28 h-28 md:w-32 md:h-32 ${card.logoBg || "bg-white"} rounded-2xl p-4 flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-foreground/5 group-hover:scale-110 transition-transform duration-500 relative z-10`}>
-                    <img src={card.logo} alt={cardTitle} className="max-h-full max-w-full object-contain" />
-                  </div>
+                    <div className={`mb-8 w-28 h-28 md:w-32 md:h-32 ${card.logoBg || "bg-white"} rounded-2xl p-4 flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-foreground/5 group-hover:scale-110 transition-transform duration-500 relative z-10`}>
+                      <img src={card.logo} alt={cardTitle} className="max-h-full max-w-full object-contain" />
+                    </div>
 
-                  <h3 className={`text-2xl md:text-3xl font-display font-bold text-foreground mb-3 relative z-10 group-hover:text-primary transition-colors ${
-                    isArabic ? "font-arabic text-right" : "text-left"
-                  }`}>
-                    {cardTitle}
-                  </h3>
-                  <p className={`text-foreground/75 font-sans text-sm md:text-base leading-relaxed mb-8 flex-grow relative z-10 max-w-sm ${
-                    isArabic ? "font-arabic text-right" : "text-left"
-                  }`}>
-                    {cardDesc}
-                  </p>
-                  <div className="mt-auto flex items-center gap-3 text-xs font-bold tracking-widest uppercase text-foreground/50 group-hover:text-primary transition-colors relative z-10">
-                    <span>{isArabic ? "استكشف إطار المعايير" : "Explore Framework"}</span>
-                    <span className={`transform transition-transform ${isArabic ? "group-hover:-translate-x-2 rotate-180" : "group-hover:translate-x-2"}`}>→</span>
-                  </div>
-                </motion.div>
-              </Link>
+                    <h3 className={`text-2xl md:text-3xl font-display font-bold text-foreground mb-3 relative z-10 group-hover:text-primary transition-colors ${
+                      isArabic ? "font-arabic text-right" : "text-left"
+                    }`}>
+                      {cardTitle}
+                    </h3>
+                    <p className={`text-foreground/75 font-sans text-sm md:text-base leading-relaxed mb-8 flex-grow relative z-10 max-w-sm ${
+                      isArabic ? "font-arabic text-right" : "text-left"
+                    }`}>
+                      {cardDesc}
+                    </p>
+                    <div className="mt-auto flex items-center gap-3 text-xs font-bold tracking-widest uppercase text-foreground/50 group-hover:text-primary transition-colors relative z-10">
+                      <span>{isArabic ? "استكشف إطار المعايير" : "Explore Framework"}</span>
+                      <span className={`transform transition-transform ${isArabic ? "group-hover:-translate-x-2 rotate-180" : "group-hover:translate-x-2"}`}>→</span>
+                    </div>
+                  </motion.div>
+                </Link>
+              </div>
             );
           })}
         </div>

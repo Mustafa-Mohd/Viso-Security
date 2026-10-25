@@ -92,7 +92,8 @@ function useCareerJobs(): CareerJob[] {
 }
 
 function CareerPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language?.startsWith("ar");
   const jobs = useCareerJobs();
   const [activeJob, setActiveJob] = useState<string | null>(null);
   const [shareJob, setShareJob] = useState<CareerJob | null>(null);
@@ -145,9 +146,15 @@ function CareerPage() {
         <CareerCta onApply={() => setActiveJob(t("career.cta_btn"))} />
       </main>
 
-      <footer className="border-t border-foreground/10 py-8">
+      <footer className="border-t border-foreground/10 py-8" dir={isArabic ? "rtl" : "ltr"}>
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-foreground/45 font-mono tracking-wide">
-          <span>© {new Date().getFullYear()} VISO Group</span>
+          <span>
+            {isArabic ? (
+              <span>جميع الحقوق محفوظة &copy; {new Date().getFullYear()} مجموعة فيزو (VISO Group)</span>
+            ) : (
+              <span>&copy; {new Date().getFullYear()} VISO Group</span>
+            )}
+          </span>
           <Link to="/contact" className="hover:text-primary transition-colors">
             {t("career.contact_hr")}
           </Link>

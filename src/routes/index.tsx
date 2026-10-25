@@ -448,11 +448,11 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
   const slideLink = currentSlideData?.link || slide.link;
 
   const defaultRegulatoryLogos = [
-    { slug: "moi", label: "MOI", labelAr: "وزارة الداخلية (MOI)", img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png" },
-    { slug: "sais", label: "SAIS", labelAr: "الهيئة العليا للأمن الصناعي (HCIS / SAIS)", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgBwqTj0FNNJJm59mHR1GKznOvHK23QpPB5jwKZQuFaQ&s=10" },
-    { slug: "neom", label: "NEOM", labelAr: "نيوم (NEOM)", img: "https://neom.scene7.com/is/image/neom/logo-neom-en-spaced?fmt=png-alpha&scl=1" },
-    { slug: "api780", label: "API 780", labelAr: "معايير معهد البترول الأمريكي (API 780)", img: "https://theshopmag.com/wp-content/uploads/2023/05/api-logo-stacked.png" },
-    { slug: "aramco", label: "ARAMCO", labelAr: "أرامكو السعودية (ARAMCO)", img: "https://upload.wikimedia.org/wikipedia/en/thumb/8/85/Saudi_Aramco_logo.svg/1200px-Saudi_Aramco_logo.svg.png" },
+    { slug: "moi", label: "MOI", labelAr: "وزارة الداخلية (MOI)", img: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790599258/download.png", url: "/regulatory/moi" },
+    { slug: "sais", label: "SAIS", labelAr: "الهيئة العليا للأمن الصناعي (HCIS / SAIS)", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgBwqTj0FNNJJm59mHR1GKznOvHK23QpPB5jwKZQuFaQ&s=10", url: "/regulatory/sais" },
+    { slug: "neom", label: "NEOM", labelAr: "نيوم (NEOM)", img: "https://neom.scene7.com/is/image/neom/logo-neom-en-spaced?fmt=png-alpha&scl=1", url: "/regulatory/neom" },
+    { slug: "api780", label: "API 780", labelAr: "معايير معهد البترول الأمريكي (API 780)", img: "https://theshopmag.com/wp-content/uploads/2023/05/api-logo-stacked.png", url: "/regulatory/api780" },
+    { slug: "aramco", label: "ARAMCO", labelAr: "أرامكو السعودية (ARAMCO)", img: "https://upload.wikimedia.org/wikipedia/en/thumb/8/85/Saudi_Aramco_logo.svg/1200px-Saudi_Aramco_logo.svg.png", url: "/regulatory/aramco" },
   ];
 
   const regulatoryLogos = data?.regulatoryLogos && data.regulatoryLogos.length > 0 ? data.regulatoryLogos : defaultRegulatoryLogos;
@@ -545,18 +545,43 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
           const bodyLabel = isArabic
             ? (body.labelAr || ARABIC_REGULATORY_MAP[cleanSlug] || ARABIC_REGULATORY_MAP[cleanLabel] || body.label)
             : body.label;
+          const targetUrl = body.url || body.link || `/regulatory/${cleanSlug || "sais"}`;
+          const isExternal = typeof targetUrl === "string" && (targetUrl.startsWith("http://") || targetUrl.startsWith("https://"));
+          const hashPart = targetUrl.includes("#") ? targetUrl.split("#")[1] : undefined;
+          const pathPart = targetUrl.split("#")[0] || `/regulatory/${cleanSlug || "sais"}`;
+
           return (
             <div key={idx} className="relative group shrink-0">
-              <div
-                className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-transparent border-2 border-[#D4AF37] hover:border-[#FFD700] flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-[0_0_10px_rgba(212,175,55,0.3)] hover:shadow-[0_0_20px_rgba(212,175,55,0.8)] cursor-default overflow-hidden block"
-                aria-label={bodyLabel}
-              >
-                <img
-                  src={body.img}
-                  alt={bodyLabel}
-                  className="w-full h-full object-cover rounded-full transition-all duration-500 grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105"
-                />
-              </div>
+              {isExternal ? (
+                <a
+                  href={targetUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-transparent border-2 border-[#D4AF37] hover:border-[#FFD700] flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-[0_0_10px_rgba(212,175,55,0.3)] hover:shadow-[0_0_20px_rgba(212,175,55,0.8)] cursor-pointer overflow-hidden block"
+                  aria-label={bodyLabel}
+                  title={isArabic ? `${bodyLabel} - استعراض معايير الامتثال` : `${bodyLabel} - View Standards & Compliance`}
+                >
+                  <img
+                    src={body.img}
+                    alt={bodyLabel}
+                    className="w-full h-full object-cover rounded-full transition-all duration-500 grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105"
+                  />
+                </a>
+              ) : (
+                <Link
+                  to={pathPart}
+                  hash={hashPart}
+                  className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-transparent border-2 border-[#D4AF37] hover:border-[#FFD700] flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-[0_0_10px_rgba(212,175,55,0.3)] hover:shadow-[0_0_20px_rgba(212,175,55,0.8)] cursor-pointer overflow-hidden block"
+                  aria-label={bodyLabel}
+                  title={isArabic ? `${bodyLabel} - استعراض معايير الامتثال` : `${bodyLabel} - View Standards & Compliance`}
+                >
+                  <img
+                    src={body.img}
+                    alt={bodyLabel}
+                    className="w-full h-full object-cover rounded-full transition-all duration-500 grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105"
+                  />
+                </Link>
+              )}
               {/* Logo Name Tooltip on Hover */}
               <span className={`absolute top-[calc(100%+0.6rem)] ${
                 isArabic 
@@ -2246,8 +2271,14 @@ function LinkedInPosts() {
    FOOTER SECTION
    ============================================================ */
 function Footer({ data }: { data?: any }) {
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language?.startsWith("ar");
+
   return (
-    <footer className="bg-white text-black relative overflow-hidden flex flex-col min-h-[450px]">
+    <footer 
+      dir={isArabic ? "rtl" : "ltr"}
+      className="bg-white text-black relative overflow-hidden flex flex-col min-h-[450px]"
+    >
       {/* Subtle gold glow at the top edge */}
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-50 z-20"></div>
 
@@ -2275,41 +2306,77 @@ function Footer({ data }: { data?: any }) {
               className="h-16 w-auto object-contain"
             />
             <p className="font-sans text-black/70 text-sm leading-relaxed max-w-xs text-justify">
-              Pioneering high-end security architecture, consulting, and seamless defensive integration for mega-projects worldwide.
+              {t(
+                "footer.desc",
+                "Pioneering high-end security architecture, consulting, and seamless defensive integration for mega-projects worldwide."
+              )}
             </p>
           </div>
 
           {/* Links Col */}
           <div>
-            <h4 className="font-display font-bold text-lg mb-6 text-gold">Explore</h4>
+            <h4 className="font-display font-bold text-lg mb-6 text-gold">
+              {t("footer.explore", "Explore")}
+            </h4>
             <ul className="space-y-3 font-sans text-sm text-black/70">
-              <li><Link to="/" className="hover:text-gold transition-colors">Home</Link></li>
-              <li><Link to="/about" className="hover:text-gold transition-colors">About Us</Link></li>
-              <li><Link to="/security" className="hover:text-gold transition-colors">Security Consultancy</Link></li>
-              <li><Link to="/translation" className="hover:text-gold transition-colors">Translation Services</Link></li>
-              <li><Link to="/career" className="hover:text-gold transition-colors">Careers</Link></li>
+              <li>
+                <Link to="/" className="hover:text-gold transition-colors">
+                  {t("nav.home", "Home")}
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="hover:text-gold transition-colors">
+                  {t("nav.about", "About Us")}
+                </Link>
+              </li>
+              <li>
+                <Link to="/security" className="hover:text-gold transition-colors">
+                  {t("nav.security", "Security Consultancy")}
+                </Link>
+              </li>
+              <li>
+                <Link to="/translation" className="hover:text-gold transition-colors">
+                  {t("nav.translation", "Translation Services")}
+                </Link>
+              </li>
+              <li>
+                <Link to="/career" className="hover:text-gold transition-colors">
+                  {t("nav.careers", "Careers")}
+                </Link>
+              </li>
             </ul>
           </div>
 
           {/* Contact Col */}
           <div>
-            <h4 className="font-display font-bold text-lg mb-6 text-gold">Contact Us</h4>
+            <h4 className="font-display font-bold text-lg mb-6 text-gold">
+              {t("footer.contact_us", "Contact Us")}
+            </h4>
             <ul className="space-y-3 font-sans text-sm text-black/70">
               <li className="flex items-center gap-3">
-                <span className="text-gold">📍</span> Riyadh, Saudi Arabia
+                <span className="text-gold">📍</span>{" "}
+                <span>{t("footer.location", "Riyadh, Saudi Arabia")}</span>
               </li>
               <li className="flex items-center gap-3">
-                <span className="text-gold">✉️</span> info@visogroup.com
+                <span className="text-gold">✉️</span>{" "}
+                <a href="mailto:info@visogroup.com" className="hover:text-gold transition-colors" dir="ltr">
+                  info@visogroup.com
+                </a>
               </li>
               <li className="flex items-center gap-3">
-                <span className="text-gold">📞</span> +966 11 450 3289
+                <span className="text-gold">📞</span>{" "}
+                <a href="tel:+966114503289" className="hover:text-gold transition-colors" dir="ltr">
+                  +966 11 450 3289
+                </a>
               </li>
             </ul>
           </div>
 
           {/* Socials Col */}
           <div>
-            <h4 className="font-display font-bold text-lg mb-6 text-gold">Connect</h4>
+            <h4 className="font-display font-bold text-lg mb-6 text-gold">
+              {t("footer.connect", "Connect")}
+            </h4>
             <div className="flex items-center gap-5">
               <a
                 href="https://www.linkedin.com/company/viso-security-consultant/posts/"
@@ -2379,12 +2446,22 @@ function Footer({ data }: { data?: any }) {
       <div className="relative z-10 w-full border-t border-black/10 bg-white/60 backdrop-blur-md">
         <div className="max-w-[1600px] mx-auto px-8 md:px-16 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-black/70 font-semibold text-xs font-mono uppercase tracking-widest">
-            &copy; {new Date().getFullYear()} VISO Group. All rights reserved.
+            {isArabic ? (
+              <span>جميع الحقوق محفوظة &copy; {new Date().getFullYear()} مجموعة فيزو (VISO Group).</span>
+            ) : (
+              <span>&copy; {new Date().getFullYear()} VISO Group. All rights reserved.</span>
+            )}
           </p>
           <div className="flex flex-wrap justify-center md:justify-end gap-x-6 gap-y-2 text-black/70 font-semibold text-xs font-mono uppercase tracking-widest">
-            <Link to="/privacy" className="hover:text-gold transition-colors">Privacy Policy</Link>
-            <Link to="/terms" className="hover:text-gold transition-colors">Terms of Service</Link>
-            <Link to="/contact" className="hover:text-gold transition-colors">Contact Us</Link>
+            <Link to="/privacy" className="hover:text-gold transition-colors">
+              {t("footer.privacy", "Privacy Policy")}
+            </Link>
+            <Link to="/terms" className="hover:text-gold transition-colors">
+              {t("footer.terms", "Terms of Service")}
+            </Link>
+            <Link to="/contact" className="hover:text-gold transition-colors">
+              {t("footer.contact", "Contact Us")}
+            </Link>
           </div>
         </div>
       </div>

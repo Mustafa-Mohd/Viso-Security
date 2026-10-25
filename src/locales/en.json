@@ -388,10 +388,19 @@
     "title": "OUR LOCATION",
     "subtitle": "Serving Saudi Arabia and Surroundings",
     "nationwide": "Saudi Arabia (Nationwide)",
+    "headquarters": "Headquarters",
+    "headquarters_address": "RHTA7423, Office No. 110, Al Taawun Dist. 7423 Abi Bakr Al Siddiq Road, Riyadh, Kingdom of Saudi Arabia.",
+    "get_directions": "Get Directions",
+    "regional_presence": "Regional Presence",
+    "regional_office": "Regional Office",
     "cities": {
       "riyadh": {
         "name": "Riyadh",
         "region": "Central Region"
+      },
+      "khobar": {
+        "name": "Khobar",
+        "region": "Eastern Province"
       },
       "jeddah": {
         "name": "Jeddah",
@@ -437,6 +446,7 @@
     "nationwide_short": "Nationwide",
     "blurbs": {
       "riyadh": "Headquarters & national operations hub.",
+      "khobar": "Eastern Province operations.",
       "jeddah": "Gateway to western coastal projects.",
       "makkah": "High-security heritage & pilgrimage environments.",
       "madina": "Regional coverage for sacred-city assets.",
@@ -447,6 +457,23 @@
       "taif": "Highland regional support.",
       "tabuk": "Northern Kingdom project delivery."
     }
+  },
+  "footer": {
+    "desc": "Pioneering high-end security architecture, consulting, and seamless defensive integration for mega-projects worldwide.",
+    "explore": "Explore",
+    "home": "Home",
+    "about": "About Us",
+    "security": "Security Consultancy",
+    "translation": "Translation Services",
+    "careers": "Careers",
+    "contact_us": "Contact Us",
+    "location": "Riyadh, Saudi Arabia",
+    "connect": "Connect",
+    "rights": "VISO Group. All rights reserved.",
+    "rights_full": "Vision of Solutions for Security Consultations Co. Ltd. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "contact": "Contact Us"
   },
   "contact": {
     "eyebrow": "REACH OUT",

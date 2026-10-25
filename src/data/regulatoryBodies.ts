@@ -325,9 +325,13 @@ export const REGULATORY_BODIES: RegulatoryBody[] =
   REGULATORY_BODIES_BASE.map(withRegulatoryMedia);
 
 export function normalizeRegulatorySlug(raw: string): RegulatorySlug | undefined {
-  const s = raw.toLowerCase();
-  if (s === "hais") return "hcis";
-  if (s === "moi" || s === "sais" || s === "hcis" || s === "neom" || s === "api780" || s === "aramco") return s;
+  const s = raw.toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (s === "hais" || s === "hcis") return "hcis";
+  if (s === "sais" || s === "hcissais") return "sais";
+  if (s === "api" || s === "api780") return "api780";
+  if (s === "aramco" || s === "saudiaramco") return "aramco";
+  if (s === "moi") return "moi";
+  if (s === "neom") return "neom";
   return undefined;
 }
 
