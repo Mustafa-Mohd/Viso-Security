@@ -30,6 +30,19 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-.env*
+# Secrets — never commit real credentials (use Netlify/host env in production)
+.env
+.env.*
 !.env.example
-*/.env
+**/.env
+**/.env.*
+!.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+admin/.env
+admin/.env.*
+!admin/.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example

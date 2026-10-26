@@ -1,0 +1,770 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About Us",
+    "overview": "Overview",
+    "security": "Security Consultancy",
+    "translation": "Translation Service",
+    "clients": "Clients",
+    "expertise": "Expertise",
+    "certifications": "Certifications",
+    "gallery": "Gallery",
+    "careers": "Careers",
+    "contact": "Contact",
+    "engage": "OTHERS",
+    "lang_toggle": "العربية",
+    "lang_switch": "Switch to العربية",
+    "group_who": "Who We Are",
+    "group_services": "What We Do",
+    "group_impact": "Projects",
+    "join_team": "Join Our Team",
+    "contact_us": "Contact Us",
+    "regulatory_overview": "Regulatory Authorities",
+    "regulatory_sais": "SAIS",
+    "regulatory_moi": "MOI",
+    "regulatory_hcis": "HCIS (→ SAIS)"
+  },
+  "home": {
+    "strategic_architecture": "Strategic Architecture",
+    "designing": "Designing",
+    "the_future": "The Future",
+    "subtitle": "Elevating physical security through sophisticated architectural integration.",
+    "desc": "We merge high-end architectural design with rigorous security protocols to create spaces that are both exceptionally safe and visually stunning. Inspired by global innovation leaders.",
+    "scroll_down": "SCROLL DOWN",
+    "learn_more": "Learn More",
+    "more_info": "For more info",
+    "skip_intro": "Skip Intro",
+    "hero_eyebrow": "VISO Group",
+    "hero_panel_titles": [
+      "Strategic Security Architecture",
+      "Physical Security Consulting",
+      "Certified Translation Services",
+      "Risk Assessment & Compliance",
+      "Critical Infrastructure Protection",
+      "Integrated Security Design"
+    ]
+  },
+  "loader": {
+    "bg_text": "SECURITY ARCHITECTURE",
+    "w1": "Security Consultations",
+    "w2": "Project Management",
+    "w3": "Certified Translation"
+  },
+  "home_interactive": {
+    "our_services": "Our Services",
+    "our_services_desc": "Explore our integrated portals and specialized consultancy offerings.",
+    "services_carousel": {
+      "sc_title": "Security Consultancy",
+      "sc_desc": "Comprehensive risk and threat assessment engineering.",
+      "sc_more": "Our Security Consultancy services provide strategic guidance and technical engineering to safeguard your critical assets. We specialize in Security Risk Assessments (SRA), vulnerability analysis, and the development of robust physical security frameworks.\n\nFrom concept design to detailed engineering and operational readiness, our experts ensure your facility complies with local regulations (such as HCIS/SAIS directives) and international best practices.",
+      "trans_title": "Translation Services",
+      "trans_desc": "Verify and authenticate VISO translation certificates.",
+      "trans_more": "We offer professional, certified translation services tailored specifically for technical, legal, and security-related documentation. Ensuring accuracy in highly specialized fields is critical for compliance and successful project delivery.\n\nOur system also provides an integrated verification portal where you can instantly authenticate VISO-issued translation certificates using unique reference codes.",
+      "train_title": "Training",
+      "train_desc": "Specialized training programs for physical security professionals.",
+      "train_more": "Empower your workforce with industry-leading security training. We design and deliver specialized programs that cover a wide range of topics, from basic security awareness to advanced physical security system operations and emergency response protocols.\n\nOur training modules are continuously updated to reflect the latest threats, technological advancements, and regulatory changes in the Kingdom.",
+      "ind_title": "Industrial Security",
+      "ind_desc": "Robust physical security solutions for industrial assets.",
+      "ind_more": "Industrial facilities face unique and complex security challenges. We provide specialized consulting to protect oil, gas, petrochemical, and manufacturing infrastructure against intrusion, sabotage, and disruption.\n\nOur approach integrates cutting-edge electronic security systems (CCTV, ACS, IDS) with structural and procedural countermeasures, ensuring full alignment with strict regulatory standards.",
+      "gap_title": "Security Gap Analysis",
+      "gap_desc": "Identify vulnerabilities and align with international standards.",
+      "gap_more": "A Security Gap Analysis is the crucial first step in fortifying your defenses. We conduct thorough site surveys and audits to compare your existing security posture against required baselines and industry best practices.\n\nWe provide detailed, actionable roadmaps that highlight critical vulnerabilities and outline the specific steps necessary to achieve full compliance and operational resilience.",
+      "pm_title": "Project Management",
+      "pm_desc": "Expert oversight and execution of high-end security architecture projects from conception to completion.",
+      "pm_more": "Our dedicated project management teams ensure that your security infrastructure is deployed on time, within budget, and to the highest quality standards. We provide specialized owner's engineer representation, contractor oversight, technical submittal reviews, and rigorous milestone tracking to deliver seamless security integration across your facilities."
+    },
+    "about_viso": "About Viso",
+    "read_more": "Read More",
+    "metrics": {
+      "hubs": "Regional Hubs",
+      "hubs_sub": "KSA-Wide Presence",
+      "mega": "Megaprojects",
+      "mega_sub": "Secured & Certified",
+      "hcis": "HCIS / MOI",
+      "hcis_sub": "Compliance Audit Rate",
+      "mission": "Mission Readiness",
+      "mission_sub": "Continuous Protection"
+    }
+  },
+  "framework": {
+    "title_mono": "Security Consulting Framework",
+    "title_display": "From Risk to",
+    "title_display_italic": "Readiness",
+    "desc": "End-to-End HCIS Security Consultancy Across Every Stage",
+    "explore": "EXPLORE SECURITY ANALYSIS"
+  },
+  "about": {
+    "who_we_are": "WHO WE ARE",
+    "title": "Where Security Meets",
+    "title_italic": "Peace of Mind",
+    "desc1": "VISO is a premier physical security consultancy specializing in safeguarding our clients' most valuable assets. Founded in February 2019 and headquartered in Riyadh, we now operate from four regional offices across the Kingdom—Khobar, Jubail, Jeddah and Yanbu—delivering tailored security solutions that align with national authorities and the highest international benchmarks.",
+    "desc2": "Our team of seasoned experts brings decades of combined experience in security analysis, risk assessment, and the implementation of integrated protective measures across critical national infrastructure, energy, industrial, financial and government sectors.",
+    "stats": {
+      "established": "ESTABLISHED",
+      "offices": "REGIONAL OFFICES",
+      "locations": "Locations",
+      "projects": "PROJECTS DELIVERED",
+      "local": "LOCAL CONTENT"
+    },
+    "values": {
+      "title": "Our Core Values",
+      "subtitle": "Guiding principles that drive our excellence.",
+      "items": {
+        "v1": {
+          "title": "Honesty & Integrity",
+          "desc": "Our guiding philosophy revolves around transparency and professionalism. We remain prudent and fair in dealing with all stakeholders.",
+          "points": [
+            "Transparent Communication",
+            "Uncompromising Ethics",
+            "Fair Stakeholder Practices"
+          ]
+        },
+        "v2": {
+          "title": "Customer Excellence",
+          "desc": "We strive to fully understand our clients' needs to deliver tailored, premium security solutions that exceed expectations.",
+          "points": [
+            "Tailored Security Solutions",
+            "Proactive Client Support",
+            "Exceeding Expectations"
+          ]
+        },
+        "v3": {
+          "title": "Leadership & Prudence",
+          "desc": "As we build a robust security culture, we optimize resources and lead by example in setting industry standards.",
+          "points": [
+            "Robust Security Culture",
+            "Resource Optimization",
+            "Setting Industry Standards"
+          ]
+        },
+        "v4": {
+          "title": "Innovation & Change",
+          "desc": "We are an organization in constant progress, continuously adapting to new threats and integrating cutting-edge technologies.",
+          "points": [
+            "Continuous Progress",
+            "Threat Adaptation",
+            "Cutting-Edge Technologies"
+          ]
+        }
+      }
+    },
+    "areas": {
+      "title": "Areas We Serve",
+      "subtitle": "Protecting vital sectors with specialized physical security consulting and architectural integration.",
+      "items": {
+        "a1": {
+          "title": "Integrated Security Systems",
+          "desc": "Delivering comprehensive physical and cyber security architectures, ensuring end-to-end compliance with SAIS and national security directives."
+        },
+        "a2": {
+          "title": "Meteorological Solutions",
+          "desc": "Advanced monitoring and predictive frameworks for atmospheric conditions, optimizing flight safety and complex airport operations."
+        },
+        "a3": {
+          "title": "Aviation Technology",
+          "desc": "Engineering and deploying state-of-the-art Air Traffic Control, NAVAIDS, and communication networks for civil and military airspace."
+        },
+        "a4": {
+          "title": "ICT & Connectivity",
+          "desc": "Providing high-performance information and communication technology consulting to maximize operational workflow and secure data infrastructures."
+        },
+        "a5": {
+          "title": "Marine Surveying",
+          "desc": "Executing precision hydrographic surveys, spatial mapping, and maritime analytics to support complex offshore deployments."
+        },
+        "a6": {
+          "title": "Engineering Design",
+          "desc": "End-to-end turnkey engineering blueprints spanning structural security, ICT, and unified protection systems, from concept to final execution."
+        }
+      }
+    }
+  },
+  "security": {
+    "title": "Our Core",
+    "title_italic": "Services",
+    "desc": "Supporting Every Stage of the HCIS / SAIS Security Project Lifecycle\nWhether developing a new facility or upgrading an existing asset, security requirements evolve throughout the project lifecycle. VISO provides specialist security engineering consultancy from project initiation through operational readiness, ensuring security objectives, engineering deliverables, and regulatory requirements remain aligned at every stage.",
+    "phase": "STAGE",
+    "stage": "STAGE",
+    "deliverables": "Deliverables",
+    "stages": {
+      "s1": {
+        "title": "Security Risk Assessment (SRA)",
+        "subtitle": "Establish the security foundation.",
+        "desc": "The Security Risk Assessment (SRA) establishes the security foundation for the project by identifying critical assets, evaluating credible threats, assessing vulnerabilities, and determining the level of protection required for the facility. The assessment is conducted in accordance with applicable SAIS requirements and recognized international risk assessment methodologies, including ANSI/API 780 and ANSI/ASIS/RIMS RA.1-2015. The outcomes form the basis for the security engineering strategy, Concept of Design (CoD), and subsequent design stages.",
+        "d1": "Security Risk Assessment (SRA) Report",
+        "d2": "Business Criterial Analysis (BCA)",
+        "d3": "Concept of Design (CoD)",
+        "d4": "Concept Security Drawings",
+        "d5": "Security Philosophy",
+        "d6": "Security Organization Concept",
+        "d7": "Security Policies & Procedures Framework",
+        "d8": "Security Training Plan Framework"
+      },
+      "s2": {
+        "title": "Preliminary design",
+        "subtitle": "Develop the engineering package.",
+        "desc": "Following completion of the Stage-1, we develop the security engineering package required to support project execution and regulatory submissions.",
+        "d1": "Design Criteria",
+        "d2": "Physical Security Infrastructure (PSI)",
+        "d3": "System Design Document (SDD)",
+        "d4": "Security System Architecture",
+        "d5": "Schematic Drawings",
+        "d6": "Geographic Layout Drawings",
+        "d7": "Equipment Identification Schedule",
+        "d8": "Scope of Work (SOW)",
+        "d9": "Technical Specifications",
+        "d10": "Waiver Requests (where applicable)",
+        "d11": "SAIS submission Coordination"
+      },
+      "s3": {
+        "title": "Detailed Design Review & Project Delivery",
+        "subtitle": "Independent technical support.",
+        "desc": "During project execution, we provide independent technical support to help clients maintain engineering quality, regulatory compliance, and project performance.",
+        "d1": "Detailed Design Review",
+        "d2": "Shop Drawing Review",
+        "d3": "Material Submittal Review",
+        "d4": "Technical Query Review",
+        "d5": "Project Controls",
+        "d6": "Construction Monitoring",
+        "d7": "Site Supervision",
+        "d8": "Progress Monitoring",
+        "d9": "Engineering Coordination",
+        "d10": "Contractor Technical Support",
+        "d11": "Owner's Engineer & Project Management Services"
+      },
+      "s4": {
+        "title": "Operational Readiness & Project Close-Out",
+        "subtitle": "Verify, test, and integrate.",
+        "desc": "The final stage focuses on verifying that installed security systems are fully integrated, tested, documented, and ready for operation.",
+        "d1": "Operational Readiness",
+        "d2": "Testing & Commissioning Support",
+        "d3": "FAT & SAT Witnessing",
+        "d4": "Integrated System Testing",
+        "d5": "Compliance Documentation",
+        "d6": "Regulatory Coordination",
+        "d7": "Final Inspection Support",
+        "d8": "Project Close-Out",
+        "d9": "Handover Documentation"
+      }
+    },
+    "pm": {
+      "title": "Project Management",
+      "title_italic": "& Owner's Engineer Services",
+      "desc": "In addition to security engineering consultancy, VISO provides project management and owner's engineer services to support successful implementation during project execution.",
+      "services": [
+        "Project Planning & Scheduling",
+        "Project Controls",
+        "Engineering Coordination",
+        "Design Management",
+        "Technical Submittal Reviews",
+        "Material Approval Reviews",
+        "Construction Monitoring",
+        "Site Supervision",
+        "Progress Reporting",
+        "Risk & Issue Management",
+        "Testing & Commissioning Support",
+        "FAT & SAT Witnessing",
+        "Project Close-Out Support"
+      ]
+    },
+    "why_choose": {
+      "title": "Why Choose",
+      "title_italic": "VISO",
+      "items": {
+        "c1": {
+          "title": "Technical Expertise",
+          "desc": "Objective engineering advice based on technical excellence, industry best practices, and SAIS requirements."
+        },
+        "c2": {
+          "title": "Engineering Excellence",
+          "desc": "Multidisciplinary expertise in physical security systems, design reviews, and regulatory compliance."
+        },
+        "c3": {
+          "title": "End-to-End SAIS Consultancy",
+          "desc": "Supporting clients through every stage of the SAIS security engineering process, from Security Risk Assessment to Operational Readiness."
+        },
+        "c4": {
+          "title": "Project Delivery Experience",
+          "desc": "Providing project management, construction monitoring, and technical oversight to support successful implementation."
+        },
+        "c5": {
+          "title": "Quality Without Compromise",
+          "desc": "Every deliverable undergoes structured technical reviews to ensure compliance, consistency, and engineering integrity."
+        },
+        "c6": {
+          "title": "Client-Focused Solutions",
+          "desc": "Practical engineering solutions tailored to project requirements, operational objectives, and long-term security performance."
+        },
+        "c7": {
+          "title": "Trusted Partnership",
+          "desc": "Working collaboratively with owners, EPC contractors, consultants, and stakeholders to achieve successful project outcomes."
+        }
+      }
+    },
+    "approach": {
+      "title": "Our",
+      "title_italic": "Approach",
+      "desc": "Every assignment follows a structured methodology designed to maintain technical quality, regulatory compliance, and project objectives.",
+      "items": {
+        "a1": {
+          "title": "Assess",
+          "desc": "Understand project requirements and security objectives."
+        },
+        "a2": {
+          "title": "Review",
+          "desc": "Verify engineering deliverables and compliance."
+        },
+        "a3": {
+          "title": "Coordinate",
+          "desc": "Support communication between project stakeholders and regulatory authorities."
+        },
+        "a4": {
+          "title": "Monitor",
+          "desc": "Provide technical oversight during implementation."
+        },
+        "a5": {
+          "title": "Verify",
+          "desc": "Support testing, commissioning, and operational readiness."
+        },
+        "a6": {
+          "title": "Deliver",
+          "desc": "Assist with project close-out and final compliance documentation."
+        }
+      }
+    },
+    "discuss": {
+      "title": "Let's Discuss",
+      "title_italic": "Your Project",
+      "desc": "Whether you're planning a new facility, expanding an existing asset, or managing the delivery of a complex security package, VISO provides the technical expertise and project advisory services required to support successful project outcomes.",
+      "btn": "CONTACT OUR TEAM"
+    }
+  },
+  "certificates": {
+    "accreditations": "ACCREDITATIONS & COMPLIANCE",
+    "official": "Official",
+    "certificates": "Certificates",
+    "desc": "Validated by leading governmental and international organizations, establishing our supreme standard of quality.",
+    "footer": {
+      "hq": "HEADQUARTERS",
+      "address": "RHTA7423, Office No. 110\nAl Taawun Dist. 7423 Abi Bakr Al Siddiq Road\nRiyadh, Kingdom of Saudi Arabia",
+      "contact": "CONTACT US",
+      "legal": "LEGAL",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "rights": "© 2026 Viso Security Consultations. All rights reserved."
+    }
+  },
+  "areas": {
+    "title": "Areas We Serve",
+    "subtitle": "Empowering growth and innovation across critical sectors through VISO's tailored, elite security and technology solutions.",
+    "items": {
+      "a1": {
+        "title": "Integrated Security Systems",
+        "desc": "Delivering comprehensive, scalable physical and cyber security solutions designed to ensure strict compliance with regional directives and safeguard critical assets."
+      },
+      "a2": {
+        "title": "Meteorological Solutions",
+        "desc": "Advanced environmental monitoring and predictive weather systems tailored to optimize flight safety, forecasting, and critical operational continuity."
+      },
+      "a3": {
+        "title": "Aviation & Air Traffic",
+        "desc": "Engineering and integrating state-of-the-art Air Traffic Management, NAVAIDS, and secure communication systems for both civil and defense applications."
+      },
+      "a4": {
+        "title": "Information & Communication Technology",
+        "desc": "Providing cutting-edge ICT consulting, services, and secure data management solutions to maximize operational efficiency and technological resilience."
+      },
+      "a5": {
+        "title": "Marine & Hydrographic Services",
+        "desc": "Comprehensive marine surveying, precision map generation, and specialized hydrographic solutions executed to the highest international standards."
+      },
+      "a6": {
+        "title": "Turnkey Engineering Design",
+        "desc": "Delivering end-to-end engineering excellence across security and ICT domains—transforming conceptual designs into fully integrated, operational realities."
+      }
+    }
+  },
+  "locations": {
+    "title": "OUR LOCATION",
+    "subtitle": "Serving Saudi Arabia and Surroundings",
+    "nationwide": "Saudi Arabia (Nationwide)",
+    "headquarters": "Headquarters",
+    "headquarters_address": "RHTA7423, Office No. 110, Al Taawun Dist. 7423 Abi Bakr Al Siddiq Road, Riyadh, Kingdom of Saudi Arabia.",
+    "get_directions": "Get Directions",
+    "regional_presence": "Regional Presence",
+    "regional_office": "Regional Office",
+    "cities": {
+      "riyadh": {
+        "name": "Riyadh",
+        "region": "Central Region"
+      },
+      "khobar": {
+        "name": "Khobar",
+        "region": "Eastern Province"
+      },
+      "jeddah": {
+        "name": "Jeddah",
+        "region": "Western Region"
+      },
+      "makkah": {
+        "name": "Makkah",
+        "region": "Western Region"
+      },
+      "madina": {
+        "name": "Madina",
+        "region": "Western Region"
+      },
+      "dammam": {
+        "name": "Dammam",
+        "region": "Eastern Region"
+      },
+      "jubail": {
+        "name": "Jubail",
+        "region": "Industrial City"
+      },
+      "yanbu": {
+        "name": "Yanbu",
+        "region": "Industrial City"
+      },
+      "neom": {
+        "name": "NEOM Region",
+        "region": "Northwest"
+      },
+      "taif": {
+        "name": "Taif",
+        "region": "Western Highlands"
+      },
+      "tabuk": {
+        "name": "Tabuk",
+        "region": "Northern Region"
+      }
+    },
+    "presence": "Presence",
+    "cities_count": "Cities",
+    "regions_count": "Regions",
+    "coverage": "Coverage",
+    "nationwide_short": "Nationwide",
+    "blurbs": {
+      "riyadh": "Headquarters & national operations hub.",
+      "khobar": "Eastern Province operations.",
+      "jeddah": "Gateway to western coastal projects.",
+      "makkah": "High-security heritage & pilgrimage environments.",
+      "madina": "Regional coverage for sacred-city assets.",
+      "dammam": "Eastern Province commercial corridor.",
+      "jubail": "Industrial & petrochemical security programs.",
+      "yanbu": "Red Sea industrial facility coverage.",
+      "neom": "Next-gen mega-project security consulting.",
+      "taif": "Highland regional support.",
+      "tabuk": "Northern Kingdom project delivery."
+    }
+  },
+  "footer": {
+    "desc": "Pioneering high-end security architecture, consulting, and seamless defensive integration for mega-projects worldwide.",
+    "explore": "Explore",
+    "home": "Home",
+    "about": "About Us",
+    "security": "Security Consultancy",
+    "translation": "Translation Services",
+    "careers": "Careers",
+    "contact_us": "Contact Us",
+    "location": "Riyadh, Saudi Arabia",
+    "connect": "Connect",
+    "rights": "VISO Group. All rights reserved.",
+    "rights_full": "Vision of Solutions for Security Consultations Co. Ltd. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "contact": "Contact Us"
+  },
+  "contact": {
+    "eyebrow": "REACH OUT",
+    "title": "GET IN",
+    "title_italic": "TOUCH",
+    "desc": "Connect with our lead architects and security consultants to discuss how we can secure your critical infrastructure and future-proof your assets.",
+    "email_label": "Email Us",
+    "hq_label": "Headquarters",
+    "hq_text": "Riyadh, Kingdom of Saudi Arabia\nAlso operating in Khobar, Jubail, Jeddah and Yanbu",
+    "form_title": "Send a Message",
+    "name": "Full Name *",
+    "name_ph": "John Doe",
+    "email": "Email Address *",
+    "email_ph": "john@company.com",
+    "company": "Company (Optional)",
+    "company_ph": "Your Organization",
+    "message": "Message *",
+    "message_ph": "How can we assist you?",
+    "submit": "Submit Request",
+    "sending": "Sending...",
+    "sent": "Message Sent!",
+    "error_fallback": "Failed to send message. Please try again later."
+  },
+  "gallery": {
+    "eyebrow": "Explore",
+    "title": "Visual",
+    "title_italic": "Gallery.",
+    "loading": "Loading images...",
+    "view": "View Fullscreen",
+    "empty": "No images yet."
+  },
+  "clients": {
+    "eyebrow": "Partnerships",
+    "title": "Clients who",
+    "title_italic": "picked VISO.",
+    "desc": "From oil & gas titans to mega projects redrawing the map — we've designed the security spine for the names below.",
+    "visit": "Visit Site"
+  },
+  "career": {
+    "eyebrow": "Join Our Team",
+    "title": "Careers at",
+    "desc": "Build the future of physical security with a team that values honesty, excellence, leadership, and innovation across the Kingdom.",
+    "view_roles": "VIEW OPEN ROLES",
+    "about_viso": "ABOUT VISO",
+    "founded": "Founded",
+    "offices": "Offices",
+    "nationwide": "Nationwide",
+    "now_hiring": "Now hiring",
+    "open_roles_count": "{{count}} open roles",
+    "roles_eyebrow": "Open Positions",
+    "roles_title": "Roles that shape security",
+    "roles_desc": "Select a role to apply. Our HR team reviews every submission carefully.",
+    "apply": "Apply",
+    "full_time": "Full-Time",
+    "culture_title": "A culture built for precision, integrity, and long-term craft.",
+    "culture": {
+      "c1": { "title": "Meaningful work", "desc": "Work on critical infrastructure and premium facilities across Saudi Arabia." },
+      "c2": { "title": "Growth path", "desc": "Clear progression, mentorship, and exposure to end-to-end security lifecycles." },
+      "c3": { "title": "Modern tools", "desc": "Operate with DMS, ESS, and structured delivery frameworks built for scale." }
+    },
+    "pillars": {
+      "p1": { "title": "Honesty & Integrity", "desc": "Transparent work, fair practices, and professionalism in every engagement." },
+      "p2": { "title": "Excellence", "desc": "Premium delivery standards that match the critical nature of our projects." },
+      "p3": { "title": "Leadership", "desc": "Lead by example — building a strong security culture across teams." }
+    },
+    "jobs": {
+      "civil": {
+        "title": "Civil Engineer",
+        "department": "Engineering & Infrastructure",
+        "location": "Riyadh / Site Operations, KSA",
+        "description": "Lead structural security engineering, perimeter blast-mitigation design, anti-ram barrier specifications, and civil infrastructure compliance aligned with HCIS SEC directives across mission-critical facilities."
+      },
+      "planning": {
+        "title": "Planning Engineer",
+        "department": "Project Controls & Scheduling",
+        "location": "Riyadh, KSA",
+        "description": "Develop and maintain master project schedules using Primavera P6, analyze EPC milestones and critical paths, and coordinate interdisciplinary engineering deliverables for high-security infrastructure programs."
+      },
+      "electrical": {
+        "title": "Electrical Engineer",
+        "department": "Security Systems Engineering",
+        "location": "Dammam / Eastern Province, KSA",
+        "description": "Design and supervise low-current electrical security architecture, video surveillance systems (VSS/CCTV), perimeter intrusion detection (PIDS), and dual-redundant backup power systems adhering to HCIS SEC-03 and SEC-04."
+      },
+      "doc": {
+        "title": "Document Controller",
+        "department": "Projects / Document Control",
+        "location": "Riyadh, KSA",
+        "description": "Manage project documentation, track revisions, and oversee the correspondence flow between internal teams and clients using our proprietary DMS platform."
+      },
+      "security": {
+        "title": "Senior Security Officer",
+        "department": "Operations",
+        "location": "Jeddah, KSA",
+        "description": "Ensure the highest level of physical security for premium assets. Manage field operations and oversee junior officers across critical sites."
+      },
+      "hr": {
+        "title": "HR Specialist",
+        "department": "Human Resources",
+        "location": "Riyadh, KSA",
+        "description": "Drive employee engagement, handle onboarding, and manage records in our internal ESS platform while supporting growth across the Kingdom."
+      },
+      "security_engineer": {
+        "title": "Security Engineer",
+        "department": "Security Systems Engineering",
+        "location": "Riyadh / Eastern Province, KSA",
+        "description": "Design and supervise integrated physical security architectures, HCIS compliance directives, threat risk assessments (SRA), CCTV/VSS, access control, and perimeter protection for mission-critical facilities."
+      }
+    },
+    "all_departments": "All Disciplines",
+    "filter_search_placeholder": "Search roles by title, department, or location...",
+    "no_roles_found": "No open roles match your current search.",
+    "clear_filters": "Clear Search",
+    "cta_title": "Don't see your role?",
+    "cta_desc": "Send a general application — we review every submission carefully.",
+    "cta_btn": "GENERAL APPLICATION",
+    "contact_hr": "Contact HR →",
+    "modal_title": "Apply for",
+    "modal_success": "Application submitted",
+    "modal_success_desc": "Our HR team will review your application shortly.",
+    "modal_name": "Full Name *",
+    "modal_email": "Email *",
+    "modal_phone": "Phone",
+    "modal_cv": "Resume (PDF)",
+    "modal_cv_hint": "PDF only · max 5 MB",
+    "modal_cv_required": "Please upload your resume as a PDF.",
+    "modal_cv_invalid": "Only PDF files are allowed.",
+    "modal_cv_large": "File is too large. Maximum size is 5 MB.",
+    "modal_cv_choose": "Click to upload PDF",
+    "modal_cv_chosen": "Selected",
+    "modal_cv_change": "Change file",
+    "modal_cv_uploading": "Uploading resume...",
+    "modal_cover": "Cover Letter",
+    "modal_submit": "Submit Application",
+    "modal_sending": "Submitting...",
+    "modal_close": "Close"
+  },
+  "home_extra": {
+    "architectural": "Architectural",
+    "integrity": "Integrity",
+    "approach_desc": "Our approach favors minimalism and strict geometric order, ensuring that safety protocols disappear into the elegance of the structure.",
+    "master_planning": "Master Planning",
+    "master_planning_desc": "Holistic site analysis and macro-scale architectural defensive zoning.",
+    "facade": "Facade Engineering",
+    "facade_desc": "Integrating blast-resistant aesthetics without compromising visual purity.",
+    "access": "Access Topography",
+    "access_desc": "Seamless flow management blending security gates into environmental design.",
+    "measurable": "Measurable Excellence",
+    "assets": "Assets Protected",
+    "partners": "Global Partners",
+    "compliance": "Design Compliance",
+    "ready_title1": "Ready to shape",
+    "ready_title2": "the future?",
+    "ready_desc": "Connect with our lead architects and security consultants to begin your project.",
+    "get_in_touch": "Get in Touch"
+  },
+  "common": {
+    "go_home": "Go home",
+    "page_not_found": "Page not found",
+    "something_wrong": "Something went wrong",
+    "try_again": "Try again"
+  },
+  "chatbot": {
+    "greeting": "Hello! I am the VISO assistant. How can I help you with our security services today?",
+    "placeholder": "Type your message..."
+  },
+  "translation_page": {
+    "verify": {
+      "status_active": "Within validity period (until {{date}})",
+      "status_expired": "Validity ended on {{date}}",
+      "status_pending": "Effective from {{date}}",
+      "status_revoked": "This record has been withdrawn from the registry"
+    },
+    "eyebrow": "CERTIFIED TRANSLATION SERVICES",
+    "title": "Officially Accredited",
+    "title_italic": "Translation Services",
+    "desc": "Delivering officially accredited translation services that bridge languages with precision, accuracy, and absolute confidentiality.",
+    "toggle_security": "Security Consultations",
+    "toggle_translation": "Certified Translation",
+    "read_more": "Read More",
+    "breadcrumb_base": "Vision of Solutions for Security Consultations and Translation Services",
+    "breadcrumb_mid": "Our Services",
+    "services": {
+      "official": {
+        "title": "Official Documents Translation",
+        "short_desc": "The documents vary in terms of their purpose. However, the need to translate official documents appears when there are requirements...",
+        "desc": "The documents vary in terms of their purpose. However, the need to translate official documents appears when there are requirements with which to translate those documents into English or another language. Therefore, we offer in this section a number of services as follows:",
+        "items": [
+          "Translation of academic degrees certificates.",
+          "Translation of the driving licenses.",
+          "Translation of title certificate of ownership.",
+          "Correspondence and communication with foreign authorities."
+        ]
+      },
+      "medical": {
+        "title": "Medical Translation",
+        "short_desc": "Medical translation is of high importance in terms of the accuracy of translation and the attainment of scientific precision...",
+        "desc": "Medical translation is of high importance in terms of the accuracy of translation and the attainment of scientific precision. It requires professional expertise in medical terminology to ensure correct interpretation of documents, diagnoses, and medical literature. Therefore, we provide:",
+        "items": [
+          "Translation of medical reports and diagnoses.",
+          "Translation of pharmaceutical guides and manuals.",
+          "Translation of medical research and academic papers.",
+          "Translation of clinical trial documents."
+        ]
+      },
+      "legal": {
+        "title": "Legal Translation",
+        "short_desc": "Legal requirements are considered highly sensitive. Thus, an experienced translator in legal terminology is considered mandatory...",
+        "desc": "Legal requirements are considered highly sensitive. Thus, an experienced translator in legal terminology is considered mandatory as he is able to transfer legal content to another language or legal interpretation. Therefore, we are keen in this section to provide the following legal translations:",
+        "items": [
+          "Translation of contracts Arabic - English.",
+          "Translating final judicial decisions Arabic - English.",
+          "Translation of the agreements Arabic - English.",
+          "Translation of agencies' licences, power of attorney and authorizations Arabic - English."
+        ]
+      },
+      "media": {
+        "title": "Media Translation",
+        "short_desc": "Media materials are diverse according to the different needs. There are multiple media purposes that the recipient or the reporters is interested in...",
+        "desc": "Media materials are diverse according to the different needs. There are multiple media purposes that the recipient or the reporters or others is interested in to be a clear message, hence translation will have an effective role that helps the media or marketing writer to find content appropriate to the purpose. Therefore, we will provide translations in this regard or Arabic-English consulting for every media person, according to the following:",
+        "items": [
+          "Translation of informational and news articles.",
+          "Preparing propaganda brochures Arabic - English.",
+          "Auditing media contents Arabic - English.",
+          "Translating marketing content Arabic - English."
+        ]
+      },
+      "security": {
+        "title": "Security Translation",
+        "short_desc": "We are interested in Vision of solutions by providing certified security translation of foreign expertise to translate physical security manuals...",
+        "desc": "We are interested in Vision of Solutions by providing certified security translation of foreign expertise. This service is crucial for transferring security procedures, frameworks, and technical manuals. Therefore, we provide:",
+        "items": [
+          "Translation of physical security manuals and guidelines.",
+          "Translation of risk assessment and security survey reports.",
+          "Translation of security equipment catalogs and technical specifications.",
+          "Translation of training materials for security personnel."
+        ]
+      }
+    }
+  },
+  "about_page": {
+    "eyebrow": "About VISO",
+    "cta": "Start a conversation",
+    "focus": "Focus",
+    "focus_value": "Physical Security",
+    "journey_title": "Our journey",
+    "present_title": "How we present",
+    "present_brand": "VISO",
+    "ready_title": "Ready to secure your",
+    "ready_italic": "facility?",
+    "ready_desc": "Talk with our consultants about risk assessment, design, and operational readiness for your facility.",
+    "contact_team": "Contact our team",
+    "view_framework": "View framework",
+    "hero_title": "Elevating Physical",
+    "hero_title_italic": "Security Architecture.",
+    "hero_desc": "Integrating high-end design with rigorous security protocols to create visually stunning and exceptionally safe spaces.",
+    "explore": "Explore Our Services",
+    "est": "Established 2019 · Kingdom of Saudi Arabia",
+    "vision_for": "VISION OF SOLUTIONS FOR",
+    "sec_consult": "SECURITY CONSULTATIONS",
+    "trans_services": "TRANSLATION SERVICES",
+    "scroll": "Scroll",
+    "hq_riyadh": "Headquartered in Riyadh",
+    "founded_label": "Founded",
+    "founded_val": "February 2019",
+    "hq_label": "HQ",
+    "hq_val": "Riyadh, KSA",
+    "coverage_label": "Coverage",
+    "coverage_val": "4 Regional Offices",
+    "focus_label": "Focus",
+    "focus_val": "Physical Security",
+    "msg_title1": "A Message from ",
+    "msg_title2": "Our Founder & CEO",
+    "msg_p1": "At Vision of Solutions for Security Consultations, we believe that security consulting is more than identifying risks or meeting regulatory requirements. It is about protecting people, assets, operations, and the confidence our clients place in us.",
+    "msg_p2": "Since our establishment, we have worked to build a consulting practice founded on integrity, technical excellence, independence, and a clear understanding of the security challenges facing critical infrastructure and organizations across the Kingdom.",
+    "msg_p3": "Our commitment is to provide practical, reliable, and forward-looking security solutions that help our clients make informed decisions, strengthen resilience, and protect what matters most to their organizations.",
+    "msg_p4": "We are proud of the expertise of our team, the trust of our clients, and the relationships we have built across the sectors we serve. As security needs continue to evolve, we remain committed to developing our capabilities, adopting effective technologies and methodologies, and delivering services that create lasting value.",
+    "msg_p5": "We look forward to continuing our journey with our clients and partners toward safer, more resilient, and more secure organizations.",
+    "ceo_name": "Mohammad Bin Sadiq",
+    "founder_ceo": "Founder & CEO",
+    "vm_title": "Our Vision, Mission & Values",
+    "vision_h3": "Our Vision",
+    "vision_sub": "TRUSTED LEADERSHIP IN PHYSICAL SECURITY",
+    "vision_p": "To lead the physical security consultancy sector through technical expertise, continuous innovation, and rigorous standards. We build resilient security frameworks that protect communities, operations, and assets for generations to come.",
+    "mission_h3": "Our Mission",
+    "mission_sub": "SECURING CRITICAL ASSETS",
+    "mission_p": "To deliver integrated physical security consulting services that safeguard national infrastructure, corporate assets, and human life. We protect our clients through proactive risk management, robust engineering, and strict compliance with global standards.",
+    "values_h3": "Our Values",
+    "values_sub": "INTEGRITY, EXCELLENCE & INNOVATION",
+    "values_p": "Grounded in transparency, integrity, and fair stakeholder engagement. We consistently exceed expectations by pairing client-focused service with disciplined leadership to build a culture of lasting operational safety.",
+    "story_title": "Our",
+    "story_italic": "Story"
+  }
+}

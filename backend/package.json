@@ -1,0 +1,19 @@
+{
+  "name": "@viso/backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --env-file=.env --import tsx scripts/dev-server.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "i": "^0.3.7",
+    "openai": "^7.4.0",
+    "resend": "^6.34.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.16.5",
+    "tsx": "^4.20.5",
+    "typescript": "^5.8.3"
+  }
+}

@@ -1,11 +1,11 @@
 [build]
-  command = "npm run build"
-  publish = "dist"
+  command = "npm run build:frontend"
+  publish = "frontend/dist"
 
 [functions]
-  directory = "netlify/functions"
+  directory = "backend/netlify/functions"
   node_bundler = "esbuild"
-  included_files = ["server/**"]
+  included_files = ["backend/server/**"]
 
 # Force rewrite API endpoints to serverless functions
 [[redirects]]

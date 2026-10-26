@@ -1,0 +1,239 @@
+import { motion, useInView, animate } from "framer-motion";
+import { Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
+
+const ease = [0.16, 1, 0.3, 1] as const;
+
+function renderVisionTitle(title: string, isArabic = false) {
+  if (isArabic) {
+    if (title.includes("فيسو")) {
+      const parts = title.split("فيسو");
+      return (
+        <span className="font-arabic">
+          {parts[0]}<span className="text-gold font-light">فيسو</span>{parts.slice(1).join("فيسو")}
+        </span>
+      );
+    }
+    return <span className="font-arabic">{title}</span>;
+  }
+  const split = title.match(/^(.+?\s+to)\s+(.+)$/i);
+  if (!split) return title;
+  return (
+    <>
+      {split[1]}{" "}
+      <span className="text-gold font-light">{split[2]}</span>
+    </>
+  );
+}
+
+const METRICS_COUNTERS = [
+  { num: 4, suffix: "+", labelKey: "hubs", subKey: "hubs_sub" },
+  { num: 300, suffix: "+", labelKey: "mega", subKey: "mega_sub" },
+  { num: 100, suffix: "%", labelKey: "hcis", subKey: "hcis_sub" },
+  { num: 24, suffix: "/7", labelKey: "mission", subKey: "mission_sub" },
+];
+
+function AnimatedCounter({ target, suffix }: { target: number; suffix: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: false, amount: 0.3 });
+
+  useEffect(() => {
+    if (isInView && ref.current) {
+      const controls = animate(0, target, {
+        duration: 1.5,
+        ease: "easeOut",
+        onUpdate: (value) => {
+          if (ref.current) {
+            ref.current.textContent = Math.floor(value) + suffix;
+          }
+        },
+      });
+      return () => controls.stop();
+    } else if (!isInView && ref.current) {
+      ref.current.textContent = "0" + suffix;
+    }
+  }, [isInView, target, suffix]);
+
+  return <span ref={ref} className="text-gold">0{suffix}</span>;
+}
+
+/* ---------- Main export ---------- */
+export function AboutInteractive({
+  title,
+  subtitle,
+  whoWeAreTitle,
+  whoWeAreDesc,
+}: {
+  title: string;
+  subtitle: string;
+  whoWeAreTitle: string;
+  whoWeAreDesc: string;
+}) {
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language === "ar";
+  return (
+    <div className="relative w-full h-full flex flex-col justify-center" dir={isArabic ? "rtl" : "ltr"}>
+      {/* Background ambient gold aura */}
+      <div className="pointer-events-none absolute top-0 -start-12 w-96 h-96 bg-primary/[0.03] rounded-full blur-[100px]" />
+      <div className="pointer-events-none absolute bottom-0 -end-12 w-96 h-96 bg-primary/[0.03] rounded-full blur-[100px]" />
+
+      {/* Centered Welcome Title */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, ease }}
+        className="w-full flex justify-center text-center mb-12 md:mb-16 relative z-10"
+      >
+        <h2 className="font-display text-4xl md:text-5xl lg:text-[3.5rem] font-bold tracking-tight text-foreground uppercase">
+          {isArabic ? (
+            <>
+              مرحباً بكم في <span className="text-primary font-arabic">مجموعة فيسو</span>
+            </>
+          ) : (
+            <>
+              Welcome to <span className="text-primary">VISO GROUP</span>
+            </>
+          )}
+        </h2>
+      </motion.div>
+
+      <div dir="ltr" className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center mb-12 relative z-10 flex-1">
+        {/* Left Column: Simple About Info (Preserved on the Left like English) */}
+        <div dir={isArabic ? "rtl" : "ltr"} className="lg:col-span-6 flex flex-col justify-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.85, ease }}
+          >
+
+
+            {/* Side Heading */}
+            <motion.div
+              initial={{ opacity: 0, x: isArabic ? 10 : -10 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.05, ease }}
+              className="mb-4 flex items-center gap-4"
+            >
+              <div className="h-px w-8 bg-primary" />
+              <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary">
+                {t("home_interactive.about_viso", isArabic ? "عن فيسو" : "About Viso")}
+              </span>
+            </motion.div>
+
+            {/* Main Headline */}
+            <motion.h2
+              initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, delay: 0.1, ease }}
+              className="font-display text-3xl md:text-4xl lg:text-[2.65rem] leading-[1.12] tracking-tight text-foreground font-bold"
+            >
+              {renderVisionTitle(title, isArabic)}
+            </motion.h2>
+
+            {/* Subtitle */}
+            <motion.p
+              initial={{ opacity: 0, x: isArabic ? 20 : -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2, ease }}
+              className={`mt-6 text-base md:text-lg text-foreground/90 leading-relaxed font-light text-pretty border-gold ${
+                isArabic
+                  ? "border-r-[3px] border-l-0 pr-5 pl-0 text-right font-arabic"
+                  : "border-l-[3px] border-r-0 pl-5 pr-0 text-left"
+              }`}
+            >
+              {subtitle}
+            </motion.p>
+
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2, ease }}
+              className={`mt-4 text-sm md:text-base text-foreground/80 leading-relaxed font-light ${
+                isArabic
+                  ? "mr-[3px] ml-0 pr-5 pl-0 text-right font-arabic"
+                  : "ml-[3px] mr-0 pl-5 pr-0 text-left text-justify hyphens-none"
+              }`}
+            >
+              {whoWeAreDesc}
+            </motion.p>
+
+            {/* Action Link Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.26, ease }}
+              className="mt-8 flex flex-wrap items-center gap-4"
+            >
+              <Link
+                to="/about"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-gold hover:bg-gold/90 px-6 py-3 font-mono text-[11px] font-bold tracking-[0.16em] uppercase text-black transition-all shadow-[0_4px_15px_rgba(212,175,55,0.25)] hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <span>{t("home_interactive.read_more")}</span>
+                <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+              </Link>
+            </motion.div>
+          </motion.div>
+        </div>
+
+        {/* Right Column: Image */}
+        <div className="lg:col-span-6 flex items-center justify-center relative">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, x: 20 }}
+            whileInView={{ opacity: 1, scale: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.9, delay: 0.2, ease }}
+            className="w-full"
+          >
+            <motion.div
+              animate={{ y: [0, -12, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              className="relative w-full aspect-[5/4] md:aspect-[4/3] rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(212,175,55,0.15)] border border-gold/30 group cursor-pointer"
+            >
+              <div className="absolute inset-0 bg-gradient-to-tr from-gold/20 via-transparent to-transparent z-10 opacity-60 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none" />
+              <motion.img loading="lazy" decoding="async"
+                src="https://res.cloudinary.com/dppwnds6z/image/upload/v1790599106/ChatGPT_Image_Sep_28_2026_06_08_11_PM.png"
+                alt="About VISO Security"
+                whileHover={{ scale: 1.08 }}
+                transition={{ duration: 1.2, ease: "easeOut" }}
+                className="w-full h-full object-cover"
+              />
+            </motion.div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Horizontal Counters */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 w-full relative z-10 mt-auto pt-4 border-t border-foreground/5">
+        {METRICS_COUNTERS.map((m, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.6, delay: 0.1 + i * 0.1, ease }}
+            className="group rounded-xl border border-transparent bg-transparent p-4 text-center hover:bg-surface/50 hover:border-foreground/10 transition-all duration-500 relative flex flex-col justify-center items-center"
+          >
+            <div className="font-display font-bold text-3xl md:text-4xl text-primary tracking-tight mb-2 group-hover:scale-105 transition-transform duration-500">
+              <AnimatedCounter target={m.num} suffix={m.suffix} />
+            </div>
+            <div className="font-mono text-[11px] font-bold text-foreground/80 uppercase tracking-widest mb-1.5">
+              {t(`home_interactive.metrics.${m.labelKey}`)}
+            </div>
+            <div className="text-[10px] text-muted-foreground leading-relaxed max-w-[160px]">
+              {t(`home_interactive.metrics.${m.subKey}`)}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
