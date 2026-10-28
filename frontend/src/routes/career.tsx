@@ -25,7 +25,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { sendJobApplicationNotification } from "@/lib/emailApi";
+// import { sendJobApplicationNotification } from "@/lib/emailApi";
 import {
   buildDefaultCareerPageCms,
   parseCareerPageCms,
@@ -1261,22 +1261,23 @@ function ApplicationModal({
 
       if (error) throw error;
 
-      // Dispatch Resend emails (HR notification with resume link + candidate acknowledgment)
-      try {
-        const emailRes = await sendJobApplicationNotification({
-          name,
-          email,
-          phone,
-          position: jobTitle,
-          coverLetter: coverLetter || null,
-          resumeUrl: publicUrl || null,
-        });
-        if (!emailRes.success) {
-          console.warn("Job application email dispatch notice:", emailRes.error);
-        }
-      } catch (emailErr) {
-        console.warn("Could not dispatch job application email:", emailErr);
-      }
+      // Resend emails are disabled for now. The application is already saved above.
+      // Uncomment this block (and the import) to email HR and the candidate again.
+      // try {
+      //   const emailRes = await sendJobApplicationNotification({
+      //     name,
+      //     email,
+      //     phone,
+      //     position: jobTitle,
+      //     coverLetter: coverLetter || null,
+      //     resumeUrl: publicUrl || null,
+      //   });
+      //   if (!emailRes.success) {
+      //     console.warn("Job application email dispatch notice:", emailRes.error);
+      //   }
+      // } catch (emailErr) {
+      //   console.warn("Could not dispatch job application email:", emailErr);
+      // }
 
       setSuccess(true);
     } catch (err: any) {

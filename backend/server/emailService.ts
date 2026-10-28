@@ -479,6 +479,15 @@ export async function handleEmailDispatch(
     hrEmails.push(...adminEmails);
   }
 
+  // Resend delivery is off for now. Contact leads and job applications still
+  // save to the database and show in admin. To turn mail back on, remove this
+  // return and uncomment the resend.emails.send calls below.
+  return {
+    success: true,
+    adminSent: false,
+    ackSent: false,
+  };
+
   const resend = new Resend(apiKey);
 
   if (payload.type === "contact") {

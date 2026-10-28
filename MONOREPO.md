@@ -48,10 +48,11 @@ Do **not** put API keys in frontend/admin `.env` with a `VITE_` prefix. Chat and
 
 ## Production (VPS / static host)
 
-- **Main site:** build `frontend/dist`, serve with nginx (or similar). SPA fallback: `try_files $uri $uri/ /index.html`.
+- **nginx configs:** `deploy/nginx/` (`viso-frontend.conf`, `viso-admin.conf`, `viso-upstream.conf`) — see `deploy/nginx/README.md`.
+- **Main site:** build `frontend/dist`, serve with nginx. SPA fallback: `try_files $uri $uri/ /index.html`.
 - **Admin:** build `admin/dist`, serve on a subdomain (e.g. `admin.yourdomain.com`) with the same SPA fallback.
-- **API:** run `npm run start -w @viso/backend` (or systemd service). Proxy `/api/` to the Node process (default port **8787**). Leave **`VITE_API_URL` unset** so the browser uses same-origin `/api/*`.
-- Set **`VITE_*`** at build time; set **`backend/.env`** (or host env) on the server for secrets.
+- **API:** PM2 in `backend/` (`npm run pm2:backend`). nginx proxies `/api/` to port **8787**. Leave **`VITE_API_URL` unset** on the main site unless API is on another host.
+- Set **`VITE_*`** at build time; set **`backend/.env`** on the server for secrets.
 
 ### PM2 (VPS)
 
