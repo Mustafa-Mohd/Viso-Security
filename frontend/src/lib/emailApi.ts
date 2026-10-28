@@ -3,7 +3,7 @@ import { apiUrl } from "@/lib/apiBase";
 /**
  * Client-side email API client for Resend integration.
  * Dispatches contact leads and job applications to the backend email service
- * (handled by Vite dev server plugin in development and Netlify Functions in production).
+ * Dispatches contact leads and job applications to POST /api/send-email on the server.
  */
 
 export interface ContactNotificationPayload {
@@ -31,13 +31,7 @@ export type EmailApiResponse = {
 };
 
 async function postEmailPayload(payload: any): Promise<EmailApiResponse> {
-  const origin = typeof window !== "undefined" ? window.location.origin : "";
-  const endpoints = [
-    apiUrl("/api/send-email"),
-    "/api/send-email",
-    `${origin}/api/send-email`,
-    "/.netlify/functions/send-email",
-  ];
+  const endpoints = [apiUrl("/api/send-email"), "/api/send-email"];
 
   let lastError: Error | null = null;
 

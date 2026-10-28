@@ -14,7 +14,7 @@ export interface ContactSubmission {
 export async function fetchContactSubmissions(): Promise<ContactSubmission[]> {
   if (!isSupabaseConfigured) {
     throw new Error(
-      "Supabase environment variables (VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY) are missing in deployment. Please add them in your hosting provider's project settings (e.g. Vercel / Netlify) and redeploy."
+      "Supabase environment variables (VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY) are missing in deployment. Add them to your host environment, rebuild the frontend/admin app, and redeploy."
     );
   }
 
@@ -83,6 +83,18 @@ export async function markInquiryRead(id: string): Promise<void> {
 
   if (error) {
     throw new Error(error.message);
+  }
+}
+
+export async function deleteContactInquiry(id: string): Promise<void> {
+  if (!isSupabaseConfigured) {
+    throw new Error("Supabase is not configured.");
+  }
+
+  const { error } = await supabase.from("contact_submissions").delete().eq("id", id);
+
+  if (error) {
+    throw new Error(error.message || "Failed to delete inquiry");
   }
 }
 

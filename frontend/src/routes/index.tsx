@@ -529,15 +529,6 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
         </motion.div>
       </div>
 
-      {/* VISO Logo in bottom corner */}
-      <div className={`absolute bottom-2 ${isArabic ? "left-6 md:bottom-4 md:left-12" : "right-24 md:bottom-4 md:right-32"} z-20 pointer-events-none p-3 backdrop-blur-md bg-black/30 rounded-xl border border-white/10`}>
-        <img loading="lazy" decoding="async"
-          src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
-          alt="VISO Group"
-          className="h-10 md:h-12 w-auto object-contain brightness-0 invert opacity-90 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
-        />
-      </div>
-
       {/* Regulatory Bodies / Standards Icons on Top — Transparent Circle with Golden Border, Logo Name Tooltip on Hover */}
       <div className={`absolute top-6 ${isArabic ? "right-6 md:right-12" : "left-6 md:left-12"} z-30 flex gap-3 md:gap-4 items-center`} dir={isArabic ? "rtl" : "ltr"}>
         {regulatoryLogos.map((body: any, idx: number) => {

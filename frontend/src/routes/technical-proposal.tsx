@@ -86,7 +86,7 @@ function TechnicalProposalPage() {
               </div>
               <div>
                 <p className="text-[10px] uppercase tracking-wider text-neutral-400 mb-1">Platform type</p>
-                <p className="font-semibold text-neutral-800">SPA · Supabase BaaS · Netlify deployment</p>
+                <p className="font-semibold text-neutral-800">SPA · Supabase BaaS · VPS / nginx hosting</p>
               </div>
             </div>
           </div>
@@ -154,7 +154,7 @@ function TechnicalProposalPage() {
               ["Auth (current)", "portal_users table + session in localStorage", "Role-based admin login"],
               ["AI (optional)", "SambaNova API (OpenAI-compatible)", "VISO chatbot via proxied /api/sambanova"],
               ["CDN", "Cloudinary", "Brand assets and optimized imagery"],
-              ["Hosting", "Netlify", "SPA deploy, _redirects for deep links and API proxy"],
+              ["Hosting", "VPS + nginx", "Static SPA deploy, API reverse proxy to Node backend"],
             ]}
           />
 
@@ -309,7 +309,7 @@ function TechnicalProposalPage() {
           <SectionTitle number="9" title="AI Assistant (Optional)" />
           <Body>
             An embeddable chatbot (Chatbot component) uses an OpenAI-compatible client pointed at SambaNova via a dev
-            proxy and Netlify redirect rule. The system prompt encodes VISO services, locations, and HCIS/SAIS/Aramco
+            proxy on the server. The system prompt encodes VISO services, locations, and HCIS/SAIS/Aramco
             positioning. API keys are supplied through environment variables (not committed to source control).
           </Body>
 
@@ -327,7 +327,7 @@ function TechnicalProposalPage() {
             headers={["Item", "Detail"]}
             rows={[
               ["Build", "npm run build → Vite production bundle"],
-              ["Host", "Netlify (or equivalent static host)"],
+              ["Host", "Linux VPS (nginx + Node API)"],
               ["SPA routing", "public/_redirects → index.html for all routes"],
               ["API proxy", "/api/sambanova/* → SambaNova for chatbot"],
               ["Configuration", "VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, optional VITE_SAMBANOVA_API_KEY"],

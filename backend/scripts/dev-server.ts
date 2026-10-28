@@ -1,6 +1,6 @@
 import http from "node:http";
-import { handler as chatHandler } from "../netlify/functions/chat";
-import { handler as emailHandler } from "../netlify/functions/send-email";
+import { handler as chatHandler } from "../server/handlers/chat";
+import { handler as emailHandler } from "../server/handlers/send-email";
 
 const PORT = Number(process.env.BACKEND_DEV_PORT || 8787);
 
@@ -20,7 +20,7 @@ function toWebRequest(req: http.IncomingMessage, body: Buffer, port: number): Re
   return new Request(url, {
     method: req.method,
     headers: req.headers as HeadersInit,
-    body: hasBody ? body : undefined,
+    body: hasBody ? new Uint8Array(body) : undefined,
   });
 }
 
@@ -47,8 +47,8 @@ const server = http.createServer(async (req, res) => {
     const webReq = toWebRequest(req, body, PORT);
     const response =
       path === "/api/chat"
-        ? (await chatHandler(webReq)) as Response
-        : (await emailHandler(webReq)) as Response;
+        ? await chatHandler(webReq)
+        : await emailHandler(webReq);
     await writeWebResponse(res, response);
   } catch (err) {
     console.error(err);

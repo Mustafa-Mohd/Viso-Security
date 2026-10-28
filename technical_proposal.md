@@ -41,7 +41,7 @@ A TÜV-style corporate registry built directly into the platform.
 
 ### 4.3. Dynamic Digital Certificates & QR Integration
 - **Standalone Document Viewer**: Certificates are dynamically rendered on dedicated routes (`/certificate/$id`) formatted as digital A4 documents.
-- **On-the-fly QR Generation**: Each document automatically generates a QR code (`api.qrserver.com`) embedding the live Netlify production URL.
+- **On-the-fly QR Generation**: Each document automatically generates a QR code (`api.qrserver.com`) embedding the live production site URL.
 - **Mobile-First Scanning**: When a printed or digital certificate's QR code is scanned via a smartphone, it routes the user directly to the Certipedia portal, auto-fills the credentials, and instantly validates the document.
 
 ### 4.4. Multilingual Engine
@@ -57,6 +57,6 @@ A TÜV-style corporate registry built directly into the platform.
 - **Code Splitting**: TanStack router inherently supports code-splitting, meaning users only download the JavaScript necessary for the page they are viewing.
 
 ## 6. Deployment Strategy
-The application is configured for continuous deployment via **Netlify** (`https://alternate-v.netlify.app`).
-- **Build Command**: `vite build` strictly compiles the TypeScript application.
-- **Edge Routing**: Netlify handles all SPA routing fallbacks via `_redirects` configuration, ensuring deep links (like `/certificate/VISO-TR-2026-001245`) resolve correctly without throwing 404 errors.
+Production uses a **Linux VPS**: nginx serves `frontend/dist` and `admin/dist`; a Node process handles `POST /api/chat` and `POST /api/send-email` (see `backend/scripts/dev-server.ts`).
+- **Build Command**: `npm run build` and `npm run build:admin` from the monorepo root.
+- **Routing**: nginx SPA fallback (`try_files … /index.html`) so deep links resolve without 404 errors.

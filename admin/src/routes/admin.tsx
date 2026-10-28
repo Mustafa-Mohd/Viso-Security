@@ -6,7 +6,7 @@ import { DmsDashboard } from "@/components/DmsDashboard";
 import { HrDashboard } from "@/components/HrDashboard";
 import { CertificatesDashboard } from "@/components/CertificatesDashboard";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { fetchContactSubmissions, markInquiryRead, type ContactSubmission } from "@/lib/inquiriesApi";
+import { fetchContactSubmissions, markInquiryRead, deleteContactInquiry, type ContactSubmission } from "@/lib/inquiriesApi";
 import {
   uploadGalleryImage,
   insertGalleryImageRecord,
@@ -920,6 +920,7 @@ const DEFAULT_HERO_SLIDES = [
   const [inquiries, setInquiries] = useState<ContactSubmission[]>([]);
   const [inquiriesLoading, setInquiriesLoading] = useState(false);
   const [inquiriesError, setInquiriesError] = useState<string | null>(null);
+  const [deletingInquiryId, setDeletingInquiryId] = useState<string | null>(null);
 
   const [pendingLeavesCount, setPendingLeavesCount] = useState(0);
 
@@ -4497,7 +4498,7 @@ CREATE POLICY "Allow public all access on contact_submissions"
                     Step 2: Deployment Environment Variables
                   </div>
                   <p className="text-foreground/60 leading-relaxed font-sans">
-                    Ensure <code className="bg-foreground/10 px-1 py-0.5 rounded text-[11px]">VITE_SUPABASE_URL</code> and <code className="bg-foreground/10 px-1 py-0.5 rounded text-[11px]">VITE_SUPABASE_ANON_KEY</code> are configured in your hosting platform (Vercel / Netlify / Cloudflare) under <strong>Project Settings → Environment Variables</strong> and redeploy.
+                    Ensure <code className="bg-foreground/10 px-1 py-0.5 rounded text-[11px]">VITE_SUPABASE_URL</code> and <code className="bg-foreground/10 px-1 py-0.5 rounded text-[11px]">VITE_SUPABASE_ANON_KEY</code> are set in <strong>admin/.env</strong> (or your host build environment), then rebuild and redeploy the admin app.
                   </p>
                 </div>
               </div>
@@ -4513,7 +4514,42 @@ CREATE POLICY "Allow public all access on contact_submissions"
                           <span className="text-[10px] font-bold uppercase tracking-wide bg-red-500/15 text-red-600 px-2 py-0.5 rounded">New</span>
                         )}
                       </div>
-                      <span className="text-xs text-foreground/50">{new Date(inq.created_at).toLocaleString()}</span>
+                      <div className="flex items-center gap-3 flex-wrap shrink-0">
+                        <span className="text-xs text-foreground/50">{new Date(inq.created_at).toLocaleString()}</span>
+                        <button
+                        type="button"
+                        disabled={deletingInquiryId === inq.id}
+                        onClick={async () => {
+                          if (
+                            !confirm(
+                              `Delete inquiry from ${inq.name}? This cannot be undone.`,
+                            )
+                          ) {
+                            return;
+                          }
+                          setDeletingInquiryId(inq.id);
+                          try {
+                            await deleteContactInquiry(inq.id);
+                            setInquiries((prev) => prev.filter((row) => row.id !== inq.id));
+                          } catch {
+                            alert(
+                              "Could not delete inquiry. Check Supabase RLS allows DELETE on contact_submissions.",
+                            );
+                          } finally {
+                            setDeletingInquiryId(null);
+                          }
+                        }}
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-red-600 hover:text-red-700 disabled:opacity-50"
+                        title="Delete inquiry"
+                      >
+                        {deletingInquiryId === inq.id ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-3.5 h-3.5" />
+                        )}
+                        Delete
+                      </button>
+                      </div>
                     </div>
                     <div className="mb-4 flex flex-wrap items-center gap-4">
                       <a href={`mailto:${inq.email}`} className="text-sm text-primary hover:underline">{inq.email}</a>

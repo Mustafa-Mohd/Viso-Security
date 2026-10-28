@@ -14,7 +14,11 @@
     "build": "npm run build -w @viso/frontend",
     "build:frontend": "npm run build -w @viso/frontend",
     "build:admin": "npm run build -w @viso/admin",
+    "build:backend": "npm run build -w @viso/backend",
     "lint": "npm run lint -w @viso/frontend && npm run lint -w @viso/admin",
     "format": "npm run format -w @viso/frontend"
+  },
+  "dependencies": {
+    "i": "^0.3.7"
   }
 }

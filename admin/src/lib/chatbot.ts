@@ -76,19 +76,13 @@ ${brainKnowledge}
 
 /**
  * Primary Backend Caller:
- * Calls the secure backend /api/chat endpoint (powered by Vite dev server plugin or Netlify Functions)
+ * Calls the secure backend POST /api/chat (Vite dev plugin or Node API on the server).
  */
 async function callBackendChatApi(
   messages: { role: string; content: string }[],
   systemPrompt: string,
 ): Promise<string> {
-  const origin = typeof window !== "undefined" ? window.location.origin : "";
-  const endpoints = [
-    apiUrl("/api/chat"),
-    "/api/chat",
-    `${origin}/api/chat`,
-    "/.netlify/functions/chat",
-  ];
+  const endpoints = [apiUrl("/api/chat"), "/api/chat"];
 
   for (const endpoint of endpoints) {
     try {
