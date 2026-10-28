@@ -2,11 +2,52 @@
 
 Replace **`visogroup.com`** and paths if yours differ.
 
-| Site | Config file | Document root | API |
-|------|-------------|---------------|-----|
-| Public site | `viso-frontend.conf` | `/var/www/viso/frontend/dist` | `/api/` → Node `:8787` |
-| Admin | `viso-admin.conf` | `/var/www/viso/admin/dist` | `/api/` → Node `:8787` |
-| Backend | (no separate vhost) | — | PM2: `cd backend && npm run pm2:backend` |
+| Host | Config | Document root | Must NOT use |
+|------|--------|---------------|--------------|
+| **visogroup.com** | `viso-frontend.conf` | `/var/www/viso/frontend/dist` | admin dist, `return /admin` |
+| **admin.visogroup.com** | `viso-admin.conf` | `/var/www/viso/admin/dist` | frontend dist only |
+
+## Wrong site on visogroup.com?
+
+If **visogroup.com** shows the **admin login/CMS** (or redirects to **/admin**), nginx is serving the **admin** app on the main domain.
+
+**Check on the VPS:**
+
+```bash
+# Should print: viso-app" content="frontend"
+curl -s https://visogroup.com/ | grep -o 'viso-app" content="[^"]*"'
+
+# Should print: viso-app" content="admin"
+curl -s https://admin.visogroup.com/ | grep -o 'viso-app" content="[^"]*"'
+```
+
+**Fix:**
+
+```bash
+sudo grep -r "root " /etc/nginx/sites-enabled/
+```
+
+For `server_name visogroup.com`, `root` must be **`/var/www/viso/frontend/dist`**.  
+There must be **no** `return 301 /admin` on the main domain (that rule belongs only on **admin.visogroup.com**).
+
+```bash
+sudo cp /var/www/viso/deploy/nginx/viso-frontend.conf /etc/nginx/sites-available/viso-frontend.conf
+sudo cp /var/www/viso/deploy/nginx/viso-admin.conf /etc/nginx/sites-available/viso-admin.conf
+sudo ln -sf /etc/nginx/sites-available/viso-frontend.conf /etc/nginx/sites-enabled/
+sudo ln -sf /etc/nginx/sites-available/viso-admin.conf /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+Rebuild and deploy both apps:
+
+```bash
+cd /var/www/viso && npm run build && npm run build:admin
+```
+
+| Site | Build output |
+|------|----------------|
+| Public site | `frontend/dist` |
+| Admin | `admin/dist` |
 
 ## 1. Build on the server
 
