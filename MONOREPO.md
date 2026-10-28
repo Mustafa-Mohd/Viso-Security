@@ -55,24 +55,30 @@ Do **not** put API keys in frontend/admin `.env` with a `VITE_` prefix. Chat and
 
 ### PM2 (VPS)
 
-From repo root (after `npm install` and `backend/.env` exists):
+Ensure **`backend/.env`** exists, then either:
+
+**From repo root** (`/var/www/viso`):
 
 ```bash
-npm install -g pm2
-npm run pm2:backend          # starts viso-api via npm run dev:backend
+npm run pm2:backend
+```
+
+**From backend folder** (`/var/www/viso/backend`):
+
+```bash
+npm run pm2:backend
+```
+
+Both start the same process (`npm run dev` → port **8787**). Then:
+
+```bash
 pm2 save
-pm2 startup                  # follow the printed command so API survives reboot
-npm run pm2:backend:logs     # tail logs
-npm run pm2:backend:stop
+pm2 startup   # run the command it prints
+pm2 logs viso-api
+pm2 restart viso-api
 ```
 
-Equivalent manual command:
-
-```bash
-pm2 start ecosystem.config.cjs
-```
-
-Restart after code or env changes: `pm2 restart viso-api`.
+Do **not** run `npm run pm2:backend` from `backend/` on an old deploy without pulling — use root **or** update `backend/package.json` on the server.
 
 ## SQL
 

@@ -6,7 +6,11 @@
     "dev": "node --env-file=.env --import tsx scripts/dev-server.ts",
     "start": "node --env-file=.env --import tsx scripts/dev-server.ts",
     "build": "npm run typecheck",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "pm2:backend": "pm2 start ecosystem.config.cjs",
+    "pm2:backend:stop": "pm2 stop viso-api",
+    "pm2:backend:logs": "pm2 logs viso-api",
+    "pm2:backend:restart": "pm2 restart viso-api"
   },
   "dependencies": {
     "i": "^0.3.7",
