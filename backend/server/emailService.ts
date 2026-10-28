@@ -438,6 +438,44 @@ export function buildJobAckEmail(payload: JobEmailPayload) {
 /*                               DISPATCH LOGIC                               */
 /* -------------------------------------------------------------------------- */
 
+type ResendSendResponse = { error: { message: string } | null; data?: unknown };
+
+function summarizeDualSendResults(
+  adminRes: PromiseSettledResult<ResendSendResponse>,
+  ackRes: PromiseSettledResult<ResendSendResponse>,
+  adminLabel: string,
+  ackLabel: string,
+): Pick<SendEmailResult, "adminSent" | "ackSent" | "error" | "details"> & { success: boolean } {
+  const errors: string[] = [];
+
+  let adminSent = false;
+  if (adminRes.status === "fulfilled") {
+    adminSent = !adminRes.value.error;
+    if (adminRes.value.error) errors.push(`${adminLabel}: ${adminRes.value.error.message}`);
+  } else {
+    errors.push(`${adminLabel}: ${String(adminRes.reason)}`);
+  }
+
+  let ackSent = false;
+  if (ackRes.status === "fulfilled") {
+    ackSent = !ackRes.value.error;
+    if (ackRes.value.error) errors.push(`${ackLabel}: ${ackRes.value.error.message}`);
+  } else {
+    errors.push(`${ackLabel}: ${String(ackRes.reason)}`);
+  }
+
+  return {
+    success: adminSent || ackSent,
+    adminSent,
+    ackSent,
+    error: errors.length > 0 ? errors.join("; ") : undefined,
+    details: {
+      admin: adminRes.status === "fulfilled" ? adminRes.value : null,
+      ack: ackRes.status === "fulfilled" ? ackRes.value : null,
+    },
+  };
+}
+
 export async function handleEmailDispatch(
   payload: EmailPayload,
   config: EmailServiceConfig
@@ -479,34 +517,35 @@ export async function handleEmailDispatch(
     hrEmails.push(...adminEmails);
   }
 
-  // Resend delivery is off for now. Contact leads and job applications still
-  // save to the database and show in admin. To turn mail back on, remove this
-  // return and uncomment the resend.emails.send calls below.
-  return {
-    success: true,
-    adminSent: false,
-    ackSent: false,
-  };
+  const skipSend =
+    process.env.RESEND_SKIP_SEND === "1" || process.env.RESEND_SKIP_SEND === "true";
+  if (skipSend) {
+    return {
+      success: true,
+      adminSent: false,
+      ackSent: false,
+    };
+  }
 
   const resend = new Resend(apiKey);
 
   if (payload.type === "contact") {
-    const adminEmailData = buildContactAdminEmail(payload);
-    const ackEmailData = buildContactAckEmail(payload);
+    const contactPayload: ContactEmailPayload = payload;
+    const adminEmailData = buildContactAdminEmail(contactPayload);
+    const ackEmailData = buildContactAckEmail(contactPayload);
 
-    // Send both in parallel: admin notification goes to all admin recipients
     const [adminRes, ackRes] = await Promise.allSettled([
       resend.emails.send({
         from: fromEmail,
         to: adminEmails,
-        replyTo: payload.email,
+        replyTo: contactPayload.email,
         subject: adminEmailData.subject,
         html: adminEmailData.html,
         text: adminEmailData.text,
       }),
       resend.emails.send({
         from: fromEmail,
-        to: [payload.email],
+        to: [contactPayload.email],
         replyTo: adminEmails[0],
         subject: ackEmailData.subject,
         html: ackEmailData.html,
@@ -514,45 +553,26 @@ export async function handleEmailDispatch(
       }),
     ]);
 
-    const adminSent = adminRes.status === "fulfilled" && !adminRes.value.error;
-    const ackSent = ackRes.status === "fulfilled" && !ackRes.value.error;
-
-    const errors: string[] = [];
-    if (adminRes.status === "rejected") errors.push(`Admin: ${adminRes.reason}`);
-    else if (adminRes.value.error) errors.push(`Admin: ${adminRes.value.error.message}`);
-
-    if (ackRes.status === "rejected") errors.push(`User Ack: ${ackRes.reason}`);
-    else if (ackRes.value.error) errors.push(`User Ack: ${ackRes.value.error.message}`);
-
-    return {
-      success: adminSent || ackSent,
-      adminSent,
-      ackSent,
-      error: errors.length > 0 ? errors.join("; ") : undefined,
-      details: {
-        admin: adminRes.status === "fulfilled" ? adminRes.value : null,
-        ack: ackRes.status === "fulfilled" ? ackRes.value : null,
-      },
-    };
+    return summarizeDualSendResults(adminRes, ackRes, "Admin", "User Ack");
   }
 
   if (payload.type === "job_application") {
-    const adminEmailData = buildJobAdminEmail(payload);
-    const ackEmailData = buildJobAckEmail(payload);
+    const jobPayload: JobEmailPayload = payload;
+    const adminEmailData = buildJobAdminEmail(jobPayload);
+    const ackEmailData = buildJobAckEmail(jobPayload);
 
-    // Send both in parallel: application goes to all HR/Admin recipients
     const [adminRes, ackRes] = await Promise.allSettled([
       resend.emails.send({
         from: fromEmail,
         to: hrEmails,
-        replyTo: payload.email,
+        replyTo: jobPayload.email,
         subject: adminEmailData.subject,
         html: adminEmailData.html,
         text: adminEmailData.text,
       }),
       resend.emails.send({
         from: fromEmail,
-        to: [payload.email],
+        to: [jobPayload.email],
         replyTo: hrEmails[0],
         subject: ackEmailData.subject,
         html: ackEmailData.html,
@@ -560,26 +580,7 @@ export async function handleEmailDispatch(
       }),
     ]);
 
-    const adminSent = adminRes.status === "fulfilled" && !adminRes.value.error;
-    const ackSent = ackRes.status === "fulfilled" && !ackRes.value.error;
-
-    const errors: string[] = [];
-    if (adminRes.status === "rejected") errors.push(`HR/Admin: ${adminRes.reason}`);
-    else if (adminRes.value.error) errors.push(`HR/Admin: ${adminRes.value.error.message}`);
-
-    if (ackRes.status === "rejected") errors.push(`Candidate Ack: ${ackRes.reason}`);
-    else if (ackRes.value.error) errors.push(`Candidate Ack: ${ackRes.value.error.message}`);
-
-    return {
-      success: adminSent || ackSent,
-      adminSent,
-      ackSent,
-      error: errors.length > 0 ? errors.join("; ") : undefined,
-      details: {
-        admin: adminRes.status === "fulfilled" ? adminRes.value : null,
-        ack: ackRes.status === "fulfilled" ? ackRes.value : null,
-      },
-    };
+    return summarizeDualSendResults(adminRes, ackRes, "HR/Admin", "Candidate Ack");
   }
 
   return {
