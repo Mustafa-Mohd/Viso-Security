@@ -65,18 +65,20 @@ export function resolveCareerPageCopy(cms: CareerPageCmsContent | null, t: TFunc
 }
 
 export function resolveCareerJobs(cmsJobs: CareerJobRecord[] | null | undefined, t: TFunction): CareerJob[] {
-  const fromCms = (cmsJobs || []).filter((j) => j.published !== false && j.title?.trim());
-  if (fromCms.length > 0) {
-    return fromCms.map((j) => ({
-      id: j.id,
-      title: j.title,
-      department: j.department,
-      location: j.location,
-      type: j.type || t("career.full_time"),
-      description: j.description,
-      longDescription: j.longDescription?.trim() || undefined,
-      badges: j.badges || [],
-    }));
+  // Explicit CMS list (including empty []) — do not fall back to legacy defaults.
+  if (Array.isArray(cmsJobs)) {
+    return cmsJobs
+      .filter((j) => j.published !== false && j.title?.trim())
+      .map((j) => ({
+        id: j.id,
+        title: j.title,
+        department: j.department,
+        location: j.location,
+        type: j.type || t("career.full_time"),
+        description: j.description,
+        longDescription: j.longDescription?.trim() || undefined,
+        badges: j.badges || [],
+      }));
   }
 
   return LEGACY_JOB_IDS.map((id) => ({

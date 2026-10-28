@@ -78,8 +78,17 @@ function CareerPage() {
     }
     loadCareerPage();
     const onUpdate = () => loadCareerPage();
+    const onVisible = () => {
+      if (document.visibilityState === "visible") loadCareerPage();
+    };
     window.addEventListener("viso_cms_updated", onUpdate);
-    return () => window.removeEventListener("viso_cms_updated", onUpdate);
+    window.addEventListener("focus", onUpdate);
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      window.removeEventListener("viso_cms_updated", onUpdate);
+      window.removeEventListener("focus", onUpdate);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, []);
 
   // Detect URL parameter ?role=... or #role-... to auto-scroll & highlight the shared role
@@ -384,10 +393,12 @@ function TeamIllustration({ jobCount }: { jobCount: number }) {
         className="absolute bottom-4 right-4 md:right-8 rounded-sm border border-foreground/10 bg-surface/90 backdrop-blur px-3 py-2 shadow-sm"
       >
         <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-foreground/40">
-          {t("career.now_hiring")}
+          {jobCount > 0 ? t("career.now_hiring") : t("career.careers_status")}
         </p>
         <p className="font-display text-sm tracking-tight">
-          {t("career.open_roles_count", { count: jobCount })}
+          {jobCount > 0
+            ? t("career.open_roles_count", { count: jobCount })
+            : t("career.no_open_roles_short")}
         </p>
       </motion.div>
     </div>
@@ -593,6 +604,33 @@ function OpenRoles({
           </p>
         </motion.div>
 
+        {roleList.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease }}
+            className="rounded-2xl border border-foreground/10 bg-surface/40 px-8 py-16 md:py-20 text-center"
+          >
+            <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full border border-primary/25 bg-primary/10">
+              <Briefcase className="h-6 w-6 text-primary" strokeWidth={1.5} />
+            </div>
+            <h3 className="font-display text-xl md:text-2xl tracking-tight mb-3">
+              {t("career.no_open_roles_title")}
+            </h3>
+            <p className="text-sm text-foreground/55 font-light leading-relaxed max-w-md mx-auto mb-8">
+              {t("career.no_open_roles_desc")}
+            </p>
+            <Link
+              to="/contact"
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-xs font-bold uppercase tracking-wider text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              <Mail className="h-4 w-4" />
+              {t("career.contact_hr")}
+            </Link>
+          </motion.div>
+        ) : (
+          <>
         {/* Filter and Search Bar */}
         <div className="mb-10 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 bg-surface/60 backdrop-blur-sm border border-foreground/10 p-3.5 md:p-4 rounded-2xl">
           {/* Department Pills */}
@@ -776,6 +814,8 @@ function OpenRoles({
               {t("career.clear_filters", "Clear Search")}
             </button>
           </div>
+        )}
+          </>
         )}
       </div>
     </section>
