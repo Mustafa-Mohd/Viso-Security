@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as EmployeeDashboardRouteImport } from './routes/employee-dashboard'
 import { Route as ProjectsRouteImport } from './routes/projects'
 
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -30,30 +36,34 @@ const ProjectsRoute = ProjectsRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/employee-dashboard': typeof EmployeeDashboardRoute
   '/projects': typeof ProjectsRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/employee-dashboard': typeof EmployeeDashboardRoute
   '/projects': typeof ProjectsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/employee-dashboard': typeof EmployeeDashboardRoute
   '/projects': typeof ProjectsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/admin' | '/employee-dashboard' | '/projects'
+  fullPaths: '/' | '/admin' | '/employee-dashboard' | '/projects'
   fileRoutesByTo: FileRoutesByTo
-  to: '/admin' | '/employee-dashboard' | '/projects'
-  id: '__root__' | '/admin' | '/employee-dashboard' | '/projects'
+  to: '/' | '/admin' | '/employee-dashboard' | '/projects'
+  id: '__root__' | '/' | '/admin' | '/employee-dashboard' | '/projects'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   EmployeeDashboardRoute: typeof EmployeeDashboardRoute
   ProjectsRoute: typeof ProjectsRoute
@@ -61,6 +71,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -86,6 +103,7 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   EmployeeDashboardRoute: EmployeeDashboardRoute,
   ProjectsRoute: ProjectsRoute,

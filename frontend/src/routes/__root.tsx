@@ -7,6 +7,7 @@ import {
   useLocation,
 } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect } from "react";
+import { setAppLanguage } from "@/i18n";
 import "../styles.css";
 
 const CustomCursor = lazy(() =>
@@ -85,6 +86,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const location = useLocation();
+  const router = useRouter();
+
+  // Old site / WordPress-style URLs (/en/, /ar/) — app routes live at /, /about, …
+  useEffect(() => {
+    const pathname = location.pathname;
+    const enMatch = pathname.match(/^\/en(?:\/(.*))?$/);
+    const arMatch = pathname.match(/^\/ar(?:\/(.*))?$/);
+    if (enMatch) {
+      setAppLanguage("en", false);
+      const tail = enMatch[1] ? `/${enMatch[1]}` : "/";
+      router.history.replace(`${tail}${location.search}${location.hash}`);
+      return;
+    }
+    if (arMatch) {
+      setAppLanguage("ar", false);
+      const tail = arMatch[1] ? `/${arMatch[1]}` : "/";
+      router.history.replace(`${tail}${location.search}${location.hash}`);
+    }
+  }, [location.pathname, location.search, location.hash, router.history]);
 
   useEffect(() => {
     const path = location.pathname;
