@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { ChevronDown } from "lucide-react";
-import { useState, useEffect } from "react";
+import { ChevronDown, Menu, X } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { TypewriterText } from "@/components/TypewriterText";
@@ -103,19 +103,22 @@ function WifiLanguageToggle({
   onSwitch: (lang: AppLang) => void;
   title: string;
 }) {
+  const flipLanguage = () => onSwitch(isAr ? "en" : "ar");
+
   return (
     <div
       dir="ltr"
       title={title}
-      onClick={() => onSwitch(isAr ? "en" : "ar")}
-      role="switch"
-      aria-checked={isAr}
-      aria-label="Toggle language between English and Arabic"
-      className="group relative inline-flex items-center w-[74px] h-[30px] p-[2.5px] rounded-full bg-black/[0.06] hover:bg-black/[0.1] border border-black/15 hover:border-gold/50 shadow-[inset_0_1px_2.5px_rgba(0,0,0,0.12)] transition-all duration-300 select-none shrink-0 cursor-pointer"
+      role="group"
+      aria-label="Language"
+      className="group relative inline-flex items-center w-[74px] h-[30px] p-[2.5px] rounded-full bg-black/[0.06] hover:bg-black/[0.1] border border-black/15 hover:border-gold/50 shadow-[inset_0_1px_2.5px_rgba(0,0,0,0.12)] transition-all duration-300 select-none shrink-0"
     >
-      {/* Sliding Knob (WiFi Switch Handle) */}
-      <motion.div
-        className="absolute top-[2.5px] bottom-[2.5px] w-[33px] rounded-full bg-white shadow-[0_2px_6px_rgba(0,0,0,0.18),0_1px_2px_rgba(0,0,0,0.1)] border border-black/10 flex items-center justify-center z-10 pointer-events-none"
+      {/* Sliding knob — receives clicks so toggling works (not blocked by EN/AR labels) */}
+      <motion.button
+        type="button"
+        onClick={flipLanguage}
+        aria-label={isAr ? "Switch to English" : "Switch to Arabic"}
+        className="absolute top-[2.5px] bottom-[2.5px] w-[33px] rounded-full bg-white shadow-[0_2px_6px_rgba(0,0,0,0.18),0_1px_2px_rgba(0,0,0,0.1)] border border-black/10 flex items-center justify-center z-20 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
         initial={false}
         animate={{
           left: isAr ? "38.5px" : "2.5px",
@@ -127,35 +130,29 @@ function WifiLanguageToggle({
         }}
       >
         <span className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_rgba(220,38,38,0.7)]" />
-      </motion.div>
+      </motion.button>
 
-      {/* EN Button */}
       <button
         type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          onSwitch("en");
-        }}
+        onClick={() => onSwitch("en")}
         aria-label="Switch to English"
+        aria-pressed={!isAr}
         className={cn(
-          "relative w-[34px] h-full flex items-center justify-center font-mono text-[10px] tracking-wider transition-colors duration-200 z-0 cursor-pointer rounded-full focus:outline-none",
-          !isAr ? "text-primary font-black" : "text-black/50 hover:text-black/80 font-bold"
+          "relative w-[34px] h-full flex items-center justify-center font-mono text-[10px] tracking-wider transition-colors duration-200 z-10 cursor-pointer rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+          !isAr ? "text-primary font-black" : "text-black/50 hover:text-black/80 font-bold",
         )}
       >
         EN
       </button>
 
-      {/* AR Button */}
       <button
         type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          onSwitch("ar");
-        }}
+        onClick={() => onSwitch("ar")}
         aria-label="التبديل إلى العربية"
+        aria-pressed={isAr}
         className={cn(
-          "relative w-[34px] h-full flex items-center justify-center font-sans text-[11px] transition-colors duration-200 z-0 cursor-pointer rounded-full focus:outline-none ms-auto",
-          isAr ? "text-primary font-black" : "text-black/50 hover:text-black/80 font-bold"
+          "relative w-[34px] h-full flex items-center justify-center font-sans text-[11px] transition-colors duration-200 z-10 cursor-pointer rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ms-auto",
+          isAr ? "text-primary font-black" : "text-black/50 hover:text-black/80 font-bold",
         )}
       >
         عربي
@@ -190,11 +187,27 @@ export function TopNav() {
 
   const isAr = i18n.language?.startsWith("ar");
 
+  const currentLang = useCallback((): AppLang => (i18n.language?.startsWith("ar") ? "ar" : "en"), [i18n.language]);
+
   const switchLanguage = (target: AppLang) => {
-    if (target !== i18n.language) {
+    if (target !== currentLang()) {
       setAppLanguage(target, true);
     }
   };
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [mobileMenuOpen]);
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -248,17 +261,19 @@ export function TopNav() {
         <div className="max-w-[1920px] mx-auto px-3 sm:px-5 md:px-6 lg:px-5 xl:px-10 2xl:px-12">
           <div className="flex items-center justify-between h-16 md:h-20 flex-nowrap">
             {/* Logo on the left */}
-            <Link to="/" className="flex items-center gap-2 sm:gap-2.5 xl:gap-3 group shrink-0">
+            <Link to="/" className="flex items-center gap-2 sm:gap-2.5 xl:gap-3 group shrink-0 min-w-0">
               <img loading="lazy" decoding="async"
                 src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
                 alt="Viso Group"
                 className="h-9 sm:h-11 md:h-12 lg:h-13 xl:h-16 w-auto object-contain shrink-0 transition-transform duration-500 group-hover:scale-105"
               />
-              <NavLogoTagline
-                visionLine={t("about_page.vision_for").trim()}
-                taglinePhrases={[t("about_page.sec_consult"), t("about_page.trans_services")]}
-                isAr={isAr}
-              />
+              <div className="hidden min-[420px]:block min-w-0">
+                <NavLogoTagline
+                  visionLine={t("about_page.vision_for").trim()}
+                  taglinePhrases={[t("about_page.sec_consult"), t("about_page.trans_services")]}
+                  isAr={isAr}
+                />
+              </div>
             </Link>
 
             {/* Navigation links - responsive spacing and labels to fit at 125%+ zoom */}
@@ -331,35 +346,28 @@ export function TopNav() {
             <div className="hidden lg:flex items-center shrink-0 ms-auto ps-2 xl:ps-4">
               <div className="h-4 xl:h-5 w-px bg-foreground/15 me-2 xl:me-3.5 shrink-0" aria-hidden />
               <WifiLanguageToggle
-                isAr={isAr}
+                isAr={!!isAr}
                 onSwitch={switchLanguage}
                 title={t("nav.lang_switch")}
               />
             </div>
 
-            {/* Mobile Header Right */}
-            <div className="flex items-center gap-2.5 lg:hidden ms-auto">
+            {/* Mobile: language + menu */}
+            <div className="flex items-center gap-2 lg:hidden ms-auto shrink-0">
               <WifiLanguageToggle
-                isAr={isAr}
+                isAr={!!isAr}
                 onSwitch={switchLanguage}
                 title={t("nav.lang_switch")}
               />
               <button
                 type="button"
-                className="flex flex-col justify-center items-center w-9 h-9 rounded-md hover:bg-foreground/5 focus:outline-none"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                aria-label="Menu"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-foreground/10 bg-background/80 text-foreground shadow-sm hover:bg-foreground/5 hover:border-primary/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors"
+                onClick={() => setMobileMenuOpen((open) => !open)}
+                aria-label={mobileMenuOpen ? t("nav.close_menu", "Close menu") : t("nav.open_menu", "Open menu")}
                 aria-expanded={mobileMenuOpen}
+                aria-controls="mobile-main-nav"
               >
-                <span
-                  className={`block w-6 h-0.5 bg-foreground transition-transform duration-300 ${mobileMenuOpen ? "rotate-45 translate-y-2" : ""}`}
-                />
-                <span
-                  className={`block w-6 h-0.5 bg-foreground transition-opacity duration-300 ${mobileMenuOpen ? "opacity-0" : ""}`}
-                />
-                <span
-                  className={`block w-6 h-0.5 bg-foreground transition-transform duration-300 ${mobileMenuOpen ? "-rotate-45 -translate-y-2" : ""}`}
-                />
+                {mobileMenuOpen ? <X className="h-5 w-5" strokeWidth={2} /> : <Menu className="h-5 w-5" strokeWidth={2} />}
               </button>
             </div>
           </div>
@@ -391,122 +399,188 @@ export function TopNav() {
       </header>
 
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-[140] bg-background/98 backdrop-blur-lg flex flex-col overflow-y-auto pt-20 pb-12 px-6 lg:hidden animate-in fade-in duration-300">
-          <div className="mb-4 p-3.5 rounded-2xl bg-gradient-to-r from-primary/10 via-gold/5 to-transparent border border-primary/20 flex flex-col gap-1 shadow-sm">
-            <span className="text-[10px] uppercase font-mono font-bold tracking-wider text-primary/70">{t("about_page.vision_for")}</span>
-            <div className="font-display font-semibold text-xs text-primary flex items-center">
-              <TypewriterText
-                phrases={[t("about_page.sec_consult"), t("about_page.trans_services")]}
-                className="font-bold"
-              />
+        <>
+          <button
+            type="button"
+            className="fixed inset-0 z-[155] bg-black/50 backdrop-blur-[2px] lg:hidden animate-in fade-in duration-200"
+            aria-label={t("nav.close_menu", "Close menu")}
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <nav
+            id="mobile-main-nav"
+            className="fixed inset-y-0 end-0 z-[160] flex w-[min(100vw-3rem,340px)] flex-col border-s border-foreground/10 bg-background/98 shadow-2xl backdrop-blur-xl lg:hidden animate-in slide-in-from-right duration-300"
+            aria-label="Main"
+          >
+            <div className="flex items-center justify-between gap-3 border-b border-foreground/10 px-5 py-4 pt-[max(1rem,env(safe-area-inset-top))]">
+              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-primary/80">
+                {t("nav.menu", "Menu")}
+              </span>
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(false)}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-foreground/10 hover:bg-foreground/5"
+                aria-label={t("nav.close_menu", "Close menu")}
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
-          </div>
 
-          <Link
-            to="/"
-            onClick={() => setMobileMenuOpen(false)}
-            className={`${mobileNavClass("/")} mb-2`}
-            aria-current={isActivePath("/") ? "page" : undefined}
-          >
-            {t("nav.home")}
-          </Link>
-          <Link
-            to="/about"
-            onClick={() => setMobileMenuOpen(false)}
-            className={`${mobileNavClass("/about")} mb-2`}
-            aria-current={isActivePath("/about") ? "page" : undefined}
-          >
-            {t("nav.about")}
-          </Link>
-
-          <div className="border-b border-foreground/10 pb-3 mb-2 mt-2">
-            <button
-              type="button"
-              onClick={() => toggleMobileGroup(securityGroup.id)}
-              className="flex w-full items-center justify-between font-display text-xl text-foreground/85"
-            >
-              {securityGroup.label}
-              <ChevronDown
-                className={cn(
-                  "h-5 w-5 transition-transform",
-                  mobileExpanded === securityGroup.id && "rotate-180",
-                )}
-              />
-            </button>
-            {mobileExpanded === securityGroup.id && (
-              <div className="mt-3 flex flex-col gap-3">
-                {securityGroup.items.map((item) => (
-                  <Link
-                    key={item.to}
-                    to={item.to}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={mobileNavClass(item.to)}
-                    aria-current={isActivePath(item.to) ? "page" : undefined}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+            <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+              <div className="mb-6 rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/8 to-gold/5 p-4">
+                <span className="text-[10px] uppercase font-mono font-bold tracking-wider text-primary/70 block mb-1.5">
+                  {t("about_page.vision_for")}
+                </span>
+                <div className="font-display text-sm font-semibold text-primary">
+                  <TypewriterText
+                    phrases={[t("about_page.sec_consult"), t("about_page.trans_services")]}
+                    className="font-bold"
+                  />
+                </div>
               </div>
-            )}
-          </div>
-          <Link
-            to="/translation"
-            onClick={() => setMobileMenuOpen(false)}
-            className={`${mobileNavClass("/translation")} mb-2`}
-            aria-current={isActivePath("/translation") ? "page" : undefined}
-          >
-            {t("nav.translation")}
-          </Link>
 
-          <Link
-            to="/projects"
-            onClick={() => setMobileMenuOpen(false)}
-            className={`${mobileNavClass("/projects")} mb-3`}
-            aria-current={isActivePath("/projects") ? "page" : undefined}
-          >
-            {t("nav.group_impact")}
-          </Link>
+              <div className="flex flex-col gap-1">
+                <Link
+                  to="/"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`${mobileNavClass("/")} py-3 rounded-lg hover:bg-foreground/[0.03]`}
+                  aria-current={isActivePath("/") ? "page" : undefined}
+                >
+                  {t("nav.home")}
+                </Link>
+                <Link
+                  to="/about"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`${mobileNavClass("/about")} py-3 rounded-lg hover:bg-foreground/[0.03]`}
+                  aria-current={isActivePath("/about") ? "page" : undefined}
+                >
+                  {t("nav.about")}
+                </Link>
 
-          <div className="border-b border-foreground/10 pb-3 mb-4">
-            <button
-              type="button"
-              onClick={() => toggleMobileGroup(joinTeamGroup.id)}
-              className="flex w-full items-center justify-between font-display text-xl text-foreground/85"
-            >
-              {joinTeamGroup.label}
-              <ChevronDown
-                className={cn(
-                  "h-5 w-5 transition-transform",
-                  mobileExpanded === joinTeamGroup.id && "rotate-180",
-                )}
-              />
-            </button>
-            {mobileExpanded === joinTeamGroup.id && (
-              <div className="mt-3 flex flex-col gap-3">
-                {joinTeamGroup.items.map((item) => (
-                  <Link
-                    key={item.to}
-                    to={item.to}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={mobileNavClass(item.to)}
-                    aria-current={isActivePath(item.to) ? "page" : undefined}
+                <div className="mt-2 rounded-xl border border-foreground/8 bg-surface/40 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => toggleMobileGroup(securityGroup.id)}
+                    className="flex w-full items-center justify-between px-4 py-3.5 font-display text-lg text-foreground"
                   >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
+                    {securityGroup.label}
+                    <ChevronDown
+                      className={cn(
+                        "h-5 w-5 text-foreground/50 transition-transform",
+                        mobileExpanded === securityGroup.id && "rotate-180",
+                      )}
+                    />
+                  </button>
+                  {mobileExpanded === securityGroup.id && (
+                    <div className="border-t border-foreground/8 px-2 pb-2 flex flex-col gap-0.5">
+                      {securityGroup.items.map((item) => (
+                        <Link
+                          key={item.to}
+                          to={item.to}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={`${mobileNavClass(item.to)} py-2.5 text-base rounded-lg hover:bg-foreground/[0.03]`}
+                          aria-current={isActivePath(item.to) ? "page" : undefined}
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
-          <Link
-            to="/contact"
-            onClick={() => setMobileMenuOpen(false)}
-            className={`${mobileNavClass("/contact")} mb-4`}
-            aria-current={isActivePath("/contact") ? "page" : undefined}
-          >
-            {t("nav.contact_us")}
-          </Link>
-        </div>
+                <Link
+                  to="/translation"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`${mobileNavClass("/translation")} py-3 rounded-lg hover:bg-foreground/[0.03]`}
+                  aria-current={isActivePath("/translation") ? "page" : undefined}
+                >
+                  {t("nav.translation")}
+                </Link>
+
+                <div className="rounded-xl border border-foreground/8 bg-surface/40 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => toggleMobileGroup(projectsGroup.id)}
+                    className="flex w-full items-center justify-between px-4 py-3.5 font-display text-lg text-foreground"
+                  >
+                    {projectsGroup.label}
+                    <ChevronDown
+                      className={cn(
+                        "h-5 w-5 text-foreground/50 transition-transform",
+                        mobileExpanded === projectsGroup.id && "rotate-180",
+                      )}
+                    />
+                  </button>
+                  {mobileExpanded === projectsGroup.id && (
+                    <div className="border-t border-foreground/8 px-2 pb-2 flex flex-col gap-0.5">
+                      {projectsGroup.items.map((item) => (
+                        <Link
+                          key={item.to}
+                          to={item.to}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={`${mobileNavClass(item.to)} py-2.5 text-base rounded-lg hover:bg-foreground/[0.03]`}
+                          aria-current={isActivePath(item.to) ? "page" : undefined}
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="rounded-xl border border-foreground/8 bg-surface/40 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => toggleMobileGroup(joinTeamGroup.id)}
+                    className="flex w-full items-center justify-between px-4 py-3.5 font-display text-lg text-foreground"
+                  >
+                    {joinTeamGroup.label}
+                    <ChevronDown
+                      className={cn(
+                        "h-5 w-5 text-foreground/50 transition-transform",
+                        mobileExpanded === joinTeamGroup.id && "rotate-180",
+                      )}
+                    />
+                  </button>
+                  {mobileExpanded === joinTeamGroup.id && (
+                    <div className="border-t border-foreground/8 px-2 pb-2 flex flex-col gap-0.5">
+                      {joinTeamGroup.items.map((item) => (
+                        <Link
+                          key={item.to}
+                          to={item.to}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={`${mobileNavClass(item.to)} py-2.5 text-base rounded-lg hover:bg-foreground/[0.03]`}
+                          aria-current={isActivePath(item.to) ? "page" : undefined}
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <Link
+                  to="/contact"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`${mobileNavClass("/contact")} py-3 mt-2 rounded-lg hover:bg-foreground/[0.03]`}
+                  aria-current={isActivePath("/contact") ? "page" : undefined}
+                >
+                  {t("nav.contact_us")}
+                </Link>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-foreground/10">
+                <p className="font-mono text-[10px] uppercase tracking-wider text-foreground/45 mb-3">
+                  {t("nav.lang_switch")}
+                </p>
+                <WifiLanguageToggle
+                  isAr={!!isAr}
+                  onSwitch={switchLanguage}
+                  title={t("nav.lang_switch")}
+                />
+              </div>
+            </div>
+          </nav>
+        </>
       )}
       
       <EmployeeLoginModal 
