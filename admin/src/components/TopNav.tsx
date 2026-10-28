@@ -4,14 +4,11 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { TypewriterText } from "@/components/TypewriterText";
+import { NavLogoTagline } from "@/components/NavLogoTagline";
 import { setAppLanguage, type AppLang } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { EmployeeLoginModal, type Mode } from "@/components/EmployeeLoginModal";
 import { supabase } from "@/lib/supabase";
-
-function ShiningSwordLine() {
-  return <div className="h-0.5 w-full bg-gradient-to-r from-primary via-gold to-primary/50 rounded-full my-1" />;
-}
 
 type NavLink = { to: string; label: string };
 
@@ -256,25 +253,11 @@ export function TopNav() {
                 alt="Viso Group"
                 className="h-9 sm:h-11 md:h-12 lg:h-13 xl:h-16 w-auto object-contain shrink-0 transition-transform duration-500 group-hover:scale-105"
               />
-              <div className="flex flex-col justify-center w-[150px] sm:w-[170px] md:w-[185px] lg:w-[190px] xl:w-[245px] shrink-0 border-s border-foreground/20 ps-2 sm:ps-2.5 xl:ps-3.5 py-0.5 font-brand-condensed overflow-hidden">
-                <span
-                  className={cn(
-                    "text-foreground font-brand-condensed font-semibold text-[12px] sm:text-[13px] md:text-[14px] lg:text-[14px] xl:text-[16px] uppercase whitespace-nowrap leading-tight truncate",
-                    isAr ? "tracking-normal" : "tracking-[0.035em] xl:tracking-[0.048em]"
-                  )}
-                >
-                  {t("about_page.vision_for").trim()}
-                </span>
-                <ShiningSwordLine />
-                <span
-                  className={cn(
-                    "text-primary font-brand-condensed font-semibold text-[12px] sm:text-[13px] md:text-[14px] lg:text-[14px] xl:text-[16px] uppercase whitespace-nowrap leading-tight truncate",
-                    isAr ? "tracking-normal" : "tracking-[0.11em] sm:tracking-[0.125em] xl:tracking-[0.145em]"
-                  )}
-                >
-                  <TypewriterText phrases={[t("about_page.sec_consult"), t("about_page.trans_services")]} />
-                </span>
-              </div>
+              <NavLogoTagline
+                visionLine={t("about_page.vision_for").trim()}
+                taglinePhrases={[t("about_page.sec_consult"), t("about_page.trans_services")]}
+                isAr={isAr}
+              />
             </Link>
 
             {/* Navigation links - responsive spacing and labels to fit at 125%+ zoom */}
@@ -411,7 +394,10 @@ export function TopNav() {
           <div className="mb-4 p-3.5 rounded-2xl bg-gradient-to-r from-primary/10 via-gold/5 to-transparent border border-primary/20 flex flex-col gap-1 shadow-sm">
             <span className="text-[10px] uppercase font-mono font-bold tracking-wider text-primary/70">{t("about_page.vision_for")}</span>
             <div className="font-display font-semibold text-xs text-primary flex items-center">
-              <TypewriterText phrases={[t("about_page.sec_consult"), t("about_page.trans_services")]} className="min-w-[180px] font-bold" />
+              <TypewriterText
+                phrases={[t("about_page.sec_consult"), t("about_page.trans_services")]}
+                className="font-bold"
+              />
             </div>
           </div>
 

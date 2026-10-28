@@ -526,6 +526,14 @@
     "roles_eyebrow": "Open Positions",
     "roles_title": "Roles that shape security",
     "roles_desc": "Select a role to apply. Our HR team reviews every submission carefully.",
+    "process": {
+      "title": "How to apply",
+      "desc": "A straightforward process — browse open roles, submit your application, and our HR team will follow up.",
+      "s1": { "title": "Explore roles", "desc": "Review open positions by discipline, location, and requirements." },
+      "s2": { "title": "Submit application", "desc": "Apply with your resume and a short cover letter for the role." },
+      "s3": { "title": "HR review", "desc": "Our team screens every submission and contacts shortlisted candidates." },
+      "s4": { "title": "Interview & offer", "desc": "Technical and HR conversations, then an offer for successful candidates." }
+    },
     "apply": "Apply",
     "full_time": "Full-Time",
     "culture_title": "A culture built for precision, integrity, and long-term craft.",
@@ -587,6 +595,8 @@
     "filter_search_placeholder": "Search roles by title, department, or location...",
     "no_roles_found": "No open roles match your current search.",
     "clear_filters": "Clear Search",
+    "view_full_description": "View full description",
+    "hide_description": "Hide full description",
     "cta_title": "Don't see your role?",
     "cta_desc": "Send a general application — we review every submission carefully.",
     "cta_btn": "GENERAL APPLICATION",

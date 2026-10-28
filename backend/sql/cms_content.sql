@@ -10,3 +10,6 @@ ALTER TABLE cms_content DISABLE ROW LEVEL SECURITY;
 -- If you prefer keeping RLS enabled, uncomment these lines instead:
 -- ALTER TABLE cms_content ENABLE ROW LEVEL SECURITY;
 -- CREATE POLICY "Allow public all access" ON cms_content FOR ALL USING (true);
+
+-- Careers page content: section_key `career_jobs` (JSON object with rolesTitle, rolesDescription, processTitle, processDescription, jobs[]).
+-- Seed via Admin CMS or see career_jobs_cms_seed.sql.

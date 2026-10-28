@@ -17,6 +17,11 @@ import { fetchLeaveRequests } from "@/lib/leaveApi";
 import { PROJECTS, type ProjectItem, parseMonthYear } from "@/routes/projects";
 import { clientCategoriesData, ClientLogo, type ClientCategory, type ClientItem } from "@/data/clientsData";
 import { defaultStandardsComplianceData, type StandardsComplianceData, COLOR_THEME_PRESETS } from "@/data/standardsComplianceData";
+import {
+  buildDefaultCareerPageCms,
+  parseCareerPageCms,
+  type CareerPageCmsContent,
+} from "@/data/careerJobsDefaults";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -908,6 +913,7 @@ const DEFAULT_HERO_SLIDES = [
   });
 
   const [projectsData, setProjectsData] = useState<ProjectItem[]>([...PROJECTS]);
+  const [careerPageData, setCareerPageData] = useState<CareerPageCmsContent>(() => buildDefaultCareerPageCms());
   const [standardsComplianceData, setStandardsComplianceData] = useState<StandardsComplianceData>(defaultStandardsComplianceData);
 
   // Inquiries State
@@ -1103,6 +1109,7 @@ const DEFAULT_HERO_SLIDES = [
       { section_key: 'footer', content: footerData },
       { section_key: 'client_page_categories', content: clientPageCategoriesData },
       { section_key: 'projects', content: projectsData },
+      { section_key: 'career_jobs', content: careerPageData },
       { section_key: 'standards_compliance', content: standardsComplianceData }
     ];
     for (const item of defaultData) {
@@ -1176,6 +1183,10 @@ const DEFAULT_HERO_SLIDES = [
         if (row.section_key === 'cta') setCtaData(row.content);
         if (row.section_key === 'footer') setFooterData(row.content);
         if (row.section_key === 'projects') setProjectsData(row.content || PROJECTS);
+        if (row.section_key === 'career_jobs') {
+          const parsed = parseCareerPageCms(row.content);
+          if (parsed) setCareerPageData(parsed);
+        }
         if (row.section_key === 'standards_compliance') setStandardsComplianceData(row.content || defaultStandardsComplianceData);
       });
     }
@@ -1253,6 +1264,10 @@ const DEFAULT_HERO_SLIDES = [
         if (row.section_key === 'footer') setFooterData(row.content);
         if (row.section_key === 'client_page_categories') setClientPageCategoriesData(row.content || clientCategoriesData);
         if (row.section_key === 'projects') setProjectsData(row.content || PROJECTS);
+        if (row.section_key === 'career_jobs') {
+          const parsed = parseCareerPageCms(row.content);
+          if (parsed) setCareerPageData(parsed);
+        }
         if (row.section_key === 'standards_compliance') setStandardsComplianceData(row.content || defaultStandardsComplianceData);
       });
     }
@@ -1949,6 +1964,16 @@ const DEFAULT_HERO_SLIDES = [
                     sectionCount: 2,
                   },
                   {
+                    id: "careers_page",
+                    title: "Careers Page",
+                    badge: "CAREERS & HR",
+                    desc: "Open job roles on the Careers page — add, edit, hide, or remove positions (no images).",
+                    icon: Users,
+                    badgeColor: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20",
+                    defaultSection: "career_jobs",
+                    sectionCount: 1,
+                  },
+                  {
                     id: "clients_page",
                     title: "Clients Portfolio Page",
                     badge: "OUR CLIENTS",
@@ -2053,6 +2078,8 @@ const DEFAULT_HERO_SLIDES = [
                         { id: "projects", label: "Projects Database" },
                         { id: "stats", label: "Performance Metrics" },
                       ]
+                    : selectedCmsPage === 'careers_page'
+                    ? [{ id: "career_jobs", label: "Open Job Roles" }]
                     : selectedCmsPage === 'clients_page'
                     ? [
                         { id: "client_page_categories", label: "Client Categories & Logos" },
@@ -4082,6 +4109,307 @@ const DEFAULT_HERO_SLIDES = [
                         No projects match your current search/filter criteria.
                       </div>
                     )}
+                  </div>
+                </div>
+              )}
+
+              {/* CAREER JOB ROLES CMS */}
+              {cmsSection === "career_jobs" && (
+                <div className="flex flex-col gap-4 max-w-5xl">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-foreground/10">
+                    <div>
+                      <h2 className="text-2xl mb-1 font-semibold">Careers Page</h2>
+                      <p className="text-[11px] text-muted-foreground">
+                        Section headings, descriptions, and open roles (text listings — no images).
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const id = `role_${Date.now()}`;
+                          setCareerPageData({
+                            ...careerPageData,
+                            jobs: [
+                              {
+                                id,
+                                title: "New Role",
+                                department: "Department",
+                                location: "Riyadh, KSA",
+                                type: "Full-Time",
+                                description: "Short summary shown in the role list...",
+                                longDescription:
+                                  "Full job description (use blank lines between paragraphs).\n\nKey responsibilities:\n• ...\n\nIdeal background:\n• ...",
+                                badges: [],
+                                published: true,
+                              },
+                              ...careerPageData.jobs,
+                            ],
+                          });
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-primary text-primary hover:bg-primary/10 transition-all cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5" /> Add Role
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (confirm("Reset careers page to default copy and job list?")) {
+                            setCareerPageData(buildDefaultCareerPageCms());
+                          }
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-amber-500/50 text-amber-600 hover:bg-amber-500/10 transition-all cursor-pointer"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" /> Seed defaults
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSaveCmsSection("career_jobs", careerPageData)}
+                        className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-all cursor-pointer"
+                      >
+                        <Save className="w-3.5 h-3.5" /> Save Careers Page
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-foreground/15 bg-surface/40 p-4 md:p-5 space-y-4">
+                    <h3 className="text-sm font-semibold">Section copy</h3>
+                    <div className="grid md:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[10px] font-mono uppercase tracking-wider text-muted-foreground mb-1">
+                          Roles eyebrow
+                        </label>
+                        <input
+                          type="text"
+                          value={careerPageData.rolesEyebrow}
+                          onChange={(e) =>
+                            setCareerPageData({ ...careerPageData, rolesEyebrow: e.target.value })
+                          }
+                          className="w-full px-3 py-2 rounded-lg bg-background border border-foreground/20 text-sm focus:border-primary focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-mono uppercase tracking-wider text-muted-foreground mb-1">
+                          Roles section title
+                        </label>
+                        <input
+                          type="text"
+                          value={careerPageData.rolesTitle}
+                          onChange={(e) =>
+                            setCareerPageData({ ...careerPageData, rolesTitle: e.target.value })
+                          }
+                          className="w-full px-3 py-2 rounded-lg bg-background border border-foreground/20 text-sm focus:border-primary focus:outline-none"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-mono uppercase tracking-wider text-muted-foreground mb-1">
+                        Roles section description
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={careerPageData.rolesDescription}
+                        onChange={(e) =>
+                          setCareerPageData({ ...careerPageData, rolesDescription: e.target.value })
+                        }
+                        className="w-full px-3 py-2 rounded-lg bg-background border border-foreground/20 text-sm focus:border-primary focus:outline-none resize-y"
+                      />
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-3 pt-2 border-t border-foreground/10">
+                      <div>
+                        <label className="block text-[10px] font-mono uppercase tracking-wider text-muted-foreground mb-1">
+                          How to apply — title
+                        </label>
+                        <input
+                          type="text"
+                          value={careerPageData.processTitle}
+                          onChange={(e) =>
+                            setCareerPageData({ ...careerPageData, processTitle: e.target.value })
+                          }
+                          className="w-full px-3 py-2 rounded-lg bg-background border border-foreground/20 text-sm focus:border-primary focus:outline-none"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-mono uppercase tracking-wider text-muted-foreground mb-1">
+                        How to apply — description
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={careerPageData.processDescription}
+                        onChange={(e) =>
+                          setCareerPageData({ ...careerPageData, processDescription: e.target.value })
+                        }
+                        className="w-full px-3 py-2 rounded-lg bg-background border border-foreground/20 text-sm focus:border-primary focus:outline-none resize-y"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-4">
+                    {careerPageData.jobs.map((role, index) => (
+                      <div
+                        key={role.id || index}
+                        className="rounded-xl border border-foreground/15 bg-surface/50 p-4 md:p-5 space-y-3"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <label className="flex items-center gap-2 text-xs font-medium cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={role.published !== false}
+                              onChange={(e) => {
+                                const next = [...careerPageData.jobs];
+                                next[index] = { ...role, published: e.target.checked };
+                                setCareerPageData({ ...careerPageData, jobs: next });
+                              }}
+                              className="rounded border-foreground/30"
+                            />
+                            Published on Careers page
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (confirm(`Remove role "${role.title}"?`)) {
+                                setCareerPageData({
+                                  ...careerPageData,
+                                  jobs: careerPageData.jobs.filter((_, i) => i !== index),
+                                });
+                              }
+                            }}
+                            className="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-700 cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" /> Remove
+                          </button>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[10px] font-mono uppercase tracking-wider text-muted-foreground mb-1">
+                              Role ID (URL slug)
+                            </label>
+                            <input
+                              type="text"
+                              value={role.id}
+                              onChange={(e) => {
+                                const next = [...careerPageData.jobs];
+                                next[index] = { ...role, id: e.target.value.replace(/\s+/g, "_") };
+                                setCareerPageData({ ...careerPageData, jobs: next });
+                              }}
+                              className="w-full px-3 py-2 rounded-lg bg-background border border-foreground/20 text-sm focus:border-primary focus:outline-none font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-mono uppercase tracking-wider text-muted-foreground mb-1">
+                              Job title
+                            </label>
+                            <input
+                              type="text"
+                              value={role.title}
+                              onChange={(e) => {
+                                const next = [...careerPageData.jobs];
+                                next[index] = { ...role, title: e.target.value };
+                                setCareerPageData({ ...careerPageData, jobs: next });
+                              }}
+                              className="w-full px-3 py-2 rounded-lg bg-background border border-foreground/20 text-sm focus:border-primary focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-mono uppercase tracking-wider text-muted-foreground mb-1">
+                              Department
+                            </label>
+                            <input
+                              type="text"
+                              value={role.department}
+                              onChange={(e) => {
+                                const next = [...careerPageData.jobs];
+                                next[index] = { ...role, department: e.target.value };
+                                setCareerPageData({ ...careerPageData, jobs: next });
+                              }}
+                              className="w-full px-3 py-2 rounded-lg bg-background border border-foreground/20 text-sm focus:border-primary focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-mono uppercase tracking-wider text-muted-foreground mb-1">
+                              Location
+                            </label>
+                            <input
+                              type="text"
+                              value={role.location}
+                              onChange={(e) => {
+                                const next = [...careerPageData.jobs];
+                                next[index] = { ...role, location: e.target.value };
+                                setCareerPageData({ ...careerPageData, jobs: next });
+                              }}
+                              className="w-full px-3 py-2 rounded-lg bg-background border border-foreground/20 text-sm focus:border-primary focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-mono uppercase tracking-wider text-muted-foreground mb-1">
+                              Employment type
+                            </label>
+                            <input
+                              type="text"
+                              value={role.type}
+                              onChange={(e) => {
+                                const next = [...careerPageData.jobs];
+                                next[index] = { ...role, type: e.target.value };
+                                setCareerPageData({ ...careerPageData, jobs: next });
+                              }}
+                              className="w-full px-3 py-2 rounded-lg bg-background border border-foreground/20 text-sm focus:border-primary focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-mono uppercase tracking-wider text-muted-foreground mb-1">
+                              Skill tags (comma-separated)
+                            </label>
+                            <input
+                              type="text"
+                              value={(role.badges || []).join(", ")}
+                              onChange={(e) => {
+                                const badges = e.target.value
+                                  .split(",")
+                                  .map((s) => s.trim())
+                                  .filter(Boolean);
+                                const next = [...careerPageData.jobs];
+                                next[index] = { ...role, badges };
+                                setCareerPageData({ ...careerPageData, jobs: next });
+                              }}
+                              className="w-full px-3 py-2 rounded-lg bg-background border border-foreground/20 text-sm focus:border-primary focus:outline-none"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-mono uppercase tracking-wider text-muted-foreground mb-1">
+                            Short summary (role list)
+                          </label>
+                          <textarea
+                            rows={3}
+                            value={role.description}
+                            onChange={(e) => {
+                              const next = [...careerPageData.jobs];
+                              next[index] = { ...role, description: e.target.value };
+                              setCareerPageData({ ...careerPageData, jobs: next });
+                            }}
+                            placeholder="One or two sentences — shown before expanding the full posting."
+                            className="w-full px-3 py-2 rounded-lg bg-background border border-foreground/20 text-sm focus:border-primary focus:outline-none resize-y"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-mono uppercase tracking-wider text-muted-foreground mb-1">
+                            Full job description
+                          </label>
+                          <textarea
+                            rows={10}
+                            value={role.longDescription ?? ""}
+                            onChange={(e) => {
+                              const next = [...careerPageData.jobs];
+                              next[index] = { ...role, longDescription: e.target.value };
+                              setCareerPageData({ ...careerPageData, jobs: next });
+                            }}
+                            placeholder="Full posting — separate paragraphs with a blank line. Shown when candidates expand “View full description”."
+                            className="w-full px-3 py-2 rounded-lg bg-background border border-foreground/20 text-sm focus:border-primary focus:outline-none resize-y font-mono text-[13px] leading-relaxed"
+                          />
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}

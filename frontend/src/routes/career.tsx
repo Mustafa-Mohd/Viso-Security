@@ -22,9 +22,20 @@ import {
   Mail,
   Link2,
   Search,
+  ChevronDown,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { sendJobApplicationNotification } from "@/lib/emailApi";
+import {
+  buildDefaultCareerPageCms,
+  parseCareerPageCms,
+  careerJobDescriptionIsExpandable,
+  getCareerJobFullDescription,
+  getCareerJobListSummary,
+  resolveCareerJobs,
+  resolveCareerPageCopy,
+} from "@/lib/careerJobs";
+import type { CareerJob, CareerPageCmsContent } from "@/data/careerJobsDefaults";
 
 export const Route = createFileRoute("/career")({
   head: () => ({
@@ -38,66 +49,38 @@ export const Route = createFileRoute("/career")({
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
-const JOB_IDS = [
-  "doc",
-  "security",
-  "hr",
-  "security_engineer",
-  "civil",
-  "planning",
-  "electrical",
-] as const;
-
-const JOB_IMAGES: Record<string, string> = {
-  doc: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790590884/ChatGPT_Image_Sep_28_2026_03_51_15_PM.png",
-  security: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790595554/ChatGPT_Image_Sep_28_2026_05_08_48_PM.png",
-  hr: "https://images.unsplash.com/photo-1573164713988-8665fc963095?w=800&q=80",
-  security_engineer: "https://ingenieure-international.de/wp-content/uploads/2024/04/iStock-1462139281.jpg",
-  civil: "https://media.istockphoto.com/id/1334138265/photo/surveyor-equipment-surveyor-u2019s-telescope-at-construction-site-or-surveying-for-making.jpg?s=612x612&w=0&k=20&c=jNHW2l4oYoYhHfN7DWRlOUterkDEEqVF60EV-1zD7Jg=",
-  planning: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80",
-  electrical: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&q=80",
-};
-
-const JOB_BADGES: Record<string, string[]> = {
-  civil: ["HCIS SEC", "Blast Resistance", "Perimeter Infrastructure"],
-  planning: ["Primavera P6", "EPC Milestones", "Critical Path Scheduling"],
-  electrical: ["Low-Current Systems", "CCTV / VSS Matrix", "PIDS Security"],
-  doc: ["DMS Platform", "Revision Tracking", "ISO Standards"],
-  security: ["Physical Security", "Site Defense", "Asset Protection"],
-  hr: ["Talent Acquisition", "ESS Platform", "People Operations"],
-  security_engineer: ["HCIS Directives", "SRA Assessment", "Systems Architecture"],
-};
-
 const PILLAR_ICONS = [Shield, Sparkles, Users] as const;
 
-export interface CareerJob {
-  id: string;
-  title: string;
-  department: string;
-  type: string;
-  location: string;
-  description: string;
-}
-
-function useCareerJobs(): CareerJob[] {
-  const { t } = useTranslation();
-  return JOB_IDS.map((id) => ({
-    id,
-    title: t(`career.jobs.${id}.title`),
-    department: t(`career.jobs.${id}.department`),
-    type: t("career.full_time"),
-    location: t(`career.jobs.${id}.location`),
-    description: t(`career.jobs.${id}.description`),
-  }));
-}
+export type { CareerJob };
 
 function CareerPage() {
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language?.startsWith("ar");
-  const jobs = useCareerJobs();
+  const [careerCms, setCareerCms] = useState<CareerPageCmsContent | null>(null);
+  const pageCopy = useMemo(() => resolveCareerPageCopy(careerCms, t), [careerCms, t, i18n.language]);
+  const jobs = useMemo(
+    () => resolveCareerJobs(careerCms?.jobs, t),
+    [careerCms?.jobs, t, i18n.language],
+  );
   const [activeJob, setActiveJob] = useState<string | null>(null);
   const [shareJob, setShareJob] = useState<CareerJob | null>(null);
   const [highlightedRoleId, setHighlightedRoleId] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadCareerPage() {
+      const { data } = await supabase
+        .from("cms_content")
+        .select("content")
+        .eq("section_key", "career_jobs")
+        .maybeSingle();
+      const parsed = parseCareerPageCms(data?.content);
+      setCareerCms(parsed ?? buildDefaultCareerPageCms());
+    }
+    loadCareerPage();
+    const onUpdate = () => loadCareerPage();
+    window.addEventListener("viso_cms_updated", onUpdate);
+    return () => window.removeEventListener("viso_cms_updated", onUpdate);
+  }, []);
 
   // Detect URL parameter ?role=... or #role-... to auto-scroll & highlight the shared role
   useEffect(() => {
@@ -106,9 +89,10 @@ function CareerPage() {
     const urlParams = new URLSearchParams(window.location.search);
     const roleParam = urlParams.get("role") || urlParams.get("job");
     const rawHash = window.location.hash.replace("#", "").replace("role-", "");
-    const targetId = roleParam || (JOB_IDS.includes(rawHash as any) ? rawHash : null);
+    const knownIds = new Set(jobs.map((j) => j.id));
+    const targetId = roleParam || (knownIds.has(rawHash) ? rawHash : null);
 
-    if (targetId && JOB_IDS.includes(targetId as any)) {
+    if (targetId && knownIds.has(targetId)) {
       setHighlightedRoleId(targetId);
       const timer = setTimeout(() => {
         const el = document.getElementById(`role-${targetId}`);
@@ -127,7 +111,7 @@ function CareerPage() {
         clearTimeout(fadeTimer);
       };
     }
-  }, []);
+  }, [jobs]);
 
   return (
     <div className="min-h-[100dvh] bg-background text-foreground font-sans selection:bg-primary/20 selection:text-primary overflow-x-hidden flex flex-col">
@@ -136,8 +120,15 @@ function CareerPage() {
       <main className="flex-1">
         <CareerHero jobCount={jobs.length} />
         <ValuesStrip />
-        <OpenRoles 
-          jobs={jobs} 
+        <HiringProcess
+          title={pageCopy.processTitle}
+          description={pageCopy.processDescription}
+        />
+        <OpenRoles
+          jobs={jobs}
+          rolesEyebrow={pageCopy.rolesEyebrow}
+          rolesTitle={pageCopy.rolesTitle}
+          rolesDescription={pageCopy.rolesDescription}
           onApply={setActiveJob}
           onShare={setShareJob}
           highlightedRoleId={highlightedRoleId}
@@ -403,6 +394,39 @@ function TeamIllustration({ jobCount }: { jobCount: number }) {
   );
 }
 
+function HiringProcess({ title, description }: { title: string; description: string }) {
+  const { t } = useTranslation();
+  const steps = ["s1", "s2", "s3", "s4"] as const;
+  return (
+    <section className="border-b border-foreground/5 bg-background">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-12 md:py-16">
+        <h2 className="font-display text-2xl md:text-3xl tracking-tight mb-2">{title}</h2>
+        <p className="text-sm text-foreground/55 font-light mb-10 max-w-2xl">{description}</p>
+        <ol className="grid md:grid-cols-4 gap-6 md:gap-4">
+          {steps.map((key, i) => (
+            <li key={key} className="relative flex gap-4 md:flex-col md:gap-3">
+              <span
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-primary/30 bg-primary/10 font-mono text-xs font-bold text-primary"
+                aria-hidden
+              >
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <div>
+                <h3 className="font-display text-base font-semibold tracking-tight mb-1">
+                  {t(`career.process.${key}.title`)}
+                </h3>
+                <p className="text-sm text-foreground/55 leading-relaxed font-light">
+                  {t(`career.process.${key}.desc`)}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
+
 function ValuesStrip() {
   const { t } = useTranslation();
   const pillars = PILLAR_ICONS.map((icon, i) => ({
@@ -468,13 +492,39 @@ function TwitterXIcon({ className }: { className?: string }) {
   );
 }
 
+function JobDescriptionBody({ text, className }: { text: string; className?: string }) {
+  const paragraphs = text
+    .split(/\n\n+/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  if (paragraphs.length === 0) return null;
+  return (
+    <div className={className}>
+      {paragraphs.map((para, i) => (
+        <p
+          key={i}
+          className="text-sm text-foreground/65 font-light leading-relaxed mb-3 last:mb-0 whitespace-pre-wrap"
+        >
+          {para}
+        </p>
+      ))}
+    </div>
+  );
+}
+
 function OpenRoles({
   jobs: roleList,
+  rolesEyebrow,
+  rolesTitle,
+  rolesDescription,
   onApply,
   onShare,
   highlightedRoleId,
 }: {
   jobs: CareerJob[];
+  rolesEyebrow: string;
+  rolesTitle: string;
+  rolesDescription: string;
   onApply: (title: string) => void;
   onShare: (job: CareerJob) => void;
   highlightedRoleId: string | null;
@@ -482,6 +532,16 @@ function OpenRoles({
   const { t } = useTranslation();
   const [selectedDept, setSelectedDept] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [expandedRoleIds, setExpandedRoleIds] = useState<Set<string>>(() => new Set());
+
+  useEffect(() => {
+    if (!highlightedRoleId) return;
+    setExpandedRoleIds((prev) => {
+      const next = new Set(prev);
+      next.add(highlightedRoleId);
+      return next;
+    });
+  }, [highlightedRoleId]);
 
   // Unique departments for filter pills
   const departments = useMemo(() => {
@@ -504,7 +564,8 @@ function OpenRoles({
         job.title.toLowerCase().includes(q) ||
         job.department.toLowerCase().includes(q) ||
         job.location.toLowerCase().includes(q) ||
-        job.description.toLowerCase().includes(q);
+        job.description.toLowerCase().includes(q) ||
+        getCareerJobFullDescription(job).toLowerCase().includes(q);
       return matchDept && matchSearch;
     });
   }, [roleList, selectedDept, searchQuery]);
@@ -523,14 +584,12 @@ function OpenRoles({
           <div>
             <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-3">
               <Briefcase className="w-3.5 h-3.5 text-primary" />
-              <span>{t("career.roles_eyebrow")}</span>
+              <span>{rolesEyebrow}</span>
             </div>
-            <h2 className="font-display text-3xl md:text-4xl tracking-tight">
-              {t("career.roles_title")}
-            </h2>
+            <h2 className="font-display text-3xl md:text-4xl tracking-tight">{rolesTitle}</h2>
           </div>
-          <p className="text-sm text-foreground/50 font-light max-w-sm md:text-right">
-            {t("career.roles_desc")}
+          <p className="text-sm text-foreground/50 font-light max-w-md md:max-w-sm md:text-right leading-relaxed">
+            {rolesDescription}
           </p>
         </motion.div>
 
@@ -591,76 +650,70 @@ function OpenRoles({
           </div>
         </div>
 
-        {/* Roles Grid */}
+        {/* Roles list */}
         {filteredRoles.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="rounded-2xl border border-foreground/10 bg-surface/40 overflow-hidden divide-y divide-foreground/10">
             {filteredRoles.map((job, index) => {
               const isHighlighted = highlightedRoleId === job.id;
-              const imgUrl =
-                JOB_IMAGES[job.id] ||
-                "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=800&q=80";
-              const badges = JOB_BADGES[job.id] || [];
+              const badges = job.badges || [];
+              const isExpanded = expandedRoleIds.has(job.id);
+              const summary = getCareerJobListSummary(job);
+              const fullDescription = getCareerJobFullDescription(job);
+              const canExpand = careerJobDescriptionIsExpandable(job);
 
               return (
                 <motion.article
                   key={job.id}
                   id={`role-${job.id}`}
-                  onClick={() => onApply(job.title)}
-                  initial={{ opacity: 0, y: 18 }}
+                  initial={{ opacity: 0, y: 12 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.06, duration: 0.5, ease }}
-                  className={`group flex flex-col border bg-surface transition-all duration-400 cursor-pointer overflow-hidden rounded-2xl relative ${
-                    isHighlighted
-                      ? "border-primary ring-2 ring-primary ring-offset-4 ring-offset-background shadow-[0_0_35px_rgba(212,175,55,0.35)] scale-[1.01]"
-                      : "border-foreground/10 hover:border-primary/40 hover:shadow-xl hover:-translate-y-1"
+                  transition={{ delay: index * 0.04, duration: 0.45, ease }}
+                  className={`group relative flex flex-col gap-4 p-6 md:p-8 md:flex-row md:items-start md:justify-between transition-colors ${
+                    isHighlighted ? "bg-primary/[0.06] ring-1 ring-inset ring-primary/40" : "hover:bg-surface/80"
                   }`}
                 >
-                  {/* Active Highlight Badge */}
                   {isHighlighted && (
-                    <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 bg-gradient-to-r from-amber-400 via-primary to-amber-500 text-black px-3.5 py-1 rounded-full font-mono text-[10px] font-extrabold tracking-wider uppercase shadow-lg flex items-center gap-1.5 animate-bounce">
-                      <Sparkles className="w-3.5 h-3.5 fill-black" /> Selected Role
+                    <div className="absolute top-3 right-3 md:top-4 md:right-4 flex items-center gap-1.5 rounded-full bg-primary px-2.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-primary-foreground">
+                      <Sparkles className="h-3 w-3" /> Selected
                     </div>
                   )}
 
-                  {/* Image Section */}
-                  <div className="w-full h-52 overflow-hidden bg-foreground/5 relative">
-                    <img
-                      src={imgUrl}
-                      alt={job.title}
-                      loading="lazy"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
-
-                    {/* Department Badge */}
-                    <div className="absolute top-3.5 left-3.5 bg-background/90 backdrop-blur-md border border-foreground/10 px-3 py-1 rounded-full font-mono text-[10px] tracking-[0.18em] uppercase text-primary font-semibold shadow-sm">
-                      {job.department}
-                    </div>
-
-                    {/* Top-Right Quick Share Button */}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onShare(job);
-                      }}
-                      className="absolute top-3.5 right-3.5 z-20 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-background/90 hover:bg-background text-foreground/80 hover:text-primary backdrop-blur-md border border-foreground/15 shadow-sm text-xs font-mono font-medium transition-all group-hover:border-primary/40 cursor-pointer"
-                      title="Share role & copy link"
-                    >
-                      <Share2 className="w-3.5 h-3.5 text-primary" />
-                      <span>Share</span>
-                    </button>
-                  </div>
-
-                  {/* Content Section */}
-                  <div className="p-6 flex flex-col flex-1">
-                    <h3 className="font-display text-xl md:text-2xl font-bold tracking-tight group-hover:text-primary transition-colors mb-3">
+                  <div className="min-w-0 flex-1 pe-0 md:pe-8">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary mb-2">{job.department}</p>
+                    <h3 className="font-display text-xl md:text-2xl font-bold tracking-tight mb-3 group-hover:text-primary transition-colors">
                       {job.title}
                     </h3>
-
-                    {/* Competency Badges */}
+                    <div className="mb-4">
+                      {isExpanded ? (
+                        <JobDescriptionBody text={fullDescription} />
+                      ) : (
+                        <p className="text-sm text-foreground/60 font-light leading-relaxed">{summary}</p>
+                      )}
+                      {canExpand && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setExpandedRoleIds((prev) => {
+                              const next = new Set(prev);
+                              if (next.has(job.id)) next.delete(job.id);
+                              else next.add(job.id);
+                              return next;
+                            });
+                          }}
+                          className="mt-3 inline-flex items-center gap-1.5 text-xs font-mono font-medium uppercase tracking-wider text-primary hover:text-primary/80 transition-colors cursor-pointer"
+                        >
+                          <ChevronDown
+                            className={`h-3.5 w-3.5 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                          />
+                          {isExpanded
+                            ? t("career.hide_description", "Hide full description")
+                            : t("career.view_full_description", "View full description")}
+                        </button>
+                      )}
+                    </div>
                     {badges.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 mb-4">
+                      <div className="flex flex-wrap gap-1.5">
                         {badges.map((b) => (
                           <span
                             key={b}
@@ -671,43 +724,35 @@ function OpenRoles({
                         ))}
                       </div>
                     )}
+                  </div>
 
-                    {/* Metadata */}
-                    <div className="flex flex-wrap gap-y-1.5 gap-x-4 text-xs font-mono text-foreground/50 mb-5">
-                      <span className="inline-flex items-center gap-1.5">
-                        <MapPin className="w-3.5 h-3.5 text-primary" />
+                  <div className="flex shrink-0 flex-col gap-3 md:items-end md:text-right md:min-w-[200px]">
+                    <div className="flex flex-col gap-1.5 text-xs font-mono text-foreground/55">
+                      <span className="inline-flex items-center gap-1.5 md:justify-end">
+                        <MapPin className="h-3.5 w-3.5 text-primary shrink-0" />
                         {job.location}
                       </span>
-                      <span className="inline-flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-primary" />
+                      <span className="inline-flex items-center gap-1.5 md:justify-end">
+                        <Clock className="h-3.5 w-3.5 text-primary shrink-0" />
                         {job.type}
                       </span>
                     </div>
-
-                    <p className="text-sm text-foreground/60 font-light leading-relaxed mb-6 line-clamp-3 flex-1">
-                      {job.description}
-                    </p>
-
-                    {/* Action Bar */}
-                    <div className="mt-auto pt-4 border-t border-foreground/10 flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-bold tracking-[0.18em] text-foreground group-hover:text-primary transition-colors uppercase">
-                          {t("career.apply")}
-                        </span>
-                        <ArrowUpRight className="w-4 h-4 text-primary group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                      </div>
-
+                    <div className="flex flex-wrap gap-2 md:justify-end">
                       <button
                         type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onShare(job);
-                        }}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-foreground/15 hover:border-primary/50 bg-foreground/[0.02] hover:bg-primary/10 text-foreground/75 hover:text-primary transition-all text-xs font-mono font-medium cursor-pointer"
-                        title="Share link & social media"
+                        onClick={() => onApply(job.title)}
+                        className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer"
                       >
-                        <Share2 className="w-3.5 h-3.5 text-primary" />
-                        <span>Share</span>
+                        {t("career.apply")}
+                        <ArrowUpRight className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onShare(job)}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-foreground/15 px-3 py-2 text-xs font-mono font-medium text-foreground/75 hover:border-primary/40 hover:text-primary transition-colors cursor-pointer"
+                      >
+                        <Share2 className="h-3.5 w-3.5 text-primary" />
+                        Share
                       </button>
                     </div>
                   </div>
