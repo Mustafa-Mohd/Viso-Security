@@ -50,10 +50,29 @@ Do **not** put API keys in frontend/admin `.env` with a `VITE_` prefix. Chat and
 
 - **Main site:** build `frontend/dist`, serve with nginx (or similar). SPA fallback: `try_files $uri $uri/ /index.html`.
 - **Admin:** build `admin/dist`, serve on a subdomain (e.g. `admin.yourdomain.com`) with the same SPA fallback.
-- **API:** run `npm run start -w @viso/backend` (or systemd). Proxy `/api/` to the Node process (default port **8787**). Leave **`VITE_API_URL` unset** so the browser uses same-origin `/api/*`.
-- **PM2:** from repo root: `npm run pm2:start` · `npm run pm2:logs` · `npm run pm2:stop` · persist on reboot: `pm2 startup` then `pm2 save`.
-- **PM2 (VPS):** from repo root, after `backend/.env` exists and `npm install`: `npm run pm2:start` · logs: `npm run pm2:logs` · stop: `npm run pm2:stop` · on boot: `pm2 startup` then `pm2 save`.
+- **API:** run `npm run start -w @viso/backend` (or systemd service). Proxy `/api/` to the Node process (default port **8787**). Leave **`VITE_API_URL` unset** so the browser uses same-origin `/api/*`.
 - Set **`VITE_*`** at build time; set **`backend/.env`** (or host env) on the server for secrets.
+
+### PM2 (VPS)
+
+From repo root (after `npm install` and `backend/.env` exists):
+
+```bash
+npm install -g pm2
+npm run pm2:backend          # starts viso-api via npm run dev:backend
+pm2 save
+pm2 startup                  # follow the printed command so API survives reboot
+npm run pm2:backend:logs     # tail logs
+npm run pm2:backend:stop
+```
+
+Equivalent manual command:
+
+```bash
+pm2 start ecosystem.config.cjs
+```
+
+Restart after code or env changes: `pm2 restart viso-api`.
 
 ## SQL
 

@@ -1,14 +1,15 @@
-/** PM2 process file — run from repo root: npm run pm2:start */
+/** PM2: API server (chat + email). Same as `npm run dev:backend`. */
 module.exports = {
   apps: [
     {
       name: "viso-api",
-      cwd: "./backend",
+      cwd: __dirname,
       script: "npm",
-      args: "run start",
+      args: "run dev:backend",
+      interpreter: "none",
       autorestart: true,
+      max_restarts: 10,
       watch: false,
-      max_memory_restart: "400M",
       env: {
         NODE_ENV: "production",
       },
