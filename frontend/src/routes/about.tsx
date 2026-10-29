@@ -590,10 +590,10 @@ function WhoWeAre({
     <section
       id="who"
       ref={ref}
-      className="relative px-8 md:px-16 py-12 md:py-20 overflow-hidden"
+      className="relative px-4 sm:px-6 md:px-16 py-10 md:py-20 overflow-hidden pb-24 sm:pb-20 md:pb-20"
     >
-      <div className="relative z-10 max-w-[1600px] mx-auto bg-surface border border-foreground/10 rounded-[2rem] p-6 md:p-8 lg:p-10 shadow-sm transition-all duration-700 hover:shadow-xl hover:border-gold/30">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+      <div className="relative z-10 max-w-[1600px] mx-auto min-w-0 bg-surface border border-foreground/10 rounded-2xl sm:rounded-[2rem] p-4 sm:p-6 md:p-8 lg:p-10 shadow-sm transition-all duration-700 hover:shadow-xl hover:border-gold/30">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center min-w-0">
           {/* Left Side: 3D Interactive Logo */}
           <div className="order-2 lg:order-1">
             <Reveal delay={0.25}>
@@ -602,9 +602,9 @@ function WhoWeAre({
           </div>
 
           {/* Right Side: Information */}
-          <div className="order-1 lg:order-2 space-y-6">
+          <div className="order-1 lg:order-2 space-y-5 sm:space-y-6 min-w-0 max-w-full pe-1 sm:pe-0">
             <Reveal delay={0.1}>
-              <h2 className="font-display text-3xl md:text-4xl lg:text-5xl xl:text-[3.25rem] leading-[1.1] tracking-tight text-foreground whitespace-nowrap">
+              <h2 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-[3.25rem] leading-[1.15] tracking-tight text-foreground text-balance break-words">
                 {title.includes("Peace") || title.includes("meets") || title.includes("يلتقي") ? (
                   <>
                     {t("about_page.story_title")}{" "}
@@ -628,17 +628,17 @@ function WhoWeAre({
             <AnimatedText 
               text={desc} 
               delay={2}
-              className="text-base md:text-lg text-foreground/90 leading-relaxed font-light text-justify"
+              className="text-sm sm:text-base md:text-lg text-foreground/90 leading-relaxed font-light text-pretty sm:text-justify hyphens-none"
             />
             
             <AnimatedText 
               text={secondary} 
               delay={4}
-              className="text-sm md:text-base text-foreground/80 leading-relaxed font-light text-justify mt-4"
+              className="text-sm md:text-base text-foreground/80 leading-relaxed font-light text-pretty sm:text-justify hyphens-none mt-4"
             />
 
             <Reveal delay={0.5}>
-              <div className="pt-6 grid grid-cols-2 gap-x-8 gap-y-8 border-t border-foreground/10">
+              <div className="pt-5 sm:pt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-4 sm:gap-x-8 gap-y-6 sm:gap-y-8 border-t border-foreground/10 min-w-0">
                 {[
                   { label: t("about_page.founded_label"), value: t("about_page.founded_val") },
                   { label: t("about_page.hq_label"), value: t("about_page.hq_val") },
@@ -647,17 +647,17 @@ function WhoWeAre({
                 ].map((item, idx) => (
                   <motion.div 
                     key={item.label} 
-                    className="group cursor-pointer"
+                    className="group cursor-pointer min-w-0"
                     initial={{ opacity: 0, y: 15 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: 0.6 + idx * 0.1 }}
                   >
-                    <div className="font-mono text-[10px] tracking-[0.25em] text-primary uppercase mb-1.5 flex items-center gap-2">
-                      <span className="w-2 h-px bg-primary/50 group-hover:bg-primary transition-colors duration-300 group-hover:w-4" />
-                      {item.label}
+                    <div className="font-mono text-[9px] sm:text-[10px] tracking-[0.12em] sm:tracking-[0.25em] text-primary uppercase mb-1.5 flex items-center gap-2 min-w-0">
+                      <span className="w-2 h-px shrink-0 bg-primary/50 group-hover:bg-primary transition-colors duration-300 group-hover:w-4" />
+                      <span className="min-w-0 break-words">{item.label}</span>
                     </div>
-                    <div className="font-display text-lg md:text-xl text-foreground tracking-tight group-hover:text-primary transition-colors duration-500 group-hover:translate-x-1 transform">
+                    <div className="font-display text-base sm:text-lg md:text-xl text-foreground tracking-tight break-words group-hover:text-primary transition-colors duration-500 sm:group-hover:translate-x-1 transform">
                       {item.value}
                     </div>
                   </motion.div>

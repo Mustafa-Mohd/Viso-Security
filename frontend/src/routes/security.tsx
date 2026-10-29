@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { TopNav } from "@/components/TopNav";
 import ScrollStack, { ScrollStackItem } from "@/components/ScrollStack";
 
@@ -14,6 +14,62 @@ export const Route = createFileRoute("/security")({
     ],
   }),
 });
+
+type SecurityStage = {
+  id: number;
+  num: string;
+  title: string;
+  subtitle: string;
+  desc: string;
+  deliverables: string[];
+  img: string;
+};
+
+function SecurityStageCard({ stage, t }: { stage: SecurityStage; t: TFunction }) {
+  return (
+    <div className="flex flex-col lg:flex-row h-full min-h-0 lg:min-h-[65vh]">
+      <div className="p-5 sm:p-6 md:p-8 lg:p-12 flex-1 flex flex-col justify-center order-2 lg:order-1">
+        <div className="font-mono text-[10px] sm:text-xs tracking-widest text-primary mb-2 sm:mb-3">
+          {t("security.phase")} {stage.num}
+        </div>
+        <h3 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl mb-2 sm:mb-3 text-foreground leading-tight text-balance">
+          {stage.title}
+        </h3>
+        <div className="font-sans text-base sm:text-lg font-medium mb-3 sm:mb-4 text-gold leading-snug">
+          {stage.subtitle}
+        </div>
+        <p className="font-sans text-sm sm:text-base leading-relaxed text-foreground/70 mb-6 sm:mb-8 max-w-xl">
+          {stage.desc}
+        </p>
+        <div>
+          <div className="font-mono text-[10px] sm:text-xs font-bold tracking-widest text-foreground/40 uppercase mb-2 sm:mb-3">
+            {t("security.deliverables")}
+          </div>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4 sm:gap-x-6">
+            {stage.deliverables.map((item, idx) => (
+              <li key={idx} className="flex items-start gap-2.5 sm:gap-3">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+                <span className="font-sans text-xs sm:text-sm font-medium text-foreground/80 leading-snug">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div className="lg:w-5/12 w-full p-4 sm:p-6 lg:p-8 flex items-center justify-center bg-background/30 border-b lg:border-b-0 border-t lg:border-t-0 lg:border-l border-foreground/5 order-1 lg:order-2">
+        <div className="w-full aspect-[4/3] sm:aspect-[16/10] lg:min-h-[250px] lg:h-full lg:aspect-auto relative rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl border border-foreground/10 group bg-surface">
+          <img
+            src={stage.img}
+            alt={stage.title}
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-1000 ease-out"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function SecurityAnalysisPage() {
   const { t, i18n } = useTranslation();
@@ -72,10 +128,10 @@ function SecurityAnalysisPage() {
     <div className="bg-background min-h-screen text-foreground font-sans selection:bg-primary/20 selection:text-primary">
       <TopNav />
       
-      <main className="pb-40">
+      <main className="pb-16 md:pb-40">
 
         {/* Compact Hero Banner Section */}
-        <div className="relative w-full overflow-hidden flex items-center justify-center bg-black">
+        <div className="relative w-full overflow-hidden flex items-center justify-center bg-black min-h-[280px] sm:min-h-[320px]">
           <div className="absolute inset-0 pointer-events-none">
             <img 
               src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=80" 
@@ -86,13 +142,13 @@ function SecurityAnalysisPage() {
             <div className="absolute inset-0 bg-black/40" />
           </div>
           
-          <div className="relative z-10 max-w-[1400px] mx-auto px-4 md:px-8 pt-40 pb-16 text-center flex flex-col items-center">
+          <div className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8 pt-28 sm:pt-32 md:pt-40 pb-10 sm:pb-14 md:pb-16 text-center flex flex-col items-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <h1 className="font-display text-4xl md:text-6xl font-bold text-white tracking-tight leading-tight mb-6 drop-shadow-lg">
+              <h1 className="font-display text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-tight mb-4 sm:mb-6 drop-shadow-lg text-balance">
                 {isArabic ? (
                   <>خدماتنا <span className="text-primary">الجوهرية</span></>
                 ) : (
@@ -105,14 +161,14 @@ function SecurityAnalysisPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.15 }}
-              className="max-w-3xl"
+              className="max-w-3xl px-1"
             >
-              <h2 className="font-display text-xl font-bold text-white/90 mb-3 drop-shadow-md">
+              <h2 className="font-display text-base sm:text-lg md:text-xl font-bold text-white/90 mb-2 sm:mb-3 drop-shadow-md leading-snug text-balance">
                 {isArabic
                   ? "دعم متكامل لكافة مراحل دورة مشروع الأمن وفق متطلبات الهيئة العليا للأمن الصناعي (HCIS / SAIS)"
                   : "Supporting Every Stage of the HCIS / SAIS Security Project Lifecycle"}
               </h2>
-              <p className="font-sans text-base text-white/80 leading-relaxed drop-shadow-md">
+              <p className="font-sans text-sm sm:text-base text-white/80 leading-relaxed drop-shadow-md">
                 {isArabic
                   ? "سواء كنت بصدد تطوير منشأة جديدة أو ترقية أصول قائمة، فإن المتطلبات الأمنية تتطور عبر مراحل المشروع المختلفة. تقدم فيسو استشارات هندسية أمنية متخصصة تبدأ من انطلاق المشروع وحتى الجاهزية التشغيلية التامة، مما يضمن توافق الأهداف الأمنية، والمخرجات الهندسية، والاشتراطات التنظيمية في كل مرحلة."
                   : "Whether developing a new facility or upgrading an existing asset, security requirements evolve throughout the project lifecycle. VISO provides specialist security engineering consultancy from project initiation through operational readiness, ensuring security objectives, engineering deliverables, and regulatory requirements remain aligned at every stage."}
@@ -121,7 +177,21 @@ function SecurityAnalysisPage() {
           </div>
         </div>
 
-        <div className="max-w-[1400px] mx-auto px-4 md:px-8 -mt-6">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8 -mt-4 sm:-mt-6">
+          {/* Mobile / tablet: normal scroll (no Lenis stack) */}
+          <div className="lg:hidden flex flex-col gap-5 sm:gap-6 py-6 sm:py-8 pb-8">
+            {stages.map((stage) => (
+              <article
+                key={stage.id}
+                className="bg-surface-2 overflow-hidden border border-foreground/5 rounded-2xl sm:rounded-3xl shadow-lg"
+              >
+                <SecurityStageCard stage={stage} t={t} />
+              </article>
+            ))}
+          </div>
+
+          {/* Desktop: stacked scroll experience */}
+          <div className="hidden lg:block">
           <ScrollStack 
             useWindowScroll={true} 
             itemDistance={400}
@@ -132,50 +202,11 @@ function SecurityAnalysisPage() {
           >
             {stages.map((stage) => (
               <ScrollStackItem key={stage.id} itemClassName="!bg-surface-2 !p-0 !overflow-hidden border border-foreground/5 rounded-3xl shadow-xl">
-                <div className="flex flex-col lg:flex-row h-full min-h-[65vh]">
-                  {/* Left Side: Content */}
-                  <div className="p-8 lg:p-12 flex-1 flex flex-col justify-center">
-                    <div className="font-mono text-xs tracking-widest text-primary mb-3">
-                      {t("security.phase")} {stage.num}
-                    </div>
-                    <h3 className="font-display text-4xl lg:text-5xl mb-3 text-foreground leading-tight">
-                      {stage.title}
-                    </h3>
-                    <div className="font-sans text-lg font-medium mb-4 text-gold">
-                      {stage.subtitle}
-                    </div>
-                    <p className="font-sans text-base leading-relaxed text-foreground/70 mb-8 max-w-xl">
-                      {stage.desc}
-                    </p>
-                    <div>
-                      <div className="font-mono text-xs font-bold tracking-widest text-foreground/40 uppercase mb-3">{t("security.deliverables")}</div>
-                      <ul className="grid sm:grid-cols-2 gap-y-2 gap-x-6">
-                        {stage.deliverables.map((item, idx) => (
-                          <li key={idx} className="flex items-start gap-3">
-                            <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0"></span>
-                            <span className="font-sans text-sm font-medium text-foreground/80">{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                  
-                  {/* Right Side: Image Frame */}
-                  <div className="lg:w-5/12 w-full p-6 lg:p-8 flex items-center justify-center bg-background/30 border-t lg:border-t-0 lg:border-l border-foreground/5">
-                    <div className="w-full h-full min-h-[250px] relative rounded-2xl overflow-hidden shadow-2xl border border-foreground/10 group bg-surface">
-                      <img 
-                        src={stage.img} 
-                        alt={stage.title}
-                        loading="lazy"
-                        decoding="async"
-                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out" 
-                      />
-                    </div>
-                  </div>
-                </div>
+                <SecurityStageCard stage={stage} t={t} />
               </ScrollStackItem>
             ))}
           </ScrollStack>
+          </div>
         </div>
 
         {/* Project Management Section */}
@@ -184,13 +215,13 @@ function SecurityAnalysisPage() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="mt-8 relative overflow-hidden bg-surface-2 border-y border-foreground/5"
+          className="mt-4 sm:mt-8 relative overflow-hidden bg-surface-2 border-y border-foreground/5"
         >
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl translate-x-1/3 -translate-y-1/3 pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gold/5 rounded-full blur-3xl -translate-x-1/3 translate-y-1/3 pointer-events-none" />
           
-          <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-24 relative z-10">
-            <div className="grid lg:grid-cols-[1fr_1.2fr] gap-16 lg:gap-24 items-center">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8 py-14 sm:py-20 md:py-24 relative z-10">
+            <div className="grid lg:grid-cols-[1fr_1.2fr] gap-10 sm:gap-12 lg:gap-24 items-center">
               <div>
                 <motion.div
                   initial={{ opacity: 0, x: -30 }}
@@ -198,11 +229,11 @@ function SecurityAnalysisPage() {
                   viewport={{ once: true, margin: "-40px" }}
                   transition={{ duration: 0.8, delay: 0.2 }}
                 >
-                  <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-foreground mb-6 leading-tight">
+                  <h2 className="font-display text-2xl sm:text-3xl md:text-5xl lg:text-6xl text-foreground mb-4 sm:mb-6 leading-tight text-balance">
                     {t("security.pm.title")} <br/>
                     <span className="text-primary">{t("security.pm.title_italic")}</span>
                   </h2>
-                  <p className="font-sans text-lg text-foreground/70 leading-relaxed mb-8 max-w-xl">
+                  <p className="font-sans text-sm sm:text-base md:text-lg text-foreground/70 leading-relaxed mb-6 sm:mb-8 max-w-xl">
                     {t("security.pm.desc")}
                   </p>
                 </motion.div>
@@ -213,7 +244,7 @@ function SecurityAnalysisPage() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ duration: 0.8, delay: 0.4 }}
-                className="bg-background rounded-3xl p-8 md:p-12 shadow-2xl border border-foreground/5 relative group hover:border-primary/20 transition-colors duration-500"
+                className="bg-background rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-12 shadow-2xl border border-foreground/5 relative group hover:border-primary/20 transition-colors duration-500"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl pointer-events-none" />
                 
@@ -241,14 +272,14 @@ function SecurityAnalysisPage() {
         </motion.section>
 
         {/* Why Choose VISO Section */}
-        <section className="py-32 bg-background relative overflow-hidden">
-          <div className="max-w-[1400px] mx-auto px-4 md:px-8 relative z-10">
-            <div className="text-center mb-20">
-              <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-foreground mb-4">
+        <section className="py-16 sm:py-24 md:py-32 bg-background relative overflow-hidden">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8 relative z-10">
+            <div className="text-center mb-10 sm:mb-16 md:mb-20">
+              <h2 className="font-display text-2xl sm:text-3xl md:text-5xl lg:text-6xl text-foreground mb-3 sm:mb-4 text-balance px-2">
                 {t("security.why_choose.title")} <span className="text-primary">{t("security.why_choose.title_italic")}</span>
               </h2>
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
               {['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7'].map((key, idx) => (
                 <motion.div
                   key={key}
@@ -256,7 +287,7 @@ function SecurityAnalysisPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.5, delay: idx * 0.08 }}
-                  className="bg-surface-2 p-8 rounded-3xl border border-foreground/5 hover:border-primary/20 transition-all duration-300 group flex flex-col h-full hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5"
+                  className="bg-surface-2 p-5 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-foreground/5 hover:border-primary/20 transition-all duration-300 group flex flex-col h-full hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5"
                 >
                   <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all duration-300 border border-primary/10">
                     <span className="font-display font-bold text-lg">{idx + 1}</span>
@@ -270,17 +301,17 @@ function SecurityAnalysisPage() {
         </section>
 
         {/* Our Approach Section */}
-        <section className="py-32 bg-surface-2 border-y border-foreground/5 relative overflow-hidden">
+        <section className="py-16 sm:py-24 md:py-32 bg-surface-2 border-y border-foreground/5 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl translate-x-1/3 -translate-y-1/3 pointer-events-none" />
-          <div className="max-w-[1400px] mx-auto px-4 md:px-8 relative z-10">
-            <div className="text-center mb-20 max-w-3xl mx-auto">
-              <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-foreground mb-6">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8 relative z-10">
+            <div className="text-center mb-10 sm:mb-16 md:mb-20 max-w-3xl mx-auto px-1">
+              <h2 className="font-display text-2xl sm:text-3xl md:text-5xl lg:text-6xl text-foreground mb-4 sm:mb-6 text-balance">
                 {t("security.approach.title")} <span className="italic text-primary">{t("security.approach.title_italic")}</span>
               </h2>
-              <p className="font-sans text-lg text-foreground/70">{t("security.approach.desc")}</p>
+              <p className="font-sans text-sm sm:text-base md:text-lg text-foreground/70">{t("security.approach.desc")}</p>
             </div>
             
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8 sm:gap-x-8 sm:gap-y-12">
               {['a1', 'a2', 'a3', 'a4', 'a5', 'a6'].map((key, idx) => (
                 <motion.div
                   key={key}
@@ -288,9 +319,9 @@ function SecurityAnalysisPage() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  className="flex gap-6 items-start group"
+                  className="flex gap-4 sm:gap-6 items-start group"
                 >
-                  <div className="w-16 h-16 rounded-full bg-background border border-foreground/10 flex flex-col items-center justify-center shrink-0 shadow-lg relative overflow-hidden group-hover:border-primary/30 transition-colors duration-300">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-background border border-foreground/10 flex flex-col items-center justify-center shrink-0 shadow-lg relative overflow-hidden group-hover:border-primary/30 transition-colors duration-300">
                     <div className="absolute inset-0 bg-primary/5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
                     <span className="font-mono text-[10px] font-bold tracking-widest text-primary/60 group-hover:text-primary transition-colors relative z-10">STEP</span>
                     <span className="font-display font-bold text-xl text-foreground relative z-10">0{idx + 1}</span>
@@ -306,27 +337,27 @@ function SecurityAnalysisPage() {
         </section>
 
         {/* Let's Discuss CTA */}
-        <section className="py-32 bg-background relative overflow-hidden">
+        <section className="py-16 sm:py-24 md:py-32 bg-background relative overflow-hidden pb-[max(2rem,env(safe-area-inset-bottom))]">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-gold/5 rounded-full blur-3xl translate-x-1/3 translate-y-1/3 pointer-events-none" />
           
-          <div className="max-w-[800px] mx-auto px-4 text-center relative z-10">
+          <div className="max-w-[800px] mx-auto px-4 sm:px-6 text-center relative z-10">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="font-display text-4xl md:text-5xl lg:text-7xl text-foreground mb-8 leading-tight">
+              <h2 className="font-display text-2xl sm:text-3xl md:text-5xl lg:text-7xl text-foreground mb-6 sm:mb-8 leading-tight text-balance">
                 {t("security.discuss.title")} <br/>
                 <span className="italic text-primary">{t("security.discuss.title_italic")}</span>
               </h2>
-              <p className="font-sans text-lg md:text-xl text-foreground/70 mb-12 leading-relaxed max-w-2xl mx-auto">
+              <p className="font-sans text-sm sm:text-base md:text-xl text-foreground/70 mb-8 sm:mb-12 leading-relaxed max-w-2xl mx-auto">
                 {t("security.discuss.desc")}
               </p>
               <Link
                 to="/contact"
-                className="inline-flex items-center justify-center rounded-full bg-primary px-10 py-5 font-sans text-sm font-bold tracking-widest text-white hover:bg-gold transition-all duration-400 hover:scale-[1.05] shadow-xl hover:shadow-primary/30 group"
+                className="inline-flex items-center justify-center rounded-full bg-primary px-7 py-3.5 sm:px-10 sm:py-5 font-sans text-xs sm:text-sm font-bold tracking-widest text-white hover:bg-gold transition-all duration-400 hover:scale-[1.05] shadow-xl hover:shadow-primary/30 group"
               >
                 {t("security.discuss.btn")}
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="ml-3 transition-transform duration-300 group-hover:translate-x-1" aria-hidden><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
