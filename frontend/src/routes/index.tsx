@@ -31,7 +31,24 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "VISO | High-End Security Architecture" },
-      { name: "description", content: "Premium security architecture and consulting." },
+      {
+        name: "description",
+        content:
+          "Vision of Solutions (Viso Group) provides SAIS security consultancy, physical security engineering, risk management & certified translation services across Saudi Arabia.",
+      },
+      {
+        property: "og:title",
+        content: "Viso Group | Leading Security Consultancy & SAIS Experts in KSA",
+      },
+      {
+        property: "og:description",
+        content:
+          "Vision of Solutions (Viso Group) provides SAIS security consultancy, physical security engineering, risk management & certified translation services across Saudi Arabia.",
+      },
+      {
+        name: "twitter:description",
+        content: "SAIS security consultancy, physical security engineering, & certified translation services in KSA.",
+      },
     ],
   }),
 });
@@ -495,13 +512,13 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
 
       {/* Text Content overlay */}
       <div
-        className="relative z-10 flex min-h-[inherit] items-center px-6 md:px-12 lg:px-16 py-10 md:py-14"
+        className="relative z-10 flex min-h-[inherit] items-center px-5 sm:px-6 md:px-12 lg:px-16 py-8 sm:py-10 md:py-14"
         dir={isArabic ? "rtl" : "ltr"}
       >
         <motion.div
-          className={`max-w-xl md:max-w-2xl lg:max-w-3xl w-full ${isArabic ? 'text-right' : 'text-left'}`}
+          className={`max-w-[min(100%,22rem)] sm:max-w-xl md:max-w-2xl lg:max-w-3xl w-full ${isArabic ? "text-right sm:max-w-xl" : "text-left"}`}
         >
-          <div className="relative h-64 md:h-56">
+          <div className="relative min-h-[11.5rem] sm:min-h-[14rem] md:h-56">
             <AnimatePresence mode="wait">
               <motion.div
                 key={`${currentSlide}-${isArabic}`}
@@ -511,15 +528,25 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
                 transition={{ duration: 0.5, ease: "easeOut" }}
                 className="absolute inset-0"
               >
-                <h1 className={`font-display font-black text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.1] tracking-tight text-white uppercase drop-shadow-[0_4px_25px_rgba(0,0,0,0.9)] mb-6 ${isArabic ? 'font-arabic tracking-normal' : ''}`}>
+                <h1
+                  className={`font-display font-black text-[1.5rem] leading-[1.12] sm:text-3xl md:text-6xl lg:text-7xl tracking-tight text-white uppercase drop-shadow-[0_4px_25px_rgba(0,0,0,0.9)] mb-3 sm:mb-5 md:mb-6 ${
+                    isArabic ? "font-arabic tracking-normal normal-case text-[1.375rem] sm:text-[1.75rem] md:text-5xl" : ""
+                  }`}
+                >
                   {slideTitle}
                 </h1>
-                <p className={`font-sans text-lg md:text-xl text-white/80 font-light mb-8 max-w-xl text-pretty drop-shadow-md ${isArabic ? 'font-arabic' : ''}`}>
+                <p
+                  className={`font-sans text-[0.8125rem] leading-relaxed sm:text-base md:text-xl text-white/80 font-light mb-5 sm:mb-7 md:mb-8 max-w-[18rem] sm:max-w-md md:max-w-xl text-pretty drop-shadow-md ${
+                    isArabic ? "font-arabic max-w-[20rem] sm:max-w-lg" : ""
+                  }`}
+                >
                   {slideSubtitle}
                 </p>
                 <Link
                   to={slideLink}
-                  className={`inline-flex items-center gap-2 rounded-sm bg-primary px-8 py-4 font-sans text-xs font-bold tracking-[0.2em] text-white transition-all duration-400 hover:bg-gold hover:scale-[1.03] shadow-[0_4px_20px_rgba(212,175,55,0.3)] uppercase cursor-pointer ${isArabic ? 'font-arabic tracking-normal' : ''}`}
+                  className={`inline-flex items-center gap-2 rounded-sm bg-primary px-5 py-2.5 sm:px-8 sm:py-4 font-sans text-[10px] sm:text-xs font-bold tracking-[0.18em] sm:tracking-[0.2em] text-white transition-all duration-400 hover:bg-gold hover:scale-[1.03] shadow-[0_4px_20px_rgba(212,175,55,0.3)] uppercase cursor-pointer ${
+                    isArabic ? "font-arabic tracking-normal" : ""
+                  }`}
                 >
                   {slideButtonText}
                 </Link>
