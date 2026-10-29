@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useRef } from "react";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import { Eye, EyeOff, LayoutDashboard, Image as ImageIcon, Settings, LogOut, ChevronRight, Save, Plus, Trash2, Upload, AlertCircle, MessageSquare, Users, Briefcase, FileText, History, ArrowUp, ArrowDown, Loader2, Link, Video, ShieldCheck, ArrowLeft, Layers, Search, X, Calendar, RefreshCw } from "lucide-react";
+import { Eye, EyeOff, LayoutDashboard, Image as ImageIcon, Settings, LogOut, ChevronRight, Save, Plus, Trash2, Upload, AlertCircle, MessageSquare, Users, Briefcase, FileText, History, ArrowUp, ArrowDown, Loader2, Link, Video, ShieldCheck, ArrowLeft, Layers, Search, X, Calendar, RefreshCw, Smartphone } from "lucide-react";
 import { DmsDashboard } from "@/components/DmsDashboard";
 import { HrDashboard } from "@/components/HrDashboard";
 import { CertificatesDashboard } from "@/components/CertificatesDashboard";
@@ -730,6 +730,7 @@ const DEFAULT_HERO_SLIDES = [
 
   const [heroData, setHeroData] = useState<{
     videoUrl?: string;
+    mobileVideoUrl?: string;
     slides: { title: string; subtitle?: string; link?: string; buttonText?: string; imageUrl?: string }[];
     title1?: string;
     title2?: string;
@@ -2113,7 +2114,7 @@ const DEFAULT_HERO_SLIDES = [
                     <div>
                       <h2 className="text-lg font-bold text-foreground">Hero Section Configuration</h2>
                       <p className="text-[11px] text-muted-foreground">
-                        Configure the homepage hero background video and compliance logos.
+                        Configure desktop and mobile hero background videos, plus compliance logos.
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -2129,33 +2130,65 @@ const DEFAULT_HERO_SLIDES = [
                   </div>
 
                   {/* Hero Background Video Section */}
-                  <div className="p-4 rounded-xl border border-foreground/10 bg-background/60 space-y-2.5">
-                    <div className="flex items-center justify-between">
-                      <label className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-2">
-                        <Video className="w-4 h-4 text-primary" />
-                        Hero Background Video URL
-                      </label>
-                      <span className="text-[10px] text-muted-foreground">MP4 video link for homepage background</span>
+                  <div className="p-4 rounded-xl border border-foreground/10 bg-background/60 space-y-4">
+                    <div className="space-y-2.5">
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <label className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-2">
+                          <Video className="w-4 h-4 text-primary" />
+                          Hero Video URL (Desktop)
+                        </label>
+                        <span className="text-[10px] text-muted-foreground">Tablet &amp; desktop (md and up)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="url"
+                          placeholder="https://res.cloudinary.com/.../video.mp4"
+                          value={heroData.videoUrl || ""}
+                          onChange={(e) => setHeroData({ ...heroData, videoUrl: e.target.value })}
+                          className="flex-1 px-3 py-2 rounded-lg bg-surface border border-foreground/15 text-xs text-foreground font-mono placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none transition-colors"
+                        />
+                        {heroData.videoUrl && (
+                          <a
+                            href={heroData.videoUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 px-3 py-2 text-xs font-medium rounded-lg bg-foreground/5 hover:bg-foreground/10 text-foreground transition-colors shrink-0"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                            Preview
+                          </a>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="url"
-                        placeholder="https://res.cloudinary.com/.../video.mp4"
-                        value={heroData.videoUrl || ""}
-                        onChange={(e) => setHeroData({ ...heroData, videoUrl: e.target.value })}
-                        className="flex-1 px-3 py-2 rounded-lg bg-surface border border-foreground/15 text-xs text-foreground font-mono placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none transition-colors"
-                      />
-                      {heroData.videoUrl && (
-                        <a
-                          href={heroData.videoUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1 px-3 py-2 text-xs font-medium rounded-lg bg-foreground/5 hover:bg-foreground/10 text-foreground transition-colors shrink-0"
-                        >
-                          <Eye className="w-3.5 h-3.5" />
-                          Preview Video
-                        </a>
-                      )}
+
+                    <div className="space-y-2.5 pt-2 border-t border-foreground/10">
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <label className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-2">
+                          <Smartphone className="w-4 h-4 text-primary" />
+                          Hero Video URL (Mobile)
+                        </label>
+                        <span className="text-[10px] text-muted-foreground">Phones only; leave empty to use desktop video</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="url"
+                          placeholder="https://res.cloudinary.com/.../mobile-video.mp4"
+                          value={heroData.mobileVideoUrl || ""}
+                          onChange={(e) => setHeroData({ ...heroData, mobileVideoUrl: e.target.value })}
+                          className="flex-1 px-3 py-2 rounded-lg bg-surface border border-foreground/15 text-xs text-foreground font-mono placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none transition-colors"
+                        />
+                        {(heroData.mobileVideoUrl || heroData.videoUrl) && (
+                          <a
+                            href={heroData.mobileVideoUrl || heroData.videoUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 px-3 py-2 text-xs font-medium rounded-lg bg-foreground/5 hover:bg-foreground/10 text-foreground transition-colors shrink-0"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                            Preview
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </div>
 

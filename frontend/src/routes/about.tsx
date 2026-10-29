@@ -1215,24 +1215,24 @@ function AboutFooter() {
   return (
     <footer 
       dir={isArabic ? "rtl" : "ltr"}
-      className="bg-white text-black py-12 border-t border-black/10"
+      className="bg-white text-black py-8 sm:py-12 border-t border-black/10 pb-[max(1rem,env(safe-area-inset-bottom))]"
     >
-      <div className="max-w-[1600px] mx-auto px-8 md:px-16 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="max-w-[1600px] mx-auto px-5 sm:px-8 md:px-16 flex flex-col md:flex-row items-center justify-between gap-5 sm:gap-6 text-center md:text-start">
         <img
           src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
           alt="VISO"
           loading="lazy"
           decoding="async"
-          className="h-10 w-auto object-contain"
+          className="h-9 sm:h-10 w-auto object-contain"
         />
-        <p className="font-sans text-xs text-black/50 tracking-wide">
+        <p className="font-sans text-[11px] sm:text-xs text-black/50 tracking-wide leading-relaxed max-w-sm">
           {isArabic ? (
             <span>جميع الحقوق محفوظة &copy; {new Date().getFullYear()} مجموعة فيزو (VISO Group).</span>
           ) : (
             <span>&copy; {new Date().getFullYear()} VISO Group. All rights reserved.</span>
           )}
         </p>
-        <div className="flex flex-wrap justify-center md:justify-end gap-x-6 gap-y-2 font-sans text-xs text-black/60">
+        <div className="flex flex-wrap justify-center md:justify-end gap-x-4 sm:gap-x-6 gap-y-2 font-sans text-[11px] sm:text-xs text-black/60">
           <Link to="/privacy" className="hover:text-gold transition-colors">
             {t("footer.privacy", "Privacy Policy")}
           </Link>

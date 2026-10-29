@@ -205,21 +205,21 @@ function HomePage() {
           </LazyMount>
 
           {cmsData.core_values && (
-            <LazyMount minHeight={540} fallback={<SectionFallback h={540} />}>
-              <div className="mt-10 md:mt-12 mb-12 md:mb-16">
+            <LazyMount minHeight={480} fallback={<SectionFallback h={480} />}>
+              <div className="mt-8 md:mt-12 mb-10 md:mb-16 px-4 sm:px-6 md:px-0">
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 1 }}
-                  className="text-center mb-5"
+                  className="text-center mb-4 md:mb-5 max-w-2xl mx-auto"
                 >
-                  <h2 className="text-3xl md:text-5xl font-light mb-2 text-foreground font-display">
+                  <h2 className="text-2xl sm:text-3xl md:text-5xl font-light mb-2 text-foreground font-display leading-tight">
                     {i18n.language === 'ar'
                       ? (cmsData.core_values.title_ar || t("about.values.title", "قيمنا الجوهرية"))
                       : (cmsData.core_values.title || t("about.values.title", "Our Core Values"))}
                   </h2>
-                  <p className="text-base md:text-lg text-black">
+                  <p className="text-sm sm:text-base md:text-lg text-black/80 leading-relaxed px-1">
                     {i18n.language === 'ar'
                       ? (cmsData.core_values.subtitle_ar || t("about.values.subtitle", "المبادئ التوجيهية الراسخة التي تقود مسيرة تميزنا وريادتنا الاستشارية."))
                       : (cmsData.core_values.subtitle || t("about.values.subtitle", "Guiding principles that drive our excellence."))}
@@ -427,10 +427,15 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
   const MERGED_HERO_VIDEO_URL =
     "https://res.cloudinary.com/dppwnds6z/video/upload/fl_splice,l_video:gemini_generated_video_1c397ea0/gemini_generated_video_4932b2ba.mp4";
 
-  const videoUrl =
-    data?.videoUrl && !data.videoUrl.includes("8399bb9c")
-      ? data.videoUrl
-      : MERGED_HERO_VIDEO_URL;
+  const resolveHeroVideoUrl = (url?: string) => {
+    if (url?.trim() && !url.includes("8399bb9c")) return url.trim();
+    return MERGED_HERO_VIDEO_URL;
+  };
+
+  const desktopVideoUrl = resolveHeroVideoUrl(data?.videoUrl);
+  const mobileVideoUrl = data?.mobileVideoUrl?.trim()
+    ? resolveHeroVideoUrl(data.mobileVideoUrl)
+    : desktopVideoUrl;
 
   useEffect(() => {
     if (!isReady) return;
@@ -488,14 +493,24 @@ export function HeroSection({ data, isReady = true }: { data?: any; isReady?: bo
       className="relative min-h-[calc(100dvh-4.25rem)] md:min-h-[calc(100dvh-4.5rem)] mt-[4.25rem] md:mt-[4.5rem] overflow-hidden bg-[#0d1117]"
     >
       <video
-        key={videoUrl}
+        key={`mobile-${mobileVideoUrl}`}
         autoPlay
         loop
         muted
         playsInline
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-cover md:hidden"
       >
-        <source src={videoUrl} type="video/mp4" />
+        <source src={mobileVideoUrl} type="video/mp4" />
+      </video>
+      <video
+        key={`desktop-${desktopVideoUrl}`}
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover hidden md:block"
+      >
+        <source src={desktopVideoUrl} type="video/mp4" />
         <source
           src="https://res.cloudinary.com/dppwnds6z/video/upload/v1792423642/gemini_generated_video_4932b2ba.mp4"
           type="video/mp4"
@@ -1398,7 +1413,7 @@ function ExpandingValueCards({ items }: { items: any[] }) {
 
   return (
     <div
-      className="flex flex-col lg:flex-row h-[750px] lg:h-[540px] w-full gap-[2px] rounded-3xl overflow-hidden bg-white/20 shadow-xl border border-white/10"
+      className="flex flex-col lg:flex-row h-auto lg:h-[540px] w-full gap-1.5 lg:gap-[2px] rounded-2xl lg:rounded-3xl overflow-hidden bg-white/20 shadow-xl border border-white/10 touch-pan-y"
       dir={isArabic ? "rtl" : "ltr"}
     >
       {items.map((cv, i) => {
@@ -1426,21 +1441,24 @@ function ExpandingValueCards({ items }: { items: any[] }) {
         return (
           <motion.div
             key={cv.id || i}
-            className="relative overflow-hidden cursor-pointer bg-black group"
-            layout
+            className={`relative cursor-pointer bg-black group w-full shrink-0 flex-none transition-[min-height] duration-500 ease-out overflow-hidden lg:overflow-hidden ${
+              isActive
+                ? "h-auto min-h-[18rem] lg:min-h-0 lg:h-full lg:flex-[6]"
+                : "min-h-[3.25rem] lg:min-h-0 lg:h-full lg:flex-1"
+            }`}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{
               duration: 0.8,
               delay: 0.1 + i * 0.1,
-              layout: { type: "spring", stiffness: 200, damping: 25 }
             }}
-            onMouseEnter={() => setActiveIdx(i)}
+            onMouseEnter={() => {
+              if (typeof window !== "undefined" && window.matchMedia("(min-width: 1024px)").matches) {
+                setActiveIdx(i);
+              }
+            }}
             onClick={() => setActiveIdx(i)}
-            style={{
-              flex: isActive ? 6 : 1,
-            }}
           >
             {/* Background Image with Zoom */}
             {(() => {
@@ -1481,21 +1499,32 @@ function ExpandingValueCards({ items }: { items: any[] }) {
             <div className="absolute inset-0 bg-black/20 z-10" />
             <div className={`absolute inset-0 transition-opacity duration-700 z-10 ${isActive ? 'bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-100' : 'opacity-0'}`} />
 
-            {/* Content Container */}
-            <div className="absolute inset-0 z-20 overflow-hidden">
+            {/* Content Container — flows on mobile (page scroll), overlay on desktop */}
+            <div
+              className={`z-20 ${
+                isActive
+                  ? "relative lg:absolute lg:inset-0 lg:overflow-hidden"
+                  : "absolute inset-0 overflow-hidden"
+              }`}
+            >
               <AnimatePresence mode="wait">
                 {!isActive ? (
-                  /* Vertical Title State (Inactive) */
+                  /* Collapsed — horizontal strip on mobile, vertical label on desktop */
                   <motion.div
                     key="inactive"
                     initial={{ opacity: 0, rotateY: 90 }}
                     animate={{ opacity: 1, rotateY: 0 }}
                     exit={{ opacity: 0, rotateY: -90 }}
                     transition={{ duration: 0.3 }}
-                    className="absolute inset-0 flex items-center justify-center p-6"
+                    className="absolute inset-0 flex items-center justify-center p-3 lg:p-6"
                   >
                     <h3
-                      className={`font-display font-bold text-3xl md:text-4xl text-white tracking-widest drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] opacity-90 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap ${isArabic ? 'font-arabic tracking-normal' : ''}`}
+                      className={`font-display font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] opacity-90 group-hover:opacity-100 transition-opacity duration-300 lg:hidden w-full text-center text-sm sm:text-base truncate px-2 ${isArabic ? "font-arabic tracking-normal" : "uppercase tracking-wider"}`}
+                    >
+                      {itemTitle}
+                    </h3>
+                    <h3
+                      className={`hidden lg:block font-display font-bold text-3xl md:text-4xl text-white tracking-widest drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] opacity-90 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap ${isArabic ? "font-arabic tracking-normal" : ""}`}
                       style={
                         isArabic
                           ? { transform: "rotate(-90deg)" }
@@ -1509,18 +1538,18 @@ function ExpandingValueCards({ items }: { items: any[] }) {
                   /* Expanded Content State (Active) */
                   <motion.div
                     key="active"
-                    initial={{ opacity: 0, y: 40, rotateX: -45 }}
-                    animate={{ opacity: 1, y: 0, rotateX: 0 }}
-                    exit={{ opacity: 0, y: 20, rotateX: 45 }}
-                    transition={{ duration: 0.5, staggerChildren: 0.1 }}
-                    className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 transform-gpu"
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
+                    transition={{ duration: 0.35 }}
+                    className="relative flex flex-col justify-end min-h-[18rem] sm:min-h-[20rem] p-4 sm:p-6 md:p-8 lg:absolute lg:inset-0 lg:min-h-0 transform-gpu"
                   >
                     {/* Large Animated Floating Symbol */}
                     <motion.div
                       initial={{ opacity: 0, scale: 0.3, rotate: -30 }}
                       animate={{ opacity: 0.25, scale: 1, rotate: 0 }}
                       transition={{ duration: 1.2, ease: "easeOut", delay: 0.3 }}
-                      className={`absolute top-8 ${isArabic ? 'left-8 md:top-12 md:left-12' : 'right-8 md:top-12 md:right-12'} w-28 h-28 md:w-48 md:h-48 pointer-events-none z-0`}
+                      className={`absolute top-4 ${isArabic ? "left-4 sm:top-8 sm:left-8" : "right-4 sm:top-8 sm:right-8"} w-16 h-16 sm:w-28 sm:h-28 md:w-48 md:h-48 pointer-events-none z-0`}
                     >
                       <motion.div
                         animate={{ y: [0, -15, 0] }}
@@ -1548,17 +1577,17 @@ function ExpandingValueCards({ items }: { items: any[] }) {
                       initial={{ opacity: 0, x: isArabic ? 20 : -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.5, delay: 0.15 }}
-                      className={`font-display text-3xl md:text-5xl text-white tracking-tight mb-3 md:mb-4 drop-shadow-md whitespace-nowrap ${isArabic ? 'font-arabic' : ''}`}
+                      className={`font-display text-xl sm:text-3xl md:text-5xl text-white tracking-tight mb-2 md:mb-4 drop-shadow-md text-balance ${isArabic ? "font-arabic" : ""}`}
                     >
                       {itemTitle}
                     </motion.h3>
 
-                    <div className="flex flex-col lg:flex-row gap-4 lg:gap-12 items-start">
+                    <div className="flex flex-col lg:flex-row gap-3 lg:gap-12 items-start w-full">
                       <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.25 }}
-                        className={`font-sans text-sm md:text-base text-white/90 max-w-md leading-relaxed hidden sm:block ${isArabic ? 'font-arabic' : ''}`}
+                        className={`font-sans text-xs sm:text-sm md:text-base text-white/90 max-w-md leading-relaxed ${isArabic ? "font-arabic" : ""}`}
                       >
                         {itemDesc}
                       </motion.p>
@@ -1569,7 +1598,7 @@ function ExpandingValueCards({ items }: { items: any[] }) {
                         variants={{
                           visible: { transition: { staggerChildren: 0.08, delayChildren: 0.35 } }
                         }}
-                        className="space-y-2 lg:space-y-3 min-w-[200px]"
+                        className="space-y-1.5 sm:space-y-2 lg:space-y-3 w-full lg:min-w-[200px] lg:w-auto"
                       >
                         {itemPoints.map((pt: string, idx: number) => (
                           <motion.li
@@ -1591,9 +1620,9 @@ function ExpandingValueCards({ items }: { items: any[] }) {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: 0.5 }}
-                      className="mt-4 md:mt-6"
+                      className="mt-3 md:mt-6 pb-1"
                     >
-                      <Link to="/about" className="inline-block text-[10px] md:text-xs font-bold font-mono tracking-[0.2em] text-black bg-gold hover:bg-white px-6 py-3 rounded-sm uppercase transition-colors shadow-[0_4px_15px_rgba(212,175,55,0.3)]">
+                      <Link to="/about" className="inline-block text-[10px] md:text-xs font-bold font-mono tracking-[0.2em] text-black bg-gold hover:bg-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-sm uppercase transition-colors shadow-[0_4px_15px_rgba(212,175,55,0.3)]">
                         {isArabic ? "اعرف المزيد" : "Learn More"}
                       </Link>
                     </motion.div>
@@ -2301,35 +2330,35 @@ function Footer({ data }: { data?: any }) {
   return (
     <footer 
       dir={isArabic ? "rtl" : "ltr"}
-      className="bg-white text-black relative overflow-hidden flex flex-col min-h-[450px]"
+      className="bg-white text-black relative overflow-hidden flex flex-col min-h-0 md:min-h-[450px]"
     >
       {/* Subtle gold glow at the top edge */}
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-50 z-20"></div>
 
       {/* Grounded Cityscape Background Illustration */}
-      <div className="absolute bottom-0 left-0 w-full h-full pointer-events-none z-0 flex items-end">
+      <div className="absolute bottom-0 left-0 w-full h-[45%] sm:h-[55%] md:h-full pointer-events-none z-0 flex items-end opacity-60 md:opacity-100">
         <img
           src={data?.imageUrl || "https://res.cloudinary.com/dppwnds6z/image/upload/v1790680329/ChatGPT_Image_Sep_29_2026_04_41_56_PM.png"}
-          alt="Saudi Landmarks"
+          alt=""
           loading="lazy"
           decoding="async"
-          className="w-full h-auto min-w-full object-cover object-bottom opacity-80"
+          className="w-full h-full min-w-full object-cover object-bottom opacity-70 md:opacity-80"
         />
       </div>
 
-      <div className="max-w-[1600px] w-full mx-auto px-8 md:px-16 pt-16 pb-12 relative z-10 flex-grow">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-0">
+      <div className="max-w-[1600px] w-full mx-auto px-5 sm:px-8 md:px-16 pt-10 sm:pt-12 md:pt-16 pb-8 md:pb-12 relative z-10 flex-grow">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-8 mb-0">
 
           {/* Brand Col */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6 sm:col-span-2 lg:col-span-1 text-center sm:text-start">
             <img
               src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
               alt="VISO Logo"
               loading="lazy"
               decoding="async"
-              className="h-16 w-auto object-contain"
+              className="h-12 sm:h-14 md:h-16 w-auto object-contain mx-auto sm:mx-0"
             />
-            <p className="font-sans text-black/70 text-sm leading-relaxed max-w-xs text-justify">
+            <p className="font-sans text-black/70 text-xs sm:text-sm leading-relaxed max-w-md mx-auto sm:mx-0 sm:max-w-xs sm:text-start">
               {t(
                 "footer.desc",
                 "Pioneering high-end security architecture, consulting, and seamless defensive integration for mega-projects worldwide."
@@ -2338,11 +2367,11 @@ function Footer({ data }: { data?: any }) {
           </div>
 
           {/* Links Col */}
-          <div>
-            <h4 className="font-display font-bold text-lg mb-6 text-gold">
+          <div className="text-center sm:text-start">
+            <h4 className="font-display font-bold text-base md:text-lg mb-4 md:mb-6 text-gold">
               {t("footer.explore", "Explore")}
             </h4>
-            <ul className="space-y-3 font-sans text-sm text-black/70">
+            <ul className="space-y-2.5 md:space-y-3 font-sans text-xs sm:text-sm text-black/70 inline-block sm:block text-start">
               <li>
                 <Link to="/" className="hover:text-gold transition-colors">
                   {t("nav.home", "Home")}
@@ -2372,24 +2401,24 @@ function Footer({ data }: { data?: any }) {
           </div>
 
           {/* Contact Col */}
-          <div>
-            <h4 className="font-display font-bold text-lg mb-6 text-gold">
+          <div className="text-center sm:text-start">
+            <h4 className="font-display font-bold text-base md:text-lg mb-4 md:mb-6 text-gold">
               {t("footer.contact_us", "Contact Us")}
             </h4>
-            <ul className="space-y-3 font-sans text-sm text-black/70">
-              <li className="flex items-center gap-3">
-                <span className="text-gold">📍</span>{" "}
+            <ul className="space-y-2.5 md:space-y-3 font-sans text-xs sm:text-sm text-black/70 inline-block sm:block text-start max-w-xs mx-auto sm:mx-0">
+              <li className="flex items-start gap-2.5 sm:gap-3 justify-center sm:justify-start">
+                <span className="text-gold shrink-0 mt-0.5">📍</span>
                 <span>{t("footer.location", "Riyadh, Saudi Arabia")}</span>
               </li>
-              <li className="flex items-center gap-3">
-                <span className="text-gold">✉️</span>{" "}
-                <a href="mailto:info@visogroup.com" className="hover:text-gold transition-colors" dir="ltr">
+              <li className="flex items-start gap-2.5 sm:gap-3 justify-center sm:justify-start">
+                <span className="text-gold shrink-0 mt-0.5">✉️</span>
+                <a href="mailto:info@visogroup.com" className="hover:text-gold transition-colors break-all" dir="ltr">
                   info@visogroup.com
                 </a>
               </li>
-              <li className="flex items-center gap-3">
-                <span className="text-gold">📞</span>{" "}
-                <a href="tel:+966114503289" className="hover:text-gold transition-colors" dir="ltr">
+              <li className="flex items-start gap-2.5 sm:gap-3 justify-center sm:justify-start">
+                <span className="text-gold shrink-0 mt-0.5">📞</span>
+                <a href="tel:+966114503289" className="hover:text-gold transition-colors whitespace-nowrap" dir="ltr">
                   +966 11 450 3289
                 </a>
               </li>
@@ -2397,11 +2426,11 @@ function Footer({ data }: { data?: any }) {
           </div>
 
           {/* Socials Col */}
-          <div>
-            <h4 className="font-display font-bold text-lg mb-6 text-gold">
+          <div className="text-center sm:text-start sm:col-span-2 lg:col-span-1">
+            <h4 className="font-display font-bold text-base md:text-lg mb-4 md:mb-6 text-gold">
               {t("footer.connect", "Connect")}
             </h4>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 sm:gap-5">
               <a
                 href="https://www.linkedin.com/company/viso-security-consultant/posts/"
                 target="_blank"
@@ -2411,7 +2440,7 @@ function Footer({ data }: { data?: any }) {
               >
                 <span className="sr-only">LinkedIn</span>
                 <svg
-                  className="w-9 h-9 drop-shadow-sm hover:drop-shadow-md transition-all duration-300"
+                  className="w-8 h-8 sm:w-9 sm:h-9 drop-shadow-sm hover:drop-shadow-md transition-all duration-300"
                   viewBox="0 0 24 24"
                   fill="none"
                   aria-hidden="true"
@@ -2431,7 +2460,7 @@ function Footer({ data }: { data?: any }) {
               >
                 <span className="sr-only">Twitter</span>
                 <svg
-                  className="w-9 h-9 text-[#1DA1F2] drop-shadow-sm hover:drop-shadow-md transition-all duration-300"
+                  className="w-8 h-8 sm:w-9 sm:h-9 text-[#1DA1F2] drop-shadow-sm hover:drop-shadow-md transition-all duration-300"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                   aria-hidden="true"
@@ -2449,7 +2478,7 @@ function Footer({ data }: { data?: any }) {
               >
                 <span className="sr-only">SAP Ariba Certifications</span>
                 <svg
-                  className="w-10 h-10 drop-shadow-sm hover:drop-shadow-md transition-all duration-300"
+                  className="w-9 h-9 sm:w-10 sm:h-10 drop-shadow-sm hover:drop-shadow-md transition-all duration-300"
                   viewBox="0 0 24 24"
                   fill="none"
                   aria-hidden="true"
@@ -2467,16 +2496,16 @@ function Footer({ data }: { data?: any }) {
       </div>
 
       {/* Bottom Bar */}
-      <div className="relative z-10 w-full border-t border-black/10 bg-white/60 backdrop-blur-md">
-        <div className="max-w-[1600px] mx-auto px-8 md:px-16 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-black/70 font-semibold text-xs font-mono uppercase tracking-widest">
+      <div className="relative z-10 w-full border-t border-black/10 bg-white/80 md:bg-white/60 backdrop-blur-md pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <div className="max-w-[1600px] mx-auto px-5 sm:px-8 md:px-16 py-4 md:py-6 flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4 text-center md:text-start">
+          <p className="text-black/70 font-semibold text-[10px] sm:text-xs font-mono uppercase tracking-wide sm:tracking-widest leading-relaxed max-w-[20rem] sm:max-w-none">
             {isArabic ? (
               <span>جميع الحقوق محفوظة &copy; {new Date().getFullYear()} مجموعة فيزو (VISO Group).</span>
             ) : (
               <span>&copy; {new Date().getFullYear()} VISO Group. All rights reserved.</span>
             )}
           </p>
-          <div className="flex flex-wrap justify-center md:justify-end gap-x-6 gap-y-2 text-black/70 font-semibold text-xs font-mono uppercase tracking-widest">
+          <div className="flex flex-wrap justify-center md:justify-end gap-x-4 sm:gap-x-6 gap-y-2 text-black/70 font-semibold text-[10px] sm:text-xs font-mono uppercase tracking-wide sm:tracking-widest">
             <Link to="/privacy" className="hover:text-gold transition-colors">
               {t("footer.privacy", "Privacy Policy")}
             </Link>

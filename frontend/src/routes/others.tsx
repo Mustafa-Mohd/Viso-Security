@@ -1251,32 +1251,32 @@ function Footer() {
   return (
     <footer 
       dir={isArabic ? "rtl" : "ltr"}
-      className="border-t border-black/10 bg-white px-6 py-12"
+      className="border-t border-black/10 bg-white px-5 sm:px-6 py-8 sm:py-12 pb-[max(1rem,env(safe-area-inset-bottom))]"
     >
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-6">
-        <div className="flex items-center gap-3">
+      <div className="mx-auto flex max-w-7xl flex-col items-center gap-5 sm:gap-6 text-center sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:text-start">
+        <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
           <span className="grid h-7 w-7 place-items-center rounded-md bg-gold text-gold-foreground font-mono text-[11px] font-bold">
             V
           </span>
-          <span className="font-display text-lg text-black">VISO</span>
-          <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-black/60">
+          <span className="font-display text-base sm:text-lg text-black">VISO</span>
+          <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.25em] text-black/60">
             {isArabic ? "استشارات أمنية" : "Security Consultations"}
           </span>
         </div>
-        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-black/60">
+        <p className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.15em] sm:tracking-[0.2em] text-black/60 leading-relaxed max-w-md">
           {isArabic 
             ? "الرياض • الخبر • الجبيل • جدة • ينبع"
             : "Riyadh • Khobar • Jubail • Jeddah • Yanbu"}
         </p>
-        <div className="flex flex-col items-end gap-2">
-          <p className="text-[11px] text-black/60">
+        <div className="flex flex-col items-center sm:items-end gap-2 w-full sm:w-auto">
+          <p className="text-[10px] sm:text-[11px] text-black/60 leading-relaxed text-center sm:text-end max-w-sm">
             {isArabic ? (
               <span>جميع الحقوق محفوظة &copy; {new Date().getFullYear()} شركة رؤية الحلول للاستشارات الأمنية المحدودة</span>
             ) : (
               <span>&copy; {new Date().getFullYear()} Vision of Solutions for Security Consultations Co. Ltd</span>
             )}
           </p>
-          <div className="flex flex-wrap items-center gap-4 text-[11px] uppercase tracking-widest text-black/60">
+          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-3 sm:gap-4 text-[10px] sm:text-[11px] uppercase tracking-wide sm:tracking-widest text-black/60">
             <Link to="/privacy" className="hover:text-gold transition-colors">
               {t("footer.privacy", "Privacy Policy")}
             </Link>
