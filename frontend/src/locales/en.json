@@ -783,5 +783,22 @@
     "values_p": "Grounded in transparency, integrity, and fair stakeholder engagement. We consistently exceed expectations by pairing client-focused service with disciplined leadership to build a culture of lasting operational safety.",
     "story_title": "Our",
     "story_italic": "Story"
+  },
+  "cookie_consent": {
+    "title": "Cookie consent",
+    "message": "By clicking “Accept All Cookies”, you agree to the storing of cookies on your device to enhance site navigation, analyze site usage, and assist in our marketing efforts. See our",
+    "privacy_link": "Privacy Policy",
+    "settings": "Cookie Settings",
+    "accept_all": "Accept All Cookies",
+    "settings_title": "Cookie Settings",
+    "settings_desc": "Choose which cookies we may store on your device. You can update these choices at any time.",
+    "necessary_title": "Strictly necessary",
+    "necessary_desc": "Required for the site to function, including language preference and security. Always enabled.",
+    "analytics_title": "Analytics",
+    "analytics_desc": "Help us understand how visitors use the site so we can improve performance and content.",
+    "marketing_title": "Marketing",
+    "marketing_desc": "Used to measure campaigns and deliver relevant content on other platforms.",
+    "reject_nonessential": "Reject non-essential",
+    "save_preferences": "Save preferences"
   }
 }

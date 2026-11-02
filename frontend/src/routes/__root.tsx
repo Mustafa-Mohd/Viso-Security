@@ -19,6 +19,9 @@ const Chatbot = lazy(() =>
 const WhatsAppButton = lazy(() =>
   import("@/components/WhatsAppButton").then((m) => ({ default: m.WhatsAppButton }))
 );
+const CookieConsentBanner = lazy(() =>
+  import("@/components/CookieConsentBanner").then((m) => ({ default: m.CookieConsentBanner }))
+);
 
 function NotFoundComponent() {
   return (
@@ -148,6 +151,7 @@ function RootComponent() {
       </Suspense>
       <Outlet />
       <Suspense fallback={null}>
+        <CookieConsentBanner />
         <Chatbot />
         <WhatsAppButton />
       </Suspense>
