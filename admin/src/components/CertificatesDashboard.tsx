@@ -7,6 +7,41 @@ import {
   resolveCertificateStatusForStorage,
   CertificateDisplayStatus,
 } from "../lib/certsApi";
+import {
+  computeNextCertificateId,
+  generateVerificationReferenceId,
+  getPublicCertificateUrl,
+} from "../lib/certificateIds";
+
+const VALIDITY_MONTH_OPTIONS = [1, 2, 3] as const;
+type ValidityMonths = (typeof VALIDITY_MONTH_OPTIONS)[number];
+
+function addMonthsToDateOnly(dateStr: string, months: number): string {
+  const parts = dateStr.split("-").map(Number);
+  if (parts.length !== 3 || parts.some((n) => Number.isNaN(n))) return dateStr;
+  const [y, m, d] = parts;
+  const date = new Date(y, m - 1, d);
+  date.setMonth(date.getMonth() + months);
+  const yy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+  return `${yy}-${mm}-${dd}`;
+}
+
+function detectValidityMonths(issueDate: string, expiryDate: string): ValidityMonths | null {
+  for (const months of VALIDITY_MONTH_OPTIONS) {
+    if (addMonthsToDateOnly(issueDate, months) === expiryDate) return months;
+  }
+  return null;
+}
+
+function todayDateOnly(): string {
+  const now = new Date();
+  const yy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  return `${yy}-${mm}-${dd}`;
+}
 
 export function CertificatesDashboard() {
   const [certs, setCerts] = useState<TranslationCertificate[]>([]);
@@ -25,6 +60,7 @@ export function CertificatesDashboard() {
   const [formTarget, setFormTarget] = useState("English");
   const [formIssue, setFormIssue] = useState("");
   const [formExpiry, setFormExpiry] = useState("");
+  const [formValidityMonths, setFormValidityMonths] = useState<ValidityMonths>(1);
   const [formRevoked, setFormRevoked] = useState(false);
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -46,38 +82,26 @@ export function CertificatesDashboard() {
     loadCerts();
   }, []);
 
+  useEffect(() => {
+    if (!showForm || !formIssue) return;
+    setFormExpiry(addMonthsToDateOnly(formIssue, formValidityMonths));
+  }, [showForm, formIssue, formValidityMonths]);
+
   // Helper to open form for creating
   const openCreateForm = () => {
     setFormError("");
     setEditingId(null);
-    const currentYear = new Date().getFullYear();
-    let maxSerial = 0;
-    
-    certs.forEach(cert => {
-      const match = cert.id.match(new RegExp(`VISO-TR-${currentYear}-(\\d+)`));
-      if (match && match[1]) {
-        const serial = parseInt(match[1], 10);
-        if (!isNaN(serial) && serial > maxSerial) {
-          maxSerial = serial;
-        }
-      }
-    });
-    
-    const nextSerialStr = (maxSerial + 1).toString().padStart(6, '0');
-    setFormId(`VISO-TR-${currentYear}-${nextSerialStr}`);
+    setFormId(computeNextCertificateId(certs.map((c) => c.id)));
     setFormNationalId("");
     setFormName("");
     setFormSource("Arabic");
     setFormTarget("English");
     
-    // Set default dates (today & next year)
-    const today = new Date().toISOString().split("T")[0];
-    const nextYear = new Date();
-    nextYear.setFullYear(nextYear.getFullYear() + 1);
-    const nextYearStr = nextYear.toISOString().split("T")[0];
-    
+    const today = todayDateOnly();
+    const defaultMonths: ValidityMonths = 1;
+    setFormValidityMonths(defaultMonths);
     setFormIssue(today);
-    setFormExpiry(nextYearStr);
+    setFormExpiry(addMonthsToDateOnly(today, defaultMonths));
     setFormRevoked(false);
     setShowForm(true);
   };
@@ -92,7 +116,9 @@ export function CertificatesDashboard() {
     setFormSource(cert.source_lang);
     setFormTarget(cert.target_lang);
     setFormIssue(cert.issue_date);
-    setFormExpiry(cert.expiry_date);
+    const months = detectValidityMonths(cert.issue_date, cert.expiry_date) ?? 1;
+    setFormValidityMonths(months);
+    setFormExpiry(addMonthsToDateOnly(cert.issue_date, months));
     setFormRevoked(cert.status === "REVOKED");
     setShowForm(true);
   };
@@ -108,13 +134,17 @@ export function CertificatesDashboard() {
       return;
     }
 
-    if (!formNationalId.trim() || formNationalId.trim().length < 8) {
-      setFormError("A valid National ID is required (min 8 digits).");
+    if (!formName.trim()) {
+      setFormError("Document/Project Name is required.");
       return;
     }
 
-    if (!formName.trim()) {
-      setFormError("Document/Project Name is required.");
+    const nationalId = editingId
+      ? formNationalId.trim()
+      : generateVerificationReferenceId();
+
+    if (!nationalId || nationalId.length < 8) {
+      setFormError("Could not assign an internal verification reference. Please try again.");
       return;
     }
 
@@ -140,7 +170,7 @@ export function CertificatesDashboard() {
 
       await certsApi.upsertCertificate({
         id: upperId,
-        national_id: formNationalId.trim(),
+        national_id: nationalId,
         project_name: formName.trim(),
         source_lang: formSource,
         target_lang: formTarget,
@@ -335,7 +365,6 @@ export function CertificatesDashboard() {
               <thead className="bg-foreground/[0.02] text-foreground/60 font-bold uppercase tracking-wider border-b border-foreground/5">
                 <tr>
                   <th className="px-6 py-4">Certificate ID</th>
-                  <th className="px-6 py-4">Ref / Order No</th>
                   <th className="px-6 py-4">Client Name</th>
                   <th className="px-6 py-4">Languages</th>
                   <th className="px-6 py-4">Timeline</th>
@@ -346,7 +375,7 @@ export function CertificatesDashboard() {
               <tbody className="divide-y divide-foreground/5">
                 {filteredCerts.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-12 text-foreground/40 font-medium">
+                    <td colSpan={6} className="text-center py-12 text-foreground/40 font-medium">
                       No certificate records found matching the criteria.
                     </td>
                   </tr>
@@ -355,9 +384,6 @@ export function CertificatesDashboard() {
                     <tr key={cert.id} className="hover:bg-foreground/[0.01] transition-colors group">
                       <td className="px-6 py-4">
                         <span className="font-mono font-bold text-foreground">{cert.id}</span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="font-mono text-foreground/80">{cert.national_id}</span>
                       </td>
                       <td className="px-6 py-4">
                         <div className="font-bold text-foreground text-sm max-w-xs truncate">{cert.project_name}</div>
@@ -407,11 +433,11 @@ export function CertificatesDashboard() {
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end gap-2">
                           <a
-                            href={`/certificate/${cert.id}`}
+                            href={getPublicCertificateUrl(cert.id)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="px-3 py-1.5 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 transition-colors font-semibold shadow-sm hover:shadow"
-                            title="View PDF Document"
+                            title="View certificate on public site"
                           >
                             View PDF
                           </a>
@@ -443,72 +469,51 @@ export function CertificatesDashboard() {
       {/* Issuing / Editing Modal Overlay */}
       {showForm && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 w-full max-w-lg rounded shadow-2xl p-6 md:p-8 text-foreground flex flex-col relative max-h-[90vh] overflow-y-auto">
-            <h3 className="text-lg font-bold text-foreground border-b border-foreground/5 pb-4 mb-6">
+          <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 w-full max-w-4xl rounded-xl shadow-2xl p-5 md:p-6 text-foreground flex flex-col relative">
+            <h3 className="text-base font-bold text-foreground border-b border-foreground/5 pb-3 mb-4">
               {editingId ? `Edit Certificate: ${editingId}` : "Issue New Certificate"}
             </h3>
             
             {formError && (
-              <div className="mb-4 p-3.5 rounded-lg bg-rose-500/10 border border-rose-500/25 text-rose-500 text-xs font-semibold flex items-center gap-2">
+              <div className="mb-3 p-3 rounded-lg bg-rose-500/10 border border-rose-500/25 text-rose-500 text-xs font-semibold flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 shrink-0" />
                 {formError}
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2">Certificate ID</label>
-                <input
-                  type="text"
-                  value={formId}
-                  onChange={(e) => setFormId(e.target.value)}
-                  placeholder="e.g. VISO-TR-2026-001245"
-                  className="w-full bg-background border border-foreground/15 rounded-lg py-3 px-4 text-xs font-mono text-foreground focus:outline-none focus:border-primary/50 transition-all uppercase"
-                  disabled={!!editingId}
-                  required
-                />
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60">Internal Ref / Order No.</label>
-                  <button
-                    type="button"
-                    onClick={() => setFormNationalId(`1${Math.floor(100000000 + Math.random() * 900000000)}`)}
-                    className="text-[9px] font-bold uppercase tracking-wider text-primary hover:text-primary/80 transition-colors cursor-pointer"
-                  >
-                    Auto-Generate
-                  </button>
-                </div>
-                <input
-                  type="text"
-                  value={formNationalId}
-                  onChange={(e) => setFormNationalId(e.target.value)}
-                  placeholder="e.g. 1023456789 (10-digit ID)"
-                  className="w-full bg-background border border-foreground/15 rounded-lg py-3 px-4 text-xs font-mono text-foreground focus:outline-none focus:border-primary/50 transition-all"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2">Client Name</label>
-                <input
-                  type="text"
-                  value={formName}
-                  onChange={(e) => setFormName(e.target.value)}
-                  placeholder="e.g. Corporate Legal Contract"
-                  className="w-full bg-background border border-foreground/15 rounded-lg py-3 px-4 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all font-semibold"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2">Source Language</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1.5">Certificate ID</label>
+                  <input
+                    type="text"
+                    value={formId}
+                    readOnly
+                    className="w-full bg-foreground/[0.04] border border-foreground/15 rounded-lg py-2.5 px-3 text-xs font-mono text-foreground uppercase cursor-default"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1.5">Client Name</label>
+                  <input
+                    type="text"
+                    value={formName}
+                    onChange={(e) => setFormName(e.target.value)}
+                    placeholder="e.g. Corporate Legal Contract"
+                    className="w-full bg-background border border-foreground/15 rounded-lg py-2.5 px-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all font-semibold"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1.5">Source Language</label>
                   <select
                     value={formSource}
                     onChange={(e) => setFormSource(e.target.value)}
-                    className="w-full bg-background border border-foreground/15 rounded-lg py-3 px-4 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all font-medium"
+                    className="w-full bg-background border border-foreground/15 rounded-lg py-2.5 px-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all font-medium"
                   >
                     <option value="Arabic">Arabic</option>
                     <option value="English">English</option>
@@ -519,11 +524,11 @@ export function CertificatesDashboard() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2">Target Language</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1.5">Target Language</label>
                   <select
                     value={formTarget}
                     onChange={(e) => setFormTarget(e.target.value)}
-                    className="w-full bg-background border border-foreground/15 rounded-lg py-3 px-4 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all font-medium"
+                    className="w-full bg-background border border-foreground/15 rounded-lg py-2.5 px-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all font-medium"
                   >
                     <option value="English">English</option>
                     <option value="Arabic">Arabic</option>
@@ -534,57 +539,72 @@ export function CertificatesDashboard() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2">Issue Date</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1.5">Issue Date</label>
                   <input
                     type="date"
                     value={formIssue}
                     onChange={(e) => setFormIssue(e.target.value)}
-                    className="w-full bg-background border border-foreground/15 rounded-lg py-3 px-4 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all"
+                    className="w-full bg-background border border-foreground/15 rounded-lg py-2.5 px-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2">Expiry Date</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1.5">Validity</label>
+                  <select
+                    value={formValidityMonths}
+                    onChange={(e) => setFormValidityMonths(Number(e.target.value) as ValidityMonths)}
+                    className="w-full bg-background border border-foreground/15 rounded-lg py-2.5 px-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all font-medium"
+                  >
+                    {VALIDITY_MONTH_OPTIONS.map((months) => (
+                      <option key={months} value={months}>
+                        {months} {months === 1 ? "Month" : "Months"}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1.5">Expiry Date</label>
                   <input
                     type="date"
                     value={formExpiry}
-                    onChange={(e) => setFormExpiry(e.target.value)}
-                    className="w-full bg-background border border-foreground/15 rounded-lg py-3 px-4 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all"
+                    readOnly
+                    tabIndex={-1}
+                    className="w-full bg-foreground/[0.04] border border-foreground/15 rounded-lg py-2.5 px-3 text-xs text-foreground cursor-default"
                     required
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2">
-                  Registry status (from dates)
-                </label>
-                <div
-                  className={`w-full rounded-lg border py-3 px-4 text-xs font-semibold flex items-center gap-2 ${getStatusStyle(formDisplayStatus)}`}
-                >
-                  {getStatusIcon(formDisplayStatus)}
-                  {getDisplayStatusLabel(formPreviewCert)}
+              <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 items-center pt-1">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1.5">
+                    Registry status
+                  </label>
+                  <div
+                    className={`w-full rounded-lg border py-2.5 px-3 text-xs font-semibold flex items-center gap-2 ${getStatusStyle(formDisplayStatus)}`}
+                  >
+                    {getStatusIcon(formDisplayStatus)}
+                    {getDisplayStatusLabel(formPreviewCert)}
+                  </div>
                 </div>
-                <p className="text-[10px] text-foreground/45 mt-2 leading-relaxed">
-                  Status is calculated from the issue and expiry dates. Use Withdraw on the list to remove a record from verification.
-                </p>
                 {editingId && (
-                  <label className="mt-3 flex items-center gap-2 text-xs text-foreground/70 cursor-pointer">
+                  <label className="flex items-center gap-2 text-xs text-foreground/70 cursor-pointer md:pt-5">
                     <input
                       type="checkbox"
                       checked={formRevoked}
                       onChange={(e) => setFormRevoked(e.target.checked)}
                       className="rounded border-foreground/20"
                     />
-                    Mark as withdrawn from registry
+                    Withdrawn from registry
                   </label>
                 )}
               </div>
 
-              <div className="pt-6 flex justify-end gap-3 border-t border-foreground/5 mt-8">
+              <div className="pt-3 flex justify-end gap-3 border-t border-foreground/5 mt-2">
                 <button
                   type="button"
                   disabled={isSubmitting}

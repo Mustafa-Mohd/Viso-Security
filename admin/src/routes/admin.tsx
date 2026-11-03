@@ -29,6 +29,7 @@ import {
   normalizeLocationsCmsContent,
   type LocationsCmsContent,
 } from "@/data/officeLocations";
+import { fetchPortalLoginLogs, recordPortalLogin, type PortalLoginLog } from "@/lib/loginLogsApi";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -693,6 +694,9 @@ function AdminPage() {
 
   // Users State
   const [users, setUsers] = useState<any[]>([]);
+  const [loginLogs, setLoginLogs] = useState<PortalLoginLog[]>([]);
+  const [loginLogsLoading, setLoginLogsLoading] = useState(false);
+  const [loginLogsError, setLoginLogsError] = useState<string | null>(null);
   const [newUserName, setNewUserName] = useState("");
   const [newUserEmail, setNewUserEmail] = useState("");
   const [newUserPassword, setNewUserPassword] = useState("");
@@ -729,6 +733,19 @@ function AdminPage() {
     const { data } = await supabase.from('cms_audit_logs').select('*').order('changed_at', { ascending: false });
     if (data) setAuditLogs(data);
     setAuditLogsLoading(false);
+  };
+
+  const fetchLoginLogs = async () => {
+    setLoginLogsLoading(true);
+    setLoginLogsError(null);
+    const { logs, error } = await fetchPortalLoginLogs();
+    if (error) {
+      setLoginLogsError(error);
+      setLoginLogs([]);
+    } else {
+      setLoginLogs(logs.filter((log) => log.role !== "super_admin"));
+    }
+    setLoginLogsLoading(false);
   };
 const DEFAULT_HERO_SLIDES = [
   { title: "Security Consultancy" },
@@ -966,12 +983,14 @@ const DEFAULT_HERO_SLIDES = [
         if (storedSession.role === 'super_admin') {
           fetchUsers();
           fetchAuthUsers();
+          fetchLoginLogs();
         }
 
         // Default tab based on role if they re-open the page
         const dmsRoles = ['document_controller', 'manager', 'reviewer', 'viewer'];
         if (dmsRoles.includes(storedSession.role) && !["dms"].includes(activeTab)) setActiveTab("dms");
         else if ((storedSession.role === 'employee' || storedSession.role === 'hr') && !["hr", "job_apps", "dms"].includes(activeTab)) setActiveTab("hr");
+        else if (storedSession.role === 'cert_admin' && activeTab !== "certificates") setActiveTab("certificates");
       } catch (e) {
         localStorage.removeItem('viso_admin_session');
       }
@@ -985,6 +1004,12 @@ const DEFAULT_HERO_SLIDES = [
       (session?.role === "super_admin" || session?.role === "admin")
     ) {
       fetchInquiries();
+    }
+  }, [activeTab, session?.role]);
+
+  useEffect(() => {
+    if (activeTab === "users" && session?.role === "super_admin") {
+      fetchLoginLogs();
     }
   }, [activeTab, session?.role]);
 
@@ -1009,6 +1034,18 @@ const DEFAULT_HERO_SLIDES = [
     } else {
        setSession(data);
        localStorage.setItem('viso_admin_session', JSON.stringify(data));
+
+       if (data.role !== "super_admin") {
+         const logErr = await recordPortalLogin({
+           id: data.id,
+           name: data.name,
+           email: data.email,
+           role: data.role,
+         });
+         if (logErr) {
+           console.warn("Portal login audit:", logErr);
+         }
+       }
        
        if (data.role === 'super_admin' || data.role === 'admin') {
          fetchImages();
@@ -1024,10 +1061,12 @@ const DEFAULT_HERO_SLIDES = [
        if (data.role === 'super_admin') {
          fetchUsers();
          fetchAuthUsers();
+         fetchLoginLogs();
        }
        
        if (['document_controller', 'manager', 'reviewer', 'viewer'].includes(data.role)) setActiveTab("dms");
        else if (data.role === 'employee' || data.role === 'hr') setActiveTab("hr");
+       else if (data.role === 'cert_admin') setActiveTab("certificates");
        else setActiveTab("homepage");
     }
   };
@@ -1631,7 +1670,7 @@ const DEFAULT_HERO_SLIDES = [
   const navItems = [
     { id: 'cms', label: 'CMS', icon: LayoutDashboard, roles: ['super_admin', 'admin'] },
     { id: 'cms_history', label: 'CMS History', icon: History, roles: ['super_admin', 'admin'] },
-    { id: 'certificates', label: 'Certificates', icon: FileText, roles: ['super_admin', 'admin'] },
+    { id: 'certificates', label: 'Certificates', icon: FileText, roles: ['super_admin', 'admin', 'cert_admin'] },
     { id: 'gallery', label: 'Gallery', icon: ImageIcon, roles: ['super_admin', 'admin'] },
     { id: 'inquiries', label: 'Inquiries', icon: MessageSquare, roles: ['super_admin', 'admin'], badge: inquiries.filter((inq) => inq.status === 'unread').length, badgeColor: 'bg-red-500 text-white' },
     { id: 'job_apps', label: 'Job Applications', icon: Briefcase, roles: ['super_admin', 'hr', 'admin'], badge: jobApps.filter((app) => app.status === 'New').length, badgeColor: 'bg-primary text-primary-foreground' },
@@ -1704,7 +1743,7 @@ const DEFAULT_HERO_SLIDES = [
           <div className="flex items-center gap-4">
              <div className="text-sm font-medium text-foreground/60 hidden md:flex items-center gap-2">
                <span>{session.email}</span>
-               <span className="bg-primary/10 text-primary px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider">{session.role.replace('_', ' ')}</span>
+               <span className="bg-primary/10 text-primary px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider">{session.role.replace(/_/g, ' ')}</span>
              </div>
              <div className="w-px h-6 bg-foreground/10 mx-2 hidden sm:block"></div>
              <ThemeToggle />
@@ -1797,8 +1836,8 @@ const DEFAULT_HERO_SLIDES = [
         )}
 
 
-        {activeTab === 'cms_history' && (
-          <div className="flex flex-col gap-6">
+        {activeTab === 'cms_history' && (session?.role === 'super_admin' || session?.role === 'admin') && (
+          <div className="flex flex-col gap-6 p-6 overflow-y-auto">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl">CMS Revision History</h2>
               <button 
@@ -4700,7 +4739,55 @@ CREATE POLICY "Allow public all access on contact_submissions"
         {activeTab === 'users' && session?.role === 'super_admin' && (
           <div className="flex-1 flex flex-col p-6 overflow-y-auto">
             <h1 className="text-3xl mb-2">Users & Roles</h1>
-            <p className="text-foreground/60 mb-8">Manage employee credentials and portal access.</p>
+            <p className="text-foreground/60 mb-6">Manage employee credentials and portal access.</p>
+
+            <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded p-6 mb-8">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-bold flex items-center gap-2">
+                  <History size={18} /> Portal sign-in activity
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => fetchLoginLogs()}
+                  className="text-xs font-semibold text-primary hover:underline"
+                >
+                  Refresh
+                </button>
+              </div>
+              <p className="text-xs text-foreground/50 mb-4">
+                When someone logs in with credentials you created (admin, certificate admin, HR, DMS, etc.), it appears here. Super admin sign-ins are not listed. Sign out and sign in again with a delegated account to test.
+              </p>
+              {loginLogsError && (
+                <div className="mb-4 p-3 rounded-lg bg-rose-500/10 border border-rose-500/25 text-rose-600 text-xs">
+                  Could not load sign-in history: {loginLogsError}
+                </div>
+              )}
+              {loginLogsLoading ? (
+                <p className="text-sm text-foreground/50">Loading sign-in history…</p>
+              ) : loginLogs.length === 0 ? (
+                <p className="text-sm text-foreground/50">
+                  No delegated sign-ins recorded yet. Log in as an admin or certificate admin (not super admin), then refresh this panel while signed in as super admin.
+                </p>
+              ) : (
+                <div className="max-h-64 overflow-y-auto border border-foreground/10 rounded divide-y divide-foreground/5">
+                  {loginLogs.map((log) => (
+                    <div key={log.id} className="px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-sm">
+                      <div>
+                        <span className="font-semibold text-foreground">{log.user_name}</span>
+                        <span className="text-foreground/50 mx-2">·</span>
+                        <span className="text-foreground/70">{log.user_email}</span>
+                        <span className="ml-2 text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded">
+                          {log.role.replace(/_/g, " ")}
+                        </span>
+                      </div>
+                      <time className="text-xs text-foreground/50 shrink-0" dateTime={log.logged_in_at}>
+                        {new Date(log.logged_in_at).toLocaleString()}
+                      </time>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
             <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 rounded p-6 mb-8">
               <h2 className="text-lg font-bold mb-4 flex items-center gap-2"><Plus size={18} /> Create New User</h2>
@@ -4726,6 +4813,7 @@ CREATE POLICY "Allow public all access on contact_submissions"
                   <select value={newUserRole} onChange={e => setNewUserRole(e.target.value)} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none">
                     <option value="super_admin">Super Admin (Full Admin Access)</option>
                     <option value="admin">Admin (CMS & Inquiries Only)</option>
+                    <option value="cert_admin">Certificate Admin (Certificates Only)</option>
                     <option value="document_controller">Document Controller (EDMS)</option>
                     <option value="manager">Manager (EDMS approvals)</option>
                     <option value="reviewer">Reviewer (EDMS review)</option>
@@ -4758,7 +4846,7 @@ CREATE POLICY "Allow public all access on contact_submissions"
                         <td className="px-6 py-4 font-medium">{user.name}</td>
                         <td className="px-6 py-4 text-foreground/70">{user.email}</td>
                         <td className="px-6 py-4">
-                          <span className="bg-primary/10 text-primary px-2 py-1 rounded text-xs font-bold uppercase">{user.role.replace('_', ' ')}</span>
+                          <span className="bg-primary/10 text-primary px-2 py-1 rounded text-xs font-bold uppercase">{user.role.replace(/_/g, ' ')}</span>
                         </td>
                         <td className="px-6 py-4 text-foreground/70">{user.department}</td>
                         <td className="px-6 py-4 text-right">
@@ -4915,7 +5003,7 @@ CREATE POLICY "Allow public all access on contact_submissions"
         )}
 
         {/* CERTIFICATES DASHBOARD */}
-        {activeTab === 'certificates' && (session?.role === 'super_admin' || session?.role === 'admin') && (
+        {activeTab === 'certificates' && (session?.role === 'super_admin' || session?.role === 'admin' || session?.role === 'cert_admin') && (
           <div className="flex-1 flex flex-col p-6 overflow-y-auto">
             <CertificatesDashboard />
           </div>
