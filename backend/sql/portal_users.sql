@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS portal_users (
   name TEXT NOT NULL,
   email TEXT NOT NULL UNIQUE,
   password TEXT NOT NULL,
-  role TEXT NOT NULL CHECK (role IN ('super_admin', 'admin', 'hr', 'employee', 'document_controller')),
+  role TEXT NOT NULL CHECK (role IN ('super_admin', 'admin', 'cert_admin', 'hr', 'employee', 'document_controller')),
   department TEXT,
   grade TEXT,
   status TEXT DEFAULT 'Active',

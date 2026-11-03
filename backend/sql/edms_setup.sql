@@ -24,7 +24,7 @@ END $$;
 -- 2. Update portal_users role constraint
 ALTER TABLE public.portal_users DROP CONSTRAINT IF EXISTS portal_users_role_check;
 ALTER TABLE public.portal_users ADD CONSTRAINT portal_users_role_check 
-    CHECK (role IN ('super_admin', 'admin', 'hr', 'employee', 'document_controller', 'manager', 'reviewer', 'viewer'));
+    CHECK (role IN ('super_admin', 'admin', 'hr', 'employee', 'document_controller', 'manager', 'reviewer', 'viewer', 'cert_admin'));
 
 -- 3. edms_documents table
 CREATE TABLE IF NOT EXISTS public.edms_documents (

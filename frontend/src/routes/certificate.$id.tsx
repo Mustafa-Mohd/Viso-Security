@@ -2,9 +2,17 @@ import { createFileRoute } from '@tanstack/react-router'
 import { FileText, RefreshCw } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { certsApi, TranslationCertificate, getCertificateDisplayStatus } from '@/lib/certsApi'
+import { getPublicSiteOrigin } from '@/lib/certificateIds'
 
 export const Route = createFileRoute('/certificate/$id')({
   component: CertificatePdfView,
+  head: ({ params }) => ({
+    meta: [
+      {
+        title: `${params.id.toUpperCase()} | VISO Translation Certificate`,
+      },
+    ],
+  }),
 })
 
 function CertificatePdfView() {
@@ -27,6 +35,12 @@ function CertificatePdfView() {
     }
     fetchCert()
   }, [certId])
+
+  useEffect(() => {
+    if (certData?.id) {
+      document.title = `${certData.id} | VISO Translation Certificate`;
+    }
+  }, [certData?.id]);
 
   if (isLoading) {
     return (
@@ -52,8 +66,7 @@ function CertificatePdfView() {
     )
   }
 
-  // Use the current origin for the QR Code to scan back to the live site
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://viso-group.com';
+  const origin = getPublicSiteOrigin();
   const qrUrl = `${origin}/translation?verify=${certId}&nationalId=${certData.national_id}`;
   const displayStatus = getCertificateDisplayStatus(certData);
   const isWithinValidity = displayStatus === 'active';
