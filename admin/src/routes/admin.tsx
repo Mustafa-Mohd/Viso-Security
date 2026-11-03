@@ -22,6 +22,13 @@ import {
   parseCareerPageCms,
   type CareerPageCmsContent,
 } from "@/data/careerJobsDefaults";
+import {
+  DEFAULT_OFFICE_LOCATIONS,
+  emptyLocationsCmsCity,
+  getDefaultLocationsCmsContent,
+  normalizeLocationsCmsContent,
+  type LocationsCmsContent,
+} from "@/data/officeLocations";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -880,17 +887,7 @@ const DEFAULT_HERO_SLIDES = [
     ]
   });
 
-  const [locationsData, setLocationsData] = useState<{ title: string, subtitle: string, cities: any[] }>({
-    title: "OUR LOCATION",
-    subtitle: "Serving Saudi Arabia and Surroundings",
-    cities: [
-      { id: "riyadh", bgImage: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790668720/ChatGPT_Image_Sep_29_2026_01_27_25_PM.png" },
-      { id: "khobar", bgImage: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790761271/ChatGPT_Image_Sep_30_2026_03_10_59_PM.png" },
-      { id: "jubail", bgImage: "https://i.vimeocdn.com/video/2099272543-c3cc6657da44aea5870525710e085cc6c97b501e7baed679991b0c2c1da4fc6d-d?f=webp" },
-      { id: "yanbu", bgImage: "https://www.eritrea-focus.org/wp-content/uploads/2026/07/download.webp" },
-      { id: "jeddah", bgImage: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790761414/ChatGPT_Image_Sep_30_2026_03_13_20_PM.png" },
-    ]
-  });
+  const [locationsData, setLocationsData] = useState<LocationsCmsContent>(() => getDefaultLocationsCmsContent());
 
   const [statsData, setStatsData] = useState<{ title: string, items: any[] }>({
     title: "Measurable Excellence",
@@ -1169,17 +1166,7 @@ const DEFAULT_HERO_SLIDES = [
         if (row.section_key === 'clients') setClientsData(row.content);
         if (row.section_key === 'lifecycle') setLifecycleData(row.content);
         if (row.section_key === 'locations') {
-          const content = row.content || {};
-          if (!content.cities || content.cities.length === 0) {
-            content.cities = [
-              { id: "riyadh", bgImage: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790668720/ChatGPT_Image_Sep_29_2026_01_27_25_PM.png" },
-              { id: "khobar", bgImage: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790761271/ChatGPT_Image_Sep_30_2026_03_10_59_PM.png" },
-              { id: "jubail", bgImage: "https://i.vimeocdn.com/video/2099272543-c3cc6657da44aea5870525710e085cc6c97b501e7baed679991b0c2c1da4fc6d-d?f=webp" },
-              { id: "yanbu", bgImage: "https://www.eritrea-focus.org/wp-content/uploads/2026/07/download.webp" },
-              { id: "jeddah", bgImage: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790761414/ChatGPT_Image_Sep_30_2026_03_13_20_PM.png" },
-            ];
-          }
-          setLocationsData(content);
+          setLocationsData(normalizeLocationsCmsContent(row.content));
         }
         if (row.section_key === 'stats') setStatsData(row.content);
         if (row.section_key === 'cta') setCtaData(row.content);
@@ -1249,17 +1236,7 @@ const DEFAULT_HERO_SLIDES = [
         if (row.section_key === 'clients') setClientsData(row.content);
         if (row.section_key === 'lifecycle') setLifecycleData(row.content);
         if (row.section_key === 'locations') {
-          const content = row.content || {};
-          if (!content.cities || content.cities.length === 0) {
-            content.cities = [
-              { id: "riyadh", bgImage: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790668720/ChatGPT_Image_Sep_29_2026_01_27_25_PM.png" },
-              { id: "khobar", bgImage: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790761271/ChatGPT_Image_Sep_30_2026_03_10_59_PM.png" },
-              { id: "jubail", bgImage: "https://i.vimeocdn.com/video/2099272543-c3cc6657da44aea5870525710e085cc6c97b501e7baed679991b0c2c1da4fc6d-d?f=webp" },
-              { id: "yanbu", bgImage: "https://www.eritrea-focus.org/wp-content/uploads/2026/07/download.webp" },
-              { id: "jeddah", bgImage: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790761414/ChatGPT_Image_Sep_30_2026_03_13_20_PM.png" },
-            ];
-          }
-          setLocationsData(content);
+          setLocationsData(normalizeLocationsCmsContent(row.content));
         }
         if (row.section_key === 'stats') setStatsData(row.content);
         if (row.section_key === 'cta') setCtaData(row.content);
@@ -3618,28 +3595,134 @@ const DEFAULT_HERO_SLIDES = [
               {cmsSection === 'locations' && (
                 <div className="flex flex-col gap-4">
                   <h2 className="text-2xl mb-4">Edit Locations Section</h2>
-                  <div><label className="block text-sm font-medium mb-1">Title</label><input type="text" value={locationsData.title} onChange={(e) => setLocationsData({ ...locationsData, title: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" /></div>
-                  <div><label className="block text-sm font-medium mb-1">Subtitle</label><input type="text" value={locationsData.subtitle} onChange={(e) => setLocationsData({ ...locationsData, subtitle: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" /></div>
-                  <p className="text-sm text-foreground/50 mt-4 italic">Note: The interactive map markers and specific cities are currently hardcoded in the component for geographic precision, but the titles and background images can be edited here.</p>
-                  
-                  <div className="mt-4 border-t border-foreground/10 pt-6">
-                    <h3 className="font-bold mb-4">City Background Images</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {locationsData.cities?.map((city, idx) => (
-                        <div key={idx} className="bg-background p-4 rounded border border-foreground/10">
-                          <MediaUploader 
-                            label={`${city.id} Background Image URL`}
-                            value={city.bgImage}
+                  <div><label className="block text-sm font-medium mb-1">Title</label><input type="text" value={locationsData.title ?? ""} onChange={(e) => setLocationsData({ ...locationsData, title: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" /></div>
+                  <div><label className="block text-sm font-medium mb-1">Subtitle</label><input type="text" value={locationsData.subtitle ?? ""} onChange={(e) => setLocationsData({ ...locationsData, subtitle: e.target.value })} className="w-full px-4 py-2 rounded bg-background border border-foreground/20 focus:border-primary focus:outline-none" /></div>
+                  <p className="text-sm text-foreground/50 mt-2">
+                    Add or edit offices below. Map markers use latitude and longitude (Tabuk defaults to 28.38°N, 36.57°E in the northwest).
+                  </p>
+
+                  <div className="mt-4 border-t border-foreground/10 pt-6 flex items-center justify-between gap-4">
+                    <h3 className="font-bold">Office Locations</h3>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setLocationsData({
+                          ...locationsData,
+                          cities: [...(locationsData.cities || []), emptyLocationsCmsCity()],
+                        })
+                      }
+                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20"
+                    >
+                      <Plus className="w-3.5 h-3.5" /> Add location
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 gap-4">
+                    {locationsData.cities?.map((city, idx) => {
+                      const coords = city.coordinates ?? [0, 0];
+                      const isBuiltIn = DEFAULT_OFFICE_LOCATIONS.some((d) => d.id === city.id);
+                      return (
+                        <div key={`${city.id}-${idx}`} className="bg-background p-4 rounded border border-foreground/10 relative">
+                          {!isBuiltIn && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newCities = [...(locationsData.cities || [])];
+                                newCities.splice(idx, 1);
+                                setLocationsData({ ...locationsData, cities: newCities });
+                              }}
+                              className="absolute top-2 right-2 text-red-500 hover:text-red-700 text-xs font-bold"
+                            >
+                              Remove
+                            </button>
+                          )}
+                          <div className="grid md:grid-cols-2 gap-3 mb-3">
+                            <div>
+                              <label className="block text-xs font-bold mb-1 opacity-70">ID (slug, e.g. tabuk)</label>
+                              <input
+                                type="text"
+                                value={city.id}
+                                readOnly={isBuiltIn}
+                                onChange={(e) => {
+                                  const newCities = [...(locationsData.cities || [])];
+                                  newCities[idx] = { ...newCities[idx], id: e.target.value.trim().toLowerCase().replace(/\s+/g, "-") };
+                                  setLocationsData({ ...locationsData, cities: newCities });
+                                }}
+                                className="w-full px-3 py-2 rounded bg-surface border border-foreground/20 text-sm"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold mb-1 opacity-70">Display name</label>
+                              <input
+                                type="text"
+                                value={city.name ?? ""}
+                                onChange={(e) => {
+                                  const newCities = [...(locationsData.cities || [])];
+                                  newCities[idx] = { ...newCities[idx], name: e.target.value };
+                                  setLocationsData({ ...locationsData, cities: newCities });
+                                }}
+                                className="w-full px-3 py-2 rounded bg-surface border border-foreground/20 text-sm"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold mb-1 opacity-70">Latitude</label>
+                              <input
+                                type="number"
+                                step="0.0001"
+                                value={coords[0]}
+                                onChange={(e) => {
+                                  const newCities = [...(locationsData.cities || [])];
+                                  newCities[idx] = {
+                                    ...newCities[idx],
+                                    coordinates: [Number(e.target.value), coords[1]],
+                                  };
+                                  setLocationsData({ ...locationsData, cities: newCities });
+                                }}
+                                className="w-full px-3 py-2 rounded bg-surface border border-foreground/20 text-sm"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold mb-1 opacity-70">Longitude</label>
+                              <input
+                                type="number"
+                                step="0.0001"
+                                value={coords[1]}
+                                onChange={(e) => {
+                                  const newCities = [...(locationsData.cities || [])];
+                                  newCities[idx] = {
+                                    ...newCities[idx],
+                                    coordinates: [coords[0], Number(e.target.value)],
+                                  };
+                                  setLocationsData({ ...locationsData, cities: newCities });
+                                }}
+                                className="w-full px-3 py-2 rounded bg-surface border border-foreground/20 text-sm"
+                              />
+                            </div>
+                            <div className="md:col-span-2">
+                              <label className="block text-xs font-bold mb-1 opacity-70">Short description (English)</label>
+                              <textarea
+                                value={city.blurb ?? ""}
+                                onChange={(e) => {
+                                  const newCities = [...(locationsData.cities || [])];
+                                  newCities[idx] = { ...newCities[idx], blurb: e.target.value };
+                                  setLocationsData({ ...locationsData, cities: newCities });
+                                }}
+                                className="w-full px-3 py-2 rounded bg-surface border border-foreground/20 text-sm h-16"
+                              />
+                            </div>
+                          </div>
+                          <MediaUploader
+                            label={`${city.name || city.id} background image`}
+                            value={city.bgImage ?? ""}
                             folder="locations"
                             onChange={(url) => {
                               const newCities = [...(locationsData.cities || [])];
-                              newCities[idx].bgImage = url;
+                              newCities[idx] = { ...newCities[idx], bgImage: url };
                               setLocationsData({ ...locationsData, cities: newCities });
                             }}
                           />
                         </div>
-                      ))}
-                    </div>
+                      );
+                    })}
                   </div>
                   <button onClick={() => handleSaveCmsSection('locations', locationsData)} className="mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors w-fit font-medium">Save Locations</button>
                 </div>

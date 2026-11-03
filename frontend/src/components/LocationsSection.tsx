@@ -2,27 +2,11 @@ import { useState, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { MapPin, Phone, Mail } from "lucide-react";
+import { resolveOfficeLocations } from "@/data/officeLocations";
 
 const LocationsSaudiMap = lazy(() =>
   import("@/components/LocationsSaudiMap").then((m) => ({ default: m.LocationsSaudiMap }))
 );
-
-type Loc = {
-  id: string;
-  name: string;
-  region: string;
-  coordinates: [number, number];
-  blurb: string;
-  bgImage: string;
-};
-
-const locations: Loc[] = [
-  { id: "riyadh", name: "Riyadh", region: "Main Headquarters", coordinates: [24.7136, 46.6753], blurb: "Headquarters & national operations hub.", bgImage: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790668720/ChatGPT_Image_Sep_29_2026_01_27_25_PM.png" },
-  { id: "khobar", name: "Khobar", region: "Regional Presence", coordinates: [26.2172, 50.1971], blurb: "Eastern Province operations.", bgImage: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790761271/ChatGPT_Image_Sep_30_2026_03_10_59_PM.png" },
-  { id: "jubail", name: "Jubail", region: "Regional Presence", coordinates: [27.0112, 49.661], blurb: "Industrial & petrochemical security programs.", bgImage: "https://i.vimeocdn.com/video/2099272543-c3cc6657da44aea5870525710e085cc6c97b501e7baed679991b0c2c1da4fc6d-d?f=webp" },
-  { id: "yanbu", name: "Yanbu", region: "Regional Presence", coordinates: [24.0232, 38.0638], blurb: "Red Sea industrial facility coverage.", bgImage: "https://www.eritrea-focus.org/wp-content/uploads/2026/07/download.webp" },
-  { id: "jeddah", name: "Jeddah", region: "Regional Presence", coordinates: [21.4858, 39.1925], blurb: "Gateway to western coastal projects.", bgImage: "https://res.cloudinary.com/dppwnds6z/image/upload/v1790761414/ChatGPT_Image_Sep_30_2026_03_13_20_PM.png" },
-];
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -39,13 +23,7 @@ export function LocationsSection({ data }: { data?: any }) {
     ? (data?.subtitle_ar || t("locations.subtitle", "نخدم المملكة العربية السعودية وكافة مناطقها الحيوية"))
     : (data?.subtitle || t("locations.subtitle", "Serving Saudi Arabia and Surroundings"));
 
-  const dynamicLocations = locations.map(loc => {
-    const cmsCity = data?.cities?.find((c: any) => c.id === loc.id);
-    return {
-      ...loc,
-      bgImage: cmsCity?.bgImage || loc.bgImage
-    };
-  });
+  const dynamicLocations = resolveOfficeLocations(data);
 
   const active = dynamicLocations.find((l) => l.id === activeId) || dynamicLocations[0];
   const focusLocation = (id: string) => setActiveId(id);
@@ -56,9 +34,8 @@ export function LocationsSection({ data }: { data?: any }) {
     coordinates: l.coordinates,
   }));
 
-  const mapUrl = active.id === "riyadh"
-    ? "https://www.google.com/maps/search/?api=1&query=RHTA7423,+Office+No.+110,+Al+Taawun+Dist.+7423+Abi+Bakr+Al+Siddiq+Road,+Riyadh,+Kingdom+of+Saudi+Arabia"
-    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${active.name}, Saudi Arabia`)}`;
+  const riyadhDirectionsUrl =
+    "https://www.google.com/maps/search/?api=1&query=RHTA7423,+Office+No.+110,+Al+Taawun+Dist.+7423+Abi+Bakr+Al+Siddiq+Road,+Riyadh,+Kingdom+of+Saudi+Arabia";
 
   return (
     <section 
@@ -131,15 +108,17 @@ export function LocationsSection({ data }: { data?: any }) {
                       : t(`locations.blurbs.${active.id}`, active.blurb)}
                   </p>
 
-                  <a
-                    href={mapUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg backdrop-blur-md font-mono text-[10px] uppercase tracking-wider transition-all shadow-lg ${activeId === active.id ? "bg-primary/80 hover:bg-primary text-white border border-primary/50" : "bg-black/40 hover:bg-black/60 text-white/70 border border-white/10"}`}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <MapPin className="w-3.5 h-3.5" /> {t("locations.get_directions", "Get Directions")}
-                  </a>
+                  {active.id === "riyadh" && (
+                    <a
+                      href={riyadhDirectionsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg backdrop-blur-md font-mono text-[10px] uppercase tracking-wider transition-all shadow-lg ${activeId === active.id ? "bg-primary/80 hover:bg-primary text-white border border-primary/50" : "bg-black/40 hover:bg-black/60 text-white/70 border border-white/10"}`}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <MapPin className="w-3.5 h-3.5" /> {t("locations.get_directions", "Get Directions")}
+                    </a>
+                  )}
                 </div>
               </div>
             </div>
