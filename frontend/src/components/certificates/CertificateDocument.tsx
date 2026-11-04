@@ -10,11 +10,18 @@ import {
 } from "@/lib/certificateDisplay";
 import { formatCertDisplayDate, VISO_LOGO_URL } from "@/lib/certificateTemplates";
 
+import type { CertificateCopy } from "@/lib/certificateCopy";
+import {
+  buildCertificatePlaceholderVars,
+  fillCertificateCopy,
+} from "@/lib/certificateCopy";
+
 export type CertificateViewProps = {
   cert: TranslationCertificate;
   certId: string;
   qrUrl: string;
   branding: CertificateBranding;
+  copy: CertificateCopy;
   displayStatus: CertificateDisplayStatus;
   bannerLabel: string | null;
   watermarkLabel: string | null;
@@ -216,14 +223,16 @@ export function CertificateTemplateClassic(props: CertificateViewProps) {
 }
 
 export function CertificateTemplateTrilingual(props: CertificateViewProps) {
-  const { cert, certId, qrUrl, branding, bannerLabel } = props;
+  const { cert, certId, qrUrl, branding, bannerLabel, copy } = props;
   const refDate = formatCertDisplayDate(cert.issue_date);
   const expiryDate = formatCertDisplayDate(cert.expiry_date);
-  const client = cert.project_name;
-
-  const bodyEs = `Certificamos que la traducción del documento correspondiente a ${client}, de ${cert.source_lang} a ${cert.target_lang}, ha sido realizada por traductores acreditados de Vision of Solutions Office for Translation, conforme a los estándares oficiales del Reino de Arabia Saudita.`;
-  const bodyEn = `We certify that the translation of the document relating to ${client}, from ${cert.source_lang} to ${cert.target_lang}, has been completed by accredited translators of Vision of Solutions Office for Translation in accordance with the official standards of the Kingdom of Saudi Arabia.`;
-  const bodyAr = `نشهد بأن الترجمة الخاصة بالوثيقة المتعلقة بـ ${client}، من ${cert.source_lang} إلى ${cert.target_lang}، قد تمت من قبل مترجمين معتمدين لدى مكتب رؤية الحلول للترجمة وفق المعايير الرسمية في المملكة العربية السعودية.`;
+  const vars = buildCertificatePlaceholderVars(cert, certId, copy);
+  const bodyEs = fillCertificateCopy(copy.trilingual.bodyEs, vars);
+  const bodyEn = fillCertificateCopy(copy.trilingual.bodyEn, vars);
+  const bodyAr = fillCertificateCopy(copy.trilingual.bodyAr, vars);
+  const verifyEs = fillCertificateCopy(copy.trilingual.verifyEs, vars);
+  const verifyEn = fillCertificateCopy(copy.trilingual.verifyEn, vars);
+  const verifyAr = fillCertificateCopy(copy.trilingual.verifyAr, vars);
 
   return (
     <CertificateOuterFrame className="max-w-[940px] min-h-[1280px]">
@@ -296,14 +305,10 @@ export function CertificateTemplateTrilingual(props: CertificateViewProps) {
       {/* Verification notice */}
       <div className="mt-5 py-3 px-4 bg-neutral-100 border border-neutral-200 text-[8.5px] sm:text-[9px] text-neutral-600 leading-relaxed">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center sm:text-left">
-          <p>
-            Para verificación, escanee el código QR. Válido hasta {expiryDate} (3 meses máx.).
-          </p>
-          <p className="sm:text-center">
-            For verification, scan the QR code. Valid through {expiryDate} (up to 3 months).
-          </p>
+          <p>{verifyEs}</p>
+          <p className="sm:text-center">{verifyEn}</p>
           <p className="sm:text-right" dir="rtl">
-            للتحقق، امسح رمز QR. صالح حتى {expiryDate} (لمدة 3 أشهر كحد أقصى).
+            {verifyAr}
           </p>
         </div>
       </div>
@@ -398,9 +403,10 @@ export function CertificateTemplateTrilingual(props: CertificateViewProps) {
 }
 
 export function CertificateTemplateAccreditation(props: CertificateViewProps) {
-  const { cert, certId, qrUrl, branding, bannerLabel } = props;
+  const { cert, certId, qrUrl, branding, bannerLabel, copy } = props;
   const issueDisplay = formatCertDisplayDate(cert.issue_date);
   const expiryDisplay = formatCertDisplayDate(cert.expiry_date);
+  const vars = buildCertificatePlaceholderVars(cert, certId, copy);
   const nameEn = cert.project_name;
   const nameAr = formatCertificateProjectNameForDisplay(cert.project_name, true);
   const srcEn = cert.source_lang;
@@ -408,8 +414,10 @@ export function CertificateTemplateAccreditation(props: CertificateViewProps) {
   const tgtEn = cert.target_lang;
   const tgtAr = localizeCertificateLanguage(cert.target_lang, true);
 
-  const preambleEn = `This certificate is issued in accordance with the accredited translation standards of the Kingdom of Saudi Arabia and confirms that the translation relating to the bearer named below was completed by Vision of Solutions Office for Translation.`;
-  const preambleAr = `صدرت هذه الشهادة وفق معايير الترجمة المعتمدة في المملكة العربية السعودية وتؤكد إتمام الترجمة لدى مكتب رؤية الحلول للترجمة للشخص المذكور أدناه.`;
+  const preambleEn = fillCertificateCopy(copy.accreditation.preambleEn, vars);
+  const preambleAr = fillCertificateCopy(copy.accreditation.preambleAr, vars);
+  const validityEn = fillCertificateCopy(copy.accreditation.validityEn, vars);
+  const validityAr = fillCertificateCopy(copy.accreditation.validityAr, vars);
 
   return (
     <CertificateOuterFrame className="max-w-[920px] min-h-[1280px]">
@@ -500,9 +508,9 @@ export function CertificateTemplateAccreditation(props: CertificateViewProps) {
       {/* Validity banner */}
       <div className="relative mt-6 py-4 px-6 bg-gradient-to-r from-amber-200/60 via-amber-100 to-amber-200/60 border-y-2 border-amber-600/50">
         <div className="grid md:grid-cols-2 gap-3 text-center md:text-left text-sm font-bold text-amber-950">
-          <p>This certification is valid until: {expiryDisplay}</p>
+          <p>{validityEn}</p>
           <p className="md:text-right" dir="rtl">
-            هذه الشهادة صالحة إلى تاريخ: {expiryDisplay}
+            {validityAr}
           </p>
         </div>
       </div>

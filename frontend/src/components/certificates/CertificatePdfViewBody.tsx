@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { RefreshCw } from "lucide-react";
 import { certsApi, getCertificateDisplayStatus } from "@/lib/certsApi";
 import { fetchCertificateBranding, DEFAULT_CERTIFICATE_BRANDING } from "@/lib/certificateBranding";
+import { fetchCertificateCopy, DEFAULT_CERTIFICATE_COPY } from "@/lib/certificateCopy";
 import { resolveCertificateTemplate } from "@/lib/certificateTemplates";
 import { getPublicSiteOrigin } from "@/lib/certificateIds";
 import {
@@ -14,18 +15,21 @@ import { CertificateTemplateOfficialDoc } from "@/components/certificates/Certif
 export function CertificatePdfViewBody({ certId }: { certId: string }) {
   const [certData, setCertData] = useState<Awaited<ReturnType<typeof certsApi.getCertificateById>>>(null);
   const [branding, setBranding] = useState(DEFAULT_CERTIFICATE_BRANDING);
+  const [copy, setCopy] = useState(DEFAULT_CERTIFICATE_COPY);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       setIsLoading(true);
       try {
-        const [cert, brand] = await Promise.all([
+        const [cert, brand, publishedCopy] = await Promise.all([
           certsApi.getCertificateById(certId),
           fetchCertificateBranding(),
+          fetchCertificateCopy(),
         ]);
         setCertData(cert);
         setBranding(brand);
+        setCopy(publishedCopy);
       } finally {
         setIsLoading(false);
       }
@@ -73,6 +77,7 @@ export function CertificatePdfViewBody({ certId }: { certId: string }) {
     certId,
     qrUrl,
     branding,
+    copy,
     displayStatus,
     bannerLabel,
     watermarkLabel,

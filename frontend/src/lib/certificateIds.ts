@@ -68,3 +68,8 @@ export function getPublicCertificateUrl(certificateId: string): string {
   const id = certificateId.trim().toUpperCase();
   return `${getPublicSiteOrigin()}/certificate/${encodeURIComponent(id)}`;
 }
+
+export function getCertificatePreviewUrl(template: string): string {
+  const t = encodeURIComponent(template);
+  return `${getPublicSiteOrigin()}/certificate/preview?template=${t}`;
+}

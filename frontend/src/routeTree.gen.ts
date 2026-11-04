@@ -24,6 +24,7 @@ import { Route as TechnicalProposalRouteImport } from './routes/technical-propos
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TranslationRouteImport } from './routes/translation'
 import { Route as CertificateIdRouteImport } from './routes/certificate.$id'
+import { Route as CertificatePreviewRouteImport } from './routes/certificate.preview'
 import { Route as ExploreSlugRouteImport } from './routes/explore.$slug'
 import { Route as RegulatorySlugRouteImport } from './routes/regulatory.$slug'
 
@@ -102,6 +103,11 @@ const CertificateIdRoute = CertificateIdRouteImport.update({
   path: '/certificate/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CertificatePreviewRoute = CertificatePreviewRouteImport.update({
+  id: '/certificate/preview',
+  path: '/certificate/preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExploreSlugRoute = ExploreSlugRouteImport.update({
   id: '/explore/$slug',
   path: '/explore/$slug',
@@ -129,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/translation': typeof TranslationRoute
   '/certificate/$id': typeof CertificateIdRoute
+  '/certificate/preview': typeof CertificatePreviewRoute
   '/explore/$slug': typeof ExploreSlugRoute
   '/regulatory/$slug': typeof RegulatorySlugRoute
 }
@@ -148,6 +155,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/translation': typeof TranslationRoute
   '/certificate/$id': typeof CertificateIdRoute
+  '/certificate/preview': typeof CertificatePreviewRoute
   '/explore/$slug': typeof ExploreSlugRoute
   '/regulatory/$slug': typeof RegulatorySlugRoute
 }
@@ -168,6 +176,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/translation': typeof TranslationRoute
   '/certificate/$id': typeof CertificateIdRoute
+  '/certificate/preview': typeof CertificatePreviewRoute
   '/explore/$slug': typeof ExploreSlugRoute
   '/regulatory/$slug': typeof RegulatorySlugRoute
 }
@@ -189,6 +198,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/translation'
     | '/certificate/$id'
+    | '/certificate/preview'
     | '/explore/$slug'
     | '/regulatory/$slug'
   fileRoutesByTo: FileRoutesByTo
@@ -208,6 +218,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/translation'
     | '/certificate/$id'
+    | '/certificate/preview'
     | '/explore/$slug'
     | '/regulatory/$slug'
   id:
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/translation'
     | '/certificate/$id'
+    | '/certificate/preview'
     | '/explore/$slug'
     | '/regulatory/$slug'
   fileRoutesById: FileRoutesById
@@ -247,6 +259,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   TranslationRoute: typeof TranslationRoute
   CertificateIdRoute: typeof CertificateIdRoute
+  CertificatePreviewRoute: typeof CertificatePreviewRoute
   ExploreSlugRoute: typeof ExploreSlugRoute
   RegulatorySlugRoute: typeof RegulatorySlugRoute
 }
@@ -358,6 +371,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CertificateIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/certificate/preview': {
+      id: '/certificate/preview'
+      path: '/certificate/preview'
+      fullPath: '/certificate/preview'
+      preLoaderRoute: typeof CertificatePreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/explore/$slug': {
       id: '/explore/$slug'
       path: '/explore/$slug'
@@ -391,6 +411,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   TranslationRoute: TranslationRoute,
   CertificateIdRoute: CertificateIdRoute,
+  CertificatePreviewRoute: CertificatePreviewRoute,
   ExploreSlugRoute: ExploreSlugRoute,
   RegulatorySlugRoute: RegulatorySlugRoute,
 }

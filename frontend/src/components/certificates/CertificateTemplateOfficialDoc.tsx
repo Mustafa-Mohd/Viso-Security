@@ -1,16 +1,11 @@
 import type { ReactNode } from "react";
 import type { CertificateViewProps } from "@/components/certificates/CertificateDocument";
 import {
-  formatCertDateSlashYmd,
-  formatCertDisplayDate,
-  formatCertLongDateEn,
-  VISO_OFFICIAL_DOC_LOGO_AR,
-  VISO_OFFICIAL_DOC_LOGO_EN,
-} from "@/lib/certificateTemplates";
-import {
-  localizeCertificateLanguage,
-  textDirectionForContent,
-} from "@/lib/certificateDisplay";
+  buildCertificatePlaceholderVars,
+  fillCertificateCopy,
+} from "@/lib/certificateCopy";
+import { formatCertDisplayDate, VISO_OFFICIAL_DOC_LOGO_AR, VISO_OFFICIAL_DOC_LOGO_EN } from "@/lib/certificateTemplates";
+import { localizeCertificateLanguage, textDirectionForContent } from "@/lib/certificateDisplay";
 import { getPublicSiteOrigin } from "@/lib/certificateIds";
 
 const NAVY = "#12284C";
@@ -67,10 +62,8 @@ function GridValue({ children, center }: { children: React.ReactNode; center?: b
 }
 
 export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
-  const { cert, certId, qrUrl, branding, bannerLabel } = props;
+  const { cert, certId, qrUrl, branding, bannerLabel, copy } = props;
   const refDate = formatCertDisplayDate(cert.issue_date);
-  const longDateEn = formatCertLongDateEn(cert.issue_date);
-  const dateAr = formatCertDateSlashYmd(cert.issue_date);
   const clientEn = cert.project_name;
   const srcEn = cert.source_lang;
   const tgtEn = cert.target_lang;
@@ -78,6 +71,14 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
   const tgtAr = localizeCertificateLanguage(cert.target_lang, true);
   const documentLabel = `${srcEn} – ${tgtEn} Translation`;
   const origin = getPublicSiteOrigin();
+  const vars = buildCertificatePlaceholderVars(cert, certId, copy);
+  const o = copy.official;
+  const legalEn1 = fillCertificateCopy(o.legalEn1, vars);
+  const legalEn2 = fillCertificateCopy(o.legalEn2, vars);
+  const legalEn3 = fillCertificateCopy(o.legalEn3, vars);
+  const legalAr1 = fillCertificateCopy(o.legalAr1, vars);
+  const legalAr2 = fillCertificateCopy(o.legalAr2, vars);
+  const legalAr3 = fillCertificateCopy(o.legalAr3, vars);
 
   return (
     <div
@@ -146,44 +147,23 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
       {/* Bilingual legal body */}
       <div className="px-8 mt-6 grid grid-cols-[1fr_4px_1fr] gap-0 items-stretch">
         <div className="pr-4 space-y-4 text-[11px] leading-[1.65] text-justify">
-          <p>
-            <strong>Vision of Solutions Office for Translation</strong> hereby certifies that the accompanying{" "}
-            <strong>{srcEn}</strong> document is a <strong>true and accurate</strong> translation of the accompanying{" "}
-            <strong>{tgtEn}</strong> document, and that the translation was prepared by a qualified translator.
-          </p>
-          <p>
-            This certification relates solely to the accuracy of the translation. It does not attest to the
-            authenticity, legality, validity, or content of the original document, and we assume no responsibility for
-            the information contained therein.
-          </p>
-          <p>
-            Accordingly, we hereby certify this translation by our signature and official seal on{" "}
-            <strong>{longDateEn}</strong>, in <strong>Riyadh, Kingdom of Saudi Arabia</strong>.
-          </p>
+          <p>{legalEn1}</p>
+          <p>{legalEn2}</p>
+          <p>{legalEn3}</p>
         </div>
         <div className="w-1 self-stretch my-1" style={{ backgroundColor: GOLD }} />
         <div className="pl-4 space-y-4 text-[11px] leading-[1.75] text-justify" dir="rtl">
-          <p>
-            يشهد <strong>مكتب رؤية الحلول للترجمة</strong> بأن المستند المرفق باللغة <strong>{srcAr}</strong> هو ترجمة
-            دقيقة ومطابقة لمعنى المستند المرفق باللغة <strong>{tgtAr}</strong>، وأن هذه الترجمة قد تم إعدادها بواسطة
-            مترجم مؤهل وكفؤ.
-          </p>
-          <p>
-            يقتصر هذا التصديق على دقة الترجمة ومطابقتها للنص الأصلي، ولا يُعد إقراراً بصحة أو نظامية أو حجية المستند
-            الأصلي أو محتواه، ولا نتحمل أي مسؤولية عن المعلومات الواردة في المستند الأصلي.
-          </p>
-          <p>
-            وعليه، نُصدق ونعتمد هذه الترجمة بتوقيعنا وختمنا بتاريخ <strong>{dateAr}</strong> في{" "}
-            <strong>الرياض، المملكة العربية السعودية</strong>.
-          </p>
+          <p>{legalAr1}</p>
+          <p>{legalAr2}</p>
+          <p>{legalAr3}</p>
         </div>
       </div>
 
       {/* Signatures */}
       <div className="px-8 mt-8 grid grid-cols-3 gap-6 items-end">
         <div>
-          <p className="font-bold text-sm">Sincerely,</p>
-          <p className="font-bold text-sm mt-1 mb-6">Vision of Solutions Office for Translation</p>
+          <p className="font-bold text-sm">{o.closingEn}</p>
+          <p className="font-bold text-sm mt-1 mb-6">{o.officeNameEn}</p>
           <div className="relative min-h-[56px] mb-1">
             {branding.signatureUrl && (
               <img
@@ -194,8 +174,8 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
             )}
             <div className="border-b-2 pt-10" style={{ borderColor: NAVY }} />
           </div>
-          <p className="font-bold text-sm">Mohammad BinSadiq</p>
-          <p className="text-[11px] text-neutral-700 mt-0.5">Authorized Signatory</p>
+          <p className="font-bold text-sm">{o.signatoryNameEn}</p>
+          <p className="text-[11px] text-neutral-700 mt-0.5">{o.signatoryTitleEn}</p>
         </div>
 
         <div
@@ -211,8 +191,8 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
         </div>
 
         <div dir="rtl" className="text-right">
-          <p className="font-bold text-sm">أطيب التحيات،</p>
-          <p className="font-bold text-sm mt-1 mb-6">مكتب رؤية الحلول للترجمة</p>
+          <p className="font-bold text-sm">{o.closingAr}</p>
+          <p className="font-bold text-sm mt-1 mb-6">{o.officeNameAr}</p>
           <div className="relative min-h-[56px] mb-1">
             {branding.signatureUrl && (
               <img
@@ -223,8 +203,8 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
             )}
             <div className="border-b-2 pt-10" style={{ borderColor: NAVY }} />
           </div>
-          <p className="font-bold text-sm">محمد بن صادق</p>
-          <p className="text-[11px] text-neutral-700 mt-0.5">المفوض بالتوقيع</p>
+          <p className="font-bold text-sm">{o.signatoryNameAr}</p>
+          <p className="text-[11px] text-neutral-700 mt-0.5">{o.signatoryTitleAr}</p>
         </div>
       </div>
 
@@ -239,14 +219,11 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
         </div>
         <div className="border-2 px-4 py-3 flex flex-col justify-center gap-2" style={{ borderColor: GOLD }}>
           <p className="text-[11px] font-bold" style={{ color: NAVY }}>
-            VERIFY THIS CERTIFICATION · تحقق من الاعتماد
+            {o.verifyHeading}
           </p>
-          <p className="text-[10.5px] leading-snug">
-            For verification purposes, please scan the certification QR code. This code is valid for up to 3 months.
-          </p>
+          <p className="text-[10.5px] leading-snug">{fillCertificateCopy(o.verifyEn, vars)}</p>
           <p className="text-[10.5px] leading-snug" dir="rtl">
-            لأغراض التحقق من الاعتماد، يرجى مسح رمز الاستجابة السريعة (QR code)، وتنتهي صلاحية هذا الرمز بعد ثلاثة
-            أشهر من تاريخ الإصدار.
+            {fillCertificateCopy(o.verifyAr, vars)}
           </p>
           <p className="text-[11px] font-bold mt-1" style={{ color: GOLD }}>
             {certId} · {origin.replace(/^https?:\/\//, "")}/translation
@@ -257,8 +234,10 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
             <img src={branding.digitalStampUrl} alt="" className="max-h-24 w-auto object-contain opacity-90" />
           ) : (
             <>
-              <p>Translation Commission license / QR</p>
-              <p className="mt-1">(paste official copy here)</p>
+              <p>{o.commissionNoteEn}</p>
+              <p className="mt-1" dir="rtl">
+                {o.commissionNoteAr}
+              </p>
             </>
           )}
         </div>

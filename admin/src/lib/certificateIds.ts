@@ -4,4 +4,5 @@ export {
   generateVerificationReferenceId,
   getPublicSiteOrigin,
   getPublicCertificateUrl,
+  getCertificatePreviewUrl,
 } from "../../../frontend/src/lib/certificateIds";
