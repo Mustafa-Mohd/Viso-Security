@@ -12,6 +12,11 @@ import {
   generateVerificationReferenceId,
   getPublicCertificateUrl,
 } from "../lib/certificateIds";
+import {
+  formatCertificateClientName,
+  parseCertificateClientName,
+  type ParentRelation,
+} from "../lib/certificateClientName";
 
 const VALIDITY_MONTH_OPTIONS = [1, 2, 3] as const;
 type ValidityMonths = (typeof VALIDITY_MONTH_OPTIONS)[number];
@@ -55,7 +60,9 @@ export function CertificatesDashboard() {
   
   const [formId, setFormId] = useState("");
   const [formNationalId, setFormNationalId] = useState("");
-  const [formName, setFormName] = useState("");
+  const [formClientName, setFormClientName] = useState("");
+  const [formParentRelation, setFormParentRelation] = useState<ParentRelation>("none");
+  const [formParentName, setFormParentName] = useState("");
   const [formSource, setFormSource] = useState("Arabic");
   const [formTarget, setFormTarget] = useState("English");
   const [formIssue, setFormIssue] = useState("");
@@ -93,7 +100,9 @@ export function CertificatesDashboard() {
     setEditingId(null);
     setFormId(computeNextCertificateId(certs.map((c) => c.id)));
     setFormNationalId("");
-    setFormName("");
+    setFormClientName("");
+    setFormParentRelation("none");
+    setFormParentName("");
     setFormSource("Arabic");
     setFormTarget("English");
     
@@ -112,7 +121,10 @@ export function CertificatesDashboard() {
     setEditingId(cert.id);
     setFormId(cert.id);
     setFormNationalId(cert.national_id);
-    setFormName(cert.project_name);
+    const parsed = parseCertificateClientName(cert.project_name);
+    setFormClientName(parsed.clientName);
+    setFormParentRelation(parsed.relation);
+    setFormParentName(parsed.parentName);
     setFormSource(cert.source_lang);
     setFormTarget(cert.target_lang);
     setFormIssue(cert.issue_date);
@@ -134,10 +146,16 @@ export function CertificatesDashboard() {
       return;
     }
 
-    if (!formName.trim()) {
-      setFormError("Document/Project Name is required.");
+    if (!formClientName.trim()) {
+      setFormError("Client name is required.");
       return;
     }
+
+    const projectName = formatCertificateClientName(
+      formClientName,
+      formParentRelation,
+      formParentName
+    );
 
     const nationalId = editingId
       ? formNationalId.trim()
@@ -171,7 +189,7 @@ export function CertificatesDashboard() {
       await certsApi.upsertCertificate({
         id: upperId,
         national_id: nationalId,
-        project_name: formName.trim(),
+        project_name: projectName,
         source_lang: formSource,
         target_lang: formTarget,
         issue_date: formIssue,
@@ -277,10 +295,16 @@ export function CertificatesDashboard() {
     }
   };
 
+  const clientDisplayPreview = formatCertificateClientName(
+    formClientName,
+    formParentRelation,
+    formParentName
+  );
+
   const formPreviewCert: TranslationCertificate = {
     id: formId || "PREVIEW",
     national_id: formNationalId || "0000000000",
-    project_name: formName || "Preview",
+    project_name: clientDisplayPreview || "Preview",
     source_lang: formSource,
     target_lang: formTarget,
     issue_date: formIssue || new Date().toISOString().split("T")[0],
@@ -482,29 +506,70 @@ export function CertificatesDashboard() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1.5">Certificate ID</label>
-                  <input
-                    type="text"
-                    value={formId}
-                    readOnly
-                    className="w-full bg-foreground/[0.04] border border-foreground/15 rounded-lg py-2.5 px-3 text-xs font-mono text-foreground uppercase cursor-default"
-                    required
-                  />
-                </div>
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1.5">Certificate ID</label>
+                <input
+                  type="text"
+                  value={formId}
+                  readOnly
+                  className="w-full max-w-md bg-foreground/[0.04] border border-foreground/15 rounded-lg py-2.5 px-3 text-xs font-mono text-foreground uppercase cursor-default"
+                  required
+                />
+              </div>
 
-                <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1.5">Client Name</label>
-                  <input
-                    type="text"
-                    value={formName}
-                    onChange={(e) => setFormName(e.target.value)}
-                    placeholder="e.g. Corporate Legal Contract"
-                    className="w-full bg-background border border-foreground/15 rounded-lg py-2.5 px-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all font-semibold"
-                    required
-                  />
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                  <div className="sm:col-span-5">
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1.5">
+                      Client name
+                    </label>
+                    <input
+                      type="text"
+                      value={formClientName}
+                      onChange={(e) => setFormClientName(e.target.value)}
+                      placeholder="e.g. Ahmad Al-Rashid"
+                      className="w-full bg-background border border-foreground/15 rounded-lg py-2.5 px-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all font-semibold"
+                      required
+                    />
+                  </div>
+                  <div className="sm:col-span-3">
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1.5">
+                      Relation
+                    </label>
+                    <select
+                      value={formParentRelation}
+                      onChange={(e) => {
+                        const next = e.target.value as ParentRelation;
+                        setFormParentRelation(next);
+                        if (next === "none") setFormParentName("");
+                      }}
+                      className="w-full bg-background border border-foreground/15 rounded-lg py-2.5 px-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all font-medium"
+                    >
+                      <option value="none">— None —</option>
+                      <option value="son">Son of</option>
+                      <option value="daughter">Daughter of</option>
+                    </select>
+                  </div>
+                  <div className="sm:col-span-4">
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1.5">
+                      Parent name <span className="font-normal normal-case text-foreground/40">(optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={formParentName}
+                      onChange={(e) => setFormParentName(e.target.value)}
+                      placeholder={formParentRelation === "none" ? "Not used" : "e.g. Mohammed Al-Rashid"}
+                      disabled={formParentRelation === "none"}
+                      className="w-full bg-background border border-foreground/15 rounded-lg py-2.5 px-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all font-medium disabled:opacity-50 disabled:bg-foreground/[0.04]"
+                    />
+                  </div>
+                  <div className="sm:col-span-12 rounded-lg border border-dashed border-foreground/15 bg-foreground/[0.02] px-3 py-2.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-foreground/45 block mb-1">
+                      As shown on certificate & translation page
+                    </span>
+                    <span className="text-sm font-semibold text-foreground">
+                      {clientDisplayPreview || "Enter client name…"}
+                    </span>
+                  </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
