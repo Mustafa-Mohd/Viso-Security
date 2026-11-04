@@ -143,7 +143,13 @@ export function CertificatesDashboard() {
     const legacy = certificateUsesLegacyTemplate(cert.id);
     const t = cert.template as CertificateTemplateId | undefined;
     setFormTemplate(
-      legacy ? "classic" : t === "accreditation" ? "accreditation" : "trilingual"
+      legacy
+        ? "classic"
+        : t === "accreditation"
+          ? "accreditation"
+          : t === "official"
+            ? "official"
+            : "trilingual"
     );
     setShowForm(true);
   };
@@ -203,7 +209,9 @@ export function CertificatesDashboard() {
         ? "classic"
         : formTemplate === "accreditation"
           ? "accreditation"
-          : "trilingual";
+          : formTemplate === "official"
+            ? "official"
+            : "trilingual";
 
       await certsApi.upsertCertificate({
         id: upperId,
@@ -452,7 +460,9 @@ export function CertificatesDashboard() {
                           ? "Classic (1)"
                           : cert.template === "accreditation"
                             ? "Accreditation (3)"
-                            : "Trilingual (2)"}
+                            : cert.template === "official"
+                              ? "Official (4)"
+                              : "Trilingual (2)"}
                       </td>
                       <td className="px-6 py-4 text-center">
                         <div className="flex flex-col items-center gap-1.5">

@@ -97,7 +97,7 @@ export function CertificateBrandingPanel() {
 
   return (
     <div className="bg-white dark:bg-[#1C2541] border border-foreground/5 shadow-sm rounded p-6 mb-6">
-      <h3 className="text-sm font-bold mb-1">Certificate templates 2 & 3 — branding</h3>
+      <h3 className="text-sm font-bold mb-1">Certificate templates 2–4 — branding</h3>
       <p className="text-xs text-foreground/50 mb-4">
         Used on new certificates from <strong className="font-mono">VISO-TR-2026-00986</strong> onward. Template 1 stays unchanged for older IDs.
       </p>

@@ -9,6 +9,7 @@ import {
   CertificateTemplateClassic,
   CertificateTemplateTrilingual,
 } from "@/components/certificates/CertificateDocument";
+import { CertificateTemplateOfficialDoc } from "@/components/certificates/CertificateTemplateOfficialDoc";
 
 export function CertificatePdfViewBody({ certId }: { certId: string }) {
   const [certData, setCertData] = useState<Awaited<ReturnType<typeof certsApi.getCertificateById>>>(null);
@@ -86,6 +87,7 @@ export function CertificatePdfViewBody({ certId }: { certId: string }) {
     <div className="min-h-screen bg-neutral-300 flex flex-col items-center py-8 px-4 font-sans print:bg-white print:py-0">
       {template === "trilingual" && <CertificateTemplateTrilingual {...viewProps} />}
       {template === "accreditation" && <CertificateTemplateAccreditation {...viewProps} />}
+      {template === "official" && <CertificateTemplateOfficialDoc {...viewProps} />}
       {template === "classic" && <CertificateTemplateClassic {...viewProps} />}
     </div>
   );
