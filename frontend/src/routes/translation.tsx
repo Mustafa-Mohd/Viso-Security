@@ -6,7 +6,12 @@ import { TopNav } from "@/components/TopNav";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, FileText, Search, CheckCircle, XCircle, AlertTriangle, ShieldCheck, Lock } from "lucide-react";
 import { certsApi, TranslationCertificate, getCertificateDisplayStatus, CertificateDisplayStatus } from "@/lib/certsApi";
-
+import {
+  formatCertificateProjectNameForDisplay,
+  formatCertDateForLocale,
+  localizeCertificateLanguage,
+  textDirectionForContent,
+} from "@/lib/certificateDisplay";
 
 export const Route = createFileRoute("/translation")({
   component: TranslationPage,
@@ -17,6 +22,16 @@ export const Route = createFileRoute("/translation")({
     ],
   }),
 });
+
+function preserveViewportScroll(run: () => void) {
+  const y = window.scrollY;
+  run();
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: y, left: 0, behavior: "instant" as ScrollBehavior });
+    });
+  });
+}
 
 // Custom Premium SVG Icons for the translation domains
 function OfficialStampIcon() {
@@ -92,11 +107,11 @@ function SecurityShieldIcon() {
 function VerificationSection({ isAr }: { isAr: boolean }) {
   const { t } = useTranslation();
   const [certId, setCertId] = useState("");
-  const [nationalId, setNationalId] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<TranslationCertificate | null>(null);
   const [error, setError] = useState("");
-  
+  const resultsRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -104,39 +119,56 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
 
       if (verifyId) {
         setCertId(verifyId);
-        handleVerification(verifyId);
+        void handleVerification(verifyId, { fromQuery: true });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleVerification = async (idToVerify: string) => {
+  const handleVerification = async (idToVerify: string, opts?: { fromQuery?: boolean }) => {
+    const scrollY = window.scrollY;
     setLoading(true);
     setError("");
     setResult(null);
 
     try {
       const cert = await certsApi.getCertificateById(idToVerify.trim().toUpperCase());
-      
+
       if (!cert) {
-        setError("Certificate not found. Please check the ID.");
+        preserveViewportScroll(() => {
+          setError(t("translation_page.verify.error_not_found"));
+        });
         return;
       }
-      setResult(cert);
-      
-      // Clean up URL if it came from query params
-      if (typeof window !== "undefined") {
-        window.history.replaceState({}, '', window.location.pathname);
+
+      preserveViewportScroll(() => {
+        setResult(cert);
+      });
+
+      if (opts?.fromQuery && typeof window !== "undefined") {
+        const url = new URL(window.location.href);
+        url.searchParams.delete("verify");
+        url.searchParams.delete("nationalId");
+        window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+        requestAnimationFrame(() => {
+          window.scrollTo({ top: scrollY, left: 0, behavior: "instant" as ScrollBehavior });
+        });
       }
-    } catch (err) {
-      setError("An error occurred while verifying the certificate.");
+    } catch {
+      preserveViewportScroll(() => {
+        setError(t("translation_page.verify.error_generic"));
+      });
     } finally {
       setLoading(false);
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: scrollY, left: 0, behavior: "instant" as ScrollBehavior });
+      });
     }
   };
 
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
-    handleVerification(certId);
+    void handleVerification(certId);
   };
 
   const getStatusColor = (displayStatus: CertificateDisplayStatus) => {
@@ -171,43 +203,51 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
     }
   };
 
+  const displayName = result
+    ? formatCertificateProjectNameForDisplay(result.project_name, isAr)
+    : "";
+
   return (
-    <section className="py-12 md:py-20 relative overflow-hidden bg-neutral-50 border-b border-neutral-200">
+    <section
+      className={`py-12 md:py-20 relative overflow-hidden bg-neutral-50 border-b border-neutral-200 ${isAr ? "font-sans" : ""}`}
+      dir={isAr ? "rtl" : "ltr"}
+    >
       <div className="max-w-[1200px] mx-auto px-4 md:px-8 relative z-10">
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary font-mono text-[10px] tracking-[0.2em] uppercase mb-6 shadow-xs">
             <ShieldCheck className="w-4 h-4" />
-            <span>Certificate Search</span>
+            <span>{t("translation_page.verify.badge")}</span>
             <Search className="w-3.5 h-3.5" />
           </div>
           <h2 className="font-display text-4xl md:text-5xl text-neutral-900 mb-4">
-            VISO Certificate Database
+            {t("translation_page.verify.title")}
           </h2>
           <p className="font-sans text-base text-neutral-500 max-w-2xl mx-auto">
-            Search our centralized registry to verify the authenticity, validity, and status of VISO certified translation documents.
+            {t("translation_page.verify.subtitle")}
           </p>
         </div>
 
-        {/* Certificate Search Bar (TUV Style) */}
-        <div className="bg-white border border-neutral-200 shadow-sm rounded-xl p-6 md:p-8 mb-12 relative z-20">
+        <div className="bg-white border border-neutral-200 shadow-sm rounded-xl p-6 md:p-8 mb-6 relative z-20">
           <h3 className="text-lg font-bold text-neutral-800 mb-6 flex items-center gap-2">
-            <Search className="w-5 h-5 text-primary" /> Certificate Search
+            <Search className="w-5 h-5 text-primary" /> {t("translation_page.verify.form_title")}
           </h3>
           <form id="verify-form" onSubmit={handleVerify} className="flex flex-col md:flex-row gap-6 items-end">
             <div className="flex-1 w-full">
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-500 mb-2">Certificate Number</label>
-              <input 
-                type="text" 
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-500 mb-2">
+                {t("translation_page.verify.cert_number_label")}
+              </label>
+              <input
+                type="text"
                 value={certId}
                 onChange={(e) => setCertId(e.target.value)}
-                placeholder="e.g. VISO-TR-2026-001245"
+                placeholder={t("translation_page.verify.cert_number_placeholder")}
                 className="w-full bg-neutral-50 border border-neutral-200 rounded-lg py-3.5 px-4 text-sm font-mono focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all text-neutral-800 placeholder:text-neutral-400"
                 required
               />
             </div>
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={loading}
               className="w-full md:w-auto px-10 py-3.5 rounded-lg bg-neutral-900 text-white font-bold text-sm tracking-wide hover:bg-primary transition-all disabled:opacity-70 flex justify-center items-center gap-2 cursor-pointer shadow-md"
             >
@@ -216,15 +256,20 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
               ) : (
                 <>
                   <Search className="w-4 h-4" />
-                  Search Registry
+                  {t("translation_page.verify.search_button")}
                 </>
               )}
             </button>
           </form>
 
-          <AnimatePresence>
+          <AnimatePresence mode="popLayout">
             {error && (
-              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="mt-6">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="mt-6"
+              >
                 <div className="p-4 rounded-lg bg-red-50 border border-red-100 text-red-600 text-sm font-medium flex items-center gap-3">
                   <AlertTriangle className="w-5 h-5 shrink-0" />
                   {error}
@@ -234,68 +279,98 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
           </AnimatePresence>
         </div>
 
-        {/* Certificate Result Record */}
-        <AnimatePresence>
-          {result && (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              exit={{ opacity: 0, y: -20 }} 
-              className="bg-white border-t-4 border-t-primary shadow-xl rounded-xl overflow-hidden mb-16 relative z-10"
-            >
-              <div className="p-8 md:p-12 border-b border-neutral-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-2">Verified Document Record</div>
-                  <h4 className="text-3xl md:text-4xl font-display text-neutral-900 mb-2">{result.project_name}</h4>
-                  <p className="font-mono text-neutral-500 text-sm">Certificate No: {result.id}</p>
-                </div>
-                <div className={`px-6 py-2.5 rounded-full font-bold tracking-wide text-sm border flex items-center gap-2 shadow-sm text-center ${getStatusColor(getCertificateDisplayStatus(result))}`}>
-                  {getStatusIcon(getCertificateDisplayStatus(result))} {getStatusLabel(result)}
-                </div>
-              </div>
-              
-              <div className="grid md:grid-cols-2">
-                <div className="p-8 md:p-12 border-b md:border-b-0 md:border-r border-neutral-100">
-                  <h5 className="text-xs font-bold uppercase tracking-wider text-neutral-400 mb-6 border-b border-neutral-100 pb-3">Translation Specifications</h5>
-                  
-                  <div className="space-y-6">
-                    <div>
-                      <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">Source Language</div>
-                      <div className="text-neutral-900 font-medium">{result.source_lang}</div>
+        <div ref={resultsRef}>
+          <AnimatePresence mode="popLayout">
+            {result && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="bg-white border-t-4 border-t-primary shadow-xl rounded-xl overflow-hidden mb-16 relative z-10"
+              >
+                <div className="p-8 md:p-12 border-b border-neutral-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-2">
+                      {t("translation_page.verify.verified_record")}
                     </div>
-                    <div>
-                      <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">Target Language</div>
-                      <div className="text-neutral-900 font-medium">{result.target_lang}</div>
-                    </div>
-                    <div>
-                      <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">Date of Issuance</div>
-                      <div className="text-neutral-900 font-medium">{result.issue_date}</div>
-                    </div>
-                    <div>
-                      <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">Valid Until</div>
-                      <div className="text-neutral-900 font-medium">{result.expiry_date}</div>
-                    </div>
+                    <h4
+                      className="text-2xl md:text-4xl font-display text-neutral-900 mb-2 break-words"
+                      dir={textDirectionForContent(displayName)}
+                    >
+                      {displayName}
+                    </h4>
+                    <p className="font-mono text-neutral-500 text-sm" dir="ltr">
+                      {t("translation_page.verify.cert_no")}: {result.id}
+                    </p>
+                  </div>
+                  <div
+                    className={`px-6 py-2.5 rounded-full font-bold tracking-wide text-sm border flex items-center gap-2 shadow-sm text-center shrink-0 ${getStatusColor(getCertificateDisplayStatus(result))}`}
+                  >
+                    {getStatusIcon(getCertificateDisplayStatus(result))} {getStatusLabel(result)}
                   </div>
                 </div>
-                
-                <div className="p-8 md:p-12 bg-neutral-50 flex flex-col items-center justify-center text-center">
-                  <ShieldCheck className="w-20 h-20 text-neutral-300 mb-6" />
-                  <p className="text-sm text-neutral-500 max-w-xs mb-8 leading-relaxed">
-                    This certification record is actively monitored. The information displayed reflects the current status in the VISO central registry.
-                  </p>
-                  <a 
-                    href={`/certificate/${result.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-primary font-bold hover:text-neutral-900 transition-colors bg-white px-6 py-3 rounded-lg border border-neutral-200 shadow-sm hover:shadow-md cursor-pointer"
-                  >
-                    <FileText className="w-4 h-4"/> View Digital Certificate
-                  </a>
+
+                <div className="grid md:grid-cols-2">
+                  <div className="p-8 md:p-12 border-b md:border-b-0 md:border-r border-neutral-100">
+                    <h5 className="text-xs font-bold uppercase tracking-wider text-neutral-400 mb-6 border-b border-neutral-100 pb-3">
+                      {t("translation_page.verify.specs_title")}
+                    </h5>
+
+                    <div className="space-y-6">
+                      <div>
+                        <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">
+                          {t("translation_page.verify.source_lang")}
+                        </div>
+                        <div className="text-neutral-900 font-medium">
+                          {localizeCertificateLanguage(result.source_lang, isAr)}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">
+                          {t("translation_page.verify.target_lang")}
+                        </div>
+                        <div className="text-neutral-900 font-medium">
+                          {localizeCertificateLanguage(result.target_lang, isAr)}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">
+                          {t("translation_page.verify.issue_date")}
+                        </div>
+                        <div className="text-neutral-900 font-medium" dir="ltr">
+                          {formatCertDateForLocale(result.issue_date, isAr)}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">
+                          {t("translation_page.verify.valid_until")}
+                        </div>
+                        <div className="text-neutral-900 font-medium" dir="ltr">
+                          {formatCertDateForLocale(result.expiry_date, isAr)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-8 md:p-12 bg-neutral-50 flex flex-col items-center justify-center text-center">
+                    <ShieldCheck className="w-20 h-20 text-neutral-300 mb-6" />
+                    <p className="text-sm text-neutral-500 max-w-xs mb-8 leading-relaxed">
+                      {t("translation_page.verify.monitoring_note")}
+                    </p>
+                    <a
+                      href={`/certificate/${result.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-primary font-bold hover:text-neutral-900 transition-colors bg-white px-6 py-3 rounded-lg border border-neutral-200 shadow-sm hover:shadow-md cursor-pointer"
+                    >
+                      <FileText className="w-4 h-4" /> {t("translation_page.verify.view_digital")}
+                    </a>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
       </div>
     </section>

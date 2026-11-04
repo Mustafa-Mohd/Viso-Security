@@ -17,6 +17,12 @@ import {
   parseCertificateClientName,
   type ParentRelation,
 } from "../lib/certificateClientName";
+import {
+  CERTIFICATE_TEMPLATE_OPTIONS,
+  certificateUsesLegacyTemplate,
+  type CertificateTemplateId,
+} from "../lib/certificateTemplates";
+import { CertificateBrandingPanel } from "./CertificateBrandingPanel";
 
 const VALIDITY_MONTH_OPTIONS = [1, 2, 3] as const;
 type ValidityMonths = (typeof VALIDITY_MONTH_OPTIONS)[number];
@@ -69,6 +75,7 @@ export function CertificatesDashboard() {
   const [formExpiry, setFormExpiry] = useState("");
   const [formValidityMonths, setFormValidityMonths] = useState<ValidityMonths>(1);
   const [formRevoked, setFormRevoked] = useState(false);
+  const [formTemplate, setFormTemplate] = useState<CertificateTemplateId>("trilingual");
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -112,6 +119,7 @@ export function CertificatesDashboard() {
     setFormIssue(today);
     setFormExpiry(addMonthsToDateOnly(today, defaultMonths));
     setFormRevoked(false);
+    setFormTemplate("trilingual");
     setShowForm(true);
   };
 
@@ -132,6 +140,11 @@ export function CertificatesDashboard() {
     setFormValidityMonths(months);
     setFormExpiry(addMonthsToDateOnly(cert.issue_date, months));
     setFormRevoked(cert.status === "REVOKED");
+    const legacy = certificateUsesLegacyTemplate(cert.id);
+    const t = cert.template as CertificateTemplateId | undefined;
+    setFormTemplate(
+      legacy ? "classic" : t === "accreditation" ? "accreditation" : "trilingual"
+    );
     setShowForm(true);
   };
 
@@ -186,6 +199,12 @@ export function CertificatesDashboard() {
         previousStatus,
       });
 
+      const template: CertificateTemplateId = certificateUsesLegacyTemplate(upperId)
+        ? "classic"
+        : formTemplate === "accreditation"
+          ? "accreditation"
+          : "trilingual";
+
       await certsApi.upsertCertificate({
         id: upperId,
         national_id: nationalId,
@@ -195,6 +214,7 @@ export function CertificatesDashboard() {
         issue_date: formIssue,
         expiry_date: formExpiry,
         status,
+        template,
       });
 
       await loadCerts(); // Refresh list
@@ -313,8 +333,11 @@ export function CertificatesDashboard() {
   };
   const formDisplayStatus = getCertificateDisplayStatus(formPreviewCert);
 
+  const formUsesLegacyTemplate = certificateUsesLegacyTemplate(formId || "");
+
   return (
     <div className="space-y-6">
+      <CertificateBrandingPanel />
       {/* Header Card */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-[#1C2541] p-6 rounded border border-foreground/5 shadow-sm">
         <div>
@@ -392,6 +415,7 @@ export function CertificatesDashboard() {
                   <th className="px-6 py-4">Client Name</th>
                   <th className="px-6 py-4">Languages</th>
                   <th className="px-6 py-4">Timeline</th>
+                  <th className="px-6 py-4">Template</th>
                   <th className="px-6 py-4 text-center">Status</th>
                   <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
@@ -399,7 +423,7 @@ export function CertificatesDashboard() {
               <tbody className="divide-y divide-foreground/5">
                 {filteredCerts.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="text-center py-12 text-foreground/40 font-medium">
+                    <td colSpan={7} className="text-center py-12 text-foreground/40 font-medium">
                       No certificate records found matching the criteria.
                     </td>
                   </tr>
@@ -422,6 +446,13 @@ export function CertificatesDashboard() {
                       <td className="px-6 py-4 text-foreground/60">
                         <div>Issued: <span className="font-semibold text-foreground/80">{cert.issue_date}</span></div>
                         <div className="mt-0.5">Expires: <span className="font-semibold text-foreground/80">{cert.expiry_date}</span></div>
+                      </td>
+                      <td className="px-6 py-4 text-foreground/70 text-xs">
+                        {certificateUsesLegacyTemplate(cert.id)
+                          ? "Classic (1)"
+                          : cert.template === "accreditation"
+                            ? "Accreditation (3)"
+                            : "Trilingual (2)"}
                       </td>
                       <td className="px-6 py-4 text-center">
                         <div className="flex flex-col items-center gap-1.5">
@@ -643,6 +674,34 @@ export function CertificatesDashboard() {
                   />
                 </div>
               </div>
+
+              {!formUsesLegacyTemplate ? (
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1.5">
+                    Certificate template
+                  </label>
+                  <select
+                    value={formTemplate === "classic" ? "trilingual" : formTemplate}
+                    onChange={(e) => setFormTemplate(e.target.value as CertificateTemplateId)}
+                    className="w-full bg-background border border-foreground/15 rounded-lg py-2.5 px-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all font-medium"
+                  >
+                    {CERTIFICATE_TEMPLATE_OPTIONS.filter((o) => o.id !== "classic").map((opt) => (
+                      <option key={opt.id} value={opt.id}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-[9px] text-foreground/45 mt-1.5">
+                    {CERTIFICATE_TEMPLATE_OPTIONS.find((o) => o.id === formTemplate)?.description ??
+                      CERTIFICATE_TEMPLATE_OPTIONS.find((o) => o.id === "trilingual")?.description}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-[10px] text-foreground/50 bg-foreground/[0.03] rounded-lg px-3 py-2 border border-foreground/10">
+                  This ID uses <strong>Template 1 (Classic)</strong>. New layouts apply from{" "}
+                  <span className="font-mono">VISO-TR-2026-00986</span> onward.
+                </p>
+              )}
 
               <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 items-center pt-1">
                 <div>

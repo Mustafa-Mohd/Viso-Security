@@ -9,6 +9,7 @@ export interface TranslationCertificate {
   issue_date: string;
   expiry_date: string;
   status: "VALID" | "EXPIRED" | "REVOKED";
+  template?: "classic" | "trilingual" | "accreditation" | string | null;
   created_at?: string;
   updated_at?: string;
 }
@@ -108,6 +109,7 @@ export const certsApi = {
         issue_date: cert.issue_date,
         expiry_date: cert.expiry_date,
         status: cert.status,
+        template: cert.template ?? "classic",
         updated_at: new Date().toISOString()
       }, { onConflict: 'id' });
 
