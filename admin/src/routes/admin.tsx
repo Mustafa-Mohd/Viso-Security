@@ -680,6 +680,8 @@ function AdminPage() {
   // Tabs
   const [activeTab, setActiveTab] = useState<"gallery" | "core_values" | "homepage" | "cms" | "inquiries" | "users" | "auth_users" | "job_apps" | "dms" | "hr" | "cms_history" | "certificates">("cms");
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [sidebarHovered, setSidebarHovered] = useState(false);
+  const sidebarLabelsVisible = mobileSidebarOpen || sidebarHovered;
 
   // Job Apps State
   const [jobApps, setJobApps] = useState<any[]>([]);
@@ -1685,28 +1687,76 @@ const DEFAULT_HERO_SLIDES = [
   return (
     <div className="flex h-screen bg-surface-2 text-foreground overflow-hidden font-sans">
       
-      {/* Sidebar Navigation */}
-      <aside className={`flex-none z-[40] bg-[#0B1329] text-white border-r border-[#1C2541] transition-all duration-300 ${mobileSidebarOpen ? 'w-64 absolute h-full shadow-2xl' : 'w-0 lg:w-64 hidden lg:flex'} flex-col overflow-y-auto`}>
-         <div className="h-16 flex items-center px-6 border-b border-white/10 shrink-0">
-             <img loading="lazy" decoding="async" src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png" alt="VISO Logo" className="h-8 w-auto object-contain mr-3" />
-             <span className="font-bold text-sm tracking-wider">VISO ADMIN</span>
+      {/* Sidebar Navigation — collapsed on desktop; expands on hover */}
+      <aside
+        className={`flex-none z-[40] bg-[#0B1329] text-white border-r border-[#1C2541] transition-all duration-300 flex-col overflow-y-auto overflow-x-hidden ${
+          mobileSidebarOpen
+            ? "w-64 absolute h-full shadow-2xl flex"
+            : `hidden lg:flex ${sidebarHovered ? "lg:w-64 lg:shadow-xl" : "lg:w-16"}`
+        }`}
+        onMouseEnter={() => setSidebarHovered(true)}
+        onMouseLeave={() => setSidebarHovered(false)}
+      >
+         <div
+           className={`h-16 flex items-center border-b border-white/10 shrink-0 transition-all duration-300 ${
+             sidebarLabelsVisible ? "px-6" : "px-6 lg:px-0 lg:justify-center"
+           }`}
+         >
+             <img
+               loading="lazy"
+               decoding="async"
+               src="https://res.cloudinary.com/dcefror3c/image/upload/v1786611747/Luxurious_black_and_gold_logo_design_kjv4np__1_-removebg-preview_jvmtcu.png"
+               alt="VISO Logo"
+               className={`h-8 w-auto object-contain shrink-0 ${sidebarLabelsVisible ? "mr-3" : "lg:mr-0"}`}
+             />
+             <span
+               className={`font-bold text-sm tracking-wider whitespace-nowrap overflow-hidden transition-all duration-300 ${
+                 sidebarLabelsVisible ? "opacity-100 max-w-[200px]" : "lg:opacity-0 lg:max-w-0 lg:hidden"
+               }`}
+             >
+               VISO ADMIN
+             </span>
          </div>
          
-         <div className="flex-1 py-4 flex flex-col gap-1 px-3">
-            <div className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2 px-3">Modules</div>
+         <div className={`flex-1 py-4 flex flex-col gap-1 transition-all duration-300 ${sidebarLabelsVisible ? "px-3" : "px-3 lg:px-1.5"}`}>
+            <div
+              className={`text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2 px-3 overflow-hidden transition-all duration-300 ${
+                sidebarLabelsVisible ? "" : "lg:h-0 lg:mb-0 lg:opacity-0 lg:px-0"
+              }`}
+            >
+              Modules
+            </div>
             {visibleNavItems.map(item => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
+              const hasBadge = (item.badge || 0) > 0;
               return (
                 <button
                   key={item.id}
+                  type="button"
+                  title={!sidebarLabelsVisible ? item.label : undefined}
                   onClick={() => { setActiveTab(item.id as any); setMobileSidebarOpen(false); }}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded transition-all duration-200 text-sm w-full text-left ${isActive ? 'bg-primary text-[#0B1329] font-medium' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}
+                  className={`relative flex items-center rounded transition-all duration-200 text-sm w-full text-left ${
+                    sidebarLabelsVisible ? "gap-3 px-3 py-2.5" : "gap-3 px-3 py-2.5 lg:justify-center lg:px-0 lg:py-3"
+                  } ${isActive ? "bg-primary text-[#0B1329] font-medium" : "text-white/70 hover:bg-white/10 hover:text-white"}`}
                 >
-                  <Icon size={16} />
-                  <span className="flex-1">{item.label}</span>
-                  {(item.badge || 0) > 0 && (
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${isActive ? 'bg-[#0B1329] text-primary' : 'bg-primary text-[#0B1329]'}`}>
+                  <span className="relative shrink-0">
+                    <Icon size={18} />
+                    {hasBadge && !sidebarLabelsVisible && (
+                      <span className="absolute -top-1 -right-1 min-w-[14px] h-[14px] px-0.5 rounded-full bg-primary text-[#0B1329] text-[8px] font-bold flex items-center justify-center lg:flex">
+                        {item.badge! > 9 ? "9+" : item.badge}
+                      </span>
+                    )}
+                  </span>
+                  <span
+                    className={`flex-1 truncate whitespace-nowrap transition-all duration-300 ${
+                      sidebarLabelsVisible ? "opacity-100" : "lg:opacity-0 lg:w-0 lg:overflow-hidden lg:flex-[0]"
+                    }`}
+                  >
+                    {item.label}
+                  </span>
+                  {hasBadge && sidebarLabelsVisible && (
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 ${isActive ? "bg-[#0B1329] text-primary" : "bg-primary text-[#0B1329]"}`}>
                       {item.badge}
                     </span>
                   )}
@@ -5004,7 +5054,7 @@ CREATE POLICY "Allow public all access on contact_submissions"
 
         {/* CERTIFICATES DASHBOARD */}
         {activeTab === 'certificates' && (session?.role === 'super_admin' || session?.role === 'admin' || session?.role === 'cert_admin') && (
-          <div className="flex-1 flex flex-col p-6 overflow-y-auto">
+          <div className="flex-1 flex flex-col p-4 sm:p-6 min-w-0 overflow-x-hidden">
             <CertificatesDashboard />
           </div>
         )}

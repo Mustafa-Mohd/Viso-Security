@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Trash2, Edit, ShieldCheck, AlertTriangle, XCircle, Search, RefreshCw, Check } from "lucide-react";
+import { Plus, Trash2, Edit, ShieldCheck, AlertTriangle, XCircle, Search, RefreshCw, Check, ExternalLink, FileText, X } from "lucide-react";
 import {
   certsApi,
   TranslationCertificate,
@@ -25,7 +25,7 @@ import {
 import { CertificateBrandingPanel } from "./CertificateBrandingPanel";
 
 const VALIDITY_MONTH_OPTIONS = [1, 2, 3] as const;
-type ValidityMonths = (typeof VALIDITY_MONTH_OPTIONS)[number];
+type ValidityMonths = (typeof VALIDITY_MONTH_OPTIONS)[number] | "custom";
 
 function addMonthsToDateOnly(dateStr: string, months: number): string {
   const parts = dateStr.split("-").map(Number);
@@ -77,7 +77,11 @@ export function CertificatesDashboard() {
   const [formRevoked, setFormRevoked] = useState(false);
   const [formTemplate, setFormTemplate] = useState<CertificateTemplateId>("trilingual");
   const [formError, setFormError] = useState("");
+  const [formSuccess, setFormSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  /** Cache-bust for live public certificate iframe after saves */
+  const [livePreviewToken, setLivePreviewToken] = useState(0);
+  const [showFormPreview, setShowFormPreview] = useState(false);
 
   // Load certificates
   const loadCerts = async () => {
@@ -97,14 +101,17 @@ export function CertificatesDashboard() {
   }, []);
 
   useEffect(() => {
-    if (!showForm || !formIssue) return;
+    if (!showForm || !formIssue || formValidityMonths === "custom") return;
     setFormExpiry(addMonthsToDateOnly(formIssue, formValidityMonths));
   }, [showForm, formIssue, formValidityMonths]);
 
   // Helper to open form for creating
   const openCreateForm = () => {
     setFormError("");
+    setFormSuccess("");
     setEditingId(null);
+    setLivePreviewToken(0);
+    setShowFormPreview(false);
     setFormId(computeNextCertificateId(certs.map((c) => c.id)));
     setFormNationalId("");
     setFormClientName("");
@@ -126,6 +133,9 @@ export function CertificatesDashboard() {
   // Helper to open form for editing
   const openEditForm = (cert: TranslationCertificate) => {
     setFormError("");
+    setFormSuccess("");
+    setLivePreviewToken(Date.now());
+    setShowFormPreview(false);
     setEditingId(cert.id);
     setFormId(cert.id);
     setFormNationalId(cert.national_id);
@@ -136,9 +146,9 @@ export function CertificatesDashboard() {
     setFormSource(cert.source_lang);
     setFormTarget(cert.target_lang);
     setFormIssue(cert.issue_date);
-    const months = detectValidityMonths(cert.issue_date, cert.expiry_date) ?? 1;
-    setFormValidityMonths(months);
-    setFormExpiry(addMonthsToDateOnly(cert.issue_date, months));
+    const months = detectValidityMonths(cert.issue_date, cert.expiry_date);
+    setFormValidityMonths(months ?? "custom");
+    setFormExpiry(cert.expiry_date);
     setFormRevoked(cert.status === "REVOKED");
     const legacy = certificateUsesLegacyTemplate(cert.id);
     const t = cert.template as CertificateTemplateId | undefined;
@@ -158,6 +168,7 @@ export function CertificatesDashboard() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError("");
+    setFormSuccess("");
 
     const upperId = formId.trim().toUpperCase();
     if (!upperId) {
@@ -205,7 +216,9 @@ export function CertificatesDashboard() {
         previousStatus,
       });
 
-      const template: CertificateTemplateId = certificateUsesLegacyTemplate(upperId)
+      const idForSave = (editingId ?? upperId).trim().toUpperCase();
+
+      const template: CertificateTemplateId = certificateUsesLegacyTemplate(idForSave)
         ? "classic"
         : formTemplate === "accreditation"
           ? "accreditation"
@@ -214,7 +227,7 @@ export function CertificatesDashboard() {
             : "trilingual";
 
       await certsApi.upsertCertificate({
-        id: upperId,
+        id: idForSave,
         national_id: nationalId,
         project_name: projectName,
         source_lang: formSource,
@@ -225,9 +238,17 @@ export function CertificatesDashboard() {
         template,
       });
 
-      await loadCerts(); // Refresh list
-      setShowForm(false);
-      setEditingId(null);
+      await loadCerts();
+
+      if (editingId) {
+        setLivePreviewToken(Date.now());
+        setFormSuccess(
+          "Saved. The public certificate page and print/PDF view now use this data. Refresh the preview if it still shows the old version."
+        );
+      } else {
+        setShowForm(false);
+        setEditingId(null);
+      }
     } catch (err: any) {
       setFormError(err.message || "Failed to save certificate.");
     } finally {
@@ -293,6 +314,29 @@ export function CertificatesDashboard() {
     }
   };
 
+  const getCompactStatusLabel = (cert: TranslationCertificate) => {
+    const displayStatus = getCertificateDisplayStatus(cert);
+    switch (displayStatus) {
+      case "active":
+        return "Active";
+      case "expired":
+        return "Ended";
+      case "pending":
+        return "Upcoming";
+      case "revoked":
+        return "Withdrawn";
+      default:
+        return "";
+    }
+  };
+
+  const templateShortLabel = (cert: TranslationCertificate) => {
+    if (certificateUsesLegacyTemplate(cert.id)) return "T1";
+    if (cert.template === "accreditation") return "T3";
+    if (cert.template === "official") return "T4";
+    return "T2";
+  };
+
   const getStatusStyle = (displayStatus: CertificateDisplayStatus) => {
     switch (displayStatus) {
       case "active":
@@ -343,14 +387,21 @@ export function CertificatesDashboard() {
 
   const formUsesLegacyTemplate = certificateUsesLegacyTemplate(formId || "");
 
+  const formPreviewTemplate: CertificateTemplateId = formUsesLegacyTemplate
+    ? "classic"
+    : formTemplate === "classic"
+      ? "trilingual"
+      : formTemplate;
+
   return (
-    <div className="space-y-6">
-      <CertificateBrandingPanel />
+    <div className="space-y-6 min-w-0 w-full max-w-full">
       {/* Header Card */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-[#1C2541] p-6 rounded border border-foreground/5 shadow-sm">
         <div>
           <h2 className="text-xl font-bold text-foreground">Translation Certificates</h2>
-          <p className="text-xs text-foreground/50 mt-1">Manage, issue, update, and revoke official VISO translation certificates synced with the live Certipedia database.</p>
+          <p className="text-xs text-foreground/50 mt-1">
+            Issue certificates and update issued records at any time—editing changes the live public PDF. Use preview in the issue/edit form to adjust layout and template wording.
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <button
@@ -409,23 +460,32 @@ export function CertificatesDashboard() {
           </div>
         </div>
 
-        {/* Table View */}
-        <div className="overflow-x-auto min-h-[300px]">
+        {/* Table View — fits viewport width; actions always visible (no horizontal scroll) */}
+        <div className="w-full min-h-[200px]">
           {isLoading ? (
-            <div className="flex items-center justify-center h-[300px] text-foreground/40 font-medium">
+            <div className="flex items-center justify-center h-[200px] text-foreground/40 font-medium">
               <RefreshCw className="w-6 h-6 animate-spin mr-2" /> Loading certificates...
             </div>
           ) : (
-            <table className="w-full text-left text-xs whitespace-nowrap">
-              <thead className="bg-foreground/[0.02] text-foreground/60 font-bold uppercase tracking-wider border-b border-foreground/5">
+            <table className="w-full max-w-full text-left text-[11px] table-fixed">
+              <colgroup>
+                <col className="w-[17%]" />
+                <col className="w-[21%]" />
+                <col className="w-[11%]" />
+                <col className="w-[17%]" />
+                <col className="w-[7%]" />
+                <col className="w-[15%]" />
+                <col className="w-[12%]" />
+              </colgroup>
+              <thead className="bg-foreground/[0.02] text-foreground/60 font-bold uppercase tracking-wider border-b border-foreground/5 text-[10px]">
                 <tr>
-                  <th className="px-6 py-4">Certificate ID</th>
-                  <th className="px-6 py-4">Client Name</th>
-                  <th className="px-6 py-4">Languages</th>
-                  <th className="px-6 py-4">Timeline</th>
-                  <th className="px-6 py-4">Template</th>
-                  <th className="px-6 py-4 text-center">Status</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
+                  <th className="px-2 sm:px-3 py-2.5">ID</th>
+                  <th className="px-2 sm:px-3 py-2.5">Client</th>
+                  <th className="px-2 sm:px-3 py-2.5">Lang</th>
+                  <th className="px-2 sm:px-3 py-2.5">Dates</th>
+                  <th className="px-2 sm:px-3 py-2.5">Tmpl</th>
+                  <th className="px-2 sm:px-3 py-2.5 text-center">Status</th>
+                  <th className="px-2 sm:px-3 py-2.5 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-foreground/5">
@@ -437,46 +497,47 @@ export function CertificatesDashboard() {
                   </tr>
                 ) : (
                   filteredCerts.map((cert) => (
-                    <tr key={cert.id} className="hover:bg-foreground/[0.01] transition-colors group">
-                      <td className="px-6 py-4">
-                        <span className="font-mono font-bold text-foreground">{cert.id}</span>
+                    <tr key={cert.id} className="hover:bg-foreground/[0.01] transition-colors group align-middle">
+                      <td className="px-2 sm:px-3 py-2.5">
+                        <span className="font-mono font-bold text-foreground text-[10px] sm:text-[11px] break-all leading-snug">
+                          {cert.id}
+                        </span>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="font-bold text-foreground text-sm max-w-xs truncate">{cert.project_name}</div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-1.5 font-medium text-foreground/85">
-                          <span>{cert.source_lang}</span>
-                          <span className="text-foreground/40">➔</span>
-                          <span>{cert.target_lang}</span>
+                      <td className="px-2 sm:px-3 py-2.5">
+                        <div className="font-semibold text-foreground truncate" title={cert.project_name}>
+                          {cert.project_name}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-foreground/60">
-                        <div>Issued: <span className="font-semibold text-foreground/80">{cert.issue_date}</span></div>
-                        <div className="mt-0.5">Expires: <span className="font-semibold text-foreground/80">{cert.expiry_date}</span></div>
+                      <td className="px-2 sm:px-3 py-2.5 text-foreground/85">
+                        <span className="truncate block" title={`${cert.source_lang} → ${cert.target_lang}`}>
+                          {cert.source_lang.slice(0, 3)}→{cert.target_lang.slice(0, 3)}
+                        </span>
                       </td>
-                      <td className="px-6 py-4 text-foreground/70 text-xs">
-                        {certificateUsesLegacyTemplate(cert.id)
-                          ? "Classic (1)"
-                          : cert.template === "accreditation"
-                            ? "Accreditation (3)"
-                            : cert.template === "official"
-                              ? "Official (4)"
-                              : "Trilingual (2)"}
+                      <td className="px-2 sm:px-3 py-2.5 text-foreground/65 leading-snug">
+                        <div className="truncate" title={`Issued ${cert.issue_date}`}>
+                          <span className="text-foreground/45">I:</span> {cert.issue_date}
+                        </div>
+                        <div className="truncate" title={`Expires ${cert.expiry_date}`}>
+                          <span className="text-foreground/45">E:</span> {cert.expiry_date}
+                        </div>
                       </td>
-                      <td className="px-6 py-4 text-center">
-                        <div className="flex flex-col items-center gap-1.5">
+                      <td className="px-2 sm:px-3 py-2.5 font-mono font-bold text-foreground/70" title={`Template ${templateShortLabel(cert).replace("T", "")}`}>
+                        {templateShortLabel(cert)}
+                      </td>
+                      <td className="px-2 sm:px-3 py-2.5 text-center">
+                        <div className="flex flex-col items-center gap-0.5">
                           <span
-                            className={`inline-flex items-center gap-1 px-3 py-1 rounded-full border text-[10px] font-bold max-w-[180px] leading-tight ${getStatusStyle(getCertificateDisplayStatus(cert))}`}
+                            className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full border text-[9px] font-bold leading-tight ${getStatusStyle(getCertificateDisplayStatus(cert))}`}
+                            title={getDisplayStatusLabel(cert)}
                           >
                             {getStatusIcon(getCertificateDisplayStatus(cert))}
-                            {getDisplayStatusLabel(cert)}
+                            <span className="hidden sm:inline">{getCompactStatusLabel(cert)}</span>
                           </span>
                           {cert.status === "REVOKED" ? (
                             <button
                               type="button"
                               onClick={() => setRevokedFlag(cert, false)}
-                              className="text-[9px] font-bold uppercase tracking-wider text-primary hover:underline cursor-pointer"
+                              className="text-[8px] font-bold uppercase text-primary hover:underline cursor-pointer"
                             >
                               Reinstate
                             </button>
@@ -488,35 +549,37 @@ export function CertificatesDashboard() {
                                   setRevokedFlag(cert, true);
                                 }
                               }}
-                              className="text-[9px] font-bold uppercase tracking-wider text-rose-500 hover:underline cursor-pointer"
+                              className="text-[8px] font-bold uppercase text-rose-500 hover:underline cursor-pointer"
                             >
                               Withdraw
                             </button>
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex justify-end gap-2">
+                      <td className="px-2 sm:px-3 py-2.5">
+                        <div className="flex justify-end items-center gap-1">
                           <a
                             href={getPublicCertificateUrl(cert.id)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="px-3 py-1.5 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 transition-colors font-semibold shadow-sm hover:shadow"
-                            title="View certificate on public site"
+                            className="p-1.5 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 transition-colors"
+                            title="View PDF"
                           >
-                            View PDF
+                            <FileText className="w-3.5 h-3.5" />
                           </a>
                           <button
+                            type="button"
                             onClick={() => openEditForm(cert)}
-                            className="p-2 rounded bg-primary/10 hover:bg-primary text-primary hover:text-white transition-colors cursor-pointer"
-                            title="Edit Record"
+                            className="p-1.5 rounded bg-primary/10 hover:bg-primary text-primary hover:text-white transition-colors cursor-pointer"
+                            title="Edit certificate"
                           >
                             <Edit className="w-3.5 h-3.5" />
                           </button>
                           <button
+                            type="button"
                             onClick={() => handleDelete(cert.id)}
-                            className="p-2 rounded bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white transition-colors cursor-pointer"
-                            title="Delete Record"
+                            className="p-1.5 rounded bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white transition-colors cursor-pointer"
+                            title="Delete"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -533,20 +596,88 @@ export function CertificatesDashboard() {
 
       {/* Issuing / Editing Modal Overlay */}
       {showForm && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-[#1C2541] border border-foreground/10 w-full max-w-4xl rounded-xl shadow-2xl p-5 md:p-6 text-foreground flex flex-col relative">
-            <h3 className="text-base font-bold text-foreground border-b border-foreground/5 pb-3 mb-4">
-              {editingId ? `Edit Certificate: ${editingId}` : "Issue New Certificate"}
-            </h3>
-            
+        <div
+          className={`fixed inset-0 z-[200] bg-[#0B1329]/80 text-foreground ${
+            showFormPreview ? "" : "flex items-center justify-center backdrop-blur-sm p-4"
+          }`}
+        >
+          <div
+            className={`bg-white dark:bg-[#1C2541] flex flex-col min-h-0 ${
+              showFormPreview
+                ? "w-full h-full border-0"
+                : "w-full max-w-4xl max-h-[min(92vh,900px)] overflow-y-auto rounded-xl shadow-2xl border border-foreground/10"
+            }`}
+          >
+            <div
+              className={`shrink-0 flex items-start justify-between gap-4 border-b border-foreground/10 ${
+                showFormPreview ? "px-5 py-4 bg-white dark:bg-[#1C2541]" : "px-5 md:px-6 pt-5 pb-3"
+              }`}
+            >
+              <div className="min-w-0">
+                <h3 className="text-base font-bold text-foreground">
+                  {editingId ? `Edit issued certificate: ${editingId}` : "Issue New Certificate"}
+                </h3>
+                {editingId && !showFormPreview && (
+                  <p className="text-[11px] text-foreground/55 mt-1">
+                    Changes update the{" "}
+                    <a
+                      href={getPublicCertificateUrl(editingId)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary font-semibold hover:underline inline-flex items-center gap-0.5"
+                    >
+                      live certificate
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                    .
+                  </p>
+                )}
+                {showFormPreview && (
+                  <p className="text-[11px] text-foreground/50 mt-1">
+                    Full-screen workspace — certificate details on the left, template content and preview on the right.
+                  </p>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowForm(false);
+                  setShowFormPreview(false);
+                }}
+                className="p-2 rounded-lg border border-foreground/15 hover:bg-foreground/5 text-foreground/70 shrink-0"
+                title="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
             {formError && (
-              <div className="mb-3 p-3 rounded-lg bg-rose-500/10 border border-rose-500/25 text-rose-500 text-xs font-semibold flex items-center gap-2">
+              <div className="mx-5 mt-3 p-3 rounded-lg bg-rose-500/10 border border-rose-500/25 text-rose-500 text-xs font-semibold flex items-center gap-2 shrink-0">
                 <AlertTriangle className="w-4 h-4 shrink-0" />
                 {formError}
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-3">
+            {formSuccess && (
+              <div className="mx-5 mt-3 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-emerald-700 dark:text-emerald-400 text-xs font-semibold flex items-center gap-2 shrink-0">
+                <Check className="w-4 h-4 shrink-0" />
+                {formSuccess}
+              </div>
+            )}
+
+            <form
+              onSubmit={handleSubmit}
+              className={`min-w-0 min-h-0 ${
+                showFormPreview
+                  ? "flex-1 grid grid-cols-1 lg:grid-cols-[minmax(320px,400px)_1fr] overflow-hidden"
+                  : "space-y-3 overflow-y-auto px-5 md:px-6 pb-5 md:pb-6"
+              }`}
+            >
+              <div
+                className={`space-y-3 min-w-0 ${
+                  showFormPreview ? "overflow-y-auto border-b lg:border-b-0 lg:border-r border-foreground/10 p-5" : ""
+                }`}
+              >
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1.5">Certificate ID</label>
                 <input
@@ -661,7 +792,10 @@ export function CertificatesDashboard() {
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1.5">Validity</label>
                   <select
                     value={formValidityMonths}
-                    onChange={(e) => setFormValidityMonths(Number(e.target.value) as ValidityMonths)}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      setFormValidityMonths(v === "custom" ? "custom" : (Number(v) as 1 | 2 | 3));
+                    }}
                     className="w-full bg-background border border-foreground/15 rounded-lg py-2.5 px-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all font-medium"
                   >
                     {VALIDITY_MONTH_OPTIONS.map((months) => (
@@ -669,6 +803,7 @@ export function CertificatesDashboard() {
                         {months} {months === 1 ? "Month" : "Months"}
                       </option>
                     ))}
+                    <option value="custom">Custom expiry date</option>
                   </select>
                 </div>
 
@@ -677,11 +812,19 @@ export function CertificatesDashboard() {
                   <input
                     type="date"
                     value={formExpiry}
-                    readOnly
-                    tabIndex={-1}
-                    className="w-full bg-foreground/[0.04] border border-foreground/15 rounded-lg py-2.5 px-3 text-xs text-foreground cursor-default"
+                    readOnly={formValidityMonths !== "custom"}
+                    tabIndex={formValidityMonths === "custom" ? undefined : -1}
+                    onChange={(e) => formValidityMonths === "custom" && setFormExpiry(e.target.value)}
+                    className={`w-full border border-foreground/15 rounded-lg py-2.5 px-3 text-xs text-foreground transition-all ${
+                      formValidityMonths === "custom"
+                        ? "bg-background focus:outline-none focus:border-primary/50"
+                        : "bg-foreground/[0.04] cursor-default"
+                    }`}
                     required
                   />
+                  {formValidityMonths === "custom" && (
+                    <p className="text-[9px] text-foreground/45 mt-1">Pick validity “Custom” to set any expiry (including for corrections after issue).</p>
+                  )}
                 </div>
               </div>
 
@@ -738,11 +881,26 @@ export function CertificatesDashboard() {
                 )}
               </div>
 
-              <div className="pt-3 flex justify-end gap-3 border-t border-foreground/5 mt-2">
+              <label className="flex items-center gap-2.5 rounded-lg border border-foreground/10 bg-foreground/[0.02] px-3 py-2.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showFormPreview}
+                  onChange={(e) => setShowFormPreview(e.target.checked)}
+                  className="rounded border-foreground/20"
+                />
+                <span className="text-xs text-foreground/80 font-medium">
+                  Show preview — change template layout and edit certificate wording (branding, templates 2–4)
+                </span>
+              </label>
+
+              <div className={`pt-3 flex justify-end gap-3 border-t border-foreground/5 mt-2 ${showFormPreview ? "sticky bottom-0 bg-white dark:bg-[#1C2541] pb-1" : ""}`}>
                 <button
                   type="button"
                   disabled={isSubmitting}
-                  onClick={() => setShowForm(false)}
+                  onClick={() => {
+                    setShowForm(false);
+                    setShowFormPreview(false);
+                  }}
                   className="px-4 py-2 rounded-sm border border-foreground/10 text-foreground/75 hover:bg-foreground/5 hover:text-foreground text-xs uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-50"
                 >
                   Cancel
@@ -755,12 +913,36 @@ export function CertificatesDashboard() {
                   {isSubmitting ? (
                     <><RefreshCw className="w-4 h-4 animate-spin" /> Saving...</>
                   ) : editingId ? (
-                    "Save Changes"
+                    "Save & update live PDF"
                   ) : (
                     "Issue Certificate"
                   )}
                 </button>
               </div>
+              </div>
+
+              {showFormPreview && (
+                <div className="min-h-0 h-full flex flex-col overflow-hidden p-4 lg:p-5 bg-foreground/[0.02] dark:bg-black/20">
+                  {formUsesLegacyTemplate && (
+                    <p className="text-[10px] text-foreground/50 mb-2 shrink-0">
+                      Template 1 (Classic) on this ID — tabs still edit branding and templates 2–4 for other certificates.
+                    </p>
+                  )}
+                  <div className="flex-1 min-h-0">
+                    <CertificateBrandingPanel
+                      embedded
+                      fillHeight
+                      liveCertificateId={editingId}
+                      previewTemplate={formPreviewTemplate}
+                      livePreviewToken={livePreviewToken}
+                      className="h-full border-0 bg-white dark:bg-[#1C2541]"
+                      onPreviewTemplateChange={(t) => {
+                        if (!formUsesLegacyTemplate && t !== "classic") setFormTemplate(t);
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
             </form>
           </div>
         </div>

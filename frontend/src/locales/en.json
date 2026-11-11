@@ -439,7 +439,7 @@
       },
       "tabuk": {
         "name": "Tabuk",
-        "region": "Northern Region"
+        "region": "KSA-wide"
       }
     },
     "presence": "Presence",
@@ -458,7 +458,7 @@
       "yanbu": "Red Sea industrial facility coverage.",
       "neom": "Next-gen mega-project security consulting.",
       "taif": "Highland regional support.",
-      "tabuk": "KSA-wide northern region project delivery."
+      "tabuk": "KSA-wide project delivery."
     }
   },
   "footer": {

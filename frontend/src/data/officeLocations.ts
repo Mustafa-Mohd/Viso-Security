@@ -76,15 +76,17 @@ export const DEFAULT_OFFICE_LOCATIONS: OfficeLocation[] = [
     name: "Tabuk",
     region: "Regional Presence",
     coordinates: [28.3838, 36.571],
-    blurb: "KSA-wide northern region project delivery.",
+    blurb: "KSA-wide project delivery.",
     bgImage: TABUK_BG,
   },
 ];
 
 function resolveCityBlurb(cityId: string, cmsBlurb: string | undefined, defaultBlurb: string): string {
   const trimmed = cmsBlurb?.trim();
-  if (cityId === "tabuk" && trimmed && /^nationwide$/i.test(trimmed)) {
-    return defaultBlurb;
+  if (cityId === "tabuk" && trimmed) {
+    if (/^nationwide$/i.test(trimmed)) return defaultBlurb;
+    if (/northern\s+region/i.test(trimmed)) return defaultBlurb;
+    if (/المنطقة الشمالية/.test(trimmed)) return defaultBlurb;
   }
   return trimmed || defaultBlurb;
 }
