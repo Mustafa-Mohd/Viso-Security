@@ -76,10 +76,18 @@ export const DEFAULT_OFFICE_LOCATIONS: OfficeLocation[] = [
     name: "Tabuk",
     region: "Regional Presence",
     coordinates: [28.3838, 36.571],
-    blurb: "Northern Kingdom project delivery.",
+    blurb: "KSA-wide northern region project delivery.",
     bgImage: TABUK_BG,
   },
 ];
+
+function resolveCityBlurb(cityId: string, cmsBlurb: string | undefined, defaultBlurb: string): string {
+  const trimmed = cmsBlurb?.trim();
+  if (cityId === "tabuk" && trimmed && /^nationwide$/i.test(trimmed)) {
+    return defaultBlurb;
+  }
+  return trimmed || defaultBlurb;
+}
 
 function toCoordPair(value: unknown, fallback: [number, number]): [number, number] {
   if (Array.isArray(value) && value.length >= 2) {
@@ -120,7 +128,7 @@ export function normalizeLocationsCmsContent(content: LocationsCmsContent | null
       id: def.id,
       name: existing?.name || def.name,
       coordinates: toCoordPair(existing?.coordinates, def.coordinates),
-      blurb: existing?.blurb || def.blurb,
+      blurb: resolveCityBlurb(def.id, existing?.blurb, def.blurb),
       bgImage: existing?.bgImage || def.bgImage,
     });
   }
@@ -151,7 +159,7 @@ export function resolveOfficeLocations(data?: LocationsCmsContent | null): Offic
     result.push({
       ...def,
       name: cms?.name?.trim() || def.name,
-      blurb: cms?.blurb?.trim() || def.blurb,
+      blurb: resolveCityBlurb(def.id, cms?.blurb, def.blurb),
       bgImage: cms?.bgImage?.trim() || def.bgImage,
       coordinates: cms?.coordinates ? toCoordPair(cms.coordinates, def.coordinates) : def.coordinates,
     });
