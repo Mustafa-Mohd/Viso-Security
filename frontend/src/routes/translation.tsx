@@ -33,6 +33,16 @@ function preserveViewportScroll(run: () => void) {
   });
 }
 
+const VERIFY_SCROLL_OFFSET_PX = 100;
+
+function scrollToVerifyArea(focusResults = false, resultsEl: HTMLElement | null) {
+  const target =
+    focusResults && resultsEl ? resultsEl : document.getElementById("certipedia-section");
+  if (!target) return;
+  const y = target.getBoundingClientRect().top + window.scrollY - VERIFY_SCROLL_OFFSET_PX;
+  window.scrollTo({ top: Math.max(0, y), left: 0, behavior: "smooth" });
+}
+
 // Custom Premium SVG Icons for the translation domains
 function OfficialStampIcon() {
   return (
@@ -111,6 +121,7 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
   const [result, setResult] = useState<TranslationCertificate | null>(null);
   const [error, setError] = useState("");
   const resultsRef = useRef<HTMLDivElement>(null);
+  const scrollAfterQrVerify = useRef(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -119,13 +130,26 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
 
       if (verifyId) {
         setCertId(verifyId);
+        scrollAfterQrVerify.current = true;
+        requestAnimationFrame(() => scrollToVerifyArea(false, resultsRef.current));
         void handleVerification(verifyId, { fromQuery: true });
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (!scrollAfterQrVerify.current) return;
+    if (!result && !error) return;
+    scrollAfterQrVerify.current = false;
+    const t = window.setTimeout(() => {
+      scrollToVerifyArea(Boolean(result), resultsRef.current);
+    }, 120);
+    return () => window.clearTimeout(t);
+  }, [result, error]);
+
   const handleVerification = async (idToVerify: string, opts?: { fromQuery?: boolean }) => {
+    const fromQr = Boolean(opts?.fromQuery);
     const scrollY = window.scrollY;
     setLoading(true);
     setError("");
@@ -135,34 +159,45 @@ function VerificationSection({ isAr }: { isAr: boolean }) {
       const cert = await certsApi.getCertificateById(idToVerify.trim().toUpperCase());
 
       if (!cert) {
-        preserveViewportScroll(() => {
+        if (fromQr) {
           setError(t("translation_page.verify.error_not_found"));
-        });
+        } else {
+          preserveViewportScroll(() => {
+            setError(t("translation_page.verify.error_not_found"));
+          });
+        }
         return;
       }
 
-      preserveViewportScroll(() => {
+      if (fromQr) {
         setResult(cert);
-      });
+      } else {
+        preserveViewportScroll(() => {
+          setResult(cert);
+        });
+      }
 
-      if (opts?.fromQuery && typeof window !== "undefined") {
+      if (fromQr && typeof window !== "undefined") {
         const url = new URL(window.location.href);
         url.searchParams.delete("verify");
         url.searchParams.delete("nationalId");
         window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+      }
+    } catch {
+      if (fromQr) {
+        setError(t("translation_page.verify.error_generic"));
+      } else {
+        preserveViewportScroll(() => {
+          setError(t("translation_page.verify.error_generic"));
+        });
+      }
+    } finally {
+      setLoading(false);
+      if (!fromQr) {
         requestAnimationFrame(() => {
           window.scrollTo({ top: scrollY, left: 0, behavior: "instant" as ScrollBehavior });
         });
       }
-    } catch {
-      preserveViewportScroll(() => {
-        setError(t("translation_page.verify.error_generic"));
-      });
-    } finally {
-      setLoading(false);
-      requestAnimationFrame(() => {
-        window.scrollTo({ top: scrollY, left: 0, behavior: "instant" as ScrollBehavior });
-      });
     }
   };
 

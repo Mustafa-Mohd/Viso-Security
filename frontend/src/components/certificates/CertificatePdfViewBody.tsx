@@ -85,7 +85,7 @@ export function CertificatePdfViewBody({ certId }: { certId: string }) {
   const template = resolveCertificateTemplate(certData);
 
   return (
-    <div className="min-h-screen bg-neutral-300 flex flex-col items-center py-8 px-4 font-sans print:bg-white print:py-0">
+    <div className="min-h-screen bg-neutral-300 flex flex-col items-center py-4 px-2 sm:py-8 sm:px-4 font-sans print:bg-white print:py-0">
       {template === "official" && <CertificateTemplateOfficialDoc {...viewProps} />}
       {template === "classic" && <CertificateTemplateClassic {...viewProps} />}
     </div>
