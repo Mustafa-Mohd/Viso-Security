@@ -1,18 +1,28 @@
 import type { ReactNode } from "react";
+import { useState } from "react";
 import type { CertificateViewProps } from "@/components/certificates/CertificateDocument";
 import {
   buildCertificatePlaceholderVars,
   fillCertificateCopy,
 } from "@/lib/certificateCopy";
-import { formatCertDisplayDate, VISO_OFFICIAL_DOC_LOGO_AR, VISO_OFFICIAL_DOC_LOGO_EN } from "@/lib/certificateTemplates";
-import { certificateShowsClientCr, localizeCertificateLanguage, textDirectionForContent } from "@/lib/certificateDisplay";
+import {
+  formatCertDisplayDate,
+  SAUDI_TRANSLATION_COMMISSION_LOGO,
+  SAUDI_TRANSLATION_COMMISSION_LOGO_FALLBACK,
+  VISO_OFFICIAL_DOC_LOGO_AR,
+  VISO_OFFICIAL_DOC_LOGO_EN,
+} from "@/lib/certificateTemplates";
+import {
+  certificateShowsClientCr,
+  localizeCertificateLanguage,
+  resolveClassicClientNameAr,
+  textDirectionForContent,
+} from "@/lib/certificateDisplay";
 import { getPublicSiteOrigin } from "@/lib/certificateIds";
 
 const NAVY = "#12284C";
 const GOLD = "#B08D3C";
 const CREAM = "#F1ECE0";
-const BORDER = "#DDD5BF";
-const BORDER_GOLD = "#D8CFB6";
 
 function MetaBox({
   labelEn,
@@ -61,10 +71,27 @@ function GridValue({ children, center }: { children: React.ReactNode; center?: b
   );
 }
 
+function CommissionLogo() {
+  const [src, setSrc] = useState(SAUDI_TRANSLATION_COMMISSION_LOGO);
+  return (
+    <img
+      src={src}
+      alt="Literature, Publishing & Translation Commission"
+      className="max-h-[118px] w-auto max-w-full object-contain"
+      onError={() => {
+        if (src !== SAUDI_TRANSLATION_COMMISSION_LOGO_FALLBACK) {
+          setSrc(SAUDI_TRANSLATION_COMMISSION_LOGO_FALLBACK);
+        }
+      }}
+    />
+  );
+}
+
 export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
-  const { cert, certId, qrUrl, branding, bannerLabel, copy } = props;
+  const { cert, certId, branding, bannerLabel, copy } = props;
   const refDate = formatCertDisplayDate(cert.issue_date);
   const clientEn = cert.project_name;
+  const clientAr = resolveClassicClientNameAr(cert.project_name, cert.project_name_ar);
   const srcEn = cert.source_lang;
   const tgtEn = cert.target_lang;
   const srcAr = localizeCertificateLanguage(cert.source_lang, true);
@@ -89,7 +116,6 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
         <div className="bg-amber-600 text-white text-center text-xs font-bold py-2 px-4">{bannerLabel}</div>
       )}
 
-      {/* Header logos from Word template */}
       <div className="grid grid-cols-2 gap-4 px-8 pt-8 pb-4 items-center">
         <img src={VISO_OFFICIAL_DOC_LOGO_EN} alt="VISO Translation" className="h-[72px] w-auto object-contain object-left" />
         <div className="flex justify-end">
@@ -98,7 +124,6 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
       </div>
       <div className="mx-8 border-b-[3px]" style={{ borderColor: NAVY }} />
 
-      {/* Title */}
       <div className="text-center pt-5 pb-2">
         <h1
           className="text-[22px] font-bold tracking-[0.08em] text-neutral-900"
@@ -114,7 +139,6 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
         </p>
       </div>
 
-      {/* Ref / Date / Chamber */}
       <div className="px-8 flex gap-3 mt-4">
         <MetaBox labelEn="Ref. No" labelAr="رقم المرجع" value={certId} />
         <MetaBox labelEn="Date" labelAr="التاريخ" value={refDate} />
@@ -125,11 +149,19 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
         />
       </div>
 
-      {/* Data grid */}
       <div className="px-8 mt-5 grid grid-cols-6 gap-0">
         <GridLabel>Client Name</GridLabel>
         <GridValue center>
-          <span dir={textDirectionForContent(clientEn)}>{clientEn}</span>
+          <div className="space-y-1">
+            <span dir={textDirectionForContent(clientEn)} className="block font-semibold">
+              {clientEn}
+            </span>
+            {cert.project_name_ar?.trim() ? (
+              <span dir="rtl" className="block font-arabic text-[11px] text-neutral-800 leading-snug">
+                {clientAr}
+              </span>
+            ) : null}
+          </div>
         </GridValue>
         <GridLabel rtl>اسم العميل</GridLabel>
         <GridLabel>Document</GridLabel>
@@ -139,9 +171,7 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
         {certificateShowsClientCr(cert) ? (
           <>
             <GridLabel>CR No.</GridLabel>
-            <div
-              className={`col-span-2 px-3 py-2.5 text-[11px] text-neutral-900 border border-[#DDD5BF] bg-white flex items-center justify-center text-center`}
-            >
+            <div className="col-span-2 px-3 py-2.5 text-[11px] text-neutral-900 border border-[#DDD5BF] bg-white flex items-center justify-center text-center">
               <span className="font-mono font-semibold">{cert.client_cr_number}</span>
             </div>
             <GridLabel rtl>رقم السجل التجاري</GridLabel>
@@ -150,14 +180,23 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
         ) : null}
 
         <GridLabel>Source Language</GridLabel>
-        <GridValue center>{srcEn}</GridValue>
+        <GridValue center>
+          <span className="block">{srcEn}</span>
+          <span className="block text-[10px] mt-0.5" dir="rtl">
+            {srcAr}
+          </span>
+        </GridValue>
         <GridLabel rtl>اللغة المصدر</GridLabel>
         <GridLabel>Target Language</GridLabel>
-        <GridValue center>{tgtEn}</GridValue>
+        <GridValue center>
+          <span className="block">{tgtEn}</span>
+          <span className="block text-[10px] mt-0.5" dir="rtl">
+            {tgtAr}
+          </span>
+        </GridValue>
         <GridLabel rtl>اللغة الهدف</GridLabel>
       </div>
 
-      {/* Bilingual legal body */}
       <div className="px-8 mt-6 grid grid-cols-[1fr_4px_1fr] gap-0 items-stretch">
         <div className="pr-4 space-y-4 text-[11px] leading-[1.65] text-justify">
           <p>{legalEn1}</p>
@@ -172,65 +211,66 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
         </div>
       </div>
 
-      {/* Signatures */}
-      <div className="px-8 mt-8 grid grid-cols-3 gap-6 items-end">
-        <div>
-          <p className="font-bold text-sm">{o.closingEn}</p>
-          <p className="font-bold text-sm mt-1 mb-6">{o.officeNameEn}</p>
-          <div className="relative min-h-[56px] mb-1">
-            {branding.signatureUrl && (
-              <img
-                src={branding.signatureUrl}
-                alt=""
-                className="absolute bottom-0 left-0 h-14 w-auto max-w-full object-contain object-left"
-              />
-            )}
-            <div className="border-b-2 pt-10" style={{ borderColor: NAVY }} />
+      {/* Single signature — bilingual labels, one image & line; seal centered */}
+      <div className="px-8 mt-10">
+        <div className="grid grid-cols-[1fr_auto_1fr] gap-x-6 gap-y-1 items-start">
+          <div>
+            <p className="font-bold text-sm">{o.closingEn}</p>
+            <p className="font-bold text-sm mt-1 leading-snug">{o.officeNameEn}</p>
           </div>
-          <p className="font-bold text-sm">{o.signatoryNameEn}</p>
-          <p className="text-[11px] text-neutral-700 mt-0.5">{o.signatoryTitleEn}</p>
+          <div className="w-[148px]" aria-hidden />
+          <div className="text-right" dir="rtl">
+            <p className="font-bold text-sm">{o.closingAr}</p>
+            <p className="font-bold text-sm mt-1 leading-snug">{o.officeNameAr}</p>
+          </div>
         </div>
 
-        <div
-          className="border border-dashed border-neutral-400 px-4 py-6 text-center min-h-[160px] flex flex-col items-center justify-center gap-2"
-        >
-          <p className="text-[11px] font-semibold tracking-wide">OFFICIAL SEAL</p>
-          <p className="text-[11px] font-semibold" dir="rtl">
-            ختم المكتب
-          </p>
-          {branding.digitalStampUrl ? (
-            <img src={branding.digitalStampUrl} alt="Official seal" className="h-20 w-auto object-contain mt-1" />
+        <div className="grid grid-cols-[1fr_auto_1fr] gap-x-6 items-end mt-5">
+          <div className="pb-2">
+            <p className="font-bold text-sm">{o.signatoryNameEn}</p>
+            <p className="text-[11px] text-neutral-700 mt-0.5">{o.signatoryTitleEn}</p>
+          </div>
+
+          <div
+            className="w-[148px] border border-dashed border-neutral-400 px-3 py-4 flex flex-col items-center justify-center gap-1.5 min-h-[150px] bg-white"
+          >
+            <p className="text-[10px] font-semibold tracking-wide text-center">OFFICIAL SEAL</p>
+            <p className="text-[10px] font-semibold text-center" dir="rtl">
+              ختم المكتب
+            </p>
+            {branding.digitalStampUrl ? (
+              <img
+                src={branding.digitalStampUrl}
+                alt="Official seal"
+                className="h-[72px] w-auto max-w-[120px] object-contain mt-1"
+              />
+            ) : null}
+          </div>
+
+          <div className="text-right pb-2" dir="rtl">
+            <p className="font-bold text-sm">{o.signatoryNameAr}</p>
+            <p className="text-[11px] text-neutral-700 mt-0.5">{o.signatoryTitleAr}</p>
+          </div>
+        </div>
+
+        <div className="relative max-w-md mx-auto mt-2 mb-1 min-h-[58px]">
+          {branding.signatureUrl ? (
+            <img
+              src={branding.signatureUrl}
+              alt=""
+              className="absolute left-1/2 bottom-0 h-14 w-auto max-w-[min(100%,240px)] -translate-x-1/2 object-contain pointer-events-none"
+            />
           ) : null}
+          <div className="border-b-2 pt-12 w-full" style={{ borderColor: NAVY }} />
         </div>
-
-        <div dir="rtl" className="text-right">
-          <p className="font-bold text-sm">{o.closingAr}</p>
-          <p className="font-bold text-sm mt-1 mb-6">{o.officeNameAr}</p>
-          <div className="relative min-h-[56px] mb-1">
-            {branding.signatureUrl && (
-              <img
-                src={branding.signatureUrl}
-                alt=""
-                className="absolute bottom-0 right-0 h-14 w-auto max-w-full object-contain object-right"
-              />
-            )}
-            <div className="border-b-2 pt-10" style={{ borderColor: NAVY }} />
-          </div>
-          <p className="font-bold text-sm">{o.signatoryNameAr}</p>
-          <p className="text-[11px] text-neutral-700 mt-0.5">{o.signatoryTitleAr}</p>
-        </div>
+        <p className="text-[9px] text-neutral-500 text-center uppercase tracking-wider mt-1">
+          Authorized signature · التوقيع المعتمد
+        </p>
       </div>
 
-      {/* Verification row */}
-      <div className="px-8 mt-8 grid grid-cols-[180px_1fr_200px] gap-3 items-stretch">
-        <div className="border-2 p-3 flex items-center justify-center" style={{ borderColor: GOLD }}>
-          <img
-            src={`https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(qrUrl)}`}
-            alt="QR"
-            className="w-[120px] h-[120px]"
-          />
-        </div>
-        <div className="border-2 px-4 py-3 flex flex-col justify-center gap-2" style={{ borderColor: GOLD }}>
+      {/* Verification + commission logo (QR reserved for later) */}
+      <div className="px-8 mt-8 mb-8 grid grid-cols-[1fr_220px] gap-4 items-stretch">
+        <div className="border-2 px-4 py-3 flex flex-col justify-center gap-2 min-h-[140px]" style={{ borderColor: GOLD }}>
           <p className="text-[11px] font-bold" style={{ color: NAVY }}>
             {o.verifyHeading}
           </p>
@@ -242,21 +282,13 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
             {certId} · {origin.replace(/^https?:\/\//, "")}/translation
           </p>
         </div>
-        <div className="border border-dashed border-neutral-400 px-2 py-3 flex flex-col items-center justify-center text-center text-[10px] text-neutral-500">
-          {branding.digitalStampUrl ? (
-            <img src={branding.digitalStampUrl} alt="" className="max-h-24 w-auto object-contain opacity-90" />
-          ) : (
-            <>
-              <p>{o.commissionNoteEn}</p>
-              <p className="mt-1" dir="rtl">
-                {o.commissionNoteAr}
-              </p>
-            </>
-          )}
+        <div
+          className="border-2 px-3 py-4 flex items-center justify-center bg-white min-h-[140px]"
+          style={{ borderColor: GOLD }}
+        >
+          <CommissionLogo />
         </div>
       </div>
-
-      <div className="h-8" />
     </div>
   );
 }

@@ -214,10 +214,9 @@ export function CertificatesDashboard() {
       return;
     }
 
-    const projectNameAr =
-      involvesArabic && formClientNameAr.trim()
-        ? formatCertificateClientNameAr(formClientNameAr, formParentRelation, formParentNameAr)
-        : null;
+    const projectNameAr = formClientNameAr.trim()
+      ? formatCertificateClientNameAr(formClientNameAr, formParentRelation, formParentNameAr)
+      : null;
 
     const nationalId = editingId
       ? formNationalId.trim()
@@ -412,6 +411,8 @@ export function CertificatesDashboard() {
   const formInvolvesArabic = /arabic/i.test(formSource) || /arabic/i.test(formTarget);
   const formUsesSimpleLayout =
     certificateUsesLegacyTemplate(formId || "") || formTemplate === "classic";
+  const formShowsArabicClientFields =
+    formUsesSimpleLayout || (!certificateUsesLegacyTemplate(formId || "") && formTemplate === "official");
 
   const formPreviewCert: TranslationCertificate = {
     id: formId || "PREVIEW",
@@ -786,13 +787,13 @@ export function CertificatesDashboard() {
                   </div>
               </div>
 
-              {formInvolvesArabic && formUsesSimpleLayout ? (
+              {formShowsArabicClientFields ? (
                 <div className="rounded-lg border border-primary/20 bg-primary/[0.03] p-3 space-y-3">
                   <p className="text-[10px] font-bold uppercase tracking-wider text-primary">
-                    Arabic client (Simple layout)
+                    Arabic client name
                   </p>
                   <p className="text-[10px] text-foreground/55 leading-snug">
-                    Required when Arabic is source or target and the certificate uses the Simple template.
+                    Shown on Simple and Official certificates. Required on Simple when Arabic is source or target.
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
                     <div className="sm:col-span-5">
@@ -806,7 +807,7 @@ export function CertificatesDashboard() {
                         onChange={(e) => setFormClientNameAr(e.target.value)}
                         placeholder="مثال: مايا"
                         className="w-full bg-background border border-foreground/15 rounded-lg py-2.5 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50 transition-all font-arabic font-semibold"
-                        required={formInvolvesArabic}
+                        required={formInvolvesArabic && formUsesSimpleLayout}
                       />
                     </div>
                     <div className="sm:col-span-7">
@@ -826,7 +827,7 @@ export function CertificatesDashboard() {
                     </div>
                     <div className="sm:col-span-12 rounded-lg border border-dashed border-foreground/15 bg-white/60 dark:bg-black/10 px-3 py-2.5">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-foreground/45 block mb-1">
-                        Arabic line on Simple certificate
+                        Arabic line on certificate
                       </span>
                       <span className="text-sm font-semibold text-foreground font-arabic block" dir="rtl">
                         {clientDisplayPreviewAr || "أدخل الاسم بالعربية…"}

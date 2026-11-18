@@ -17,6 +17,12 @@ export const VISO_LOGO_URL =
 export const VISO_OFFICIAL_DOC_LOGO_EN = "/images/certificates/viso-doc-logo-en.png";
 export const VISO_OFFICIAL_DOC_LOGO_AR = "/images/certificates/viso-doc-logo-ar.png";
 
+/** Literature, Publishing & Translation Commission — local copy preferred; Wikimedia fallback */
+export const SAUDI_TRANSLATION_COMMISSION_LOGO =
+  "/images/certificates/saudi-translation-commission-logo.png";
+export const SAUDI_TRANSLATION_COMMISSION_LOGO_FALLBACK =
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Saudi_Literature%2C_Publishing%2C_and_Translation_Commission_Logo.svg/500px-Saudi_Literature%2C_Publishing%2C_and_Translation_Commission_Logo.svg.png";
+
 export const CERTIFICATE_TEMPLATE_OPTIONS: {
   id: CertificateTemplateId;
   label: string;
