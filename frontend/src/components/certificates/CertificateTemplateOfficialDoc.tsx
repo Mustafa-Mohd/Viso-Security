@@ -23,7 +23,10 @@ import {
 } from "@/lib/certificateDisplay";
 import { getPublicSiteOrigin } from "@/lib/certificateIds";
 import { CertificateOfficialViewport } from "@/components/certificates/CertificateOfficialViewport";
-import { CERTIFICATE_SINGLE_PAGE_PRINT_CSS } from "@/components/certificates/certificatePrintStyles";
+import {
+  CERTIFICATE_SIGNATURE_SCREEN_CSS,
+  CERTIFICATE_SINGLE_PAGE_PRINT_CSS,
+} from "@/components/certificates/certificatePrintStyles";
 
 const NAVY = "#12284C";
 const GOLD = "#B08D3C";
@@ -31,7 +34,9 @@ const CREAM = "#F1ECE0";
 const DOCUSIGN_STROKE = "#2A5F9E";
 const DOCUSIGN_BRACKET_W = 252;
 const DOCUSIGN_SIGNATURE_W = 262;
-const SIGNATURE_SCRIPT_FONT = '"Segoe Script", "Brush Script MT", "Snell Roundhand", cursive';
+/** Segoe on Windows; Great Vibes web font on mobile for the same script look. */
+const SIGNATURE_SCRIPT_FONT =
+  '"Segoe Script", "Great Vibes", "Brush Script MT", "Snell Roundhand", cursive';
 
 function formatSignatoryScriptName(name: string): string {
   return name.trim().replace(/\s+/g, " ").replace(/Bin([A-Z])/i, "Bin $1");
@@ -145,8 +150,8 @@ function ElectronicSignatureSeal({
         <img src={signatureUrl} alt="" className="h-[24px] w-auto max-w-full object-contain object-left" />
       ) : (
         <p
-          className="w-full shrink-0 whitespace-nowrap text-[17px] leading-none text-neutral-900"
-          style={{ fontFamily: SIGNATURE_SCRIPT_FONT }}
+          className="cert-signature-script w-full shrink-0 whitespace-nowrap text-[17px] leading-none text-neutral-900 max-[480px]:text-[19px]"
+          style={{ fontFamily: SIGNATURE_SCRIPT_FONT, fontWeight: 400 }}
         >
           {formatSignatoryScriptName(name)}
         </p>
@@ -383,7 +388,10 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
 
   return (
     <>
-      <style>{CERTIFICATE_SINGLE_PAGE_PRINT_CSS}</style>
+      <style>
+        {CERTIFICATE_SIGNATURE_SCREEN_CSS}
+        {CERTIFICATE_SINGLE_PAGE_PRINT_CSS}
+      </style>
       <CertificateOfficialViewport>
       <div
         className={`bg-white ${CERTIFICATE_A4_PAGE_CLASS} shadow-2xl mx-auto text-neutral-900 print:shadow-none overflow-x-hidden flex flex-col`}

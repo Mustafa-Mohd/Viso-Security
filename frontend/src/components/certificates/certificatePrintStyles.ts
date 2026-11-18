@@ -1,4 +1,20 @@
 /** Shared print CSS for certificate routes (toolbar hidden, site chrome hidden, single A4 page). */
+/** Screen: keep signature script consistent when the page is scaled on mobile */
+export const CERTIFICATE_SIGNATURE_SCREEN_CSS = `
+  @media screen {
+    .certificate-a4-page {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+    .cert-signature-script {
+      font-family: "Segoe Script", "Great Vibes", "Brush Script MT", "Snell Roundhand", cursive !important;
+      font-weight: 400 !important;
+      font-synthesis: none;
+      -webkit-font-smoothing: antialiased;
+    }
+  }
+`;
+
 export const CERTIFICATE_GLOBAL_PRINT_CSS = `
   @media print {
     .no-print,
@@ -79,6 +95,11 @@ export const CERTIFICATE_SINGLE_PAGE_PRINT_CSS = `
     .cert-print-qr img {
       width: 84px !important;
       height: 84px !important;
+    }
+    .cert-signature-script {
+      font-family: "Segoe Script", "Great Vibes", "Brush Script MT", "Snell Roundhand", cursive !important;
+      font-size: 17px !important;
+      font-weight: 400 !important;
     }
     .cert-official-viewport-box,
     .cert-official-viewport-page {
