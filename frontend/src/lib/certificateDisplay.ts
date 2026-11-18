@@ -1,4 +1,5 @@
 import { parseCertificateClientName } from "./certificateClientName";
+import type { TranslationCertificate } from "./certsApi";
 
 const LANGUAGE_LABELS_AR: Record<string, string> = {
   Arabic: "العربية",
@@ -18,6 +19,12 @@ export function certificateInvolvesArabic(cert: {
   target_lang: string;
 }): boolean {
   return /arabic/i.test(cert.source_lang) || /arabic/i.test(cert.target_lang);
+}
+
+export function certificateShowsClientCr(
+  cert: Pick<TranslationCertificate, "show_cr_on_certificate" | "client_cr_number">
+): boolean {
+  return Boolean(cert.show_cr_on_certificate && cert.client_cr_number?.trim());
 }
 
 export function resolveClassicClientNameAr(

@@ -73,6 +73,8 @@ export function CertificatesDashboard() {
   const [formParentRelation, setFormParentRelation] = useState<ParentRelation>("none");
   const [formParentName, setFormParentName] = useState("");
   const [formParentNameAr, setFormParentNameAr] = useState("");
+  const [formShowCr, setFormShowCr] = useState(false);
+  const [formCrNumber, setFormCrNumber] = useState("");
   const [formSource, setFormSource] = useState("Arabic");
   const [formTarget, setFormTarget] = useState("English");
   const [formIssue, setFormIssue] = useState("");
@@ -123,6 +125,8 @@ export function CertificatesDashboard() {
     setFormParentRelation("none");
     setFormParentName("");
     setFormParentNameAr("");
+    setFormShowCr(false);
+    setFormCrNumber("");
     setFormSource("Arabic");
     setFormTarget("English");
     
@@ -152,6 +156,8 @@ export function CertificatesDashboard() {
     const parsedAr = parseCertificateClientNameAr(cert.project_name_ar ?? "");
     setFormClientNameAr(parsedAr.clientNameAr);
     setFormParentNameAr(parsedAr.parentNameAr);
+    setFormShowCr(Boolean(cert.show_cr_on_certificate));
+    setFormCrNumber(cert.client_cr_number?.trim() ?? "");
     setFormSource(cert.source_lang);
     setFormTarget(cert.target_lang);
     setFormIssue(cert.issue_date);
@@ -203,6 +209,11 @@ export function CertificatesDashboard() {
       return;
     }
 
+    if (formShowCr && !formCrNumber.trim()) {
+      setFormError("Enter a CR number or turn off “Show CR on certificate”.");
+      return;
+    }
+
     const projectNameAr =
       involvesArabic && formClientNameAr.trim()
         ? formatCertificateClientNameAr(formClientNameAr, formParentRelation, formParentNameAr)
@@ -250,6 +261,8 @@ export function CertificatesDashboard() {
         national_id: nationalId,
         project_name: projectName,
         project_name_ar: projectNameAr,
+        client_cr_number: formCrNumber.trim() || null,
+        show_cr_on_certificate: formShowCr,
         source_lang: formSource,
         target_lang: formTarget,
         issue_date: formIssue,
@@ -405,6 +418,8 @@ export function CertificatesDashboard() {
     national_id: formNationalId || "0000000000",
     project_name: clientDisplayPreview || "Preview",
     project_name_ar: clientDisplayPreviewAr || null,
+    client_cr_number: formCrNumber.trim() || null,
+    show_cr_on_certificate: formShowCr,
     source_lang: formSource,
     target_lang: formTarget,
     issue_date: formIssue || new Date().toISOString().split("T")[0],
@@ -820,6 +835,38 @@ export function CertificatesDashboard() {
                   </div>
                 </div>
               ) : null}
+
+              <div className="rounded-lg border border-foreground/10 bg-foreground/[0.02] px-3 py-3 space-y-2">
+                <label className="flex items-start gap-2.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formShowCr}
+                    onChange={(e) => setFormShowCr(e.target.checked)}
+                    className="rounded border-foreground/20 mt-0.5"
+                  />
+                  <span className="text-xs text-foreground/80">
+                    <span className="font-semibold">Show client CR number on certificate</span>
+                    <span className="block text-[10px] text-foreground/50 mt-0.5">
+                      Optional — Commercial Registration (السجل التجاري) for company clients.
+                    </span>
+                  </span>
+                </label>
+                {formShowCr ? (
+                  <div>
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1.5">
+                      CR number
+                    </label>
+                    <input
+                      type="text"
+                      value={formCrNumber}
+                      onChange={(e) => setFormCrNumber(e.target.value)}
+                      placeholder="e.g. 1010558646"
+                      className="w-full max-w-sm bg-background border border-foreground/15 rounded-lg py-2.5 px-3 text-xs font-mono text-foreground focus:outline-none focus:border-primary/50 transition-all"
+                      required
+                    />
+                  </div>
+                ) : null}
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>

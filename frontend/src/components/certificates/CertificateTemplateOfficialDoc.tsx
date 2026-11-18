@@ -5,7 +5,7 @@ import {
   fillCertificateCopy,
 } from "@/lib/certificateCopy";
 import { formatCertDisplayDate, VISO_OFFICIAL_DOC_LOGO_AR, VISO_OFFICIAL_DOC_LOGO_EN } from "@/lib/certificateTemplates";
-import { localizeCertificateLanguage, textDirectionForContent } from "@/lib/certificateDisplay";
+import { certificateShowsClientCr, localizeCertificateLanguage, textDirectionForContent } from "@/lib/certificateDisplay";
 import { getPublicSiteOrigin } from "@/lib/certificateIds";
 
 const NAVY = "#12284C";
@@ -135,6 +135,19 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
         <GridLabel>Document</GridLabel>
         <GridValue center>{documentLabel}</GridValue>
         <GridLabel rtl>المستند</GridLabel>
+
+        {certificateShowsClientCr(cert) ? (
+          <>
+            <GridLabel>CR No.</GridLabel>
+            <div
+              className={`col-span-2 px-3 py-2.5 text-[11px] text-neutral-900 border border-[#DDD5BF] bg-white flex items-center justify-center text-center`}
+            >
+              <span className="font-mono font-semibold">{cert.client_cr_number}</span>
+            </div>
+            <GridLabel rtl>رقم السجل التجاري</GridLabel>
+            <div className="col-span-2 border border-[#DDD5BF] bg-white" aria-hidden />
+          </>
+        ) : null}
 
         <GridLabel>Source Language</GridLabel>
         <GridValue center>{srcEn}</GridValue>

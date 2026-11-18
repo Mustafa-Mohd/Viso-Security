@@ -5,6 +5,7 @@ import type { CertificateBranding } from "@/lib/certificateBranding";
 import { RIYADH_CHAMBER_LABELS } from "@/lib/certificateBranding";
 import {
   certificateInvolvesArabic,
+  certificateShowsClientCr,
   formatCertificateProjectNameForDisplay,
   localizeCertificateLanguage,
   resolveClassicClientNameAr,
@@ -229,6 +230,12 @@ export function CertificateTemplateClassic(props: CertificateViewProps) {
               </span>
             ) : null}
           </div>
+          {certificateShowsClientCr(cert) ? (
+            <div className="relative z-10 col-span-2">
+              <BilingualFieldLabel en="CR Number" ar="رقم السجل التجاري" showAr={showAr} />
+              <span className="font-mono font-medium text-neutral-800 text-base">{cert.client_cr_number}</span>
+            </div>
+          ) : null}
           <div className="relative z-10">
             <BilingualFieldLabel en="Source Language" ar="لغة المصدر" showAr={showAr} />
             <span className="font-medium text-neutral-800 text-base">{sourceDisplay}</span>

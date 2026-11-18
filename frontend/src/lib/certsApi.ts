@@ -6,6 +6,8 @@ export interface TranslationCertificate {
   project_name: string;
   /** Arabic client line for Simple layout when source or target is Arabic */
   project_name_ar?: string | null;
+  client_cr_number?: string | null;
+  show_cr_on_certificate?: boolean | null;
   source_lang: string;
   target_lang: string;
   issue_date: string;
@@ -107,6 +109,8 @@ export const certsApi = {
         national_id: cert.national_id,
         project_name: cert.project_name,
         project_name_ar: cert.project_name_ar?.trim() || null,
+        client_cr_number: cert.client_cr_number?.trim() || null,
+        show_cr_on_certificate: Boolean(cert.show_cr_on_certificate),
         source_lang: cert.source_lang,
         target_lang: cert.target_lang,
         issue_date: cert.issue_date,
