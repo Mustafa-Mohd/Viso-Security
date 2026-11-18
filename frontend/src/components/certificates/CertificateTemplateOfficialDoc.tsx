@@ -275,15 +275,9 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
       {/* Signature (left) + verification QR (right) — stacks on mobile */}
       <div className="px-4 sm:px-6 md:px-8 mt-8 md:mt-10 flex flex-col md:grid md:grid-cols-[1fr_152px] print:grid print:grid-cols-[1fr_152px] gap-6 md:items-end">
         <div className="min-w-0 w-full">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
-            <div>
-              <p className="font-bold text-sm">{o.closingEn}</p>
-              <p className="font-bold text-sm mt-1 leading-snug text-[12px]">{o.officeNameEn}</p>
-            </div>
-            <div dir="rtl" className="text-right">
-              <p className="font-bold text-sm">{o.closingAr}</p>
-              <p className="font-bold text-sm mt-1 leading-snug text-[12px]">{o.officeNameAr}</p>
-            </div>
+          <div className="mb-4">
+            <p className="font-bold text-sm">{o.closingEn}</p>
+            <p className="font-bold text-sm mt-1 leading-snug text-[12px]">{o.officeNameEn}</p>
           </div>
 
           <div className="relative max-w-[320px] min-h-[64px] mb-2">
@@ -297,15 +291,9 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
             <div className="border-b-2 pt-12 w-full" style={{ borderColor: NAVY }} />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <div>
-              <p className="font-bold text-sm">{o.signatoryNameEn}</p>
-              <p className="text-[11px] text-neutral-700 mt-0.5">{o.signatoryTitleEn}</p>
-            </div>
-            <div dir="rtl" className="text-right">
-              <p className="font-bold text-sm">{o.signatoryNameAr}</p>
-              <p className="text-[11px] text-neutral-700 mt-0.5">{o.signatoryTitleAr}</p>
-            </div>
+          <div>
+            <p className="font-bold text-sm">{o.signatoryNameEn}</p>
+            <p className="text-[11px] text-neutral-700 mt-0.5">{o.signatoryTitleEn}</p>
           </div>
         </div>
 
