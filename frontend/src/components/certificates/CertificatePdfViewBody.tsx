@@ -5,11 +5,7 @@ import { fetchCertificateBranding, DEFAULT_CERTIFICATE_BRANDING } from "@/lib/ce
 import { fetchCertificateCopy, DEFAULT_CERTIFICATE_COPY } from "@/lib/certificateCopy";
 import { resolveCertificateTemplate } from "@/lib/certificateTemplates";
 import { getPublicSiteOrigin } from "@/lib/certificateIds";
-import {
-  CertificateTemplateAccreditation,
-  CertificateTemplateClassic,
-  CertificateTemplateTrilingual,
-} from "@/components/certificates/CertificateDocument";
+import { CertificateTemplateClassic } from "@/components/certificates/CertificateDocument";
 import { CertificateTemplateOfficialDoc } from "@/components/certificates/CertificateTemplateOfficialDoc";
 
 export function CertificatePdfViewBody({ certId }: { certId: string }) {
@@ -90,8 +86,6 @@ export function CertificatePdfViewBody({ certId }: { certId: string }) {
 
   return (
     <div className="min-h-screen bg-neutral-300 flex flex-col items-center py-8 px-4 font-sans print:bg-white print:py-0">
-      {template === "trilingual" && <CertificateTemplateTrilingual {...viewProps} />}
-      {template === "accreditation" && <CertificateTemplateAccreditation {...viewProps} />}
       {template === "official" && <CertificateTemplateOfficialDoc {...viewProps} />}
       {template === "classic" && <CertificateTemplateClassic {...viewProps} />}
     </div>

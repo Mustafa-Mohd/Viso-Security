@@ -1,7 +1,10 @@
 import { parseCertificateId } from "./certificateIds";
 import type { TranslationCertificate } from "./certsApi";
 
-export type CertificateTemplateId = "classic" | "trilingual" | "accreditation" | "official";
+export type CertificateTemplateId = "classic" | "official";
+
+/** Retired layouts still stored on some rows — resolved to `official` when rendering. */
+export type CertificateTemplateStorage = CertificateTemplateId | "trilingual" | "accreditation";
 
 /** Legacy PDF layout through VISO-TR-2026-00985; from 00986 admin may choose new templates. */
 export const NEW_TEMPLATE_SERIAL_FROM = 986;
@@ -21,25 +24,20 @@ export const CERTIFICATE_TEMPLATE_OPTIONS: {
 }[] = [
   {
     id: "classic",
-    label: "Template 1 — Classic registry",
-    description: "Original simple certificate (auto for IDs before 00986).",
-  },
-  {
-    id: "trilingual",
-    label: "Template 2 — Trilingual certification",
-    description: "Spanish / English / Arabic certification layout (VISO translation letter).",
-  },
-  {
-    id: "accreditation",
-    label: "Template 3 — Accreditation style",
-    description: "Bilingual accreditation certificate layout adapted for VISO.",
+    label: "Simple — Certificate of Translation",
+    description: "Original registry layout with logo, client grid, QR, and signature (your classic PDF).",
   },
   {
     id: "official",
-    label: "Template 4 — Certificate of Translation (Official)",
-    description: "Official bilingual certification layout matching the VISO Word template.",
+    label: "Official — bilingual certification",
+    description: "Formal bilingual certification layout matching the VISO Word template.",
   },
 ];
+
+export function normalizeCertificateTemplateParam(value: string | undefined | null): CertificateTemplateId {
+  if (value === "classic" || value === "official") return value;
+  return "official";
+}
 
 export function certificateUsesLegacyTemplate(certId: string): boolean {
   const parsed = parseCertificateId(certId);
@@ -53,9 +51,10 @@ export function resolveCertificateTemplate(
   cert: Pick<TranslationCertificate, "id" | "template">
 ): CertificateTemplateId {
   if (certificateUsesLegacyTemplate(cert.id)) return "classic";
-  const t = cert.template as CertificateTemplateId | undefined;
-  if (t === "trilingual" || t === "accreditation" || t === "official") return t;
-  return "trilingual";
+  const t = cert.template as CertificateTemplateStorage | undefined;
+  if (t === "classic" || t === "official") return t;
+  if (t === "trilingual" || t === "accreditation") return "official";
+  return "official";
 }
 
 const MONTHS_EN = [

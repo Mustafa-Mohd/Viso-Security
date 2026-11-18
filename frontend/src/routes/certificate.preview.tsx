@@ -4,17 +4,15 @@ import { RefreshCw } from "lucide-react";
 import { DEFAULT_CERTIFICATE_BRANDING, fetchCertificateBranding } from "@/lib/certificateBranding";
 import { DEFAULT_CERTIFICATE_COPY, CERTIFICATE_PREVIEW_SAMPLE, fetchCertificateCopy } from "@/lib/certificateCopy";
 import { getPublicSiteOrigin } from "@/lib/certificateIds";
-import type { CertificateTemplateId } from "@/lib/certificateTemplates";
-import {
-  CertificateTemplateAccreditation,
-  CertificateTemplateClassic,
-  CertificateTemplateTrilingual,
-} from "@/components/certificates/CertificateDocument";
+import { normalizeCertificateTemplateParam, type CertificateTemplateId } from "@/lib/certificateTemplates";
+import { CertificateTemplateClassic } from "@/components/certificates/CertificateDocument";
 import { CertificateTemplateOfficialDoc } from "@/components/certificates/CertificateTemplateOfficialDoc";
 
 export const Route = createFileRoute("/certificate/preview")({
   validateSearch: (search: Record<string, unknown>) => ({
-    template: (typeof search.template === "string" ? search.template : "official") as CertificateTemplateId,
+    template: normalizeCertificateTemplateParam(
+      typeof search.template === "string" ? search.template : "official"
+    ),
   }),
   component: CertificatePreviewPage,
 });
@@ -67,8 +65,6 @@ function CertificatePreviewPage() {
 
   return (
     <div className="min-h-screen bg-neutral-300 py-6 px-2 print:bg-white">
-      {template === "trilingual" && <CertificateTemplateTrilingual {...viewProps} />}
-      {template === "accreditation" && <CertificateTemplateAccreditation {...viewProps} />}
       {template === "official" && <CertificateTemplateOfficialDoc {...viewProps} />}
       {template === "classic" && <CertificateTemplateClassic {...viewProps} />}
     </div>

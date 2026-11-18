@@ -17,7 +17,7 @@ import {
 import { getCertificatePreviewUrl, getPublicCertificateUrl } from "../lib/certificateIds";
 import type { CertificateTemplateId } from "../lib/certificateTemplates";
 
-type TabId = "branding" | "trilingual" | "accreditation" | "official";
+type TabId = "branding" | "official";
 
 export type CertificateBrandingPanelProps = {
   /** Inside issue/edit modal — no page-level banner */
@@ -120,9 +120,8 @@ function CopyField({
 }
 
 const TEMPLATE_PREVIEW_OPTIONS: { id: CertificateTemplateId; label: string }[] = [
-  { id: "trilingual", label: "Template 2" },
-  { id: "accreditation", label: "Template 3" },
-  { id: "official", label: "Template 4" },
+  { id: "classic", label: "Simple" },
+  { id: "official", label: "Official" },
 ];
 
 export function CertificateBrandingPanel({
@@ -148,7 +147,7 @@ export function CertificateBrandingPanel({
   const setPreviewTemplate = (t: CertificateTemplateId) => {
     if (onPreviewTemplateChange) onPreviewTemplateChange(t);
     else setInternalTemplate(t);
-    if (t !== "classic") setTab(t as TabId);
+    if (t === "official") setTab("official");
   };
 
   useEffect(() => {
@@ -165,8 +164,8 @@ export function CertificateBrandingPanel({
   }, [liveCertificateId]);
 
   useEffect(() => {
-    if (previewTemplate === "trilingual" || previewTemplate === "accreditation" || previewTemplate === "official") {
-      setTab((current) => (current === "branding" ? current : previewTemplate));
+    if (previewTemplate === "official") {
+      setTab((current) => (current === "branding" ? current : "official"));
     }
   }, [previewTemplate]);
 
@@ -206,9 +205,7 @@ export function CertificateBrandingPanel({
 
   const tabs: { id: TabId; label: string }[] = [
     { id: "branding", label: "Branding" },
-    { id: "trilingual", label: "Template 2" },
-    { id: "accreditation", label: "Template 3" },
-    { id: "official", label: "Template 4" },
+    { id: "official", label: "Official wording" },
   ];
 
   const shellClass = embedded
@@ -239,7 +236,7 @@ export function CertificateBrandingPanel({
             type="button"
             onClick={() => {
               setTab(t.id);
-              if (t.id !== "branding") setPreviewTemplate(t.id as CertificateTemplateId);
+              if (t.id === "official") setPreviewTemplate("official");
             }}
             className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide ${
               tab === t.id ? "bg-primary text-white" : "bg-foreground/5 text-foreground/70 hover:bg-foreground/10"
@@ -296,7 +293,7 @@ export function CertificateBrandingPanel({
                 onClick={() => resetCopySection("official")}
                 className="text-[10px] font-bold uppercase text-primary flex items-center gap-1"
               >
-                <RotateCcw className="w-3 h-3" /> Reset template 4 text
+                <RotateCcw className="w-3 h-3" /> Reset official template text
               </button>
               <CopyField label="Legal paragraph 1 (English)" value={copy.official.legalEn1} onChange={(v) => setCopy({ ...copy, official: { ...copy.official, legalEn1: v } })} rows={3} />
               <CopyField label="Legal paragraph 2 (English)" value={copy.official.legalEn2} onChange={(v) => setCopy({ ...copy, official: { ...copy.official, legalEn2: v } })} rows={2} />
@@ -310,31 +307,6 @@ export function CertificateBrandingPanel({
             </>
           )}
 
-          {tab === "trilingual" && (
-            <>
-              <button type="button" onClick={() => resetCopySection("trilingual")} className="text-[10px] font-bold uppercase text-primary flex items-center gap-1">
-                <RotateCcw className="w-3 h-3" /> Reset template 2 text
-              </button>
-              <CopyField label="Body (Spanish)" value={copy.trilingual.bodyEs} onChange={(v) => setCopy({ ...copy, trilingual: { ...copy.trilingual, bodyEs: v } })} rows={3} />
-              <CopyField label="Body (English)" value={copy.trilingual.bodyEn} onChange={(v) => setCopy({ ...copy, trilingual: { ...copy.trilingual, bodyEn: v } })} rows={3} />
-              <CopyField label="Body (Arabic)" value={copy.trilingual.bodyAr} onChange={(v) => setCopy({ ...copy, trilingual: { ...copy.trilingual, bodyAr: v } })} rows={3} />
-              <CopyField label="Verify (Spanish)" value={copy.trilingual.verifyEs} onChange={(v) => setCopy({ ...copy, trilingual: { ...copy.trilingual, verifyEs: v } })} />
-              <CopyField label="Verify (English)" value={copy.trilingual.verifyEn} onChange={(v) => setCopy({ ...copy, trilingual: { ...copy.trilingual, verifyEn: v } })} />
-              <CopyField label="Verify (Arabic)" value={copy.trilingual.verifyAr} onChange={(v) => setCopy({ ...copy, trilingual: { ...copy.trilingual, verifyAr: v } })} />
-            </>
-          )}
-
-          {tab === "accreditation" && (
-            <>
-              <button type="button" onClick={() => resetCopySection("accreditation")} className="text-[10px] font-bold uppercase text-primary flex items-center gap-1">
-                <RotateCcw className="w-3 h-3" /> Reset template 3 text
-              </button>
-              <CopyField label="Preamble (English)" value={copy.accreditation.preambleEn} onChange={(v) => setCopy({ ...copy, accreditation: { ...copy.accreditation, preambleEn: v } })} rows={3} />
-              <CopyField label="Preamble (Arabic)" value={copy.accreditation.preambleAr} onChange={(v) => setCopy({ ...copy, accreditation: { ...copy.accreditation, preambleAr: v } })} rows={3} />
-              <CopyField label="Validity (English)" value={copy.accreditation.validityEn} onChange={(v) => setCopy({ ...copy, accreditation: { ...copy.accreditation, validityEn: v } })} />
-              <CopyField label="Validity (Arabic)" value={copy.accreditation.validityAr} onChange={(v) => setCopy({ ...copy, accreditation: { ...copy.accreditation, validityAr: v } })} />
-            </>
-          )}
         </div>
 
         <div className={`min-w-0 flex flex-col ${fillHeight ? "h-full min-h-0" : ""}`}>
@@ -352,22 +324,19 @@ export function CertificateBrandingPanel({
                 <option value="sample">Layout sample</option>
               </select>
             ) : null}
-            {(previewMode === "sample" || !liveCertificateId) &&
-              (previewTemplate === "classic" ? (
-                <span className="text-[10px] font-semibold text-foreground/70">Template 1 (Classic)</span>
-              ) : (
-                <select
-                  value={previewTemplate}
-                  onChange={(e) => setPreviewTemplate(e.target.value as CertificateTemplateId)}
-                  className="text-[10px] border border-foreground/15 rounded-md py-1 px-2 bg-background font-semibold"
-                >
-                  {TEMPLATE_PREVIEW_OPTIONS.map((o) => (
-                    <option key={o.id} value={o.id}>
-                      {o.label}
-                    </option>
-                  ))}
-                </select>
-              ))}
+            {(previewMode === "sample" || !liveCertificateId) && (
+              <select
+                value={previewTemplate}
+                onChange={(e) => setPreviewTemplate(e.target.value as CertificateTemplateId)}
+                className="text-[10px] border border-foreground/15 rounded-md py-1 px-2 bg-background font-semibold"
+              >
+                {TEMPLATE_PREVIEW_OPTIONS.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+            )}
             <button
               type="button"
               onClick={() => setPreviewNonce((n) => n + 1)}

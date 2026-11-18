@@ -75,7 +75,7 @@ export function CertificatesDashboard() {
   const [formExpiry, setFormExpiry] = useState("");
   const [formValidityMonths, setFormValidityMonths] = useState<ValidityMonths>(1);
   const [formRevoked, setFormRevoked] = useState(false);
-  const [formTemplate, setFormTemplate] = useState<CertificateTemplateId>("trilingual");
+  const [formTemplate, setFormTemplate] = useState<CertificateTemplateId>("official");
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -126,7 +126,7 @@ export function CertificatesDashboard() {
     setFormIssue(today);
     setFormExpiry(addMonthsToDateOnly(today, defaultMonths));
     setFormRevoked(false);
-    setFormTemplate("trilingual");
+    setFormTemplate("official");
     setShowForm(true);
   };
 
@@ -153,13 +153,7 @@ export function CertificatesDashboard() {
     const legacy = certificateUsesLegacyTemplate(cert.id);
     const t = cert.template as CertificateTemplateId | undefined;
     setFormTemplate(
-      legacy
-        ? "classic"
-        : t === "accreditation"
-          ? "accreditation"
-          : t === "official"
-            ? "official"
-            : "trilingual"
+      legacy ? "classic" : t === "classic" || t === "official" ? t : "official"
     );
     setShowForm(true);
   };
@@ -220,11 +214,9 @@ export function CertificatesDashboard() {
 
       const template: CertificateTemplateId = certificateUsesLegacyTemplate(idForSave)
         ? "classic"
-        : formTemplate === "accreditation"
-          ? "accreditation"
-          : formTemplate === "official"
-            ? "official"
-            : "trilingual";
+        : formTemplate === "classic"
+          ? "classic"
+          : "official";
 
       await certsApi.upsertCertificate({
         id: idForSave,
@@ -331,10 +323,9 @@ export function CertificatesDashboard() {
   };
 
   const templateShortLabel = (cert: TranslationCertificate) => {
-    if (certificateUsesLegacyTemplate(cert.id)) return "T1";
-    if (cert.template === "accreditation") return "T3";
-    if (cert.template === "official") return "T4";
-    return "T2";
+    if (certificateUsesLegacyTemplate(cert.id)) return "Simple";
+    if (cert.template === "classic") return "Simple";
+    return "Official";
   };
 
   const getStatusStyle = (displayStatus: CertificateDisplayStatus) => {
@@ -387,11 +378,7 @@ export function CertificatesDashboard() {
 
   const formUsesLegacyTemplate = certificateUsesLegacyTemplate(formId || "");
 
-  const formPreviewTemplate: CertificateTemplateId = formUsesLegacyTemplate
-    ? "classic"
-    : formTemplate === "classic"
-      ? "trilingual"
-      : formTemplate;
+  const formPreviewTemplate: CertificateTemplateId = formUsesLegacyTemplate ? "classic" : formTemplate;
 
   return (
     <div className="space-y-6 min-w-0 w-full max-w-full">
@@ -834,24 +821,23 @@ export function CertificatesDashboard() {
                     Certificate template
                   </label>
                   <select
-                    value={formTemplate === "classic" ? "trilingual" : formTemplate}
+                    value={formTemplate}
                     onChange={(e) => setFormTemplate(e.target.value as CertificateTemplateId)}
                     className="w-full bg-background border border-foreground/15 rounded-lg py-2.5 px-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all font-medium"
                   >
-                    {CERTIFICATE_TEMPLATE_OPTIONS.filter((o) => o.id !== "classic").map((opt) => (
+                    {CERTIFICATE_TEMPLATE_OPTIONS.map((opt) => (
                       <option key={opt.id} value={opt.id}>
                         {opt.label}
                       </option>
                     ))}
                   </select>
                   <p className="text-[9px] text-foreground/45 mt-1.5">
-                    {CERTIFICATE_TEMPLATE_OPTIONS.find((o) => o.id === formTemplate)?.description ??
-                      CERTIFICATE_TEMPLATE_OPTIONS.find((o) => o.id === "trilingual")?.description}
+                    {CERTIFICATE_TEMPLATE_OPTIONS.find((o) => o.id === formTemplate)?.description}
                   </p>
                 </div>
               ) : (
                 <p className="text-[10px] text-foreground/50 bg-foreground/[0.03] rounded-lg px-3 py-2 border border-foreground/10">
-                  This ID uses <strong>Template 1 (Classic)</strong>. New layouts apply from{" "}
+                  This ID uses the <strong>Simple</strong> layout. Choose Simple or Official from{" "}
                   <span className="font-mono">VISO-TR-2026-00986</span> onward.
                 </p>
               )}
@@ -889,7 +875,7 @@ export function CertificatesDashboard() {
                   className="rounded border-foreground/20"
                 />
                 <span className="text-xs text-foreground/80 font-medium">
-                  Show preview — change template layout and edit certificate wording (branding, templates 2–4)
+                  Show preview — choose Simple or Official layout and edit branding / official wording
                 </span>
               </label>
 
@@ -925,7 +911,7 @@ export function CertificatesDashboard() {
                 <div className="min-h-0 h-full flex flex-col overflow-hidden p-4 lg:p-5 bg-foreground/[0.02] dark:bg-black/20">
                   {formUsesLegacyTemplate && (
                     <p className="text-[10px] text-foreground/50 mb-2 shrink-0">
-                      Template 1 (Classic) on this ID — tabs still edit branding and templates 2–4 for other certificates.
+                      This ID uses the Simple layout — branding applies to all certificates; official wording tab applies to the Official layout.
                     </p>
                   )}
                   <div className="flex-1 min-h-0">
@@ -937,7 +923,7 @@ export function CertificatesDashboard() {
                       livePreviewToken={livePreviewToken}
                       className="h-full border-0 bg-white dark:bg-[#1C2541]"
                       onPreviewTemplateChange={(t) => {
-                        if (!formUsesLegacyTemplate && t !== "classic") setFormTemplate(t);
+                        if (!formUsesLegacyTemplate) setFormTemplate(t);
                       }}
                     />
                   </div>
