@@ -152,21 +152,24 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
       <div className="px-8 mt-5 grid grid-cols-6 gap-0">
         <GridLabel>Client Name</GridLabel>
         <GridValue center>
-          <div className="space-y-1">
-            <span dir={textDirectionForContent(clientEn)} className="block font-semibold">
-              {clientEn}
-            </span>
-            {cert.project_name_ar?.trim() ? (
-              <span dir="rtl" className="block font-arabic text-[11px] text-neutral-800 leading-snug">
-                {clientAr}
-              </span>
-            ) : null}
-          </div>
+          <span dir={textDirectionForContent(clientEn)} className="font-semibold leading-snug">
+            {clientEn}
+          </span>
         </GridValue>
         <GridLabel rtl>اسم العميل</GridLabel>
+        <GridValue center>
+          <span dir="rtl" className="font-arabic font-semibold text-[11px] leading-snug text-neutral-900">
+            {clientAr}
+          </span>
+        </GridValue>
+        <div className="col-span-2 border border-[#DDD5BF] bg-white min-h-[42px]" aria-hidden />
+
         <GridLabel>Document</GridLabel>
-        <GridValue center>{documentLabel}</GridValue>
+        <GridValue center className="col-span-2">
+          {documentLabel}
+        </GridValue>
         <GridLabel rtl>المستند</GridLabel>
+        <div className="col-span-2 border border-[#DDD5BF] bg-white" aria-hidden />
 
         {certificateShowsClientCr(cert) ? (
           <>

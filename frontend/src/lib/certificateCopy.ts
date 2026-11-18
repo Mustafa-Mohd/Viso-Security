@@ -1,7 +1,7 @@
 import { supabase } from "./supabase";
 import { formatCertDateSlashYmd, formatCertDisplayDate, formatCertLongDateEn } from "./certificateTemplates";
 import type { TranslationCertificate } from "./certsApi";
-import { localizeCertificateLanguage } from "./certificateDisplay";
+import { localizeCertificateLanguage, resolveClassicClientNameAr } from "./certificateDisplay";
 
 export type CertificateCopyOfficial = {
   legalEn1: string;
@@ -108,6 +108,7 @@ const CMS_KEY = "translation_certificate_copy";
 
 export type CertificatePlaceholderVars = {
   clientName: string;
+  clientNameAr: string;
   sourceLang: string;
   targetLang: string;
   sourceLangAr: string;
@@ -124,13 +125,14 @@ export type CertificatePlaceholderVars = {
 export function buildCertificatePlaceholderVars(
   cert: Pick<
     TranslationCertificate,
-    "project_name" | "source_lang" | "target_lang" | "issue_date" | "expiry_date"
+    "project_name" | "project_name_ar" | "source_lang" | "target_lang" | "issue_date" | "expiry_date"
   >,
   certId: string,
   copy: CertificateCopy = DEFAULT_CERTIFICATE_COPY
 ): CertificatePlaceholderVars {
   return {
     clientName: cert.project_name,
+    clientNameAr: resolveClassicClientNameAr(cert.project_name, cert.project_name_ar),
     sourceLang: cert.source_lang,
     targetLang: cert.target_lang,
     sourceLangAr: localizeCertificateLanguage(cert.source_lang, true),
