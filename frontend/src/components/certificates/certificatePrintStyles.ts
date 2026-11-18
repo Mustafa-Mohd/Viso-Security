@@ -30,6 +30,23 @@ export const CERTIFICATE_SINGLE_PAGE_PRINT_CSS = `
       padding: 0 !important;
       margin: 0 !important;
       background: white !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      width: 100% !important;
+    }
+    .cert-official-viewport-outer {
+      width: 100% !important;
+      max-width: none !important;
+      display: block !important;
+    }
+    .cert-official-viewport-box {
+      width: auto !important;
+      max-width: none !important;
+      height: auto !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
     }
     .certificate-a4-page {
       width: 210mm !important;
@@ -62,6 +79,13 @@ export const CERTIFICATE_SINGLE_PAGE_PRINT_CSS = `
     .cert-print-qr img {
       width: 84px !important;
       height: 84px !important;
+    }
+    .cert-official-viewport-box,
+    .cert-official-viewport-page {
+      position: static !important;
+      width: auto !important;
+      height: auto !important;
+      transform: none !important;
     }
   }
 `;

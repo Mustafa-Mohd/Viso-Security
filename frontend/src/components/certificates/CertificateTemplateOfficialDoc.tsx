@@ -22,6 +22,7 @@ import {
   textDirectionForContent,
 } from "@/lib/certificateDisplay";
 import { getPublicSiteOrigin } from "@/lib/certificateIds";
+import { CertificateOfficialViewport } from "@/components/certificates/CertificateOfficialViewport";
 import { CERTIFICATE_SINGLE_PAGE_PRINT_CSS } from "@/components/certificates/certificatePrintStyles";
 
 const NAVY = "#12284C";
@@ -249,7 +250,7 @@ function MetaBox({
         <p className="text-[11px] text-neutral-900 mt-0.5" dir="rtl">
           {labelAr}
         </p>
-        <p className="text-sm sm:text-base md:text-lg font-bold text-neutral-900 mt-2 font-mono tracking-tight break-all">
+        <p className="text-lg font-bold text-neutral-900 mt-2 font-mono tracking-tight break-all">
           {value}
         </p>
       </div>
@@ -339,7 +340,7 @@ function StackedLangValuesAr({ top, bottom }: { top: string; bottom: string }) {
 /** EN label | EN value | AR label | AR value — stacks on mobile, 4 cols from md; print keeps desktop grid */
 function OfficialDetailGrid({ children }: { children: React.ReactNode }) {
   return (
-    <div className="cert-print-detail-grid px-4 sm:px-6 md:px-8 mt-5 grid grid-cols-4 gap-0 min-w-0">
+    <div className="cert-print-detail-grid px-8 mt-5 grid grid-cols-4 gap-0 min-w-0">
       {children}
     </div>
   );
@@ -383,6 +384,7 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
   return (
     <>
       <style>{CERTIFICATE_SINGLE_PAGE_PRINT_CSS}</style>
+      <CertificateOfficialViewport>
       <div
         className={`bg-white ${CERTIFICATE_A4_PAGE_CLASS} shadow-2xl mx-auto text-neutral-900 print:shadow-none overflow-x-hidden flex flex-col`}
         style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
@@ -391,45 +393,45 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
         <div className="bg-amber-600 text-white text-center text-xs font-bold py-2 px-4 print:hidden">{bannerLabel}</div>
       )}
 
-      <div className="cert-print-header grid grid-cols-[1fr_auto_1fr] gap-2 sm:gap-3 px-4 sm:px-6 md:px-8 pt-6 sm:pt-8 pb-4 items-center min-w-0">
+      <div className="cert-print-header grid grid-cols-[1fr_auto_1fr] gap-3 px-8 pt-8 pb-4 items-center min-w-0">
         <img
           src={VISO_OFFICIAL_DOC_LOGO_EN}
           alt="Vision of Solutions — Translation Services"
-          className="h-14 sm:h-[72px] w-auto max-w-full object-contain object-left justify-self-start"
+          className="h-[72px] w-auto object-contain object-left justify-self-start"
         />
         <img
           src={VISO_OFFICIAL_DOC_LOGO_MARK}
           alt="VISO"
-          className="h-16 sm:h-[84px] w-auto max-w-[120px] sm:max-w-[140px] object-contain justify-self-center"
+          className="h-[84px] w-auto max-w-[140px] object-contain justify-self-center"
         />
         <img
           src={VISO_OFFICIAL_DOC_LOGO_AR_TEXT}
           alt="رؤية الحلول — خدمات الترجمة"
-          className="h-16 sm:h-[80px] w-auto max-w-full object-contain object-right justify-self-end"
+          className="h-[80px] w-auto object-contain object-right justify-self-end"
         />
       </div>
-      <div className="mx-4 sm:mx-6 md:mx-8 border-b-[3px]" style={{ borderColor: NAVY }} />
+      <div className="mx-8 border-b-[3px]" style={{ borderColor: NAVY }} />
 
-      <div className="text-center pt-4 sm:pt-5 pb-2 px-3 sm:px-4">
+      <div className="text-center pt-5 pb-2 px-4">
         <h1
-          className="text-[14px] sm:text-lg md:text-[20px] lg:text-[22px] font-bold tracking-[0.06em] sm:tracking-[0.08em] text-neutral-900 leading-snug max-w-[95%] mx-auto"
+          className="text-[20px] font-bold tracking-[0.08em] text-neutral-900 leading-snug max-w-[95%] mx-auto"
           style={{ fontFamily: "'Cinzel', 'Playfair Display', serif", color: NAVY }}
         >
           CERTIFICATE OF TRANSLATION ACCURACY
         </h1>
         <p
-          className="text-base sm:text-[18px] font-bold mt-1.5 font-arabic px-1"
+          className="text-[18px] font-bold mt-1.5 font-arabic px-1"
           style={{ color: GOLD }}
           dir="rtl"
         >
           شهادة دقة ترجمة الوثائق
         </p>
-        <p className="text-xs sm:text-sm mt-2 tracking-widest" style={{ color: GOLD }}>
+        <p className="text-sm mt-2 tracking-widest" style={{ color: GOLD }}>
           ──────── ◆ ────────
         </p>
       </div>
 
-      <div className="px-4 sm:px-6 md:px-8 flex flex-col md:flex-row gap-3 mt-4 print:flex-row">
+      <div className="px-8 flex flex-row gap-3 mt-4">
         <MetaBox labelEn="Ref. No" labelAr="رقم المرجع" value={certId} />
         <MetaBox labelEn="Date" labelAr="التاريخ" value={refDate} />
         <MetaBox
@@ -476,8 +478,8 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
         <GridLabelStackedAr top="اللغة المصدر" bottom="اللغة الهدف" />
       </OfficialDetailGrid>
 
-      <div className="cert-print-legal px-4 sm:px-6 md:px-8 mt-6 grid grid-cols-[1fr_4px_1fr] gap-0 items-stretch">
-        <div className="cert-print-legal-col pr-3 space-y-4 text-[10px] sm:text-[11px] leading-[1.65] text-justify">
+      <div className="cert-print-legal px-8 mt-6 grid grid-cols-[1fr_4px_1fr] gap-0 items-stretch">
+        <div className="cert-print-legal-col pr-3 space-y-4 text-[11px] leading-[1.65] text-justify">
           <p>{legalEn1}</p>
           <p>{legalEn2}</p>
           <p>{legalEn3}</p>
@@ -488,7 +490,7 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
           aria-hidden
         />
         <div
-          className="cert-print-legal-col pl-3 space-y-4 text-[10px] sm:text-[11px] leading-[1.75] text-justify"
+          className="cert-print-legal-col pl-3 space-y-4 text-[11px] leading-[1.75] text-justify"
           dir="rtl"
         >
           <p>{legalAr1}</p>
@@ -497,8 +499,7 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
         </div>
       </div>
 
-      {/* Signature (left) + verification QR (right) — stacks on mobile */}
-      <div className="px-4 sm:px-6 md:px-8 mt-4 md:mt-5 flex flex-col md:grid md:grid-cols-[1fr_152px] print:grid print:grid-cols-[1fr_152px] gap-6 md:items-end print:items-end">
+      <div className="px-8 mt-5 grid grid-cols-[1fr_152px] gap-6 items-end">
         <div className="min-w-0 w-full">
           <OfficialSignatoryStack
             closingEn={o.closingEn}
@@ -513,13 +514,13 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
         </div>
 
         <div
-          className="cert-print-qr border-2 p-3 flex flex-col items-center justify-center gap-2 bg-white shrink-0 mx-auto md:mx-0 w-full max-w-[200px] md:max-w-none md:w-auto"
+          className="cert-print-qr border-2 p-3 flex flex-col items-center justify-center gap-2 bg-white shrink-0 w-auto"
           style={{ borderColor: GOLD }}
         >
           <img
             src={`https://api.qrserver.com/v1/create-qr-code/?size=132x132&data=${encodeURIComponent(qrUrl)}`}
             alt="Certificate verification QR"
-            className="w-[100px] h-[100px] sm:w-[120px] sm:h-[120px]"
+            className="w-[120px] h-[120px]"
           />
           <p className="text-[9px] font-bold text-center leading-tight" style={{ color: NAVY }}>
             Scan to verify
@@ -530,25 +531,26 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
         </div>
       </div>
 
-      <div className="cert-print-footer px-4 sm:px-6 md:px-8 mt-8 mb-6 md:mb-8 flex flex-col md:grid md:grid-cols-[1fr_220px] print:grid print:grid-cols-[1fr_220px] gap-4 items-stretch">
-        <div className="border-2 px-3 sm:px-4 py-3 flex flex-col justify-center gap-2 min-h-0 md:min-h-[140px]" style={{ borderColor: GOLD }}>
+      <div className="cert-print-footer px-8 mt-8 mb-8 grid grid-cols-[1fr_220px] gap-4 items-stretch">
+        <div className="border-2 px-4 py-3 flex flex-col justify-center gap-2 min-h-[140px]" style={{ borderColor: GOLD }}>
           <VerifyHeadingRow heading={o.verifyHeading} />
           <p className="text-[10.5px] leading-snug">{fillCertificateCopy(o.verifyEn, vars)}</p>
           <p className="text-[10.5px] leading-snug" dir="rtl">
             {fillCertificateCopy(o.verifyAr, vars)}
           </p>
-          <p className="text-[10px] sm:text-[11px] font-bold mt-1 break-all" style={{ color: GOLD }}>
+          <p className="text-[11px] font-bold mt-1 break-all" style={{ color: GOLD }}>
             {certId} · {origin.replace(/^https?:\/\//, "")}/translation
           </p>
         </div>
         <div
-          className="border-2 px-3 py-4 flex items-center justify-center bg-white min-h-[120px] md:min-h-[140px]"
+          className="border-2 px-3 py-4 flex items-center justify-center bg-white min-h-[140px]"
           style={{ borderColor: GOLD }}
         >
           <CommissionLogo />
         </div>
       </div>
     </div>
+      </CertificateOfficialViewport>
     </>
   );
 }

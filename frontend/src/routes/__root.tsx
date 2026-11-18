@@ -144,6 +144,8 @@ function RootComponent() {
     }
   }, [location.pathname]);
 
+  const hideSiteFloatingUi = location.pathname.startsWith("/certificate/");
+
   return (
     <QueryClientProvider client={queryClient}>
       <Suspense fallback={null}>
@@ -152,8 +154,12 @@ function RootComponent() {
       <Outlet />
       <Suspense fallback={null}>
         <CookieConsentBanner />
-        <Chatbot />
-        <WhatsAppButton />
+        {!hideSiteFloatingUi && (
+          <>
+            <Chatbot />
+            <WhatsAppButton />
+          </>
+        )}
       </Suspense>
     </QueryClientProvider>
   );

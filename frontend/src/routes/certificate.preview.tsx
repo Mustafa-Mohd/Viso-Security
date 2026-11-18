@@ -68,7 +68,7 @@ function CertificatePreviewPage() {
   return (
     <>
       <style>{CERTIFICATE_GLOBAL_PRINT_CSS}</style>
-      <div className="certificate-print-root min-h-screen bg-neutral-300 py-6 px-2 overflow-x-auto flex flex-col items-center print:justify-center print:items-start print:overflow-visible print:min-h-0 print:h-auto print:bg-white print:py-0 print:px-0">
+      <div className="certificate-print-root min-h-screen w-full bg-neutral-300 py-6 px-2 overflow-x-hidden flex flex-col items-center print:justify-start print:items-center print:overflow-visible print:min-h-0 print:h-auto print:bg-white print:py-0 print:px-0">
         <CertificatePrintToolbar certId={certId} />
         {template === "official" && <CertificateTemplateOfficialDoc {...viewProps} />}
         {template === "classic" && <CertificateTemplateClassic {...viewProps} />}

@@ -107,4 +107,4 @@ export function formatCertDisplayDate(isoDate: string): string {
 export const CERTIFICATE_A4_WIDTH = "210mm";
 export const CERTIFICATE_A4_HEIGHT = "297mm";
 export const CERTIFICATE_A4_PAGE_CLASS =
-  "certificate-a4-page w-[210mm] shrink-0 min-h-[297mm] box-border";
+  "certificate-a4-page w-[210mm] min-w-[210mm] shrink-0 min-h-[297mm] box-border";
