@@ -4,6 +4,8 @@ export interface TranslationCertificate {
   id: string;
   national_id: string;
   project_name: string;
+  /** Arabic client line for Simple layout when source or target is Arabic */
+  project_name_ar?: string | null;
   source_lang: string;
   target_lang: string;
   issue_date: string;
@@ -104,6 +106,7 @@ export const certsApi = {
         id: cert.id,
         national_id: cert.national_id,
         project_name: cert.project_name,
+        project_name_ar: cert.project_name_ar?.trim() || null,
         source_lang: cert.source_lang,
         target_lang: cert.target_lang,
         issue_date: cert.issue_date,

@@ -14,7 +14,9 @@ import {
 } from "../lib/certificateIds";
 import {
   formatCertificateClientName,
+  formatCertificateClientNameAr,
   parseCertificateClientName,
+  parseCertificateClientNameAr,
   type ParentRelation,
 } from "../lib/certificateClientName";
 import {
@@ -67,8 +69,10 @@ export function CertificatesDashboard() {
   const [formId, setFormId] = useState("");
   const [formNationalId, setFormNationalId] = useState("");
   const [formClientName, setFormClientName] = useState("");
+  const [formClientNameAr, setFormClientNameAr] = useState("");
   const [formParentRelation, setFormParentRelation] = useState<ParentRelation>("none");
   const [formParentName, setFormParentName] = useState("");
+  const [formParentNameAr, setFormParentNameAr] = useState("");
   const [formSource, setFormSource] = useState("Arabic");
   const [formTarget, setFormTarget] = useState("English");
   const [formIssue, setFormIssue] = useState("");
@@ -115,8 +119,10 @@ export function CertificatesDashboard() {
     setFormId(computeNextCertificateId(certs.map((c) => c.id)));
     setFormNationalId("");
     setFormClientName("");
+    setFormClientNameAr("");
     setFormParentRelation("none");
     setFormParentName("");
+    setFormParentNameAr("");
     setFormSource("Arabic");
     setFormTarget("English");
     
@@ -143,6 +149,9 @@ export function CertificatesDashboard() {
     setFormClientName(parsed.clientName);
     setFormParentRelation(parsed.relation);
     setFormParentName(parsed.parentName);
+    const parsedAr = parseCertificateClientNameAr(cert.project_name_ar ?? "");
+    setFormClientNameAr(parsedAr.clientNameAr);
+    setFormParentNameAr(parsedAr.parentNameAr);
     setFormSource(cert.source_lang);
     setFormTarget(cert.target_lang);
     setFormIssue(cert.issue_date);
@@ -180,6 +189,24 @@ export function CertificatesDashboard() {
       formParentRelation,
       formParentName
     );
+
+    const involvesArabic =
+      /arabic/i.test(formSource) || /arabic/i.test(formTarget);
+    const idForTemplateCheck = (editingId ?? upperId).trim().toUpperCase();
+    const usesSimpleLayout =
+      certificateUsesLegacyTemplate(idForTemplateCheck) || formTemplate === "classic";
+
+    if (involvesArabic && usesSimpleLayout && !formClientNameAr.trim()) {
+      setFormError(
+        "Client name (Arabic) is required when Arabic is a source or target language on the Simple layout."
+      );
+      return;
+    }
+
+    const projectNameAr =
+      involvesArabic && formClientNameAr.trim()
+        ? formatCertificateClientNameAr(formClientNameAr, formParentRelation, formParentNameAr)
+        : null;
 
     const nationalId = editingId
       ? formNationalId.trim()
@@ -222,6 +249,7 @@ export function CertificatesDashboard() {
         id: idForSave,
         national_id: nationalId,
         project_name: projectName,
+        project_name_ar: projectNameAr,
         source_lang: formSource,
         target_lang: formTarget,
         issue_date: formIssue,
@@ -363,11 +391,20 @@ export function CertificatesDashboard() {
     formParentRelation,
     formParentName
   );
+  const clientDisplayPreviewAr = formatCertificateClientNameAr(
+    formClientNameAr,
+    formParentRelation,
+    formParentNameAr
+  );
+  const formInvolvesArabic = /arabic/i.test(formSource) || /arabic/i.test(formTarget);
+  const formUsesSimpleLayout =
+    certificateUsesLegacyTemplate(formId || "") || formTemplate === "classic";
 
   const formPreviewCert: TranslationCertificate = {
     id: formId || "PREVIEW",
     national_id: formNationalId || "0000000000",
     project_name: clientDisplayPreview || "Preview",
+    project_name_ar: clientDisplayPreviewAr || null,
     source_lang: formSource,
     target_lang: formTarget,
     issue_date: formIssue || new Date().toISOString().split("T")[0],
@@ -699,7 +736,10 @@ export function CertificatesDashboard() {
                       onChange={(e) => {
                         const next = e.target.value as ParentRelation;
                         setFormParentRelation(next);
-                        if (next === "none") setFormParentName("");
+                        if (next === "none") {
+                          setFormParentName("");
+                          setFormParentNameAr("");
+                        }
                       }}
                       className="w-full bg-background border border-foreground/15 rounded-lg py-2.5 px-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all font-medium"
                     >
@@ -730,6 +770,56 @@ export function CertificatesDashboard() {
                     </span>
                   </div>
               </div>
+
+              {formInvolvesArabic && formUsesSimpleLayout ? (
+                <div className="rounded-lg border border-primary/20 bg-primary/[0.03] p-3 space-y-3">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-primary">
+                    Arabic client (Simple layout)
+                  </p>
+                  <p className="text-[10px] text-foreground/55 leading-snug">
+                    Required when Arabic is source or target and the certificate uses the Simple template.
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                    <div className="sm:col-span-5">
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1.5">
+                        Client name (Arabic)
+                      </label>
+                      <input
+                        type="text"
+                        dir="rtl"
+                        value={formClientNameAr}
+                        onChange={(e) => setFormClientNameAr(e.target.value)}
+                        placeholder="مثال: مايا"
+                        className="w-full bg-background border border-foreground/15 rounded-lg py-2.5 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50 transition-all font-arabic font-semibold"
+                        required={formInvolvesArabic}
+                      />
+                    </div>
+                    <div className="sm:col-span-7">
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1.5">
+                        Parent name (Arabic){" "}
+                        <span className="font-normal normal-case text-foreground/40">(if relation set)</span>
+                      </label>
+                      <input
+                        type="text"
+                        dir="rtl"
+                        value={formParentNameAr}
+                        onChange={(e) => setFormParentNameAr(e.target.value)}
+                        placeholder={formParentRelation === "none" ? "Not used" : "مثال: جيرمان روا كولازو"}
+                        disabled={formParentRelation === "none"}
+                        className="w-full bg-background border border-foreground/15 rounded-lg py-2.5 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50 transition-all font-arabic font-medium disabled:opacity-50 disabled:bg-foreground/[0.04]"
+                      />
+                    </div>
+                    <div className="sm:col-span-12 rounded-lg border border-dashed border-foreground/15 bg-white/60 dark:bg-black/10 px-3 py-2.5">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-foreground/45 block mb-1">
+                        Arabic line on Simple certificate
+                      </span>
+                      <span className="text-sm font-semibold text-foreground font-arabic block" dir="rtl">
+                        {clientDisplayPreviewAr || "أدخل الاسم بالعربية…"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>

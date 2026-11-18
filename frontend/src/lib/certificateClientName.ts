@@ -1,5 +1,37 @@
 export type ParentRelation = "none" | "son" | "daughter";
 
+export function formatCertificateClientNameAr(
+  clientNameAr: string,
+  relation: ParentRelation,
+  parentNameAr: string
+): string {
+  const name = clientNameAr.trim();
+  if (!name) return "";
+  const parent = parentNameAr.trim();
+  if (relation === "none" || !parent) return name;
+  const label = relation === "son" ? "ابن" : "ابنة";
+  return `${name}، ${label} ${parent}`;
+}
+
+export function parseCertificateClientNameAr(projectNameAr: string): {
+  clientNameAr: string;
+  parentNameAr: string;
+} {
+  const raw = projectNameAr.trim();
+  if (!raw) {
+    return { clientNameAr: "", parentNameAr: "" };
+  }
+  const son = raw.match(/^(.+?)،\s*ابن\s+(.+)$/u);
+  if (son) {
+    return { clientNameAr: son[1].trim(), parentNameAr: son[2].trim() };
+  }
+  const daughter = raw.match(/^(.+?)،\s*ابنة\s+(.+)$/u);
+  if (daughter) {
+    return { clientNameAr: daughter[1].trim(), parentNameAr: daughter[2].trim() };
+  }
+  return { clientNameAr: raw, parentNameAr: "" };
+}
+
 export function formatCertificateClientName(
   clientName: string,
   relation: ParentRelation,

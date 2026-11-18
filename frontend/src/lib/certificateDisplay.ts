@@ -13,6 +13,22 @@ export function localizeCertificateLanguage(lang: string, isAr: boolean): string
   return LANGUAGE_LABELS_AR[lang] ?? lang;
 }
 
+export function certificateInvolvesArabic(cert: {
+  source_lang: string;
+  target_lang: string;
+}): boolean {
+  return /arabic/i.test(cert.source_lang) || /arabic/i.test(cert.target_lang);
+}
+
+export function resolveClassicClientNameAr(
+  projectName: string,
+  projectNameAr: string | null | undefined
+): string {
+  const ar = projectNameAr?.trim();
+  if (ar) return ar;
+  return formatCertificateProjectNameForDisplay(projectName, true);
+}
+
 /** Display client line on public UI (Arabic relation labels when site is Arabic). */
 export function formatCertificateProjectNameForDisplay(projectName: string, isAr: boolean): string {
   const parsed = parseCertificateClientName(projectName);

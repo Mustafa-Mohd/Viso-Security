@@ -4,8 +4,10 @@ import type { CertificateDisplayStatus } from "@/lib/certsApi";
 import type { CertificateBranding } from "@/lib/certificateBranding";
 import { RIYADH_CHAMBER_LABELS } from "@/lib/certificateBranding";
 import {
+  certificateInvolvesArabic,
   formatCertificateProjectNameForDisplay,
   localizeCertificateLanguage,
+  resolveClassicClientNameAr,
   textDirectionForContent,
 } from "@/lib/certificateDisplay";
 import { formatCertDisplayDate, VISO_LOGO_URL } from "@/lib/certificateTemplates";
@@ -140,9 +142,31 @@ const VISO_CONTACT = {
   addressAr: "أبي بكر الصديق، 7423، مكتب 110، حي التعاون، 12477 الرياض، المملكة العربية السعودية",
 } as const;
 
+function BilingualFieldLabel({ en, ar, showAr }: { en: string; ar: string; showAr: boolean }) {
+  return (
+    <span className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-2">
+      {en}
+      {showAr ? (
+        <span className="normal-case font-arabic text-neutral-500 tracking-normal" dir="rtl">
+          {" "}
+          · {ar}
+        </span>
+      ) : null}
+    </span>
+  );
+}
+
 export function CertificateTemplateClassic(props: CertificateViewProps) {
   const { cert, certId, qrUrl, bannerLabel, watermarkLabel, isWithinValidity, isPastExpiry, isRevoked } = props;
-
+  const showAr = certificateInvolvesArabic(cert);
+  const clientEn = cert.project_name;
+  const clientAr = resolveClassicClientNameAr(cert.project_name, cert.project_name_ar);
+  const sourceDisplay = showAr
+    ? `${cert.source_lang} · ${localizeCertificateLanguage(cert.source_lang, true)}`
+    : cert.source_lang;
+  const targetDisplay = showAr
+    ? `${cert.target_lang} · ${localizeCertificateLanguage(cert.target_lang, true)}`
+    : cert.target_lang;
   return (
     <div className="bg-white w-full max-w-[800px] min-h-[1130px] shadow-2xl relative p-12 md:p-20 text-black flex flex-col mx-auto overflow-hidden print:shadow-none">
       {bannerLabel && (
@@ -160,13 +184,30 @@ export function CertificateTemplateClassic(props: CertificateViewProps) {
         <h3 className="text-2xl font-serif text-neutral-800 uppercase tracking-widest border-b-2 border-neutral-300 pb-4 inline-block">
           Certificate of Translation
         </h3>
+        {showAr ? (
+          <p className="mt-3 text-lg font-arabic text-neutral-700" dir="rtl">
+            شهادة ترجمة
+          </p>
+        ) : null}
       </div>
       <div className="flex-grow relative z-0">
-        <p className="text-base text-neutral-700 mb-12 leading-relaxed text-justify">
+        <p
+          className={`text-base text-neutral-700 leading-relaxed text-justify ${showAr ? "mb-4" : "mb-12"}`}
+        >
           This document officially certifies that the translation provided for the client{" "}
-          <strong className="text-neutral-900">{cert.project_name}</strong> has been completed by certified
+          <strong className="text-neutral-900">{clientEn}</strong> has been completed by certified
           professionals and verified for accuracy and fidelity to the source document.
         </p>
+        {showAr ? (
+          <p
+            className="text-base text-neutral-700 mb-12 leading-relaxed text-justify font-arabic"
+            dir="rtl"
+          >
+            تشهد هذه الوثيقة رسمياً بأن الترجمة المقدَّمة للعميل{" "}
+            <strong className="text-neutral-900">{clientAr}</strong> قد أُنجزت على يد متخصصين معتمدين وتم
+            التحقق من دقتها ومطابقتها للوثيقة المصدر.
+          </p>
+        ) : null}
         <div className="grid grid-cols-2 gap-y-8 gap-x-12 text-sm mb-16 border border-neutral-200 p-10 rounded-xl bg-neutral-50/50 relative">
           {watermarkLabel && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.05] z-0 overflow-hidden">
@@ -176,27 +217,32 @@ export function CertificateTemplateClassic(props: CertificateViewProps) {
             </div>
           )}
           <div className="relative z-10">
-            <span className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-2">Certificate ID</span>
+            <BilingualFieldLabel en="Certificate ID" ar="رقم الشهادة" showAr={showAr} />
             <span className="font-mono font-medium text-neutral-800 text-base">{certId}</span>
           </div>
           <div className="relative z-10">
-            <span className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-2">Client Name</span>
-            <span className="font-medium text-neutral-800 text-base">{cert.project_name}</span>
+            <BilingualFieldLabel en="Client Name" ar="اسم العميل" showAr={showAr} />
+            <span className="font-medium text-neutral-800 text-base block">{clientEn}</span>
+            {showAr ? (
+              <span className="font-medium text-neutral-800 text-base block mt-1 font-arabic" dir="rtl">
+                {clientAr}
+              </span>
+            ) : null}
           </div>
           <div className="relative z-10">
-            <span className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-2">Source Language</span>
-            <span className="font-medium text-neutral-800 text-base">{cert.source_lang}</span>
+            <BilingualFieldLabel en="Source Language" ar="لغة المصدر" showAr={showAr} />
+            <span className="font-medium text-neutral-800 text-base">{sourceDisplay}</span>
           </div>
           <div className="relative z-10">
-            <span className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-2">Target Language</span>
-            <span className="font-medium text-neutral-800 text-base">{cert.target_lang}</span>
+            <BilingualFieldLabel en="Target Language" ar="لغة الهدف" showAr={showAr} />
+            <span className="font-medium text-neutral-800 text-base">{targetDisplay}</span>
           </div>
           <div className="relative z-10">
-            <span className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-2">Issue Date</span>
+            <BilingualFieldLabel en="Issue Date" ar="تاريخ الإصدار" showAr={showAr} />
             <span className="font-medium text-neutral-800 text-base">{cert.issue_date}</span>
           </div>
           <div className="relative z-10">
-            <span className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-2">Valid Until</span>
+            <BilingualFieldLabel en="Valid Until" ar="صالحة حتى" showAr={showAr} />
             <span
               className={`font-medium text-base ${!isWithinValidity && (isPastExpiry || isRevoked) ? "text-red-600 line-through" : "text-neutral-800"}`}
             >
@@ -207,7 +253,14 @@ export function CertificateTemplateClassic(props: CertificateViewProps) {
       </div>
       <div className="mt-auto pt-10 border-t border-neutral-200 flex justify-between items-end relative z-10">
         <div>
-          <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-3">Scan to Verify</p>
+          <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-3">
+            Scan to Verify
+            {showAr ? (
+              <span className="block font-arabic normal-case tracking-normal mt-0.5" dir="rtl">
+                امسح للتحقق
+              </span>
+            ) : null}
+          </p>
           <div className="p-2 bg-white border border-neutral-200 rounded-lg inline-block shadow-sm">
             <img
               src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(qrUrl)}`}
