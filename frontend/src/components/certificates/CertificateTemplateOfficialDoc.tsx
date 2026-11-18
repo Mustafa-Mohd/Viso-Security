@@ -14,6 +14,8 @@ import {
 } from "@/lib/certificateTemplates";
 import {
   certificateShowsClientCr,
+  formatOfficialDocumentDescriptionAr,
+  formatOfficialDocumentDescriptionEn,
   localizeCertificateLanguage,
   resolveClassicClientNameAr,
   textDirectionForContent,
@@ -52,7 +54,7 @@ function MetaBox({
 function GridLabel({ children, rtl }: { children: ReactNode; rtl?: boolean }) {
   return (
     <div
-      className="px-3 py-2.5 text-[11px] font-bold text-neutral-900 border border-[#DDD5BF] flex items-center"
+      className="px-3 py-3 text-[11px] font-bold text-neutral-900 border border-[#DDD5BF] flex items-center justify-center min-h-[52px]"
       style={{ backgroundColor: CREAM }}
       dir={rtl ? "rtl" : undefined}
     >
@@ -61,11 +63,66 @@ function GridLabel({ children, rtl }: { children: ReactNode; rtl?: boolean }) {
   );
 }
 
-function GridValue({ children, center }: { children: React.ReactNode; center?: boolean }) {
+/** Cream-column label: English on top, Arabic below with clear separation */
+function GridLabelBilingual({ en, ar }: { en: string; ar: string }) {
   return (
     <div
-      className={`px-3 py-2.5 text-[11px] text-neutral-900 border border-[#DDD5BF] bg-white flex items-center ${center ? "justify-center text-center" : ""}`}
+      className="px-3 py-3 text-[11px] font-bold text-neutral-900 border border-[#DDD5BF] flex flex-col items-center justify-center gap-2 min-h-[52px] text-center"
+      style={{ backgroundColor: CREAM }}
     >
+      <span className="leading-tight">{en}</span>
+      <span
+        dir="rtl"
+        className="text-[10px] font-bold font-arabic text-neutral-700 leading-snug w-full pt-2 border-t border-[#D5CEC0]"
+      >
+        {ar}
+      </span>
+    </div>
+  );
+}
+
+function GridValue({
+  children,
+  center,
+  stacked,
+  className = "",
+}: {
+  children: React.ReactNode;
+  center?: boolean;
+  stacked?: boolean;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`px-3 py-3 text-[11px] text-neutral-900 border border-[#DDD5BF] bg-white flex min-h-[44px] ${
+        stacked ? "flex-col items-center justify-center gap-2 py-3.5" : "items-center"
+      } ${center ? "justify-center text-center" : ""} ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
+function BilingualCellValue({ primary, secondary }: { primary: React.ReactNode; secondary?: string }) {
+  return (
+    <div className="flex flex-col items-center gap-2 w-full text-center">
+      <span className="font-semibold leading-snug">{primary}</span>
+      {secondary ? (
+        <span
+          dir="rtl"
+          className="text-[10px] text-neutral-700 font-arabic leading-relaxed w-full pt-2 border-t border-[#E8E4DA]"
+        >
+          {secondary}
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
+/** EN label | EN value | AR label | AR value — no stray empty cells */
+function OfficialDetailGrid({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="px-8 mt-5 grid grid-cols-4 gap-0 [&>*:nth-child(-n+4)]:border-t [&>*:nth-child(-n+4)]:border-[#DDD5BF]">
       {children}
     </div>
   );
@@ -88,7 +145,7 @@ function CommissionLogo() {
 }
 
 export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
-  const { cert, certId, branding, bannerLabel, copy } = props;
+  const { cert, certId, qrUrl, branding, bannerLabel, copy } = props;
   const refDate = formatCertDisplayDate(cert.issue_date);
   const clientEn = cert.project_name;
   const clientAr = resolveClassicClientNameAr(cert.project_name, cert.project_name_ar);
@@ -96,7 +153,8 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
   const tgtEn = cert.target_lang;
   const srcAr = localizeCertificateLanguage(cert.source_lang, true);
   const tgtAr = localizeCertificateLanguage(cert.target_lang, true);
-  const documentLabel = `${srcEn} – ${tgtEn} Translation`;
+  const documentLabel = formatOfficialDocumentDescriptionEn(srcEn, tgtEn);
+  const documentLabelAr = formatOfficialDocumentDescriptionAr(srcEn, tgtEn);
   const origin = getPublicSiteOrigin();
   const vars = buildCertificatePlaceholderVars(cert, certId, copy);
   const o = copy.official;
@@ -129,10 +187,10 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
           className="text-[22px] font-bold tracking-[0.08em] text-neutral-900"
           style={{ fontFamily: "'Cinzel', 'Playfair Display', serif", color: NAVY }}
         >
-          CERTIFICATION
+          CERTIFICATE OF ACCURACY
         </h1>
-        <p className="text-[20px] font-bold mt-1" style={{ color: GOLD }} dir="rtl">
-          مشهد
+        <p className="text-[18px] font-bold mt-1.5 font-arabic" style={{ color: GOLD }} dir="rtl">
+          شهادة دقة الترجمة
         </p>
         <p className="text-sm mt-2 tracking-widest" style={{ color: GOLD }}>
           ──────── ◆ ────────
@@ -149,56 +207,47 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
         />
       </div>
 
-      <div className="px-8 mt-5 grid grid-cols-6 gap-0">
+      <OfficialDetailGrid>
         <GridLabel>Client Name</GridLabel>
-        <GridValue center>
+        <GridValue>
           <span dir={textDirectionForContent(clientEn)} className="font-semibold leading-snug">
             {clientEn}
           </span>
         </GridValue>
         <GridLabel rtl>اسم العميل</GridLabel>
-        <GridValue center>
-          <span dir="rtl" className="font-arabic font-semibold text-[11px] leading-snug text-neutral-900">
+        <GridValue>
+          <span dir="rtl" className="font-arabic font-semibold leading-snug text-neutral-900">
             {clientAr}
           </span>
         </GridValue>
-        <div className="col-span-2 border border-[#DDD5BF] bg-white min-h-[42px]" aria-hidden />
-
-        <GridLabel>Document</GridLabel>
-        <GridValue center className="col-span-2">
-          {documentLabel}
-        </GridValue>
-        <GridLabel rtl>المستند</GridLabel>
-        <div className="col-span-2 border border-[#DDD5BF] bg-white" aria-hidden />
 
         {certificateShowsClientCr(cert) ? (
           <>
             <GridLabel>CR No.</GridLabel>
-            <div className="col-span-2 px-3 py-2.5 text-[11px] text-neutral-900 border border-[#DDD5BF] bg-white flex items-center justify-center text-center">
-              <span className="font-mono font-semibold">{cert.client_cr_number}</span>
-            </div>
+            <GridValue center>
+              <span className="font-mono font-semibold tracking-tight">{cert.client_cr_number}</span>
+            </GridValue>
             <GridLabel rtl>رقم السجل التجاري</GridLabel>
-            <div className="col-span-2 border border-[#DDD5BF] bg-white" aria-hidden />
+            <GridValue center>
+              <span className="font-mono font-semibold tracking-tight">{cert.client_cr_number}</span>
+            </GridValue>
           </>
         ) : null}
 
-        <GridLabel>Source Language</GridLabel>
-        <GridValue center>
-          <span className="block">{srcEn}</span>
-          <span className="block text-[10px] mt-0.5" dir="rtl">
-            {srcAr}
-          </span>
+        <GridLabelBilingual en="Document" ar="المستند" />
+        <GridValue center stacked className="col-span-3">
+          <BilingualCellValue primary={documentLabel} secondary={documentLabelAr} />
         </GridValue>
-        <GridLabel rtl>اللغة المصدر</GridLabel>
-        <GridLabel>Target Language</GridLabel>
-        <GridValue center>
-          <span className="block">{tgtEn}</span>
-          <span className="block text-[10px] mt-0.5" dir="rtl">
-            {tgtAr}
-          </span>
+
+        <GridLabelBilingual en="Source Language" ar="اللغة المصدر" />
+        <GridValue center stacked>
+          <BilingualCellValue primary={srcEn} secondary={srcAr} />
         </GridValue>
-        <GridLabel rtl>اللغة الهدف</GridLabel>
-      </div>
+        <GridLabelBilingual en="Target Language" ar="اللغة الهدف" />
+        <GridValue center stacked>
+          <BilingualCellValue primary={tgtEn} secondary={tgtAr} />
+        </GridValue>
+      </OfficialDetailGrid>
 
       <div className="px-8 mt-6 grid grid-cols-[1fr_4px_1fr] gap-0 items-stretch">
         <div className="pr-4 space-y-4 text-[11px] leading-[1.65] text-justify">
@@ -214,61 +263,63 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
         </div>
       </div>
 
-      {/* Single signature — bilingual labels, one image & line; seal centered */}
-      <div className="px-8 mt-10">
-        <div className="grid grid-cols-[1fr_auto_1fr] gap-x-6 gap-y-1 items-start">
-          <div>
-            <p className="font-bold text-sm">{o.closingEn}</p>
-            <p className="font-bold text-sm mt-1 leading-snug">{o.officeNameEn}</p>
-          </div>
-          <div className="w-[148px]" aria-hidden />
-          <div className="text-right" dir="rtl">
-            <p className="font-bold text-sm">{o.closingAr}</p>
-            <p className="font-bold text-sm mt-1 leading-snug">{o.officeNameAr}</p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-[1fr_auto_1fr] gap-x-6 items-end mt-5">
-          <div className="pb-2">
-            <p className="font-bold text-sm">{o.signatoryNameEn}</p>
-            <p className="text-[11px] text-neutral-700 mt-0.5">{o.signatoryTitleEn}</p>
+      {/* Signature (left) + verification QR (right) — no official seal */}
+      <div className="px-8 mt-10 grid grid-cols-[1fr_152px] gap-6 items-end">
+        <div className="min-w-0">
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <p className="font-bold text-sm">{o.closingEn}</p>
+              <p className="font-bold text-sm mt-1 leading-snug text-[12px]">{o.officeNameEn}</p>
+            </div>
+            <div dir="rtl" className="text-right">
+              <p className="font-bold text-sm">{o.closingAr}</p>
+              <p className="font-bold text-sm mt-1 leading-snug text-[12px]">{o.officeNameAr}</p>
+            </div>
           </div>
 
-          <div
-            className="w-[148px] border border-dashed border-neutral-400 px-3 py-4 flex flex-col items-center justify-center gap-1.5 min-h-[150px] bg-white"
-          >
-            <p className="text-[10px] font-semibold tracking-wide text-center">OFFICIAL SEAL</p>
-            <p className="text-[10px] font-semibold text-center" dir="rtl">
-              ختم المكتب
-            </p>
-            {branding.digitalStampUrl ? (
+          <div className="relative max-w-[320px] min-h-[64px] mb-2">
+            {branding.signatureUrl ? (
               <img
-                src={branding.digitalStampUrl}
-                alt="Official seal"
-                className="h-[72px] w-auto max-w-[120px] object-contain mt-1"
+                src={branding.signatureUrl}
+                alt=""
+                className="absolute left-0 bottom-0 h-14 w-auto max-w-full object-contain object-left pointer-events-none"
               />
             ) : null}
+            <div className="border-b-2 pt-12 w-full" style={{ borderColor: NAVY }} />
           </div>
 
-          <div className="text-right pb-2" dir="rtl">
-            <p className="font-bold text-sm">{o.signatoryNameAr}</p>
-            <p className="text-[11px] text-neutral-700 mt-0.5">{o.signatoryTitleAr}</p>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="font-bold text-sm">{o.signatoryNameEn}</p>
+              <p className="text-[11px] text-neutral-700 mt-0.5">{o.signatoryTitleEn}</p>
+              <p className="text-[9px] text-neutral-500 uppercase tracking-wider mt-2">
+                Authorized signature
+              </p>
+            </div>
+            <div dir="rtl" className="text-right">
+              <p className="font-bold text-sm">{o.signatoryNameAr}</p>
+              <p className="text-[11px] text-neutral-700 mt-0.5">{o.signatoryTitleAr}</p>
+              <p className="text-[9px] text-neutral-500 mt-2 font-arabic">التوقيع المعتمد</p>
+            </div>
           </div>
         </div>
 
-        <div className="relative max-w-md mx-auto mt-2 mb-1 min-h-[58px]">
-          {branding.signatureUrl ? (
-            <img
-              src={branding.signatureUrl}
-              alt=""
-              className="absolute left-1/2 bottom-0 h-14 w-auto max-w-[min(100%,240px)] -translate-x-1/2 object-contain pointer-events-none"
-            />
-          ) : null}
-          <div className="border-b-2 pt-12 w-full" style={{ borderColor: NAVY }} />
+        <div
+          className="border-2 p-3 flex flex-col items-center justify-center gap-2 bg-white shrink-0"
+          style={{ borderColor: GOLD }}
+        >
+          <img
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=132x132&data=${encodeURIComponent(qrUrl)}`}
+            alt="Certificate verification QR"
+            className="w-[120px] h-[120px]"
+          />
+          <p className="text-[9px] font-bold text-center leading-tight" style={{ color: NAVY }}>
+            Scan to verify
+          </p>
+          <p className="text-[9px] font-arabic text-center leading-tight" dir="rtl">
+            امسح للتحقق
+          </p>
         </div>
-        <p className="text-[9px] text-neutral-500 text-center uppercase tracking-wider mt-1">
-          Authorized signature · التوقيع المعتمد
-        </p>
       </div>
 
       {/* Verification + commission logo (QR reserved for later) */}

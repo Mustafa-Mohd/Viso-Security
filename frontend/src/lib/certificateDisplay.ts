@@ -14,6 +14,17 @@ export function localizeCertificateLanguage(lang: string, isAr: boolean): string
   return LANGUAGE_LABELS_AR[lang] ?? lang;
 }
 
+/** Official template: "ترجمة من الإنجليزية إلى العربية" */
+export function formatOfficialDocumentDescriptionAr(sourceLang: string, targetLang: string): string {
+  const src = localizeCertificateLanguage(sourceLang, true);
+  const tgt = localizeCertificateLanguage(targetLang, true);
+  return `ترجمة من ${src} إلى ${tgt}`;
+}
+
+export function formatOfficialDocumentDescriptionEn(sourceLang: string, targetLang: string): string {
+  return `${sourceLang} – ${targetLang} Translation`;
+}
+
 export function certificateInvolvesArabic(cert: {
   source_lang: string;
   target_lang: string;
