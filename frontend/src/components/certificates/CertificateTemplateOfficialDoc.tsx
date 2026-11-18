@@ -14,8 +14,6 @@ import {
 } from "@/lib/certificateTemplates";
 import {
   certificateShowsClientCr,
-  formatOfficialDocumentDescriptionAr,
-  formatOfficialDocumentDescriptionEn,
   localizeCertificateLanguage,
   resolveClassicClientNameAr,
   textDirectionForContent,
@@ -155,8 +153,6 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
   const tgtEn = cert.target_lang;
   const srcAr = localizeCertificateLanguage(cert.source_lang, true);
   const tgtAr = localizeCertificateLanguage(cert.target_lang, true);
-  const documentLabel = formatOfficialDocumentDescriptionEn(srcEn, tgtEn);
-  const documentLabelAr = formatOfficialDocumentDescriptionAr(srcEn, tgtEn);
   const origin = getPublicSiteOrigin();
   const vars = buildCertificatePlaceholderVars(cert, certId, copy);
   const o = copy.official;
@@ -243,11 +239,6 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
             </GridValue>
           </>
         ) : null}
-
-        <GridLabelBilingual en="Document" ar="المستند" />
-        <GridValue center stacked className="md:col-span-3 print:col-span-3">
-          <BilingualCellValue primary={documentLabel} secondary={documentLabelAr} />
-        </GridValue>
 
         <GridLabelBilingual en="Source Language" ar="اللغة المصدر" />
         <GridValue center stacked>
