@@ -15,7 +15,10 @@ export const VISO_LOGO_URL =
 
 /** Header artwork from Viso_Certificate_of_Translation.docx */
 export const VISO_OFFICIAL_DOC_LOGO_EN = "/images/certificates/viso-doc-logo-en.png";
-export const VISO_OFFICIAL_DOC_LOGO_AR = "/images/certificates/viso-doc-logo-ar.png";
+/** Center VISO mark from Viso_Certificate_of_Translation.docx (stored as viso-doc-logo-ar.png). */
+export const VISO_OFFICIAL_DOC_LOGO_MARK = "/images/certificates/viso-doc-logo-ar.png";
+/** Right header — Arabic title + gold rule + tagline artwork */
+export const VISO_OFFICIAL_DOC_LOGO_AR_TEXT = "/images/certificates/viso-doc-logo-ar-text.png";
 
 /** Literature, Publishing & Translation Commission — local copy preferred; Wikimedia fallback */
 export const SAUDI_TRANSLATION_COMMISSION_LOGO =
@@ -99,3 +102,9 @@ export function formatCertDisplayDate(isoDate: string): string {
   if (parts.length !== 3) return isoDate;
   return `${parts[2]}/${parts[1]}/${parts[0]}`;
 }
+
+/** ISO 216 A4 — official certificate page (screen preview + print). */
+export const CERTIFICATE_A4_WIDTH = "210mm";
+export const CERTIFICATE_A4_HEIGHT = "297mm";
+export const CERTIFICATE_A4_PAGE_CLASS =
+  "certificate-a4-page w-[210mm] shrink-0 min-h-[297mm] box-border";

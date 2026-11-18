@@ -7,6 +7,8 @@ import { resolveCertificateTemplate } from "@/lib/certificateTemplates";
 import { getPublicSiteOrigin } from "@/lib/certificateIds";
 import { CertificateTemplateClassic } from "@/components/certificates/CertificateDocument";
 import { CertificateTemplateOfficialDoc } from "@/components/certificates/CertificateTemplateOfficialDoc";
+import { CertificatePrintToolbar } from "@/components/certificates/CertificatePrintToolbar";
+import { CERTIFICATE_GLOBAL_PRINT_CSS } from "@/components/certificates/certificatePrintStyles";
 
 export function CertificatePdfViewBody({ certId }: { certId: string }) {
   const [certData, setCertData] = useState<Awaited<ReturnType<typeof certsApi.getCertificateById>>>(null);
@@ -85,9 +87,13 @@ export function CertificatePdfViewBody({ certId }: { certId: string }) {
   const template = resolveCertificateTemplate(certData);
 
   return (
-    <div className="min-h-screen bg-neutral-300 flex flex-col items-center py-4 px-2 sm:py-8 sm:px-4 font-sans print:bg-white print:py-0">
+  <>
+    <style>{CERTIFICATE_GLOBAL_PRINT_CSS}</style>
+    <div className="certificate-print-root min-h-screen bg-neutral-300 flex flex-col items-center py-4 px-2 sm:py-8 sm:px-4 font-sans overflow-x-auto print:flex print:justify-center print:items-start print:overflow-visible print:min-h-0 print:h-auto print:bg-white print:py-0 print:px-0">
+      <CertificatePrintToolbar certId={certId} />
       {template === "official" && <CertificateTemplateOfficialDoc {...viewProps} />}
       {template === "classic" && <CertificateTemplateClassic {...viewProps} />}
     </div>
+  </>
   );
 }

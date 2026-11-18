@@ -7,6 +7,8 @@ import { getPublicSiteOrigin } from "@/lib/certificateIds";
 import { normalizeCertificateTemplateParam, type CertificateTemplateId } from "@/lib/certificateTemplates";
 import { CertificateTemplateClassic } from "@/components/certificates/CertificateDocument";
 import { CertificateTemplateOfficialDoc } from "@/components/certificates/CertificateTemplateOfficialDoc";
+import { CertificatePrintToolbar } from "@/components/certificates/CertificatePrintToolbar";
+import { CERTIFICATE_GLOBAL_PRINT_CSS } from "@/components/certificates/certificatePrintStyles";
 
 export const Route = createFileRoute("/certificate/preview")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -64,9 +66,13 @@ function CertificatePreviewPage() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-300 py-6 px-2 print:bg-white">
-      {template === "official" && <CertificateTemplateOfficialDoc {...viewProps} />}
-      {template === "classic" && <CertificateTemplateClassic {...viewProps} />}
-    </div>
+    <>
+      <style>{CERTIFICATE_GLOBAL_PRINT_CSS}</style>
+      <div className="certificate-print-root min-h-screen bg-neutral-300 py-6 px-2 overflow-x-auto flex flex-col items-center print:justify-center print:items-start print:overflow-visible print:min-h-0 print:h-auto print:bg-white print:py-0 print:px-0">
+        <CertificatePrintToolbar certId={certId} />
+        {template === "official" && <CertificateTemplateOfficialDoc {...viewProps} />}
+        {template === "classic" && <CertificateTemplateClassic {...viewProps} />}
+      </div>
+    </>
   );
 }

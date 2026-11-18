@@ -146,7 +146,7 @@ export function Chatbot() {
   };
 
   return (
-    <>
+    <div className="viso-chatbot-root no-print" aria-hidden={false}>
       {/* Floating Chat Modal */}
       <AnimatePresence>
         {isOpen && (
@@ -410,6 +410,6 @@ export function Chatbot() {
           </span>
         </motion.button>
       </div>
-    </>
+    </div>
   );
 }

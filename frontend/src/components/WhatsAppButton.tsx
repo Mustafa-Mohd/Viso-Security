@@ -13,7 +13,7 @@ export function WhatsAppButton() {
   return (
     <div
       className={cn(
-        "fixed bottom-6 right-6 z-[100] transition-all duration-700 ease-in-out",
+        "viso-whatsapp-float no-print fixed bottom-6 right-6 z-[100] transition-all duration-700 ease-in-out",
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       )}
     >

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
+import { ShieldCheck } from "lucide-react";
 import type { CertificateViewProps } from "@/components/certificates/CertificateDocument";
 import {
   buildCertificatePlaceholderVars,
@@ -9,8 +10,10 @@ import {
   formatCertDisplayDate,
   SAUDI_TRANSLATION_COMMISSION_LOGO,
   SAUDI_TRANSLATION_COMMISSION_LOGO_FALLBACK,
-  VISO_OFFICIAL_DOC_LOGO_AR,
+  VISO_OFFICIAL_DOC_LOGO_AR_TEXT,
   VISO_OFFICIAL_DOC_LOGO_EN,
+  VISO_OFFICIAL_DOC_LOGO_MARK,
+  CERTIFICATE_A4_PAGE_CLASS,
 } from "@/lib/certificateTemplates";
 import {
   certificateShowsClientCr,
@@ -19,10 +22,213 @@ import {
   textDirectionForContent,
 } from "@/lib/certificateDisplay";
 import { getPublicSiteOrigin } from "@/lib/certificateIds";
+import { CERTIFICATE_SINGLE_PAGE_PRINT_CSS } from "@/components/certificates/certificatePrintStyles";
 
 const NAVY = "#12284C";
 const GOLD = "#B08D3C";
 const CREAM = "#F1ECE0";
+const DOCUSIGN_STROKE = "#2A5F9E";
+const DOCUSIGN_BRACKET_W = 252;
+const DOCUSIGN_SIGNATURE_W = 262;
+const SIGNATURE_SCRIPT_FONT = '"Segoe Script", "Brush Script MT", "Snell Roundhand", cursive';
+
+function formatSignatoryScriptName(name: string): string {
+  return name.trim().replace(/\s+/g, " ").replace(/Bin([A-Z])/i, "Bin $1");
+}
+
+/** Left spine only — no horizontal rules after the top label or bottom ID. */
+function docuLeftBracketPath(height: number): string {
+  const top = 10;
+  const bottom = height - 10;
+  const x = 1;
+  const r = 4;
+  return `M ${x + r} ${top}
+          Q ${x} ${top} ${x} ${top + r}
+          L ${x} ${bottom - r}
+          Q ${x} ${bottom} ${x + r} ${bottom}`;
+}
+
+/** DocuSign-style stamp: blue fill, left bracket, labels without trailing rules. */
+function DocuSignBracketFrame({
+  topLabel,
+  bottomLabel,
+  height,
+  children,
+  captionBelow,
+  width = DOCUSIGN_BRACKET_W,
+  clipContent = true,
+  contentClassName = "left-2.5 right-2 top-[23px] bottom-[19px] items-center",
+}: {
+  topLabel: string;
+  bottomLabel: ReactNode;
+  height: number;
+  children: ReactNode;
+  captionBelow?: ReactNode;
+  width?: number;
+  /** Signature script extends past the box; keep visible when false. */
+  clipContent?: boolean;
+  contentClassName?: string;
+}) {
+  return (
+    <div className="inline-flex flex-col" style={{ width }}>
+      <div
+        className="relative rounded-[2px] bg-white print:bg-white"
+        style={{ width, height }}
+      >
+        <svg
+          className="absolute left-0 top-0 pointer-events-none"
+          width={width}
+          height={height}
+          viewBox={`0 0 ${width} ${height}`}
+          aria-hidden
+        >
+          <path
+            fill="none"
+            stroke={DOCUSIGN_STROKE}
+            strokeWidth={1.25}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d={docuLeftBracketPath(height)}
+          />
+        </svg>
+        <p
+          className="absolute left-2 top-[7px] z-[1] bg-white pr-2 text-[10px] font-bold leading-none text-neutral-900"
+        >
+          {topLabel}
+        </p>
+        <div
+          className={`absolute flex justify-start ${contentClassName} ${clipContent ? "overflow-hidden" : "overflow-visible"}`}
+        >
+          {children}
+        </div>
+        <div
+          className="absolute left-2 bottom-[7px] z-[1] max-w-[calc(100%-14px)] truncate bg-white pr-2 leading-none"
+        >
+          {bottomLabel}
+        </div>
+      </div>
+      {captionBelow ? (
+        <p className="mt-1.5 mb-1 pl-2 text-[8.5px] font-medium text-neutral-500 leading-none">{captionBelow}</p>
+      ) : null}
+    </div>
+  );
+}
+
+function ElectronicSignatureSeal({
+  name,
+  title,
+  signatureUrl,
+  membershipId,
+}: {
+  name: string;
+  title: string;
+  signatureUrl?: string | null;
+  membershipId: string;
+}) {
+  return (
+    <DocuSignBracketFrame
+      topLabel="DocuSigned by:"
+      captionBelow={title}
+      bottomLabel={
+        <span className="text-[8.5px] font-normal tracking-tight text-neutral-800">
+          {membershipId}
+          ..
+        </span>
+      }
+      height={58}
+      width={DOCUSIGN_SIGNATURE_W}
+      clipContent={false}
+      contentClassName="left-2.5 right-2 top-[21px] bottom-[20px] items-center"
+    >
+      {signatureUrl ? (
+        <img src={signatureUrl} alt="" className="h-[24px] w-auto max-w-full object-contain object-left" />
+      ) : (
+        <p
+          className="w-full shrink-0 whitespace-nowrap text-[17px] leading-none text-neutral-900"
+          style={{ fontFamily: SIGNATURE_SCRIPT_FONT }}
+        >
+          {formatSignatoryScriptName(name)}
+        </p>
+      )}
+    </DocuSignBracketFrame>
+  );
+}
+
+function VerifyHeadingRow({ heading }: { heading: string }) {
+  const sep = heading.indexOf("·");
+  if (sep === -1) {
+    return (
+      <p className="text-[11px] font-bold" style={{ color: NAVY }}>
+        {heading}
+      </p>
+    );
+  }
+  const en = heading.slice(0, sep).trim();
+  const ar = heading.slice(sep + 1).trim();
+  return (
+    <div className="flex w-full items-baseline justify-between gap-3">
+      <p className="text-[11px] font-bold leading-tight text-left" style={{ color: NAVY }}>
+        {en}
+      </p>
+      <p className="text-[11px] font-bold font-arabic leading-tight text-right" dir="rtl" style={{ color: NAVY }}>
+        {ar}
+      </p>
+    </div>
+  );
+}
+
+function ElectronicAuthenticationBadge({ heading, body }: { heading: string; body: string }) {
+  return (
+    <div className="mt-0.5 w-full max-w-[262px] pl-2 pr-1 text-left">
+      <div className="border-b border-neutral-400" style={{ borderColor: NAVY }} aria-hidden />
+      <div className="mt-1 flex flex-wrap items-center gap-1.5">
+        <p className="text-[9px] font-bold tracking-[0.06em] text-neutral-900 leading-tight not-italic">
+          {heading}
+        </p>
+        <ShieldCheck className="h-4 w-4 shrink-0" style={{ color: GOLD }} strokeWidth={1.75} aria-label="Authenticated" />
+      </div>
+      <p className="mt-1 text-[8.5px] font-normal italic leading-[1.45] text-neutral-600">{body}</p>
+    </div>
+  );
+}
+
+function OfficialSignatoryStack({
+  closingEn,
+  officeNameEn,
+  signatoryName,
+  signatoryTitle,
+  signatureUrl,
+  membershipId,
+  electronicAuthHeading,
+  electronicAuthBody,
+}: {
+  closingEn: string;
+  officeNameEn: string;
+  signatoryName: string;
+  signatoryTitle: string;
+  signatureUrl?: string | null;
+  membershipId: string;
+  electronicAuthHeading: string;
+  electronicAuthBody: string;
+}) {
+  return (
+    <div className="flex flex-col gap-[7px]">
+      <div className="mb-1 pt-1">
+        <p className="text-sm font-bold leading-tight text-neutral-900">{closingEn}</p>
+        <p className="mt-1 text-[12px] font-bold leading-snug text-neutral-800">{officeNameEn}</p>
+      </div>
+      <div className="flex flex-col gap-0">
+        <ElectronicSignatureSeal
+          name={signatoryName}
+          title={signatoryTitle}
+          signatureUrl={signatureUrl}
+          membershipId={membershipId}
+        />
+        <ElectronicAuthenticationBadge heading={electronicAuthHeading} body={electronicAuthBody} />
+      </div>
+    </div>
+  );
+}
 
 function MetaBox({
   labelEn,
@@ -54,29 +260,11 @@ function MetaBox({
 function GridLabel({ children, rtl }: { children: ReactNode; rtl?: boolean }) {
   return (
     <div
-      className="px-3 py-3 text-[11px] font-bold text-neutral-900 border border-[#DDD5BF] flex items-center justify-center min-h-[52px]"
+      className="px-2 py-3 text-[10px] font-bold text-neutral-900 border border-[#DDD5BF] flex items-center justify-center min-h-[52px] min-w-0 text-center leading-snug"
       style={{ backgroundColor: CREAM }}
       dir={rtl ? "rtl" : undefined}
     >
       {children}
-    </div>
-  );
-}
-
-/** Cream-column label: English on top, Arabic below with clear separation */
-function GridLabelBilingual({ en, ar }: { en: string; ar: string }) {
-  return (
-    <div
-      className="px-3 py-3 text-[11px] font-bold text-neutral-900 border border-[#DDD5BF] flex flex-col items-center justify-center gap-2 min-h-[52px] text-center"
-      style={{ backgroundColor: CREAM }}
-    >
-      <span className="leading-tight">{en}</span>
-      <span
-        dir="rtl"
-        className="text-[10px] font-bold font-arabic text-neutral-700 leading-snug w-full pt-2 border-t border-[#D5CEC0]"
-      >
-        {ar}
-      </span>
     </div>
   );
 }
@@ -94,7 +282,7 @@ function GridValue({
 }) {
   return (
     <div
-      className={`px-3 py-3 text-[11px] text-neutral-900 border border-[#DDD5BF] bg-white flex min-h-[44px] ${
+      className={`px-2 py-3 text-[11px] text-neutral-900 border border-[#DDD5BF] bg-white flex min-h-[44px] min-w-0 ${
         stacked ? "flex-col items-center justify-center gap-2 py-3.5" : "items-center"
       } ${center ? "justify-center text-center" : ""} ${className}`}
     >
@@ -103,18 +291,47 @@ function GridValue({
   );
 }
 
-function BilingualCellValue({ primary, secondary }: { primary: React.ReactNode; secondary?: string }) {
+function GridLabelStackedEn({ top, bottom }: { top: string; bottom: string }) {
+  return (
+    <div
+      className="px-2 py-3 text-[10px] font-bold text-neutral-900 border border-[#DDD5BF] flex flex-col items-center justify-center gap-2 min-h-[52px] min-w-0 text-center"
+      style={{ backgroundColor: CREAM }}
+    >
+      <span className="leading-tight">{top}</span>
+      <span className="leading-tight w-full pt-2 border-t border-[#D5CEC0]">{bottom}</span>
+    </div>
+  );
+}
+
+function GridLabelStackedAr({ top, bottom }: { top: string; bottom: string }) {
+  return (
+    <div
+      dir="rtl"
+      className="px-2 py-3 text-[10px] font-bold text-neutral-900 border border-[#DDD5BF] flex flex-col items-center justify-center gap-2 min-h-[52px] min-w-0 text-center font-arabic"
+      style={{ backgroundColor: CREAM }}
+    >
+      <span className="leading-snug">{top}</span>
+      <span className="leading-snug w-full pt-2 border-t border-[#D5CEC0]">{bottom}</span>
+    </div>
+  );
+}
+
+function StackedLangValuesEn({ top, bottom }: { top: string; bottom: string }) {
   return (
     <div className="flex flex-col items-center gap-2 w-full text-center">
-      <span className="font-semibold leading-snug">{primary}</span>
-      {secondary ? (
-        <span
-          dir="rtl"
-          className="text-[10px] text-neutral-700 font-arabic leading-relaxed w-full pt-2 border-t border-[#E8E4DA]"
-        >
-          {secondary}
-        </span>
-      ) : null}
+      <span className="font-semibold leading-snug">{top}</span>
+      <span className="font-semibold leading-snug w-full pt-2 border-t border-[#E8E4DA]">{bottom}</span>
+    </div>
+  );
+}
+
+function StackedLangValuesAr({ top, bottom }: { top: string; bottom: string }) {
+  return (
+    <div dir="rtl" className="flex flex-col items-center gap-2 w-full text-center font-arabic">
+      <span className="font-semibold leading-snug text-neutral-900">{top}</span>
+      <span className="font-semibold leading-snug text-neutral-900 w-full pt-2 border-t border-[#E8E4DA]">
+        {bottom}
+      </span>
     </div>
   );
 }
@@ -122,7 +339,7 @@ function BilingualCellValue({ primary, secondary }: { primary: React.ReactNode; 
 /** EN label | EN value | AR label | AR value — stacks on mobile, 4 cols from md; print keeps desktop grid */
 function OfficialDetailGrid({ children }: { children: React.ReactNode }) {
   return (
-    <div className="px-4 sm:px-6 md:px-8 mt-5 grid grid-cols-1 md:grid-cols-4 print:grid-cols-4 gap-0">
+    <div className="cert-print-detail-grid px-4 sm:px-6 md:px-8 mt-5 grid grid-cols-4 gap-0 min-w-0">
       {children}
     </div>
   );
@@ -134,7 +351,7 @@ function CommissionLogo() {
     <img
       src={src}
       alt="Literature, Publishing & Translation Commission"
-      className="max-h-[118px] w-auto max-w-full object-contain"
+      className="cert-print-commission max-h-[118px] w-auto max-w-full object-contain"
       onError={() => {
         if (src !== SAUDI_TRANSLATION_COMMISSION_LOGO_FALLBACK) {
           setSrc(SAUDI_TRANSLATION_COMMISSION_LOGO_FALLBACK);
@@ -164,23 +381,32 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
   const legalAr3 = fillCertificateCopy(o.legalAr3, vars);
 
   return (
-    <div
-      className="bg-white w-full max-w-[820px] min-h-0 md:min-h-[1160px] shadow-2xl mx-auto text-neutral-900 print:shadow-none print:min-h-[1160px] overflow-x-hidden"
-      style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
-    >
+    <>
+      <style>{CERTIFICATE_SINGLE_PAGE_PRINT_CSS}</style>
+      <div
+        className={`bg-white ${CERTIFICATE_A4_PAGE_CLASS} shadow-2xl mx-auto text-neutral-900 print:shadow-none overflow-x-hidden flex flex-col`}
+        style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+      >
       {bannerLabel && (
-        <div className="bg-amber-600 text-white text-center text-xs font-bold py-2 px-4">{bannerLabel}</div>
+        <div className="bg-amber-600 text-white text-center text-xs font-bold py-2 px-4 print:hidden">{bannerLabel}</div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 px-4 sm:px-6 md:px-8 pt-6 sm:pt-8 pb-4 items-center print:grid-cols-2">
+      <div className="cert-print-header grid grid-cols-[1fr_auto_1fr] gap-2 sm:gap-3 px-4 sm:px-6 md:px-8 pt-6 sm:pt-8 pb-4 items-center min-w-0">
         <img
           src={VISO_OFFICIAL_DOC_LOGO_EN}
-          alt="VISO Translation"
-          className="h-14 sm:h-[72px] w-auto object-contain object-center sm:object-left mx-auto sm:mx-0"
+          alt="Vision of Solutions — Translation Services"
+          className="h-14 sm:h-[72px] w-auto max-w-full object-contain object-left justify-self-start"
         />
-        <div className="flex justify-center sm:justify-end">
-          <img src={VISO_OFFICIAL_DOC_LOGO_AR} alt="" className="h-16 sm:h-[84px] w-auto object-contain" />
-        </div>
+        <img
+          src={VISO_OFFICIAL_DOC_LOGO_MARK}
+          alt="VISO"
+          className="h-16 sm:h-[84px] w-auto max-w-[120px] sm:max-w-[140px] object-contain justify-self-center"
+        />
+        <img
+          src={VISO_OFFICIAL_DOC_LOGO_AR_TEXT}
+          alt="رؤية الحلول — خدمات الترجمة"
+          className="h-16 sm:h-[80px] w-auto max-w-full object-contain object-right justify-self-end"
+        />
       </div>
       <div className="mx-4 sm:mx-6 md:mx-8 border-b-[3px]" style={{ borderColor: NAVY }} />
 
@@ -220,12 +446,12 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
             {clientEn}
           </span>
         </GridValue>
-        <GridLabel rtl>اسم العميل</GridLabel>
         <GridValue>
           <span dir="rtl" className="font-arabic font-semibold leading-snug text-neutral-900">
             {clientAr}
           </span>
         </GridValue>
+        <GridLabel rtl>اسم العميل</GridLabel>
 
         {certificateShowsClientCr(cert) ? (
           <>
@@ -233,39 +459,38 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
             <GridValue center>
               <span className="font-mono font-semibold tracking-tight">{cert.client_cr_number}</span>
             </GridValue>
-            <GridLabel rtl>رقم السجل التجاري</GridLabel>
             <GridValue center>
               <span className="font-mono font-semibold tracking-tight">{cert.client_cr_number}</span>
             </GridValue>
+            <GridLabel rtl>رقم السجل التجاري</GridLabel>
           </>
         ) : null}
 
-        <GridLabelBilingual en="Source Language" ar="اللغة المصدر" />
+        <GridLabelStackedEn top="Source Language" bottom="Target Language" />
         <GridValue center stacked>
-          <BilingualCellValue primary={srcEn} secondary={srcAr} />
+          <StackedLangValuesEn top={srcEn} bottom={tgtEn} />
         </GridValue>
-        <GridLabelBilingual en="Target Language" ar="اللغة الهدف" />
         <GridValue center stacked>
-          <BilingualCellValue primary={tgtEn} secondary={tgtAr} />
+          <StackedLangValuesAr top={srcAr} bottom={tgtAr} />
         </GridValue>
+        <GridLabelStackedAr top="اللغة المصدر" bottom="اللغة الهدف" />
       </OfficialDetailGrid>
 
-      <div className="px-4 sm:px-6 md:px-8 mt-6 grid grid-cols-1 md:grid-cols-[1fr_4px_1fr] print:grid-cols-[1fr_4px_1fr] gap-4 md:gap-0 items-stretch">
-        <div className="md:pr-4 space-y-4 text-[10px] sm:text-[11px] leading-[1.65] text-justify">
+      <div className="cert-print-legal px-4 sm:px-6 md:px-8 mt-6 grid grid-cols-[1fr_4px_1fr] gap-0 items-stretch">
+        <div className="cert-print-legal-col pr-3 space-y-4 text-[10px] sm:text-[11px] leading-[1.65] text-justify">
           <p>{legalEn1}</p>
           <p>{legalEn2}</p>
           <p>{legalEn3}</p>
         </div>
         <div
-          className="hidden md:block w-1 self-stretch my-1 print:block"
-          style={{ backgroundColor: GOLD }}
-        />
-        <div
-          className="md:hidden h-px w-full shrink-0"
+          className="cert-print-legal-divider-v w-1 self-stretch my-0.5 shrink-0"
           style={{ backgroundColor: GOLD }}
           aria-hidden
         />
-        <div className="md:pl-4 space-y-4 text-[10px] sm:text-[11px] leading-[1.75] text-justify" dir="rtl">
+        <div
+          className="cert-print-legal-col pl-3 space-y-4 text-[10px] sm:text-[11px] leading-[1.75] text-justify"
+          dir="rtl"
+        >
           <p>{legalAr1}</p>
           <p>{legalAr2}</p>
           <p>{legalAr3}</p>
@@ -273,32 +498,22 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
       </div>
 
       {/* Signature (left) + verification QR (right) — stacks on mobile */}
-      <div className="px-4 sm:px-6 md:px-8 mt-8 md:mt-10 flex flex-col md:grid md:grid-cols-[1fr_152px] print:grid print:grid-cols-[1fr_152px] gap-6 md:items-end">
+      <div className="px-4 sm:px-6 md:px-8 mt-4 md:mt-5 flex flex-col md:grid md:grid-cols-[1fr_152px] print:grid print:grid-cols-[1fr_152px] gap-6 md:items-end print:items-end">
         <div className="min-w-0 w-full">
-          <div className="mb-4">
-            <p className="font-bold text-sm">{o.closingEn}</p>
-            <p className="font-bold text-sm mt-1 leading-snug text-[12px]">{o.officeNameEn}</p>
-          </div>
-
-          <div className="relative max-w-[320px] min-h-[64px] mb-2">
-            {branding.signatureUrl ? (
-              <img
-                src={branding.signatureUrl}
-                alt=""
-                className="absolute left-0 bottom-0 h-14 w-auto max-w-full object-contain object-left pointer-events-none"
-              />
-            ) : null}
-            <div className="border-b-2 pt-12 w-full" style={{ borderColor: NAVY }} />
-          </div>
-
-          <div>
-            <p className="font-bold text-sm">{o.signatoryNameEn}</p>
-            <p className="text-[11px] text-neutral-700 mt-0.5">{o.signatoryTitleEn}</p>
-          </div>
+          <OfficialSignatoryStack
+            closingEn={o.closingEn}
+            officeNameEn={o.officeNameEn}
+            signatoryName={o.signatoryNameEn}
+            signatoryTitle={o.signatoryTitleEn}
+            signatureUrl={branding.signatureUrl}
+            membershipId={branding.riyadhChamberMembershipId}
+            electronicAuthHeading={o.electronicAuthHeadingEn}
+            electronicAuthBody={o.electronicAuthBodyEn}
+          />
         </div>
 
         <div
-          className="border-2 p-3 flex flex-col items-center justify-center gap-2 bg-white shrink-0 mx-auto md:mx-0 w-full max-w-[200px] md:max-w-none md:w-auto"
+          className="cert-print-qr border-2 p-3 flex flex-col items-center justify-center gap-2 bg-white shrink-0 mx-auto md:mx-0 w-full max-w-[200px] md:max-w-none md:w-auto"
           style={{ borderColor: GOLD }}
         >
           <img
@@ -315,11 +530,9 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
         </div>
       </div>
 
-      <div className="px-4 sm:px-6 md:px-8 mt-8 mb-6 md:mb-8 flex flex-col md:grid md:grid-cols-[1fr_220px] print:grid print:grid-cols-[1fr_220px] gap-4 items-stretch">
+      <div className="cert-print-footer px-4 sm:px-6 md:px-8 mt-8 mb-6 md:mb-8 flex flex-col md:grid md:grid-cols-[1fr_220px] print:grid print:grid-cols-[1fr_220px] gap-4 items-stretch">
         <div className="border-2 px-3 sm:px-4 py-3 flex flex-col justify-center gap-2 min-h-0 md:min-h-[140px]" style={{ borderColor: GOLD }}>
-          <p className="text-[11px] font-bold" style={{ color: NAVY }}>
-            {o.verifyHeading}
-          </p>
+          <VerifyHeadingRow heading={o.verifyHeading} />
           <p className="text-[10.5px] leading-snug">{fillCertificateCopy(o.verifyEn, vars)}</p>
           <p className="text-[10.5px] leading-snug" dir="rtl">
             {fillCertificateCopy(o.verifyAr, vars)}
@@ -336,5 +549,6 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
         </div>
       </div>
     </div>
+    </>
   );
 }

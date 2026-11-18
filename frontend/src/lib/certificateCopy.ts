@@ -21,6 +21,8 @@ export type CertificateCopyOfficial = {
   signatoryNameAr: string;
   signatoryTitleEn: string;
   signatoryTitleAr: string;
+  electronicAuthHeadingEn: string;
+  electronicAuthBodyEn: string;
   commissionNoteEn: string;
   commissionNoteAr: string;
 };
@@ -80,6 +82,9 @@ export const DEFAULT_CERTIFICATE_COPY: CertificateCopy = {
     signatoryNameAr: "محمد بن صادق",
     signatoryTitleEn: "Authorized Signatory",
     signatoryTitleAr: "المفوض بالتوقيع",
+    electronicAuthHeadingEn: "ELECTRONICALLY AUTHENTICATED",
+    electronicAuthBodyEn:
+      "This certificate is officially issued electronically and does not require a handwritten or digital signature.",
     commissionNoteEn: "Translation Commission license / QR",
     commissionNoteAr: "(paste official copy here)",
   },

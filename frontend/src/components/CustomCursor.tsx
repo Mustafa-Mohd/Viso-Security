@@ -54,7 +54,7 @@ export function CustomCursor({ showRotatingRing = true }: { showRotatingRing?: b
         }
       `}</style>
       
-      <div className="pointer-events-none fixed inset-0 z-[99999]">
+      <div className="viso-custom-cursor-root pointer-events-none fixed inset-0 z-[99999]">
         {/* The arrow exactly following the mouse */}
         <motion.div
           className="absolute left-0 top-0 z-50 pointer-events-none drop-shadow-[0_8px_16px_rgba(223,155,42,0.5)]"

@@ -172,7 +172,7 @@ export function CertificateTemplateClassic(props: CertificateViewProps) {
     <div className="bg-white w-full max-w-[800px] min-h-[1130px] shadow-2xl relative p-12 md:p-20 text-black flex flex-col mx-auto overflow-hidden print:shadow-none">
       {bannerLabel && (
         <div
-          className={`absolute top-12 left-[-60px] text-white font-bold tracking-wide text-sm py-2 w-[300px] text-center -rotate-45 shadow-md border-y z-10 opacity-90 ${
+          className={`absolute top-12 left-[-60px] text-white font-bold tracking-wide text-sm py-2 w-[300px] text-center -rotate-45 shadow-md border-y z-10 opacity-90 print:hidden ${
             isRevoked ? "bg-red-600 border-red-700" : "bg-amber-500 border-amber-600"
           }`}
         >
@@ -297,7 +297,7 @@ export function CertificateTemplateTrilingual(props: CertificateViewProps) {
   return (
     <CertificateOuterFrame className="max-w-[940px] min-h-[1280px]">
       {bannerLabel && (
-        <div className="absolute top-16 right-8 z-20 px-4 py-1.5 bg-amber-600 text-white text-[10px] font-bold uppercase tracking-wider shadow-md">
+        <div className="absolute top-16 right-8 z-20 px-4 py-1.5 bg-amber-600 text-white text-[10px] font-bold uppercase tracking-wider shadow-md print:hidden">
           {bannerLabel}
         </div>
       )}
@@ -487,7 +487,7 @@ export function CertificateTemplateAccreditation(props: CertificateViewProps) {
       </div>
 
       {bannerLabel && (
-        <div className="absolute top-16 left-8 z-20 px-4 py-1.5 bg-red-700 text-white text-[10px] font-bold uppercase tracking-wider shadow-md">
+        <div className="absolute top-16 left-8 z-20 px-4 py-1.5 bg-red-700 text-white text-[10px] font-bold uppercase tracking-wider shadow-md print:hidden">
           {bannerLabel}
         </div>
       )}
