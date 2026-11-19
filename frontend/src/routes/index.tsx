@@ -34,16 +34,24 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Vision of Solutions (Viso Group) provides SAIS security consultancy, physical security engineering, risk management & certified translation services across Saudi Arabia.",
+          "Vision of Solutions (VISO Group) provides SAIS security consultancy, physical security engineering, risk management & certified translation services across Saudi Arabia.",
       },
       {
         property: "og:title",
-        content: "Viso Group | Leading Security Consultancy & SAIS Experts in KSA",
+        content: "VISO Group | Leading Security Consultancy & SAIS Experts in KSA",
+      },
+      {
+        property: "og:site_name",
+        content: "VISO Group",
+      },
+      {
+        name: "twitter:title",
+        content: "VISO Group | Leading Security Consultancy & SAIS Experts in KSA",
       },
       {
         property: "og:description",
         content:
-          "Vision of Solutions (Viso Group) provides SAIS security consultancy, physical security engineering, risk management & certified translation services across Saudi Arabia.",
+          "Vision of Solutions (VISO Group) provides SAIS security consultancy, physical security engineering, risk management & certified translation services across Saudi Arabia.",
       },
       {
         name: "twitter:description",
