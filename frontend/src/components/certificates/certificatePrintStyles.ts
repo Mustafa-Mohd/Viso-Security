@@ -89,6 +89,10 @@ export const CERTIFICATE_SINGLE_PAGE_PRINT_CSS = `
       padding-top: 2mm !important;
       padding-bottom: 2mm !important;
     }
+    .cert-print-legal-tri .cert-print-legal-col {
+      font-size: 9px !important;
+      line-height: 1.42 !important;
+    }
     .cert-print-commission {
       max-height: 92px !important;
     }

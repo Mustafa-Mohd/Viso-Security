@@ -21,6 +21,13 @@ import {
   resolveClassicClientNameAr,
   textDirectionForContent,
 } from "@/lib/certificateDisplay";
+import {
+  buildCompactArabicLegal,
+  buildCompactEnglishLegal,
+  buildThirdLanguageLegalBlock,
+  buildThirdLanguageVerifyLine,
+  resolveTrilingualThirdLanguageName,
+} from "@/lib/certificateOfficialThirdLegal";
 import { getPublicSiteOrigin } from "@/lib/certificateIds";
 import { CertificateOfficialViewport } from "@/components/certificates/CertificateOfficialViewport";
 import {
@@ -367,8 +374,14 @@ function CommissionLogo() {
   );
 }
 
+function isOfficialTrilingualTemplate(cert: CertificateViewProps["cert"]) {
+  const t = cert.template;
+  return t === "official_trilingual" || t === "trilingual";
+}
+
 export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
   const { cert, certId, qrUrl, branding, bannerLabel, copy } = props;
+  const trilingual = isOfficialTrilingualTemplate(cert);
   const refDate = formatCertDisplayDate(cert.issue_date);
   const clientEn = cert.project_name;
   const clientAr = resolveClassicClientNameAr(cert.project_name, cert.project_name_ar);
@@ -385,6 +398,11 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
   const legalAr1 = fillCertificateCopy(o.legalAr1, vars);
   const legalAr2 = fillCertificateCopy(o.legalAr2, vars);
   const legalAr3 = fillCertificateCopy(o.legalAr3, vars);
+  const thirdLangName = resolveTrilingualThirdLanguageName(cert.source_lang, cert.target_lang);
+  const thirdBlock = trilingual ? buildThirdLanguageLegalBlock(thirdLangName, vars) : null;
+  const thirdVerify = trilingual ? buildThirdLanguageVerifyLine(thirdLangName, vars) : null;
+  const legalEnCompact = buildCompactEnglishLegal(legalEn1, legalEn2, legalEn3);
+  const legalArCompact = buildCompactArabicLegal(legalAr1, legalAr2, legalAr3);
 
   return (
     <>
@@ -486,26 +504,65 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
         <GridLabelStackedAr top="اللغة المصدر" bottom="اللغة الهدف" />
       </OfficialDetailGrid>
 
-      <div className="cert-print-legal px-8 mt-6 grid grid-cols-[1fr_4px_1fr] gap-0 items-stretch">
-        <div className="cert-print-legal-col pr-3 space-y-4 text-[11px] leading-[1.65] text-justify">
-          <p>{legalEn1}</p>
-          <p>{legalEn2}</p>
-          <p>{legalEn3}</p>
+      {trilingual && thirdBlock ? (
+        <div className="cert-print-legal cert-print-legal-tri px-8 mt-5 grid grid-cols-[1fr_3px_1fr_3px_1fr] gap-0 items-stretch">
+          <div className="cert-print-legal-col pr-2 pb-1 text-[9.5px] leading-[1.48] text-justify">
+            <p className="text-[8px] font-bold uppercase tracking-[0.14em] text-center mb-2 pb-1 border-b border-[#E8E4DA]">
+              Certification
+            </p>
+            <p>{legalEnCompact}</p>
+          </div>
+          <div
+            className="cert-print-legal-divider-v w-[3px] self-stretch shrink-0"
+            style={{ backgroundColor: GOLD }}
+            aria-hidden
+          />
+          <div
+            className="cert-print-legal-col px-2 pb-1 text-[9.5px] leading-[1.55] text-justify"
+            dir="rtl"
+          >
+            <p className="text-[8px] font-bold font-arabic text-center mb-2 pb-1 border-b border-[#E8E4DA]">
+              شهادة
+            </p>
+            <p className="font-arabic">{legalArCompact}</p>
+          </div>
+          <div
+            className="cert-print-legal-divider-v w-[3px] self-stretch shrink-0"
+            style={{ backgroundColor: GOLD }}
+            aria-hidden
+          />
+          <div
+            className={`cert-print-legal-col pl-2 pb-1 text-[9.5px] leading-[1.48] text-justify ${thirdBlock.fontClass ?? ""}`}
+            dir={thirdBlock.dir ?? "ltr"}
+          >
+            <p className="text-[8px] font-bold text-center mb-2 pb-1 border-b border-[#E8E4DA]">
+              {thirdBlock.heading}
+            </p>
+            <p>{thirdBlock.body}</p>
+          </div>
         </div>
-        <div
-          className="cert-print-legal-divider-v w-1 self-stretch my-0.5 shrink-0"
-          style={{ backgroundColor: GOLD }}
-          aria-hidden
-        />
-        <div
-          className="cert-print-legal-col pl-3 space-y-4 text-[11px] leading-[1.75] text-justify"
-          dir="rtl"
-        >
-          <p>{legalAr1}</p>
-          <p>{legalAr2}</p>
-          <p>{legalAr3}</p>
+      ) : (
+        <div className="cert-print-legal px-8 mt-6 grid grid-cols-[1fr_4px_1fr] gap-0 items-stretch">
+          <div className="cert-print-legal-col pr-3 space-y-4 text-[11px] leading-[1.65] text-justify">
+            <p>{legalEn1}</p>
+            <p>{legalEn2}</p>
+            <p>{legalEn3}</p>
+          </div>
+          <div
+            className="cert-print-legal-divider-v w-1 self-stretch my-0.5 shrink-0"
+            style={{ backgroundColor: GOLD }}
+            aria-hidden
+          />
+          <div
+            className="cert-print-legal-col pl-3 space-y-4 text-[11px] leading-[1.75] text-justify"
+            dir="rtl"
+          >
+            <p>{legalAr1}</p>
+            <p>{legalAr2}</p>
+            <p>{legalAr3}</p>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="px-8 mt-5 grid grid-cols-[1fr_152px] gap-6 items-end">
         <div className="min-w-0 w-full">
@@ -546,6 +603,11 @@ export function CertificateTemplateOfficialDoc(props: CertificateViewProps) {
           <p className="text-[10.5px] leading-snug" dir="rtl">
             {fillCertificateCopy(o.verifyAr, vars)}
           </p>
+          {trilingual && thirdVerify ? (
+            <p className="text-[9.5px] leading-snug pt-1 border-t border-[#E8E4DA]" dir={thirdBlock?.dir}>
+              {thirdVerify}
+            </p>
+          ) : null}
           <p className="text-[11px] font-bold mt-1 break-all" style={{ color: GOLD }}>
             {certId} · {origin.replace(/^https?:\/\//, "")}/translation
           </p>

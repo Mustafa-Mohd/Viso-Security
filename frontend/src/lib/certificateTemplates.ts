@@ -1,7 +1,7 @@
 import { parseCertificateId } from "./certificateIds";
 import type { TranslationCertificate } from "./certsApi";
 
-export type CertificateTemplateId = "classic" | "official";
+export type CertificateTemplateId = "classic" | "official" | "official_trilingual";
 
 /** Retired layouts still stored on some rows — resolved to `official` when rendering. */
 export type CertificateTemplateStorage = CertificateTemplateId | "trilingual" | "accreditation";
@@ -41,10 +41,17 @@ export const CERTIFICATE_TEMPLATE_OPTIONS: {
     label: "Official — bilingual certification",
     description: "Formal bilingual certification layout matching the VISO Word template.",
   },
+  {
+    id: "official_trilingual",
+    label: "Official — trilingual (EN · AR · 3rd language)",
+    description:
+      "Same official layout with a third legal column in the certificate target language (Hindi, French, Spanish, etc.).",
+  },
 ];
 
 export function normalizeCertificateTemplateParam(value: string | undefined | null): CertificateTemplateId {
-  if (value === "classic" || value === "official") return value;
+  if (value === "classic" || value === "official" || value === "official_trilingual") return value;
+  if (value === "trilingual") return "official_trilingual";
   return "official";
 }
 
@@ -61,8 +68,9 @@ export function resolveCertificateTemplate(
 ): CertificateTemplateId {
   if (certificateUsesLegacyTemplate(cert.id)) return "classic";
   const t = cert.template as CertificateTemplateStorage | undefined;
-  if (t === "classic" || t === "official") return t;
-  if (t === "trilingual" || t === "accreditation") return "official";
+  if (t === "classic" || t === "official" || t === "official_trilingual") return t;
+  if (t === "trilingual") return "official_trilingual";
+  if (t === "accreditation") return "official";
   return "official";
 }
 

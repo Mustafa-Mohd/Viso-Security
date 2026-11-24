@@ -24,7 +24,13 @@ import {
   certificateUsesLegacyTemplate,
   type CertificateTemplateId,
 } from "../lib/certificateTemplates";
+import {
+  CERTIFICATE_TARGET_LANGUAGE_OPTIONS,
+  certificateLanguageSelectOptions,
+} from "../lib/certificateLanguages";
 import { CertificateBrandingPanel } from "./CertificateBrandingPanel";
+
+const DELETE_CONFIRM_WORD = "delete";
 
 const VALIDITY_MONTH_OPTIONS = [1, 2, 3] as const;
 type ValidityMonths = (typeof VALIDITY_MONTH_OPTIONS)[number] | "custom";
@@ -88,6 +94,9 @@ export function CertificatesDashboard() {
   /** Cache-bust for live public certificate iframe after saves */
   const [livePreviewToken, setLivePreviewToken] = useState(0);
   const [showFormPreview, setShowFormPreview] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [deleteConfirmInput, setDeleteConfirmInput] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Load certificates
   const loadCerts = async () => {
@@ -168,7 +177,13 @@ export function CertificatesDashboard() {
     const legacy = certificateUsesLegacyTemplate(cert.id);
     const t = cert.template as CertificateTemplateId | undefined;
     setFormTemplate(
-      legacy ? "classic" : t === "classic" || t === "official" ? t : "official"
+      legacy
+        ? "classic"
+        : t === "classic" || t === "official" || t === "official_trilingual"
+          ? t
+          : t === "trilingual"
+            ? "official_trilingual"
+            : "official"
     );
     setShowForm(true);
   };
@@ -251,9 +266,7 @@ export function CertificatesDashboard() {
 
       const template: CertificateTemplateId = certificateUsesLegacyTemplate(idForSave)
         ? "classic"
-        : formTemplate === "classic"
-          ? "classic"
-          : "official";
+        : formTemplate;
 
       await certsApi.upsertCertificate({
         id: idForSave,
@@ -288,17 +301,35 @@ export function CertificatesDashboard() {
     }
   };
 
-  // Handle Delete
-  const handleDelete = async (id: string) => {
-    if (confirm(`Are you sure you want to delete certificate ${id}?`)) {
-      try {
-        await certsApi.deleteCertificate(id);
-        setCerts(certs.filter(c => c.id !== id));
-      } catch (err) {
-        alert("Failed to delete certificate.");
-      }
+  const openDeleteConfirm = (id: string) => {
+    setDeleteTargetId(id);
+    setDeleteConfirmInput("");
+  };
+
+  const closeDeleteConfirm = () => {
+    if (isDeleting) return;
+    setDeleteTargetId(null);
+    setDeleteConfirmInput("");
+  };
+
+  const confirmDeleteCertificate = async () => {
+    if (!deleteTargetId) return;
+    if (deleteConfirmInput.trim().toLowerCase() !== DELETE_CONFIRM_WORD) return;
+    setIsDeleting(true);
+    try {
+      await certsApi.deleteCertificate(deleteTargetId);
+      setCerts(certs.filter((c) => c.id !== deleteTargetId));
+      setDeleteTargetId(null);
+      setDeleteConfirmInput("");
+    } catch {
+      alert("Failed to delete certificate.");
+    } finally {
+      setIsDeleting(false);
     }
   };
+
+  const deleteConfirmMatches =
+    deleteConfirmInput.trim().toLowerCase() === DELETE_CONFIRM_WORD;
 
   const setRevokedFlag = async (cert: TranslationCertificate, revoked: boolean) => {
     const nextStatus = revoked
@@ -365,6 +396,7 @@ export function CertificatesDashboard() {
   const templateShortLabel = (cert: TranslationCertificate) => {
     if (certificateUsesLegacyTemplate(cert.id)) return "Simple";
     if (cert.template === "classic") return "Simple";
+    if (cert.template === "official_trilingual" || cert.template === "trilingual") return "Official·3";
     return "Official";
   };
 
@@ -617,7 +649,7 @@ export function CertificatesDashboard() {
                           </button>
                           <button
                             type="button"
-                            onClick={() => handleDelete(cert.id)}
+                            onClick={() => openDeleteConfirm(cert.id)}
                             className="p-1.5 rounded bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white transition-colors cursor-pointer"
                             title="Delete"
                           >
@@ -877,11 +909,11 @@ export function CertificatesDashboard() {
                     onChange={(e) => setFormSource(e.target.value)}
                     className="w-full bg-background border border-foreground/15 rounded-lg py-2.5 px-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all font-medium"
                   >
-                    <option value="Arabic">Arabic</option>
-                    <option value="English">English</option>
-                    <option value="French">French</option>
-                    <option value="German">German</option>
-                    <option value="Spanish">Spanish</option>
+                    {certificateLanguageSelectOptions(formSource).map((lang) => (
+                      <option key={`src-${lang}`} value={lang}>
+                        {lang}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -892,11 +924,11 @@ export function CertificatesDashboard() {
                     onChange={(e) => setFormTarget(e.target.value)}
                     className="w-full bg-background border border-foreground/15 rounded-lg py-2.5 px-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all font-medium"
                   >
-                    <option value="English">English</option>
-                    <option value="Arabic">Arabic</option>
-                    <option value="French">French</option>
-                    <option value="German">German</option>
-                    <option value="Spanish">Spanish</option>
+                    {certificateLanguageSelectOptions(formTarget, CERTIFICATE_TARGET_LANGUAGE_OPTIONS).map((lang) => (
+                      <option key={`tgt-${lang}`} value={lang}>
+                        {lang}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -1068,6 +1100,78 @@ export function CertificatesDashboard() {
                 </div>
               )}
             </form>
+          </div>
+        </div>
+      )}
+
+      {deleteTargetId && (
+        <div
+          className="fixed inset-0 z-[210] flex items-center justify-center bg-[#0B1329]/80 backdrop-blur-sm p-4"
+          role="dialog"
+          aria-labelledby="delete-cert-title"
+          aria-modal="true"
+        >
+          <div className="w-full max-w-md rounded-xl border border-foreground/10 bg-white dark:bg-[#1C2541] shadow-2xl p-6">
+            <div className="flex items-start gap-3">
+              <div className="p-2 rounded-lg bg-rose-500/10 text-rose-500 shrink-0">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 id="delete-cert-title" className="text-sm font-bold text-foreground">
+                  Delete translation certificate
+                </h3>
+                <p className="text-xs text-foreground/60 mt-1.5 leading-relaxed">
+                  Certificate <span className="font-mono font-semibold text-foreground">{deleteTargetId}</span> will
+                  be removed from the registry. This cannot be undone.
+                </p>
+                <p className="text-xs text-foreground/60 mt-2">
+                  Type <span className="font-mono font-semibold text-foreground">{DELETE_CONFIRM_WORD}</span> to
+                  confirm.
+                </p>
+                <input
+                  type="text"
+                  autoComplete="off"
+                  autoFocus
+                  value={deleteConfirmInput}
+                  onChange={(e) => setDeleteConfirmInput(e.target.value)}
+                  placeholder={DELETE_CONFIRM_WORD}
+                  className="mt-3 w-full bg-background border border-foreground/10 rounded-lg px-3 py-2.5 text-xs text-foreground placeholder:text-foreground/40 focus:outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500/30"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={closeDeleteConfirm}
+                disabled={isDeleting}
+                className="p-1 rounded text-foreground/40 hover:text-foreground hover:bg-foreground/5 transition-colors disabled:opacity-50 cursor-pointer"
+                aria-label="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="flex justify-end gap-2 mt-6">
+              <button
+                type="button"
+                onClick={closeDeleteConfirm}
+                disabled={isDeleting}
+                className="px-4 py-2 rounded-lg border border-foreground/10 text-xs font-bold uppercase tracking-wider text-foreground/70 hover:bg-foreground/5 transition-colors cursor-pointer disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmDeleteCertificate}
+                disabled={!deleteConfirmMatches || isDeleting}
+                className="px-4 py-2 rounded-lg bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {isDeleting ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Deleting…
+                  </>
+                ) : (
+                  "Delete certificate"
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}

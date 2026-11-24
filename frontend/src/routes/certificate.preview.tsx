@@ -38,7 +38,13 @@ function CertificatePreviewPage() {
     })();
   }, []);
 
-  const cert = { ...CERTIFICATE_PREVIEW_SAMPLE, template };
+  const cert = {
+    ...CERTIFICATE_PREVIEW_SAMPLE,
+    template,
+    ...(template === "official_trilingual"
+      ? { source_lang: "English", target_lang: "Hindi" }
+      : null),
+  };
   const certId = cert.id;
   const origin = getPublicSiteOrigin();
   const qrUrl = `${origin}/translation?verify=${certId}&nationalId=${cert.national_id}`;
@@ -70,7 +76,9 @@ function CertificatePreviewPage() {
       <style>{CERTIFICATE_GLOBAL_PRINT_CSS}</style>
       <div className="certificate-print-root min-h-screen w-full bg-neutral-300 py-6 px-2 overflow-x-hidden flex flex-col items-center print:justify-start print:items-center print:overflow-visible print:min-h-0 print:h-auto print:bg-white print:py-0 print:px-0">
         <CertificatePrintToolbar certId={certId} />
-        {template === "official" && <CertificateTemplateOfficialDoc {...viewProps} />}
+        {(template === "official" || template === "official_trilingual") && (
+          <CertificateTemplateOfficialDoc {...viewProps} />
+        )}
         {template === "classic" && <CertificateTemplateClassic {...viewProps} />}
       </div>
     </>

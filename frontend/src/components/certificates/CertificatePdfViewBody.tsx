@@ -91,7 +91,9 @@ export function CertificatePdfViewBody({ certId }: { certId: string }) {
     <style>{CERTIFICATE_GLOBAL_PRINT_CSS}</style>
     <div className="certificate-print-root min-h-screen w-full bg-neutral-300 flex flex-col items-center py-4 px-2 sm:py-8 sm:px-4 font-sans overflow-x-hidden print:flex print:justify-start print:items-center print:overflow-visible print:min-h-0 print:h-auto print:bg-white print:py-0 print:px-0">
       <CertificatePrintToolbar certId={certId} />
-      {template === "official" && <CertificateTemplateOfficialDoc {...viewProps} />}
+      {(template === "official" || template === "official_trilingual") && (
+        <CertificateTemplateOfficialDoc {...viewProps} />
+      )}
       {template === "classic" && <CertificateTemplateClassic {...viewProps} />}
     </div>
   </>
