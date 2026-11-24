@@ -1,7 +1,12 @@
 import { parseCertificateId } from "./certificateIds";
 import type { TranslationCertificate } from "./certsApi";
 
-export type CertificateTemplateId = "classic" | "official" | "official_trilingual" | "official_panorama";
+export type CertificateTemplateId =
+  | "classic"
+  | "official"
+  | "official_trilingual"
+  | "official_panorama"
+  | "official_horizon";
 
 /** Retired layouts still stored on some rows — resolved to `official` when rendering. */
 export type CertificateTemplateStorage = CertificateTemplateId | "trilingual" | "accreditation";
@@ -53,6 +58,12 @@ export const CERTIFICATE_TEMPLATE_OPTIONS: {
     description:
       "Horizontal A4 layout with EN · AR · third legal columns; VISO mark and official verify footer (per Three_languages reference).",
   },
+  {
+    id: "official_horizon",
+    label: "Official — Horizon (landscape registry)",
+    description:
+      "Professional landscape registry layout: full-height sidebar, three statement cards, commission logo, and electronic authentication.",
+  },
 ];
 
 export function normalizeCertificateTemplateParam(value: string | undefined | null): CertificateTemplateId {
@@ -60,7 +71,8 @@ export function normalizeCertificateTemplateParam(value: string | undefined | nu
     value === "classic" ||
     value === "official" ||
     value === "official_trilingual" ||
-    value === "official_panorama"
+    value === "official_panorama" ||
+    value === "official_horizon"
   ) {
     return value;
   }
@@ -81,7 +93,15 @@ export function resolveCertificateTemplate(
 ): CertificateTemplateId {
   if (certificateUsesLegacyTemplate(cert.id)) return "classic";
   const t = cert.template as CertificateTemplateStorage | undefined;
-  if (t === "classic" || t === "official" || t === "official_trilingual" || t === "official_panorama") return t;
+  if (
+    t === "classic" ||
+    t === "official" ||
+    t === "official_trilingual" ||
+    t === "official_panorama" ||
+    t === "official_horizon"
+  ) {
+    return t;
+  }
   if (t === "trilingual") return "official_trilingual";
   if (t === "accreditation") return "official";
   return "official";

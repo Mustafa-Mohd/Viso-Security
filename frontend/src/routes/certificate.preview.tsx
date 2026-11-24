@@ -8,6 +8,7 @@ import { normalizeCertificateTemplateParam, type CertificateTemplateId } from "@
 import { CertificateTemplateClassic } from "@/components/certificates/CertificateDocument";
 import { CertificateTemplateOfficialDoc } from "@/components/certificates/CertificateTemplateOfficialDoc";
 import { CertificateTemplateOfficialPanorama } from "@/components/certificates/CertificateTemplateOfficialPanorama";
+import { CertificateTemplateOfficialHorizon } from "@/components/certificates/CertificateTemplateOfficialHorizon";
 import { CertificatePrintToolbar } from "@/components/certificates/CertificatePrintToolbar";
 import { CERTIFICATE_GLOBAL_PRINT_CSS } from "@/components/certificates/certificatePrintStyles";
 
@@ -42,7 +43,9 @@ function CertificatePreviewPage() {
   const cert = {
     ...CERTIFICATE_PREVIEW_SAMPLE,
     template,
-    ...(template === "official_trilingual" || template === "official_panorama"
+    ...(template === "official_trilingual" ||
+    template === "official_panorama" ||
+    template === "official_horizon"
       ? { source_lang: "English", target_lang: "Hindi" }
       : null),
   };
@@ -81,6 +84,7 @@ function CertificatePreviewPage() {
           <CertificateTemplateOfficialDoc {...viewProps} />
         )}
         {template === "official_panorama" && <CertificateTemplateOfficialPanorama {...viewProps} />}
+        {template === "official_horizon" && <CertificateTemplateOfficialHorizon {...viewProps} />}
         {template === "classic" && <CertificateTemplateClassic {...viewProps} />}
       </div>
     </>

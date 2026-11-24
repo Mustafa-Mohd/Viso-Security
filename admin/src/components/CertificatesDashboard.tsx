@@ -182,7 +182,8 @@ export function CertificatesDashboard() {
         : t === "classic" ||
             t === "official" ||
             t === "official_trilingual" ||
-            t === "official_panorama"
+            t === "official_panorama" ||
+            t === "official_horizon"
           ? t
           : t === "trilingual"
             ? "official_trilingual"
@@ -399,6 +400,7 @@ export function CertificatesDashboard() {
   const templateShortLabel = (cert: TranslationCertificate) => {
     if (certificateUsesLegacyTemplate(cert.id)) return "Simple";
     if (cert.template === "classic") return "Simple";
+    if (cert.template === "official_horizon") return "Horizon";
     if (cert.template === "official_panorama") return "Panorama";
     if (cert.template === "official_trilingual" || cert.template === "trilingual") return "Official·3";
     return "Official";
