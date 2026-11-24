@@ -7,6 +7,7 @@ import { resolveCertificateTemplate } from "@/lib/certificateTemplates";
 import { getPublicSiteOrigin } from "@/lib/certificateIds";
 import { CertificateTemplateClassic } from "@/components/certificates/CertificateDocument";
 import { CertificateTemplateOfficialDoc } from "@/components/certificates/CertificateTemplateOfficialDoc";
+import { CertificateTemplateOfficialPanorama } from "@/components/certificates/CertificateTemplateOfficialPanorama";
 import { CertificatePrintToolbar } from "@/components/certificates/CertificatePrintToolbar";
 import { CERTIFICATE_GLOBAL_PRINT_CSS } from "@/components/certificates/certificatePrintStyles";
 
@@ -94,6 +95,7 @@ export function CertificatePdfViewBody({ certId }: { certId: string }) {
       {(template === "official" || template === "official_trilingual") && (
         <CertificateTemplateOfficialDoc {...viewProps} />
       )}
+      {template === "official_panorama" && <CertificateTemplateOfficialPanorama {...viewProps} />}
       {template === "classic" && <CertificateTemplateClassic {...viewProps} />}
     </div>
   </>

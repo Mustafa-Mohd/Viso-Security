@@ -1,7 +1,7 @@
 import { parseCertificateId } from "./certificateIds";
 import type { TranslationCertificate } from "./certsApi";
 
-export type CertificateTemplateId = "classic" | "official" | "official_trilingual";
+export type CertificateTemplateId = "classic" | "official" | "official_trilingual" | "official_panorama";
 
 /** Retired layouts still stored on some rows — resolved to `official` when rendering. */
 export type CertificateTemplateStorage = CertificateTemplateId | "trilingual" | "accreditation";
@@ -47,10 +47,23 @@ export const CERTIFICATE_TEMPLATE_OPTIONS: {
     description:
       "Same official layout with a third legal column in the certificate target language (Hindi, French, Spanish, etc.).",
   },
+  {
+    id: "official_panorama",
+    label: "Official — Panorama (landscape · 3 languages)",
+    description:
+      "Horizontal A4 layout with EN · AR · third legal columns; VISO mark and official verify footer (per Three_languages reference).",
+  },
 ];
 
 export function normalizeCertificateTemplateParam(value: string | undefined | null): CertificateTemplateId {
-  if (value === "classic" || value === "official" || value === "official_trilingual") return value;
+  if (
+    value === "classic" ||
+    value === "official" ||
+    value === "official_trilingual" ||
+    value === "official_panorama"
+  ) {
+    return value;
+  }
   if (value === "trilingual") return "official_trilingual";
   return "official";
 }
@@ -68,7 +81,7 @@ export function resolveCertificateTemplate(
 ): CertificateTemplateId {
   if (certificateUsesLegacyTemplate(cert.id)) return "classic";
   const t = cert.template as CertificateTemplateStorage | undefined;
-  if (t === "classic" || t === "official" || t === "official_trilingual") return t;
+  if (t === "classic" || t === "official" || t === "official_trilingual" || t === "official_panorama") return t;
   if (t === "trilingual") return "official_trilingual";
   if (t === "accreditation") return "official";
   return "official";
@@ -116,3 +129,7 @@ export const CERTIFICATE_A4_WIDTH = "210mm";
 export const CERTIFICATE_A4_HEIGHT = "297mm";
 export const CERTIFICATE_A4_PAGE_CLASS =
   "certificate-a4-page w-[210mm] min-w-[210mm] shrink-0 min-h-[297mm] box-border";
+
+/** ISO 216 A4 landscape — Panorama certificate */
+export const CERTIFICATE_A4_LANDSCAPE_PAGE_CLASS =
+  "certificate-a4-landscape-page w-[297mm] min-w-[297mm] shrink-0 min-h-[210mm] max-h-[210mm] box-border";

@@ -2,7 +2,8 @@
 /** Screen: keep signature script consistent when the page is scaled on mobile */
 export const CERTIFICATE_SIGNATURE_SCREEN_CSS = `
   @media screen {
-    .certificate-a4-page {
+    .certificate-a4-page,
+    .certificate-a4-landscape-page {
       -webkit-text-size-adjust: 100%;
       text-size-adjust: 100%;
     }
@@ -30,7 +31,7 @@ export const CERTIFICATE_SINGLE_PAGE_PRINT_CSS = `
   @media print {
     @page {
       size: A4 portrait;
-      margin: 0;
+      margin: 6mm;
     }
     html,
     body {
@@ -65,8 +66,8 @@ export const CERTIFICATE_SINGLE_PAGE_PRINT_CSS = `
       margin-right: auto !important;
     }
     .certificate-a4-page {
-      width: 210mm !important;
-      max-width: 210mm !important;
+      width: 100% !important;
+      max-width: 198mm !important;
       height: auto !important;
       max-height: none !important;
       min-height: 0 !important;
@@ -76,7 +77,7 @@ export const CERTIFICATE_SINGLE_PAGE_PRINT_CSS = `
       page-break-after: avoid !important;
       page-break-inside: avoid !important;
       break-inside: avoid-page !important;
-      zoom: 0.86;
+      zoom: var(--cert-print-zoom, 1);
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
     }
@@ -111,6 +112,63 @@ export const CERTIFICATE_SINGLE_PAGE_PRINT_CSS = `
       width: auto !important;
       height: auto !important;
       transform: none !important;
+    }
+  }
+`;
+
+export const CERTIFICATE_LANDSCAPE_PRINT_CSS = `
+  @media print {
+    @page {
+      size: A4 landscape;
+      margin: 6mm;
+    }
+    .certificate-a4-landscape-page {
+      width: 100% !important;
+      max-width: 285mm !important;
+      height: auto !important;
+      max-height: 198mm !important;
+      min-height: 0 !important;
+      margin: 0 auto !important;
+      box-shadow: none !important;
+      overflow: hidden !important;
+      page-break-after: avoid !important;
+      page-break-inside: avoid !important;
+      break-inside: avoid-page !important;
+      zoom: var(--cert-print-zoom, 1);
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    .cert-panorama-page {
+      display: flex !important;
+      flex-direction: column !important;
+    }
+    .cert-panorama-header img {
+      max-height: 12mm !important;
+    }
+    .cert-panorama-sidebar {
+      width: 26% !important;
+      min-width: 50mm !important;
+    }
+    .cert-panorama-main {
+      min-height: 175mm !important;
+      flex: 1 !important;
+    }
+    .cert-panorama-legal.cert-print-legal-tri .cert-print-legal-col {
+      font-size: 8.5px !important;
+      line-height: 1.5 !important;
+      padding-top: 3mm !important;
+      padding-bottom: 3mm !important;
+    }
+    .cert-panorama-legal .space-y-3 > p + p {
+      margin-top: 2.5mm !important;
+    }
+    .cert-print-footer {
+      margin-top: 2mm !important;
+      margin-bottom: 0 !important;
+    }
+    .cert-print-qr img {
+      width: 72px !important;
+      height: 72px !important;
     }
   }
 `;

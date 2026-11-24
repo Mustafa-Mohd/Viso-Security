@@ -179,7 +179,10 @@ export function CertificatesDashboard() {
     setFormTemplate(
       legacy
         ? "classic"
-        : t === "classic" || t === "official" || t === "official_trilingual"
+        : t === "classic" ||
+            t === "official" ||
+            t === "official_trilingual" ||
+            t === "official_panorama"
           ? t
           : t === "trilingual"
             ? "official_trilingual"
@@ -396,6 +399,7 @@ export function CertificatesDashboard() {
   const templateShortLabel = (cert: TranslationCertificate) => {
     if (certificateUsesLegacyTemplate(cert.id)) return "Simple";
     if (cert.template === "classic") return "Simple";
+    if (cert.template === "official_panorama") return "Panorama";
     if (cert.template === "official_trilingual" || cert.template === "trilingual") return "Official·3";
     return "Official";
   };

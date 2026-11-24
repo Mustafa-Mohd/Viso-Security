@@ -1,6 +1,19 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 
-/** Fits full A4 official layout on narrow screens by scaling — print stays 1:1. */
+import {
+  applyCertificatePrintZoom,
+  clearCertificatePrintZoom,
+} from "@/lib/certificatePrintFit";
+
+/** Screen padding so the A4 page sits inset with visible border gap (px). */
+const SCREEN_FIT_PAD = 20;
+
+function measureToolbarReservePx(): number {
+  const bar = document.querySelector(".certificate-print-root .no-print");
+  return bar instanceof HTMLElement ? bar.offsetHeight + 8 : 0;
+}
+
+/** Fits full A4 official layout on screen (with border gap) and scales for print/PDF. */
 export function CertificateOfficialViewport({ children }: { children: ReactNode }) {
   const outerRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef<HTMLDivElement>(null);
@@ -8,13 +21,20 @@ export function CertificateOfficialViewport({ children }: { children: ReactNode 
   const [printing, setPrinting] = useState(false);
 
   useEffect(() => {
-    const onBefore = () => setPrinting(true);
-    const onAfter = () => setPrinting(false);
+    const onBefore = () => {
+      setPrinting(true);
+      applyCertificatePrintZoom();
+    };
+    const onAfter = () => {
+      clearCertificatePrintZoom();
+      setPrinting(false);
+    };
     window.addEventListener("beforeprint", onBefore);
     window.addEventListener("afterprint", onAfter);
     return () => {
       window.removeEventListener("beforeprint", onBefore);
       window.removeEventListener("afterprint", onAfter);
+      clearCertificatePrintZoom();
     };
   }, []);
 
@@ -27,8 +47,12 @@ export function CertificateOfficialViewport({ children }: { children: ReactNode 
       const pageWidth = page.offsetWidth;
       const pageHeight = page.offsetHeight;
       if (pageWidth <= 0) return;
-      const available = outer.clientWidth;
-      const scale = available < pageWidth ? available / pageWidth : 1;
+      const availW = Math.max(0, outer.clientWidth - SCREEN_FIT_PAD * 2);
+      const availH = Math.max(
+        0,
+        window.innerHeight - measureToolbarReservePx() - SCREEN_FIT_PAD * 2
+      );
+      const scale = Math.min(availW / pageWidth, availH / pageHeight, 1);
       setFit({
         scale,
         width: pageWidth * scale,
@@ -48,12 +72,12 @@ export function CertificateOfficialViewport({ children }: { children: ReactNode 
   }, [printing]);
 
   const scale = fit?.scale ?? 1;
-  const scaled = Boolean(!printing && fit && scale < 0.999);
+  const scaled = Boolean(!printing && fit && scale < 0.9999);
 
   return (
     <div
       ref={outerRef}
-      className="cert-official-viewport-outer w-full flex justify-center print:block print:w-auto"
+      className="cert-official-viewport-outer w-full flex justify-center px-5 py-4 sm:px-6 sm:py-5 print:p-0 print:block print:w-auto"
     >
       <div
         className={

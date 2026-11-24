@@ -1,4 +1,5 @@
 import { Printer } from "lucide-react";
+import { applyCertificatePrintZoom, clearCertificatePrintZoom } from "@/lib/certificatePrintFit";
 
 type CertificatePrintToolbarProps = {
   certId?: string;
@@ -18,11 +19,14 @@ export function CertificatePrintToolbar({ certId }: CertificatePrintToolbarProps
       </p>
       <button
         type="button"
-        onClick={() => window.print()}
+        onClick={() => {
+          applyCertificatePrintZoom();
+          window.print();
+        }}
         className="inline-flex items-center gap-2 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm font-semibold text-neutral-900 shadow-sm hover:bg-neutral-50"
       >
         <Printer className="h-4 w-4" aria-hidden />
-        Print / Save PDF
+        Generate PDF
       </button>
     </div>
   );
